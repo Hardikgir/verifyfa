@@ -74,11 +74,11 @@ $active_group = 'default';
 $query_builder = TRUE;
 
 $db['default'] = array(
-	'dsn'	=> '', 
+	'dsn'	=> '',
 	'hostname' => 'localhost',
-	'username' => 'root',
-	'password' => '',
-	'database' => 'codeigniter_verify_development',
+	'username' => 'u337050398_verifyfadmin',
+	'password' => '/tG4@pV+Q',
+	'database' => 'u337050398_verifyfadb',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
