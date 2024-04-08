@@ -1,0 +1,31 @@
+Code :- HMCMM
+User_ID :- 17
+Email :- jasmeet@verifyfa.com
+Pass :- 12345
+
+
+TableName :- 
+
+Their is Total 3 point
+1) All Download Remaing that should ne status as Short name se Bharna tha.
+2) Not-Verify -> Download Excel format is not proper
+3) Not-Verify -> Their is Remaing count is not current and also their Format is Wrong
+    Changes in getExceptionThreeReportdownload()
+    Changes in getExceptionThreeReport()
+    Changes in getExceptionOneReport()
+
+
+File NAme should be :- 
+
+reportname_verificationStatus
+ConditionofiItems_AllReport_050424.xls
+
+
+What you have to work Today (08/04/2024)
+-> As per Last Meeting(Friday) Discussion. 
+
+Report :- 
+    -> Qty Validation status
+        -> In Not-Verify then download file is download proper but file is not able to open.
+
+    

@@ -1,0 +1,234 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+$this->load->view('layouts/header');
+$this->load->view('layouts/sidebar');
+?>
+<style>
+table th,table td{
+	padding:5px;
+	font-size: 0.875rem;
+}
+.btn-blue{
+	background: #5B96CE !important;
+    color: white !important;
+}
+</style>
+	<div class="content">
+				<div class="container-fluid">
+					<div class="row">
+						<div class="col-md-1"></div>
+						<div class="col-md-10">
+							<?php if(isset($_SESSION['error_message']))
+							{
+							?>
+							<div class="alert alert-danger">
+								<?php echo $_SESSION['error_message']['message']; ?>
+							</div>
+							<?php 
+							}
+							?>
+							<div class="card">
+								
+								<div class="card-header card-header-primary">
+									<div class="row">
+                                    	<div class="col-md-6">
+                                    		<h4 class="card-title">Reports </h4> 
+                                    	</div>
+                                    	<div class="col-md-6">
+                                    		<a href="<?php echo base_url(); ?>index.php/dashboard/exceptions"><button class="btn btn-round pull-right">Back</button></a>
+                                    	</div>
+                                    </div>
+                                    	
+								</div>
+								<?php 
+								if($data['type']=='project')
+								{
+								?>
+								<form>
+									<div class="card-body">
+										<div class="row">
+											<div class="col-md-6">
+												<div class="form-group">
+													<div class="radio"> <span class="text-center"><label><input type="radio" name="optradio" value="project" class="optradio" checked> Project based </label></span>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-6">
+												<div class="form-group">
+													<div class="radio"> <span class="text-center"><label><input type="radio" name="optradio" value="consolidated" class="text-center optradio" disabled> Consolidated </label></span>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="row my-3">
+											<div class="col-md-6">
+												<div class="form-group">
+                                                    <label>Exception Category:</label>
+                                                    <input type="text" class="form-control" value="With Verification Remarks">
+												</div>
+                                            </div>
+                                            <div class="col-md-6">
+												<div class="form-group">
+                                                    <label>Project ID:</label>
+                                                    <input type="text" class="form-control" value="<?php echo $data['project'][0]->project_id;?>">
+												</div>
+											</div>
+										</div>
+										<div class="row my-3">
+                                            
+											<div class="col-md-6">
+												<div class="form-group">
+                                                    <label>Project Name:</label>
+                                                    <input type="text" class="form-control" value="<?php echo $data['project'][0]->project_name;?>">
+												</div>
+											</div>
+											<div class="col-md-6">
+												<div class="form-group">
+                                                    <label>Period of Verification(Days):</label>
+                                                    <input type="text" class="form-control" value="<?php echo $data['project'][0]->period_of_verification;?>">
+												</div>
+											</div>
+										</div>
+										<div class="row my-3">
+                                            <div class="col-md-6">
+												<div class="form-group">
+                                                    <label>Start Date:</label>
+                                                    <input type="text" class="form-control" value="<?php echo date('d/m/yy',strtotime($data['project'][0]->start_date));?>">
+												</div>
+											</div>
+											<div class="col-md-6">
+												<div class="form-group">
+                                                    <label>Due Date:</label>
+                                                    <input type="text" class="form-control" value="<?php echo date('d/m/yy',strtotime($data['project'][0]->due_date));?>">
+												</div>
+											</div>
+											
+										</div>
+										<div class="row my-3">
+											<?php
+											$verifier=explode(',',$data['project'][0]->project_verifier);
+											$verifier_name="";
+											for($ii=0;$ii<count($verifier);$ii++)
+											{
+												if($ii==count($verifier)-1)
+												{
+													$verifier_name.=get_UserName($verifier[$ii]);
+												}
+												else
+												{
+													$verifier_name.=get_UserName($verifier[$ii]).", ";
+												}
+											}
+											?>
+											<div class="col-md-6">
+												<div class="form-group">
+                                                    <label>Allocated Users:</label>
+                                                    <input type="text" class="form-control" value="<?php echo $verifier_name;?>">
+												</div>
+											</div>
+											<div class="col-md-6">
+												<div class="form-group">
+                                                    <label>Project Status:</label>
+                                                    <?php 
+                                                    	if($data['project'][0]->status==0){
+	                                                    	$statusProject='In Process';
+	                                                    }
+	                                                    else if($data['project'][0]->status==1)
+	                                                    {
+		                                                    $statusProject='Completed';
+		                                                }
+		                                                else if($data['project'][0]->status==2)
+		                                                {
+			                                                $statusProject='Cancelled';
+			                                            }
+			                                            else
+			                                            {
+				                                            $statusProject='Finished Verification';
+				                                        }
+				                                    ?>
+                                                    <input type="text" class="form-control" value="<?php echo $statusProject;?>">
+												</div>
+											</div>
+									</div>
+									</div>
+									
+									<div class="clearfix"></div>
+								</form>
+								<div class="col-md-12" style="overflow-x:scroll;">
+									<table border="1">
+										<tr>
+											<th>Allocated Item Category</th>
+											<th>Number of Line Items</th>
+											<th>Click View Details</th>
+										</tr>
+										
+										<?php
+										$totalItems=0;
+										foreach($data['all'] as $allcat)
+										{
+											$totalItems=$totalItems+$allcat->items;
+											
+										?>
+										<tr>
+											<td><?php echo $allcat->item_category; ?></td>
+											<td><?php echo $allcat->items; ?></td>
+											<td><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionFourReport/<?php echo urlencode($allcat->item_category); ?>">Download to View Details</a></td>
+										</tr>
+										<?php
+										}
+										?>
+										<tr>
+											<td></td>
+											<td></td>
+											<td></td>
+											
+										</tr>
+										<tr>
+											<td></td>
+											<td></td>
+											<td></td>
+											
+										</tr>
+										<tr>
+											<th><?php echo "Grand Total"; ?></th>
+											<th><?php echo $totalItems; ?></th>
+											<th></th>
+										</tr>
+										<tr>
+											<td></td>
+											<td><?php if($totalItems>0){ ?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionFourAllReport">Download to View Details</a><?php } ?></td>
+											<td></td>
+											
+										</tr>
+										
+										
+										
+									</table>
+								</div>
+								<?php
+								}
+								?>
+								<div class="col-md-12 text-center mt-3"><a href="<?php echo base_url(); ?>index.php/dashboard/exceptions"><button class="btn btn-round btn-blue">Back</button></a></div>
+							</div>
+						</div>
+                    </div>
+                    
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--seccion table--->
+	</div>
+	</div>
+<style>
+	table th,table td
+	{
+		text-align: center;
+		height:40px;
+	}
+	</style>
+<?php
+$this->load->view('layouts/scripts');
+$this->load->view('layouts/reportscript');
+$this->load->view('layouts/footer');
+?>
