@@ -20,10 +20,7 @@ Their is Total 3 point
     Changes in getExceptionOneReport()
 
 
-File NAme should be :- 
 
-reportname_verificationStatus
-ConditionofiItems_AllReport_050424.xls
 
 
 What you have to work Today (08/04/2024)
@@ -31,6 +28,53 @@ What you have to work Today (08/04/2024)
 
 Report :- 
     -> Qty Validation status
-        -> In Not-Verify then download file is download proper but file is not able to open.
+        -> In Not-Verify then download file is download proper but file is not able to open. (Fixed)
+		
+	-> Condition of items Report
+		-> In this if you are selecting Not-Verify then their static of last column (Remaing is not showing proper) [line item hi aa rahi h sum nai aa raha]
+		->
+	
+	File NAme should be :- 
+
+		reportname_verificationStatus
+		ConditionofiItems_AllReport_050424.xls
+		
+	-> Mode of Verification
+		-> In all their is summary 
+			category wise showing (number of line item or qty) their count by verify by (scan or search)
+		-> their status we need to check it store that status or not
+		
+	-> In Report their we need to add Header as per their idetails.
+		Like :- 
+			-> Name of verificatiom
+			-> Verification Status
+			-> Mode of verification (Scan h or Search h)
+			-> File header in First 4 line	(Their is share a file in that showing header)
+		-> In (Additional assets report) category you can download and see their details (you can take reference their is only one issue their 3 row data is setup in single row)
+		-> In Consolidate Report their all project merge with single report generate. (their you did any changes that is reflect here you need to check)
+		-> In Consolidate Report then is Location taken other (Selvasa) and their title is showing different (DEWA Godown)
+		-> Their Report also showing of other location
+		-> Purpose of Consolidate if ek location pr multiple project h then vo club ho jayega.
+		-> if you are setup header like common then in consolidate report their report wise period of verificatation showing multiple project wise so may be they will make conflict so rehnde dete h,
+		
+	-> Discussion Regarding Changes in Verify Record
+	-> You can see multiple qty by using , in {P} Column (New Location Verified)
+				-
+
+Call 5:17 (Evening Call)
+-> 
+-> Project Name :- KML - DEWAS (Godown) - ALL STOCK
+-> Category :- Qty Validation Status
+-> Project Status :- Finished Verification
+-> Type :- Verify
+ 
+-> That Download file their column number M Their is Showing Not-Verify that need to check
+Call 8:42
+Download Annexure is not open
+-> Project Name :- KML - MAHAG - STOCK/ OTHERS (STORS/ PACK)
+-> Category :- Qty Validation Status
+-> Project Status :- In Process
+-> Type :- Not-Verify
+-> Location :- STK Mahagaon MH
 
     
