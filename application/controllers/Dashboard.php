@@ -2692,6 +2692,16 @@ class Dashboard extends CI_Controller {
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
 		$writer->setPreCalculateFormulas(false);
 		$filename = 'Exception Report';
+
+		$dateddmmyy = date('dmy');
+
+		if($original_verification_status == '1'){
+			$filename = 'AllReport_'.$dateddmmyy;
+		}else if($original_verification_status == 'Verified'){
+			$filename = 'VerifiedReport_'.$dateddmmyy;
+		}else{
+			$filename = 'NotVerifiedReport_'.$dateddmmyy;
+		}
  
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
