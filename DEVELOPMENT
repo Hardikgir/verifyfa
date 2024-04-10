@@ -38,9 +38,9 @@ Report :-
 		reportname_verificationStatus
 		ConditionofiItems_AllReport_050424.xls
 		
-	-> Mode of Verification
+	-> Mode of Verification [need to discussion]
 		-> In all their is summary 
-			category wise showing (number of line item or qty) their count by verify by (scan or search)
+			category wise showing (number of line item or qty) their count by verify by (scan or search) 
 		-> their status we need to check it store that status or not
 		
 	-> In Report their we need to add Header as per their idetails.
@@ -55,9 +55,11 @@ Report :-
 		-> Their Report also showing of other location
 		-> Purpose of Consolidate if ek location pr multiple project h then vo club ho jayega.
 		-> if you are setup header like common then in consolidate report their report wise period of verificatation showing multiple project wise so may be they will make conflict so rehnde dete h,
+
+
 		
 	-> Discussion Regarding Changes in Verify Record
-	-> You can see multiple qty by using , in {P} Column (New Location Verified)
+	-> You can see multiple qty by SEARCH , in {P} Column (New Location Verified)
 				-
 
 Call 5:17 (Evening Call)
