@@ -2265,7 +2265,7 @@ class Dashboard extends CI_Controller {
         $writer->save('php://output');
 	}
 
-	// Hardik downloadExceptionThreeVerifiedReport
+	// Hardik
 	public function downloadExceptionThreeVerifiedReport()
 	{
 		$reportOneType='verified';
@@ -2693,14 +2693,15 @@ class Dashboard extends CI_Controller {
 		$writer->setPreCalculateFormulas(false);
 		$filename = 'Exception Report';
 
+		$report_type = 'QtyValidationStatus_';
 		$dateddmmyy = date('dmy');
 
 		if($original_verification_status == '1'){
-			$filename = 'AllReport_'.$dateddmmyy;
+			$filename = $report_type.'AllReport_'.$dateddmmyy;
 		}else if($original_verification_status == 'Verified'){
-			$filename = 'VerifiedReport_'.$dateddmmyy;
+			$filename = $report_type.'VerifiedReport_'.$dateddmmyy;
 		}else{
-			$filename = 'NotVerifiedReport_'.$dateddmmyy;
+			$filename = $report_type.'NotVerifiedReport_'.$dateddmmyy;
 		}
  
         header('Content-Type: application/vnd.ms-excel');

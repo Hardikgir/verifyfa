@@ -34,7 +34,7 @@ Report :-
 		-> In this if you are selecting Not-Verify then their static of last column (Remaing is not showing proper) [line item hi aa rahi h sum nai aa raha] :- Done
 		->
 	
-	File NAme should be :-
+	File NAme should be :- Done
 		reportname_verificationStatus
 		ConditionofiItems_AllReport_050424.xls
 		
