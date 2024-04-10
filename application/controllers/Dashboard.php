@@ -2694,7 +2694,7 @@ class Dashboard extends CI_Controller {
 		$filename = 'Exception Report';
 
 		$report_type = 'QtyValidationStatus_';
-		$dateddmmyy = date('dmy');
+		$dateddmmyy = date('dmy'); 
 
 		if($original_verification_status == '1'){
 			$filename = $report_type.'AllReport_'.$dateddmmyy;
