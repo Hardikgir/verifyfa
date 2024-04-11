@@ -45,8 +45,8 @@ Report :-
 		
 	-> In Report their we need to add Header as per their idetails.
 		Like :- 
-			-> Name of verificatiom
-			-> Verification Status
+			-> Name of verifying person
+			-> Verification Status [Not-Verify where Verify as short That need to update status]
 			-> Mode of verification (Scan h or Search h)
 			-> File header in First 4 line	(Their is share a file in that showing header)
 		-> In (Additional assets report) category you can download and see their details (you can take reference their is only one issue their 3 row data is setup in single row)
@@ -79,3 +79,63 @@ Download Annexure is not open
 -> Location :- STK Mahagaon MH
 
     
+
+Call Discussion on 11/4/2024 :- 
+======================================================================================
+Laptop
+
+Tobe Verify : 5(qty)
+Verf Status :- Not-Verified
+Verf Result :- Not-Verified
+
+
+INS - 1
+Verified : 3 
+Total verified :- 3
+Remaing : 2
+Verf Status :- Verified
+Verf Result :- Verified as short
+
+
+INS - 2
+Verified : 1
+Total verified :- 4
+Remaing : 1
+Verf Status :- Verified
+Verf Result :- Verified as short
+
+INS - 3
+Verified : 1
+Total verified :- 5
+Remaing : 0
+Verf Status :- Verified
+Verf Result :- Verified as equal
+
+
+INS - 4
+Verified : 1
+Total verified :- 5+1 = 6
+Remaing : -1
+Verf Status :- Verified
+Verf Result :- Verified as excess
+
+
+
+Editing Scn :- 
+optio1 :- Qty or Details
+optio2 :- details update
+optio3 :- Remove instance (
+
+
+Eidt :- 
+
+
+optio1 :- Qty or Details
+        -> List of instance 
+            -> Select instance
+                -> Qty
+                -> Details
+optio2 :- details update
+optio3 :- Remove instance (
+======================================================================================
+
