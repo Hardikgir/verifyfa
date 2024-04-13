@@ -245,6 +245,10 @@ class Tasks extends CI_Controller {
 			"id"=>$userid
         );
         $projectdetail=$this->tasks->get_data('company_projects',array('id'=>$projectid));
+        echo '<pre>last_query ';
+        print_r($this->db->last_query());
+        echo '</pre>';
+        exit();
         $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
         $new_pattern = array("_", "_", "");
         $projectname=strtolower(preg_replace($old_pattern, $new_pattern , trim($projectname)));
