@@ -19,6 +19,10 @@ class Tasks extends CI_Controller {
 			"id"=>$userid
 		);
         $projects=$this->tasks->getProjects('users',$userid,$company_id,$location_id);
+        echo '<pre>last_query ';
+        print_r($this->db->last_query());
+        echo '</pre>';
+        exit();
         // echo $this->db->last_query();
         $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
