@@ -4,9 +4,9 @@ Email :- jasmeet@verifyfa.com
 Pass :- 12345
 
 
-u337050398_verifyfadb
-u337050398_verifyfadmin
-/tG4@pV+Q
+Database :- u337050398_verifyfadb
+User :- u337050398_verifyfadmin
+Pass :- /tG4@pV+Q
 
 
 TableName :- 
@@ -18,10 +18,6 @@ Their is Total 3 point
     Changes in getExceptionThreeReportdownload()
     Changes in getExceptionThreeReport()
     Changes in getExceptionOneReport()
-
-
-
-
 
 What you have to work Today (08/04/2024)
 -> As per Last Meeting(Friday) Discussion. 
@@ -62,11 +58,10 @@ Report :-
 				-
 
 Call 5:17 (Evening Call)
--> 
--> Project Name :- KML - DEWAS (Godown) - ALL STOCK
--> Category :- Qty Validation Status
--> Project Status :- Finished Verification
--> Type :- Verify
+	-> Project Name :- KML - DEWAS (Godown) - ALL STOCK
+	-> Category :- Qty Validation Status
+	-> Project Status :- Finished Verification
+	-> Type :- Verify
  
 -> That Download file their column number M Their is Showing Not-Verify that need to check
 Call 8:42
@@ -78,3 +73,96 @@ Download Annexure is not open
 -> Location :- STK Mahagaon MH
 
     
+Date :- 12/04/2024 :- 
+------------------------------------------
+Use the following credentials: 
+
+Entiry :- DEMOCO
+User :- Hardik@test.com
+Pas :- 12345
+
+==================================
+Array
+(
+    [company_id] => 6
+    [location_id] => 20
+    [optradio] => project
+    [projectSelect] => 22
+    [exceptioncategory] => 3
+    [projectstatus] => 0
+    [verificationstatus] => 1
+    [reportHeaders] => Array
+        (
+            [0] => all
+        )
+
+    [original_table_name] => project_1712831886
+)
+
+Project Name :- test_demo_01
+
+Table :- project_1712831886 & test_demo_01 
+
+Verify this product :- SWH-P&M-0003-PRO(rowid = 1)  (Single QTY)
+Verify this product :- SWH-P&M-0036-TVN(rowid = 3)  (Multi QTY :- 34)
+
+Once Verify From Mobile what column is effected :- 
+-> verification_status
+-> quantity_verified
+-> new_location_verified  	[In Multiple Location Verification Value store in Comma Seperate]
+-> verified_by
+-> verified_by_username
+-> verified_datetime
+-> verification_remarks		[In Multiple Location Verification Value store in Comma Seperate]
+-> qty_ok
+-> updated_at
+==================================
+
+
+Genarate Activation Link :- 
+http://localhost/CODEIGNITER_PHP/Verifyfa/Dev/index.php/generate-activation-link/7
+http://localhost/CODEIGNITER_PHP/Verifyfa/Dev/index.php/send-activation-link/7
+http://localhost/CODEIGNITER_PHP/Verifyfa/Dev/index.php/suspend-account/7
+http://localhost/CODEIGNITER_PHP/Verifyfa/Dev/index.php/unsubscribe-account/7
+
+
+"{"Peter":35,"Ben":37,"Joe":43}';
+
+{"item_scrap_condition":"qty_ok","qty_ok":1,"quantity_verified":1,"verification_status":"","verification_remarks":"","verified_datetime":"","updatedat":"a"}
+
+"{
+	'item_scrap_condition' : 'qty_ok',
+	'qty_ok' : '1',
+	'quantity_verified' : '1',
+	'verification_status' : 'Verified',
+	'verification_remarks' : 'asdasdasd',
+	'verified_datetime' : '1',
+	'updatedat' : '1'
+}"
+
+{
+"item_scrap_condition" : "qty_ok",
+"qty_ok" : "1",
+"quantity_verified" : "1",
+"verification_status" : "Verified",
+"verification_remarks" : "asdasdasd",
+"verified_datetime" : "1",
+"updatedat" : "1"
+}
+
+{
+  "item_scrap_condition": "qty_ok",
+  "message": "Lorem ipsum solar sit amet.",
+  "file": "encoded",
+  "recipients": [{
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "example@pleasesign.com.au",
+    "tabs": [{
+      "kind": "signature",
+      "page": 1,
+      "x": 100,
+      "y": 800
+    }]
+  }]
+} 

@@ -384,7 +384,8 @@ class Plancycle extends CI_Controller {
 		$data['mandatory_cols']=$getMandatoryColumns;
 		
 		$getOtherColumns=$this->plancycle->getcompleteschema($data['table_name']);
-		$select='SELECT';
+		// $select='SELECT';
+		$select='SELECT *';
 		$i=0;
 		foreach($getOtherColumns as $goc)
 		{
