@@ -327,6 +327,11 @@ class Tasks extends CI_Controller {
         $search_fields =$this->input->post('search_fields');
         $cond=array();
         
+        echo '<pre>search_fields ';
+        print_r($search_fields);
+        echo '</pre>';
+        exit();
+
         $where=' Where (';
         $i=1;
         foreach($search_fields as $sf)
@@ -335,10 +340,12 @@ class Tasks extends CI_Controller {
             $where.=str_replace('"','',$sf).' LIKE "%'.$search_text.'%"';
             else
             $where.=' OR '.str_replace('"','',$sf).' LIKE "%'.$search_text.'%"';
+            
             if(count($search_fields)==$i)
             {
                 $where.=')';
             }
+
             $i++;
         }
         echo '<pre>where ::';
