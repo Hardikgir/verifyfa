@@ -21,8 +21,13 @@ class Login extends CI_Controller {
 			"users.entity_code"=>$entity
 		);
 		$userid='';
+
 		$login=$this->login->getlogin_data($condition);
-			$userid=$login[0]["id"];
+		echo '<pre>last_query ';
+		print_r($this->db->last_query());
+		echo '</pre>';
+		exit();
+		$userid=$login[0]["id"];
 		
 		
 		$login[0]["role_cnt"]=$this->login->getuserrolecnt($userid);
