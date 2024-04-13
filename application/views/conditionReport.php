@@ -378,7 +378,7 @@ table th,table td{
 											<th><?php echo $notinuseTotalAmount!=0?getmoney_format(round(($notinuseTotalAmount/100000),2)):$notinuseTotalAmount; ?></th>
 											<th><?php echo $notinuseTotalItems; ?></th>
 											<th><?php echo $remainingTotalAmount!=0?getmoney_format(round(($remainingTotalAmount/100000),2)):$remainingTotalAmount; ?></th>
-											<th><?php echo $remainitemstotal; ?></th>
+											<th><?php echo $remainingTotalItems; ?></th>
 										</tr>
 										<tr>
 											<th><?php echo "% to Grand Total"; ?></th>
@@ -397,7 +397,7 @@ table th,table td{
 											<th><?php echo round(($notinuseTotalAmount/$totalAmount)*100,2); ?>%</th>
 											<th><?php echo round(($notinuseTotalItems/$totalItems)*100,2); ?>%</th>
 											<th><?php echo round(($remainingTotalAmount/$totalAmount)*100,2); ?>%</th>
-											<th><?php echo round(($remainitemstotal/$totalItems)*100,2); ?>%</th>
+											<th><?php echo round(($remainingTotalItems/$totalItems)*100,2); ?>%</th>
 										</tr>
 										<tr>
 											<td></td>

@@ -602,6 +602,10 @@ class Dashboard extends CI_Controller {
 				else if($exceptioncategory==3)
 				{
 					// Hardik and View will be call "quantityValidationReport"
+					// echo '<pre>project_name ';
+					// print_r($project_name);
+					// echo '</pre>';
+					// exit(); 
 					error_reporting(0);
 					$getreport=$this->tasks->getExceptionThreeReport($project_name,$verificationstatus,$reportHeaders);
 					$reportView="quantityValidationReport";
@@ -2265,7 +2269,7 @@ class Dashboard extends CI_Controller {
         $writer->save('php://output');
 	}
 
-	// Hardik downloadExceptionThreeVerifiedReport
+	// Hardik
 	public function downloadExceptionThreeVerifiedReport()
 	{
 		$reportOneType='verified';
@@ -2312,10 +2316,6 @@ class Dashboard extends CI_Controller {
 		$reportHeaders=$reportData['reportData']['report_headers'];
 		$headerCondition=array('table_name'=>$table_name);
 
-		// echo '<pre>reportOneType ';
-		// print_r($reportOneType);
-		// echo '</pre>';
-		// exit();
 		$original_verification_status = $verification_status; 
 		if($original_verification_status == 'Not-Verified'){
 			// $reportOneType = 'remaining';
@@ -2324,18 +2324,17 @@ class Dashboard extends CI_Controller {
 
 	
 		$project_headers=$this->tasks->get_data('project_headers',$headerCondition);
-		// echo '<pre>last_query ';
-		// print_r($this->db->last_query());
-		// echo '</pre>';
-		// exit();
-		// echo '<pre>reportHeaders ';
-		// print_r($reportHeaders);
-		// echo '</pre>';
-		// exit();
 		
 		$rowHeads=array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ','BA','BB','BC','BD','BE','BF','BG','BH','BI','BJ','BK','BL','BM','BN','BO','BP','BQ','BR','BS','BT','BU','BV','BW','BX','BY','BZ','CA','CB','CC','CD','CE','CF','CG','CH','CI','CJ','CK','CL','CM','CN','CO','CP','CQ','CR','CS','CT','CU','CV','CW','CX','CY','CZ');
 		$spreadsheet= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 		$sheet = $spreadsheet->getActiveSheet();
+
+
+		
+		
+
+
+
 		$cnt=0;
 		$columns="";
 		$rowCount=1;
@@ -2384,12 +2383,8 @@ class Dashboard extends CI_Controller {
 			}
 
 		}
-		$columns.="quantity_as_per_invoice,total_item_amount_capitalized, verification_status,new_location_verified,updatedat,verification_remarks,qty_ok,qty_damaged,qty_scrapped,qty_not_in_use,qty_missing,qty_shifted,mode_of_verification,quantity_verified";
 
-		// echo '<pre>colsArray ';
-		// print_r($colsArray);
-		// echo '</pre>';
-		// exit();
+		$columns.="quantity_as_per_invoice,total_item_amount_capitalized, verification_status,new_location_verified,updatedat,verification_remarks,qty_ok,qty_damaged,qty_scrapped,qty_not_in_use,qty_missing,qty_shifted,mode_of_verification,quantity_verified";
 
 		array_push($colsArray,'verification_status');
 		$sheet->setCellValue($rowHeads[$cnt].$rowCount, "Verification Status");
@@ -2692,6 +2687,17 @@ class Dashboard extends CI_Controller {
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
 		$writer->setPreCalculateFormulas(false);
 		$filename = 'Exception Report';
+
+		$report_type = 'QtyValidationStatus_';
+		$dateddmmyy = date('dmy'); 
+
+		if($original_verification_status == '1'){
+			$filename = $report_type.'AllReport_'.$dateddmmyy;
+		}else if($original_verification_status == 'Verified'){
+			$filename = $report_type.'VerifiedReport_'.$dateddmmyy;
+		}else{
+			$filename = $report_type.'NotVerifiedReport_'.$dateddmmyy;
+		}
  
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
