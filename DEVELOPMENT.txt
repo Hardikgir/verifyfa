@@ -192,39 +192,11 @@ http://localhost/CODEIGNITER_PHP/Verifyfa/Dev/index.php/unsubscribe-account/7
 
 {"item_scrap_condition":"qty_ok","qty_ok":1,"quantity_verified":1,"verification_status":"","verification_remarks":"","verified_datetime":"","updatedat":"a"}
 
-"{
-	'item_scrap_condition' : 'qty_ok',
-	'qty_ok' : '1',
-	'quantity_verified' : '1',
-	'verification_status' : 'Verified',
-	'verification_remarks' : 'asdasdasd',
-	'verified_datetime' : '1',
-	'updatedat' : '1'
-}"
 
-{
-"item_scrap_condition" : "qty_ok",
-"qty_ok" : "1",
-"quantity_verified" : "1",
-"verification_status" : "Verified",
-"verification_remarks" : "asdasdasd",
-"verified_datetime" : "1",
-"updatedat" : "1"
-}
+{"item_scrap_condition":"qty_ok","qty_ok":1,"quantity_as_per_invoice":1,"quantity_verified":1,"verification_status":"","verification_remarks":"","verified_datetime":"","updatedat":"a"}
 
-{
-  "item_scrap_condition": "qty_ok",
-  "message": "Lorem ipsum solar sit amet.",
-  "file": "encoded",
-  "recipients": [{
-    "first_name": "John",
-    "last_name": "Doe",
-    "email": "example@pleasesign.com.au",
-    "tabs": [{
-      "kind": "signature",
-      "page": 1,
-      "x": 100,
-      "y": 800
-    }]
-  }]
-} 
+
+
+================
+Notes :- 
+-> New column added with this query (ALTER TABLE `company_projects` ADD `begin_datetime` TIMESTAMP NULL DEFAULT NULL AFTER `project_header_id`;)

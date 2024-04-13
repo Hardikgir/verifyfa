@@ -1028,7 +1028,11 @@ public function project_completion_by_location(){
 
         
        
-        if($project->VerifiedQuantity!=0){ $project_percent= round(($project->VerifiedQuantity/$project->TotalQuantity)*100,2);}else{ $project_percent= "0";}
+        if($project->VerifiedQuantity!=0){ 
+            $project_percent= round(($project->VerifiedQuantity/$project->TotalQuantity)*100,2);
+        }else{ 
+            $project_percent= "0";
+        }
 
     }
     $data=array();
