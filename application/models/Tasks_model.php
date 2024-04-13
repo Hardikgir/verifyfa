@@ -44,22 +44,22 @@ class Tasks_model extends CI_Model {
 
     function getProjects($table,$userid,$company_id,$location_id) { 
 
-        // $condition1=array('Company_projects.project_verifier IN ('.$userid.') || Company_projects.manager IN ('.$userid.') || Company_projects.process_owner IN ('.$userid.') || Company_projects.item_owner IN ('.$userid.')');
+        // $condition1=array('company_projects.project_verifier IN ('.$userid.') || company_projects.manager IN ('.$userid.') || company_projects.process_owner IN ('.$userid.') || company_projects.item_owner IN ('.$userid.')');
 
-        $condition1='(FIND_IN_SET('.$userid.',Company_projects.project_verifier) || FIND_IN_SET('.$userid.',Company_projects.manager) || FIND_IN_SET('.$userid.',Company_projects.process_owner) || FIND_IN_SET('.$userid.',Company_projects.item_owner))';
+        $condition1='(FIND_IN_SET('.$userid.',company_projects.project_verifier) || FIND_IN_SET('.$userid.',company_projects.manager) || FIND_IN_SET('.$userid.',company_projects.process_owner) || FIND_IN_SET('.$userid.',company_projects.item_owner))';
 
-        $this->db->select('Company_projects.*,company_locations.location_name,user_role.id as role_id,company.company_name');
-        $this->db->from('Company_projects');
-        $this->db->join('user_role','find_in_set(user_role.user_id,Company_projects.project_verifier) AND Company_projects.company_id=user_role.company_id');
+        $this->db->select('company_projects.*,company_locations.location_name,user_role.id as role_id,company.company_name');
+        $this->db->from('company_projects');
+        $this->db->join('user_role','find_in_set(user_role.user_id,company_projects.project_verifier) AND company_projects.company_id=user_role.company_id');
         $this->db->join('company','company.id=user_role.company_id');
-        $this->db->join('company_locations','company_locations.id=Company_projects.project_location');
-        // $this->db->where(array('user_role.user_id'=>$userid,'Company_projects.status'=>0));
-        // $this->db->where(array('user_role.user_id'=>$userid,'Company_projects.status'=>0));
-        $this->db->where( 'Company_projects.status !=','2');
+        $this->db->join('company_locations','company_locations.id=company_projects.project_location');
+        // $this->db->where(array('user_role.user_id'=>$userid,'company_projects.status'=>0));
+        // $this->db->where(array('user_role.user_id'=>$userid,'company_projects.status'=>0));
+        $this->db->where( 'company_projects.status !=','2');
         $this->db->where(array('user_role.user_id'=>$userid));
         $this->db->where($condition1 );
-        $this->db->where(array('Company_projects.company_id'=>$company_id,'Company_projects.project_location'=>$location_id));
-        $this->db->group_by('Company_projects.project_id');
+        $this->db->where(array('company_projects.company_id'=>$company_id,'company_projects.project_location'=>$location_id));
+        $this->db->group_by('company_projects.project_id');
         $gettasks=$this->db->get();
         // echo $this->db->last_query();
         return $gettasks->result();
@@ -70,23 +70,23 @@ class Tasks_model extends CI_Model {
 
     function getProjectsdashboard($table,$userid,$entity_code,$company_id_imp,$location_id) { 
 
-          $condition=array('Company_projects.company_id IN ('.$company_id_imp.') AND Company_projects.project_location IN ('.$location_id.')',"Company_projects.entity_code"=>$entity_code);
+          $condition=array('company_projects.company_id IN ('.$company_id_imp.') AND company_projects.project_location IN ('.$location_id.')',"company_projects.entity_code"=>$entity_code);
 
-          $condition1=array('Company_projects.project_verifier IN ('.$userid.') || Company_projects.manager IN ('.$userid.') || Company_projects.process_owner IN ('.$userid.') || Company_projects.item_owner IN ('.$userid.')');
+          $condition1=array('company_projects.project_verifier IN ('.$userid.') || company_projects.manager IN ('.$userid.') || company_projects.process_owner IN ('.$userid.') || company_projects.item_owner IN ('.$userid.')');
 
 
-        $this->db->select('Company_projects.*,company_locations.location_name,user_role.id as role_id,company.company_name');
-        $this->db->from('Company_projects');
-        $this->db->join('user_role','find_in_set(user_role.user_id,Company_projects.project_verifier) AND Company_projects.company_id=user_role.company_id');
+        $this->db->select('company_projects.*,company_locations.location_name,user_role.id as role_id,company.company_name');
+        $this->db->from('company_projects');
+        $this->db->join('user_role','find_in_set(user_role.user_id,company_projects.project_verifier) AND company_projects.company_id=user_role.company_id');
         $this->db->join('company','company.id=user_role.company_id');
-        $this->db->join('company_locations','company_locations.id=Company_projects.project_location');
-        // $this->db->where(array('user_role.user_id'=>$userid,'Company_projects.status'=>0));
-        // $this->db->where(array('user_role.user_id'=>$userid,'Company_projects.status'=>0));
+        $this->db->join('company_locations','company_locations.id=company_projects.project_location');
+        // $this->db->where(array('user_role.user_id'=>$userid,'company_projects.status'=>0));
+        // $this->db->where(array('user_role.user_id'=>$userid,'company_projects.status'=>0));
         $this->db->where($condition);
-        $this->db->where('Company_projects.status !=','2');
+        $this->db->where('company_projects.status !=','2');
 
-        // $this->db->where(array('Company_projects.company_id'=>$company_id,'Company_projects.project_location'=>$location_id));
-        $this->db->group_by('Company_projects.project_id');
+        // $this->db->where(array('company_projects.company_id'=>$company_id,'company_projects.project_location'=>$location_id));
+        $this->db->group_by('company_projects.project_id');
         $gettasks=$this->db->get();
         // echo $this->db->last_query();
         return $gettasks->result();
@@ -96,15 +96,15 @@ class Tasks_model extends CI_Model {
 
     function getSearchProjects($table,$userid) { 
 
-        $condition1='FIND_IN_SET('.$userid.',Company_projects.project_verifier) || FIND_IN_SET('.$userid.',Company_projects.manager) || FIND_IN_SET('.$userid.',Company_projects.process_owner) || FIND_IN_SET('.$userid.',Company_projects.item_owner)';
+        $condition1='FIND_IN_SET('.$userid.',company_projects.project_verifier) || FIND_IN_SET('.$userid.',company_projects.manager) || FIND_IN_SET('.$userid.',company_projects.process_owner) || FIND_IN_SET('.$userid.',company_projects.item_owner)';
 
-        $this->db->select('Company_projects.*,company_locations.location_name,CONCAT(users.firstName,users.lastName) as verifier_name,company.company_name');
-        $this->db->from('Company_projects');
-        $this->db->join('users','find_in_set(users.id,Company_projects.project_verifier) AND Company_projects.company_id=users.company_id');
+        $this->db->select('company_projects.*,company_locations.location_name,CONCAT(users.firstName,users.lastName) as verifier_name,company.company_name');
+        $this->db->from('company_projects');
+        $this->db->join('users','find_in_set(users.id,company_projects.project_verifier) AND company_projects.company_id=users.company_id');
         $this->db->join('company','company.id=users.company_id');
-        $this->db->join('company_locations','company_locations.id=Company_projects.project_location');
+        $this->db->join('company_locations','company_locations.id=company_projects.project_location');
         $this->db->where(array('users.id'=>$userid));
-        $this->db->where( 'Company_projects.status !=','2');
+        $this->db->where( 'company_projects.status !=','2');
 
         // $this->db->where($condition1);
         $gettasks=$this->db->get();
@@ -1024,7 +1024,7 @@ class Tasks_model extends CI_Model {
     //gaurav api work start//
     public function get_project_companies($userid){
            $this->db->select('*');
-           $this->db->from('Company_projects');
+           $this->db->from('company_projects');
            $this->db->where('project_verifier',$userid);
            $this->db->group_by('company_id'); 
            $query=$this->db->get();
@@ -1058,7 +1058,7 @@ class Tasks_model extends CI_Model {
   //gaurav api work start//
   public function get_project_location($userid,$company_id){
     $this->db->select('*');
-    $this->db->from('Company_projects');
+    $this->db->from('company_projects');
     $this->db->where('project_verifier',$userid);
     $this->db->where('company_id',$company_id);
     $this->db->group_by('project_location');
@@ -1096,7 +1096,7 @@ class Tasks_model extends CI_Model {
 
   public function get_location_count($userid,$company_id){
     $this->db->select('*');
-    $this->db->from('Company_projects');
+    $this->db->from('company_projects');
     $this->db->where('project_verifier',$userid);
     $this->db->where('company_id',$company_id);
     $this->db->group_by('project_location');
@@ -1119,7 +1119,7 @@ class Tasks_model extends CI_Model {
 
   public function get_project_count($userid,$company_id){
     $this->db->select('*');
-    $this->db->from('Company_projects');
+    $this->db->from('company_projects');
     $this->db->where('project_verifier',$userid);
     $this->db->where('company_id',$company_id);
     // $this->db->group_by('project_location');
@@ -1132,7 +1132,7 @@ class Tasks_model extends CI_Model {
   
   public function get_project_count_user($userid,$company_id){
     $this->db->select('*');
-    $this->db->from('Company_projects');
+    $this->db->from('company_projects');
     $this->db->where('company_id',$company_id);
     $this->db->where('status !=','2');
 
@@ -1154,7 +1154,7 @@ class Tasks_model extends CI_Model {
   }
   public function get_project_count_location($userid,$company_id,$location_id){
     $this->db->select('*');
-    $this->db->from('Company_projects');
+    $this->db->from('company_projects');
     // $this->db->where('project_verifier',$userid);
     $this->db->where('project_location',$location_id);
     $this->db->where('company_id',$company_id);
@@ -1190,7 +1190,7 @@ class Tasks_model extends CI_Model {
 
 public function get_project_company_location($userid,$company_id,$location_id){
     $this->db->select('*');
-    $this->db->from('Company_projects');
+    $this->db->from('company_projects');
     // $this->db->where('project_verifier',$userid);
     $this->db->where('company_id',$company_id);
     $this->db->where('project_location',$location_id);
@@ -1215,7 +1215,7 @@ public function get_project_company_location($userid,$company_id,$location_id){
 
   public function get_company_project($id){
     $this->db->select('*');
-    $this->db->from('Company_projects');
+    $this->db->from('company_projects');
     $this->db->where('id',$id);
     $query=$this->db->get();
     $result=$query->row();
@@ -1290,9 +1290,9 @@ public function get_project_company_location($userid,$company_id,$location_id){
 // for reports//
  function getProjectsreport($userid) { 
 
-    $condition1='(FIND_IN_SET('.$userid.',Company_projects.project_verifier) || FIND_IN_SET('.$userid.',Company_projects.manager) || FIND_IN_SET('.$userid.',Company_projects.process_owner) || FIND_IN_SET('.$userid.',Company_projects.item_owner))';
+    $condition1='(FIND_IN_SET('.$userid.',company_projects.project_verifier) || FIND_IN_SET('.$userid.',company_projects.manager) || FIND_IN_SET('.$userid.',company_projects.process_owner) || FIND_IN_SET('.$userid.',company_projects.item_owner))';
     $this->db->select('*');
-    $this->db->from('Company_projects');
+    $this->db->from('company_projects');
     $this->db->where($condition1 );
     $this->db->where('status !=','2');
     $gettasks=$this->db->get();
@@ -1328,7 +1328,7 @@ public function loc_row($locid){
 
 public function get_project_close_by_company($company_id){
     $this->db->select('*');
-    $this->db->from('Company_projects');
+    $this->db->from('company_projects');
     $this->db->where('company_id',$company_id);
     $this->db->where('status','1');
     $query=$this->db->get();
@@ -1354,7 +1354,7 @@ public function get_project_close_by_company($company_id){
 
 public function get_project_close($project_id){
     $this->db->select('*');
-    $this->db->from('Company_projects');
+    $this->db->from('company_projects');
     $this->db->where('id',$project_id);
     $this->db->where('status !=','2');
     $query=$this->db->get();
@@ -1386,7 +1386,7 @@ public function get_notification_by_user_role($user_id){
 
 public function get_over_due_project(){
     $this->db->select('*');
-    $this->db->from('Company_projects');
+    $this->db->from('company_projects');
     // $this->db->where('company_id',$company_id);
     $this->db->where('status','1');
     $query=$this->db->get();
