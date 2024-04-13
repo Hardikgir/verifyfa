@@ -327,11 +327,6 @@ class Tasks extends CI_Controller {
         $search_fields =$this->input->post('search_fields');
         $cond=array();
         
-        echo '<pre>search_fields ';
-        print_r($search_fields);
-        echo '</pre>';
-        // exit();
-
         $where=' Where (';
         $i=1;
         foreach($search_fields as $sf)
@@ -349,11 +344,7 @@ class Tasks extends CI_Controller {
             $i++;
         }
 
-        echo '<pre>where ';
-        print_r($where);
-        echo '</pre>';
-        // exit();
-
+        
         if($verification_status !='All')
         {
             $where.=' AND verification_status="'.$verification_status.'"';    
