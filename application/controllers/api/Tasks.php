@@ -341,6 +341,10 @@ class Tasks extends CI_Controller {
             }
             $i++;
         }
+        echo '<pre>where ::';
+        print_r($where);
+        echo '</pre>';
+        exit();
         if($verification_status !='All')
         {
             $where.=' AND verification_status="'.$verification_status.'"';    
