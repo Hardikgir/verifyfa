@@ -72,6 +72,68 @@ Download Annexure is not open
 -> Type :- Not-Verify
 -> Location :- STK Mahagaon MH
 
+========================================================
+Call Discussion on 11/4/2024 :- 
+-------------------------------
+Laptop
+
+Tobe Verify : 5(qty)
+Verf Status :- Not-Verified
+Verf Result :- Not-Verified
+
+
+INS - 1
+Verified : 3 
+Total verified :- 3
+Remaing : 2
+Verf Status :- Verified
+Verf Result :- Verified as short
+
+
+INS - 2
+Verified : 1
+Total verified :- 4
+Remaing : 1
+Verf Status :- Verified
+Verf Result :- Verified as short
+
+INS - 3
+Verified : 1
+Total verified :- 5
+Remaing : 0
+Verf Status :- Verified
+Verf Result :- Verified as equal
+
+
+INS - 4
+Verified : 1
+Total verified :- 5+1 = 6
+Remaing : -1
+Verf Status :- Verified
+Verf Result :- Verified as excess
+
+
+
+Editing Scn :- 
+optio1 :- Qty or Details
+optio2 :- details update
+optio3 :- Remove instance (
+
+
+Eidt :- 
+
+
+optio1 :- Qty or Details
+        -> List of instance 
+            -> Select instance
+                -> Qty
+                -> Details
+optio2 :- details update
+optio3 :- Remove instance (
+
+
+========================================================
+
     
 Date :- 12/04/2024 :- 
 ------------------------------------------
