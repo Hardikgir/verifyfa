@@ -244,7 +244,7 @@ class Tasks extends CI_Controller {
 		$condition=array(
 			"id"=>$userid
         );
-        $projectdetail=$this->tasks->get_data('Company_projects',array('id'=>$projectid));
+        $projectdetail=$this->tasks->get_data('company_projects',array('id'=>$projectid));
         $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
         $new_pattern = array("_", "_", "");
         $projectname=strtolower(preg_replace($old_pattern, $new_pattern , trim($projectname)));
@@ -361,7 +361,7 @@ class Tasks extends CI_Controller {
         $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
         $new_pattern = array("_", "_", "");
         $projectname=strtolower(preg_replace($old_pattern, $new_pattern , trim($projectname)));
-        $projectdetail=$this->tasks->get_data('Company_projects',array('id'=>$projectid));
+        $projectdetail=$this->tasks->get_data('company_projects',array('id'=>$projectid));
         
         $select="SELECT * FROM ".$projectname;
         $scantask=$this->db->query($select.$where)->result();
@@ -504,7 +504,7 @@ class Tasks extends CI_Controller {
             "company_id"=>$companyid,
             "project_verifier"=>$userid
         );
-        $finish=$this->tasks->update_data('Company_projects',$data,$condition);
+        $finish=$this->tasks->update_data('company_projects',$data,$condition);
         
 		if($finish)
 		{
@@ -533,7 +533,7 @@ class Tasks extends CI_Controller {
             "id"=>$projectid,
             "company_id"=>$companyid,
         );
-        $finish=$this->tasks->update_data('Company_projects',$data,$condition);
+        $finish=$this->tasks->update_data('company_projects',$data,$condition);
         
 		if($finish)
 		{
@@ -578,7 +578,7 @@ class Tasks extends CI_Controller {
             "id"=>$projectid,
 
         );
-        $finish=$this->tasks->update_data('Company_projects',$data,$condition);
+        $finish=$this->tasks->update_data('company_projects',$data,$condition);
         
 		if($finish)
 		{
@@ -765,7 +765,7 @@ public function get_company_location(){
 
 
         $this->db->select("*");   
-        $this->db->from("Company_projects");   
+        $this->db->from("company_projects");   
         // $this->db->where("entity_code",$entity_code);
         $this->db->where("project_location",$location_row->id);
         $this->db->where("status !=",'2');
@@ -954,7 +954,7 @@ public function save_project_contact_info(){
 public function get_graph_datastatus(){
  $entity_code=$this->input->post('entity_code');
  $this->db->select("*");   
- $this->db->from("Company_projects");   
+ $this->db->from("company_projects");   
  $this->db->where("entity_code",$entity_code);
  $query= $this->db->get();   
  $project = $query->result();
@@ -993,7 +993,7 @@ public function project_completion_by_location(){
     $entity_code=$this->input->post('entity_code');
     $project_location=$this->input->post('project_location');
     $this->db->select("*");   
-    $this->db->from("Company_projects");   
+    $this->db->from("company_projects");   
     $this->db->where("entity_code",$entity_code);
     $this->db->where("project_location",$project_location);
     $query= $this->db->get();   
@@ -1221,7 +1221,7 @@ public function get_project_additionaldata(){
         $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
         $new_pattern = array("_", "_", "");
         $projectname=strtolower(preg_replace($old_pattern, $new_pattern , trim($projectname)));
-        $projectdetail=$this->tasks->get_data('Company_projects',array('id'=>$projectid));
+        $projectdetail=$this->tasks->get_data('company_projects',array('id'=>$projectid));
         
         $select="SELECT * FROM ".$projectname;
         $scantask=$this->db->query($select.$where)->result();
@@ -1312,7 +1312,7 @@ public function get_project_additionaldata(){
 			);
 			
 			
-			$getProject=$this->tasks->get_data('Company_projects',$condition);
+			$getProject=$this->tasks->get_data('company_projects',$condition);
 			
 			if(count($getProject) > 0)
 			{
@@ -1349,7 +1349,7 @@ public function get_project_additionaldata(){
 		else
 		{
 
-			$lastProj=$this->db->query('Select * from Company_projects where status="'.$projectstatus.'" and company_id='.$company_id.'  and entity_code="'.$this->admin_registered_entity_code.'" order by id desc limit 1')->result();
+			$lastProj=$this->db->query('Select * from company_projects where status="'.$projectstatus.'" and company_id='.$company_id.'  and entity_code="'.$this->admin_registered_entity_code.'" order by id desc limit 1')->result();
 			$condition=array(
 				"status"=>$projectstatus,
 				'company_id'=>$company_id,
@@ -1363,7 +1363,7 @@ public function get_project_additionaldata(){
 				"table_name"=>$original_table_name,
 				"report_headers"=>$reportHeaders
 			);
-			$getProject=$this->tasks->get_data('Company_projects',$condition);
+			$getProject=$this->tasks->get_data('company_projects',$condition);
 			
 			if(count($getProject) > 0)
 			{
@@ -1410,7 +1410,7 @@ public function get_project_additionaldata(){
       
     public function get_project_header(){
         $entity_code=$this->input->post('entity_code');
-        $lastProj=$this->db->query('Select * from Company_projects where  entity_code="'.$entity_code.'"   order by id desc limit 1')->result();
+        $lastProj=$this->db->query('Select * from company_projects where  entity_code="'.$entity_code.'"   order by id desc limit 1')->result();
         $headerCondition=array('table_name'=>$lastProj[0]->original_table_name);
         $project_headers=$this->tasks->get_data('project_headers',$headerCondition);
         if(count($project_headers)>0)
