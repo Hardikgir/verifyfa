@@ -36,7 +36,7 @@ function getTagUntag($projectname)
 {
     $CI =& get_instance();
     $CI->load->database();
-    $projectinfo=$CI->db->select('project_verifier')->where('project_name',$projectname)->get('Company_projects')->result();
+    $projectinfo=$CI->db->select('project_verifier')->where('project_name',$projectname)->get('company_projects')->result();
     $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
     $new_pattern = array("_", "_", "");
     $project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($projectname)));    
@@ -449,7 +449,7 @@ function check_company_projects($company_id){
     $CI =& get_instance();
     $CI->load->database();
     $CI->db->select('*');
-    $CI->db->from('Company_projects');
+    $CI->db->from('company_projects');
     $CI->db->where('company_id',$company_id);
     $query = $CI->db->get();
     return $query->num_rows();
@@ -460,7 +460,7 @@ function check_location_projects($location_id){
     $CI =& get_instance();
     $CI->load->database();
     $CI->db->select('*');
-    $CI->db->from('Company_projects');
+    $CI->db->from('company_projects');
     $CI->db->where('project_location',$location_id);
     $query = $CI->db->get();
     return $query->num_rows();
@@ -575,7 +575,7 @@ function get_location_all_user($company_id){
 function check_user_projects($userid){
     $CI =& get_instance();
     $CI->load->database();
-    $query=$CI->db->query("select * from Company_projects where  (project_verifier='".$userid."'  || process_owner='".$userid."' || item_owner='".$userid."' || manager='".$userid."') ");
+    $query=$CI->db->query("select * from company_projects where  (project_verifier='".$userid."'  || process_owner='".$userid."' || item_owner='".$userid."' || manager='".$userid."') ");
     //  $CI->db->last_query();
     return $query->num_rows();
 }
@@ -601,7 +601,7 @@ function check_location_assigned($company_id,$location_id,$user_id){
 function check_verifier_count($project_id,$user_id){
     $CI =& get_instance();
     $CI->load->database();       
-    $query=$CI->db->query("SELECT * FROM `Company_projects` where id='".$project_id."' and FIND_IN_SET($user_id,project_verifier)
+    $query=$CI->db->query("SELECT * FROM `company_projects` where id='".$project_id."' and FIND_IN_SET($user_id,project_verifier)
     ");
      $CI->db->last_query();
     return $query->num_rows();
@@ -610,21 +610,21 @@ function check_verifier_count($project_id,$user_id){
 function check_itemowner_count($project_id,$user_id){
     $CI =& get_instance();
     $CI->load->database();       
-    $query=$CI->db->query("SELECT * FROM `Company_projects` where id='".$project_id."' and FIND_IN_SET($user_id,item_owner)");
+    $query=$CI->db->query("SELECT * FROM `company_projects` where id='".$project_id."' and FIND_IN_SET($user_id,item_owner)");
     return $query->num_rows();
 }
 
 function check_process_owner_count($project_id,$user_id){
     $CI =& get_instance();
     $CI->load->database();       
-    $query=$CI->db->query("SELECT * FROM `Company_projects` where id='".$project_id."' and  FIND_IN_SET( $user_id,process_owner)");
+    $query=$CI->db->query("SELECT * FROM `company_projects` where id='".$project_id."' and  FIND_IN_SET( $user_id,process_owner)");
     return $query->num_rows();
 }
 
 function check_manager_count($project_id,$user_id){
     $CI =& get_instance();
     $CI->load->database();       
-    $query=$CI->db->query("SELECT * FROM `Company_projects` where id='".$project_id."' and FIND_IN_SET( $user_id,manager)");
+    $query=$CI->db->query("SELECT * FROM `company_projects` where id='".$project_id."' and FIND_IN_SET( $user_id,manager)");
     return $query->num_rows();
 }
 
@@ -640,7 +640,7 @@ function check_manager_count($project_id,$user_id){
 function get_project_row($project_id){
     $CI =& get_instance();
     $CI->load->database();       
-    $query=$CI->db->query("SELECT * FROM `Company_projects` where id='".$project_id."'");
+    $query=$CI->db->query("SELECT * FROM `company_projects` where id='".$project_id."'");
      $CI->db->last_query();
     return $query->row();
 }
