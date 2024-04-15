@@ -1,12 +1,19 @@
+
+Hardik Development Server
+
+URL :- https://verifyfa.developmentdemo.co.in/
+
+Database :- 
+URL :- https://auth-db1189.hstgr.io/index.php?db=u337050398_verifyfadb
+Name :- u337050398_verifyfadb
+User :- u337050398_verifyfadmin
+Pass :- 5&AmFvdA
+
 Code :- HMCMM
 User_ID :- 17
 Email :- jasmeet@verifyfa.com
 Pass :- 12345
 
-
-Database :- u337050398_verifyfadb
-User :- u337050398_verifyfadmin
-Pass :- /tG4@pV+Q
 
 
 TableName :- 
@@ -200,3 +207,11 @@ http://localhost/CODEIGNITER_PHP/Verifyfa/Dev/index.php/unsubscribe-account/7
 ================
 Notes :- 
 -> New column added with this query (ALTER TABLE `company_projects` ADD `begin_datetime` TIMESTAMP NULL DEFAULT NULL AFTER `project_header_id`;)
+
+
+
+14/04/2024 :- 
+
+You can find Table by searching usign this method
+-> Select * from
+-> db->from('
