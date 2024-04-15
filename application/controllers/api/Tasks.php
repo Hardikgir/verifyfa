@@ -1647,6 +1647,24 @@ public function get_project_additionaldata(){
         
     }
 
+    public function get_verifiedprojects_phases(){
+        $project_id=$this->input->post('project_id');
+        $user_notications=$this->tasks->get_verifiedprojects_phases($project_id);
+        if(!empty($user_notications))
+        {
+            header('Content-Type: application/json');
+            $data=$user_notications;
+            echo json_encode(array("success"=>200,"message"=>"Get Verified Project Phases.","data"=>$data));
+            exit;
+        } 
+        else {
+            header('Content-Type: application/json');
+            echo json_encode(array("success"=>401,"message"=>"No Found Verified Project Phases"));
+            exit;
+        }
+    }
+
+
 }
 
 

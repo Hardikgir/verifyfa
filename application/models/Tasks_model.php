@@ -1527,4 +1527,13 @@ function get_product_search($sort_by,$order_by,$table_name)
 		return $this->db->insert_id();
 	}
 
+
+    public function get_verifiedprojects_phases($project_id){
+        $this->db->select('*');
+        $this->db->from('verifiedproducts');
+        $this->db->where('project_id',$project_id);
+        $gettasks=$this->db->get();
+        return $gettasks->result();
+    }
+
 }
