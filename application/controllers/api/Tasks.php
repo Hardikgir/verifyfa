@@ -429,10 +429,6 @@ class Tasks extends CI_Controller {
             "id"=>$itemid
         );
         $getquantity=$this->tasks->get_data($projectname,$condition);
-        // echo '<pre>getquantity ::';
-        // print_r($getquantity);
-        // echo '</pre>';
-        // exit();
         if($scanned->item_scrap_condition =='qty_ok')
         {
             $qty_ok = (int)$getquantity[0]->qty_ok + (int)$scanned->quantity_verified;
@@ -502,34 +498,22 @@ class Tasks extends CI_Controller {
             'id' => $project_id
         );
         $getprojectdetails = $this->tasks->get_data('company_projects',$condition);
-        echo '<pre>getprojectdetails ';
-        print_r($getprojectdetails);
-        echo '</pre>';
-        exit();
-
-        echo '<pre>scanned ';
-        print_r($scanned);
-        echo '</pre>';
-        // exit();
         $new_array[0] = $this->stdToArray($scanned);
-        echo '<pre>new_array ::';
-        print_r($new_array[0]);
-        echo '</pre>';
-        exit();
         unset($new_array[0]['item_scrap_condition']);
-        $verify=$this->tasks->update_data($projectname,$new_array[0],$condition);
+        // $verify=$this->tasks->update_data($projectname,$new_array[0],$condition);
+        $verify = 1;
        
 
-        $company_id = 0;
-        $mode_of_verification = '';
+        $company_id = $getprojectdetails[0]->company_id;
+        $mode_of_verification = 'Scan';
         $new_location_verified = 0;
-        $location_id = 0;
-        $entity_code = 0;
-        $project_id = 0;
-        $project_name = '';
-        $original_table_name = '';
+        $location_id = $getprojectdetails[0]->project_location;
+        $entity_code =  $getprojectdetails[0]->entity_code;
+        $project_id = $getprojectdetails[0]->id;
+        $project_name = $getprojectdetails[0]->project_name;
+        $original_table_name = $getprojectdetails[0]->original_table_name;
         $verified_by = 0;
-        $verified_by_username = '';
+        $verified_by_username = 'ABCD';
 
         $verifiedproducts_array = array(
             'company_id' => $company_id,
@@ -560,6 +544,10 @@ class Tasks extends CI_Controller {
             'mode_of_verification' => $mode_of_verification,
             'created_at' => date('Y-m-d H:s:i'),
         );
+        echo '<pre>';
+        print_r($verifiedproducts_array);
+        echo '</pre>';
+        exit();
         $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts',$verifiedproducts_array);
         
         
