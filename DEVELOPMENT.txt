@@ -269,3 +269,32 @@ project_name
 SELECT * FROM u337050398_verifyfadb.test_demo_01;
 SELECT * FROM u337050398_verifyfadb.test_demo_01 WHERE verification_status = 'Not-Verified';
 SELECT * FROM u337050398_verifyfadb.test_demo_01 WHERE verification_status = 'Verified';
+
+-------------------------------
+verifiedproducts
+-> id
+-> company_id
+-> location_id
+-> entity_code
+-> project_id
+-> project_name
+-> original_table_name
+-> item_id
+-> item_category
+-> item_unique_code
+-> item_sub_code
+-> item_description
+-> quantity_as_per_invoice
+-> verification_status
+-> quantity_verified
+-> new_location_verified  	[In Multiple Location Verification Value store in Comma Seperate]
+-> verified_by
+-> verified_by_username
+-> verified_datetime
+-> verification_remarks		[In Multiple Location Verification Value store in Comma Seperate]
+-> qty_ok
+-> created_at
+-> updated_at
+
+
+verifiedproduct_logs

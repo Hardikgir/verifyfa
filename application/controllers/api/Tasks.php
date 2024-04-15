@@ -429,29 +429,40 @@ class Tasks extends CI_Controller {
             "id"=>$itemid
         );
         $getquantity=$this->tasks->get_data($projectname,$condition);
+        echo '<pre>getquantity ::';
+        print_r($getquantity);
+        echo '</pre>';
+        exit();
         if($scanned->item_scrap_condition =='qty_ok')
         {
-            $scanned->qty_ok=(int)$getquantity[0]->qty_ok + (int)$scanned->quantity_verified;
+            $qty_ok = (int)$getquantity[0]->qty_ok + (int)$scanned->quantity_verified;
+            $scanned->qty_ok = $qty_ok;
+             
         }
         else if($scanned->item_scrap_condition =='qty_damaged')
         {
-            $scanned->qty_damaged=(int)$getquantity[0]->qty_damaged + (int)$scanned->quantity_verified;
+            $qty_damaged = (int)$getquantity[0]->qty_damaged + (int)$scanned->quantity_verified;
+            $scanned->qty_damaged = $qty_damaged;
         }
         else if($scanned->item_scrap_condition =='qty_scrapped')
         {
-            $scanned->qty_scrapped=(int)$getquantity[0]->qty_scrapped + (int)$scanned->quantity_verified;
+            $qty_scrapped = (int)$getquantity[0]->qty_scrapped + (int)$scanned->quantity_verified;
+            $scanned->qty_scrapped = $qty_scrapped;
         }
         else if($scanned->item_scrap_condition =='qty_not_in_use')
         {
-            $scanned->qty_not_in_use=(int)$getquantity[0]->qty_not_in_use + (int)$scanned->quantity_verified;
+            $qty_not_in_use = (int)$getquantity[0]->qty_not_in_use + (int)$scanned->quantity_verified;
+            $scanned->qty_not_in_use = $qty_not_in_use;
         }
         else if($scanned->item_scrap_condition =='qty_missing')
         {
-            $scanned->qty_missing=(int)$getquantity[0]->qty_missing + (int)$scanned->quantity_verified;
+            $qty_missing = (int)$getquantity[0]->qty_missing + (int)$scanned->quantity_verified;
+            $scanned->qty_missing = $qty_missing;
         }
         else if($scanned->item_scrap_condition =='qty_shifted')
         {
-            $scanned->qty_shifted=(int)$getquantity[0]->qty_shifted + (int)$scanned->quantity_verified;
+            $qty_shifted = (int)$getquantity[0]->qty_shifted + (int)$scanned->quantity_verified;
+            $scanned->qty_shifted = $qty_shifted;
         }
         
             if($scanned->verification_remarks!='')
@@ -472,6 +483,41 @@ class Tasks extends CI_Controller {
         $new_array[0] = $this->stdToArray($scanned);
         unset($new_array[0]['item_scrap_condition']);
         $verify=$this->tasks->update_data($projectname,$new_array[0],$condition);
+       
+
+        $company_id = 0;
+
+        $verifiedproducts_array = array(
+            'company_id' => $company_id,
+            'location_id' => $location_id,
+            'entity_code' => $entity_code,
+            'project_id' => $project_id,
+            'project_name' => $project_name,
+            'original_table_name' => $original_table_name,
+            'item_id' => $item_id,
+            'item_category' => $item_category,
+            'item_unique_code' => $item_unique_code,
+            'item_sub_code' => $item_sub_code,
+            'item_description' => $item_description,
+            'quantity_as_per_invoice' => $quantity_as_per_invoice,
+            'verification_status' => $verification_status,
+            'quantity_verified' => $quantity_verified,
+            'new_location_verified' => $new_location_verified,
+            'verified_by' => $verified_by,
+            'verified_by_username' => $verified_by_username,
+            'verified_datetime' => $verified_datetime,
+            'verification_remarks' => $verification_remarks,
+            'qty_ok' => $qty_ok,
+            'qty_damaged' => $qty_damaged,
+            'qty_scrapped' => $qty_scrapped,
+            'qty_not_in_use' => $qty_not_in_use,
+            'qty_missing' => $qty_missing,
+            'qty_shifted' => $qty_shifted,
+            'mode_of_verification' => $mode_of_verification,
+            'created_at' => date('Y-m-d H:s:i'),
+        );
+        $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts',$verifiedproducts_array);
+        
         
 		if($verify)
 		{
