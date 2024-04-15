@@ -215,3 +215,57 @@ Notes :-
 You can find Table by searching usign this method
 -> Select * from
 -> db->from('
+
+Working on 15/4/2024 :- 
+User :- 
+======================================
+ID :- 24
+Entity Code :- DEMOCO
+Email :- jasmeet@test.com
+Pass :- 12345
+
+ID :- 25
+Entity Code :- DEMOCO
+Email :- hardik@test.com
+Pass :- 12345
+
+Project :- 
+id :- 22
+Entity Code :- DEMOCO
+project id :- SEER/24/22/CD
+Project Name :- Test Demo - 01
+
+item category :- ["OFFEQP","P&M","COMP","VEH"]
+project Verifier :- 24,25
+Project Location :- 20
+Table Name :- test_demo_01
+Original Table Name :- project_1712831886
+original_file :- https://verifyfa.developmentdemo.co.in/projectfiles/d65495aceb9a4ff0e153a2cfee3ebd5b.xlsx
+
+Company :- 
+Entity Code :- DEMOCO
+id :- 6
+Name :- IT Seer Demo Co.
+Short Code :- SEER
+
+======================================
+Location :- 
+id :- 19
+Entity Code :- DEMOCO
+Location :- Head Office (Delhi)
+
+id :- 20
+Entity Code :- DEMOCO
+Location :- Branch Office (GJ)
+
+project
+user_id :- 25
+company_id
+location_id
+entity_code
+project_id
+project_name
+
+SELECT * FROM u337050398_verifyfadb.test_demo_01;
+SELECT * FROM u337050398_verifyfadb.test_demo_01 WHERE verification_status = 'Not-Verified';
+SELECT * FROM u337050398_verifyfadb.test_demo_01 WHERE verification_status = 'Verified';
