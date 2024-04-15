@@ -1647,9 +1647,9 @@ public function get_project_additionaldata(){
         
     }
 
-    public function get_verifiedprojects_phases(){
+    public function get_verifiedprojects_instance(){
         $project_id=$this->input->post('project_id');
-        $user_notications=$this->tasks->get_verifiedprojects_phases($project_id);
+        $user_notications=$this->tasks->get_verifiedprojects_instance($project_id);
         if(!empty($user_notications))
         {
             header('Content-Type: application/json');
