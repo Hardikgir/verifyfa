@@ -429,9 +429,9 @@ class Tasks extends CI_Controller {
             "id"=>$itemid
         );
         $getquantity=$this->tasks->get_data($projectname,$condition);
-        echo '<pre>getquantity ::';
-        print_r($getquantity);
-        echo '</pre>';
+        // echo '<pre>getquantity ::';
+        // print_r($getquantity);
+        // echo '</pre>';
         // exit();
         if($scanned->item_scrap_condition =='qty_ok')
         {
@@ -496,7 +496,17 @@ class Tasks extends CI_Controller {
             $updatedat = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
             $scanned->updatedat = $updatedat;
         }
-            
+        
+        $project_id=$this->input->post('project_id');
+        $condition = array(
+            'id' => $project_id
+        );
+        $getprojectdetails = $this->tasks->get_data('company_projects',$condition);
+        echo '<pre>getprojectdetails ';
+        print_r($getprojectdetails);
+        echo '</pre>';
+        exit();
+
         echo '<pre>scanned ';
         print_r($scanned);
         echo '</pre>';
@@ -511,6 +521,15 @@ class Tasks extends CI_Controller {
        
 
         $company_id = 0;
+        $mode_of_verification = '';
+        $new_location_verified = 0;
+        $location_id = 0;
+        $entity_code = 0;
+        $project_id = 0;
+        $project_name = '';
+        $original_table_name = '';
+        $verified_by = 0;
+        $verified_by_username = '';
 
         $verifiedproducts_array = array(
             'company_id' => $company_id,
