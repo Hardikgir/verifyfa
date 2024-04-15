@@ -432,7 +432,7 @@ class Tasks extends CI_Controller {
         echo '<pre>getquantity ::';
         print_r($getquantity);
         echo '</pre>';
-        exit();
+        // exit();
         if($scanned->item_scrap_condition =='qty_ok')
         {
             $qty_ok = (int)$getquantity[0]->qty_ok + (int)$scanned->quantity_verified;
@@ -465,22 +465,47 @@ class Tasks extends CI_Controller {
             $scanned->qty_shifted = $qty_shifted;
         }
         
-            if($scanned->verification_remarks!='')
-            {
-                $scanned->quantity_verified=(int)$getquantity[0]->quantity_verified + (int)$scanned->quantity_verified;
-                $scanned->verification_status=$scanned->quantity_as_per_invoice <= $scanned->quantity_verified ? "Verified":"Not-Verified";
-                $scanned->verification_remarks=$getquantity[0]->verification_remarks != '' ? $getquantity[0]->verification_remarks.' || '.$scanned->verification_remarks:$scanned->verification_remarks;
-                $scanned->verified_datetime=date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
-                $scanned->updatedat=date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
-            }
-            else{
-                $scanned->quantity_verified=(int)$getquantity[0]->quantity_verified + (int)$scanned->quantity_verified;
-                $scanned->verification_status=$scanned->quantity_as_per_invoice <= $scanned->quantity_verified ? "Verified":"Not-Verified";
-                $scanned->verified_datetime=date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
-                $scanned->updatedat=date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
-            }
+        if($scanned->verification_remarks!='')
+        {
+            $quantity_verified = (int)$getquantity[0]->quantity_verified + (int)$scanned->quantity_verified;
+            $scanned->quantity_verified = $quantity_verified;
+
+            $verification_status = $scanned->quantity_as_per_invoice <= $scanned->quantity_verified ? "Verified":"Not-Verified";
+            $scanned->verification_status = $verification_status;
+
+            $verification_remarks = $getquantity[0]->verification_remarks != '' ? $getquantity[0]->verification_remarks.' || '.$scanned->verification_remarks:$scanned->verification_remarks;
+            $scanned->verification_remarks= $verification_remarks;
+
+            $verified_datetime = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
+            $scanned->verified_datetime = $verified_datetime;
+
+            $updatedat = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
+            $scanned->updatedat = $updatedat;
+        }
+        else{
             
+            $quantity_verified = (int)$getquantity[0]->quantity_verified + (int)$scanned->quantity_verified;
+            $scanned->quantity_verified = $quantity_verified;
+            
+            $verification_status = $scanned->quantity_as_per_invoice <= $scanned->quantity_verified ? "Verified":"Not-Verified";
+            $scanned->verification_status = $verification_status;
+            
+            $verified_datetime = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
+            $scanned->verified_datetime = $verified_datetime;
+            
+            $updatedat = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
+            $scanned->updatedat = $updatedat;
+        }
+            
+        echo '<pre>scanned ';
+        print_r($scanned);
+        echo '</pre>';
+        // exit();
         $new_array[0] = $this->stdToArray($scanned);
+        echo '<pre>new_array ::';
+        print_r($new_array[0]);
+        echo '</pre>';
+        exit();
         unset($new_array[0]['item_scrap_condition']);
         $verify=$this->tasks->update_data($projectname,$new_array[0],$condition);
        
@@ -494,12 +519,12 @@ class Tasks extends CI_Controller {
             'project_id' => $project_id,
             'project_name' => $project_name,
             'original_table_name' => $original_table_name,
-            'item_id' => $item_id,
-            'item_category' => $item_category,
-            'item_unique_code' => $item_unique_code,
-            'item_sub_code' => $item_sub_code,
-            'item_description' => $item_description,
-            'quantity_as_per_invoice' => $quantity_as_per_invoice,
+            'item_id' => $getquantity[0]->id,
+            'item_category' => $getquantity[0]->item_category,
+            'item_unique_code' => $getquantity[0]->item_unique_code,
+            'item_sub_code' => $getquantity[0]->item_sub_code,
+            'item_description' => $getquantity[0]->item_description,
+            'quantity_as_per_invoice' => $getquantity[0]->quantity_as_per_invoice,
             'verification_status' => $verification_status,
             'quantity_verified' => $quantity_verified,
             'new_location_verified' => $new_location_verified,
