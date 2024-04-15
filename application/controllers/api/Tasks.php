@@ -436,7 +436,7 @@ class Tasks extends CI_Controller {
         $qty_not_in_use = 0;
         $qty_missing = 0;
         $qty_shifted = 0;
-        
+
         $getquantity=$this->tasks->get_data($projectname,$condition);
         if($scanned->item_scrap_condition =='qty_ok')
         {
@@ -553,10 +553,6 @@ class Tasks extends CI_Controller {
             'mode_of_verification' => $mode_of_verification,
             'created_at' => date('Y-m-d H:s:i'),
         );
-        echo '<pre>';
-        print_r($verifiedproducts_array);
-        echo '</pre>';
-        exit();
         $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts',$verifiedproducts_array);
         
         
