@@ -507,10 +507,6 @@ class Tasks extends CI_Controller {
         $new_array[0] = $this->stdToArray($scanned);
         unset($new_array[0]['item_scrap_condition']);
         $verify=$this->tasks->update_data($projectname,$new_array[0],$condition);
-        echo '<pre>last_query ::';
-        print_r($this->db->last_query());
-        echo '</pre>';
-        exit();
         // $verify = 1;
 
         $project_id=$this->input->post('project_id');
