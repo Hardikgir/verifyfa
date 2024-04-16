@@ -502,8 +502,8 @@ class Tasks extends CI_Controller {
             $scanned->updatedat = $updatedat;
         }
         
-        $verification_mode = $scanned->verification_mode;
-        $scanned->mode_of_verification= $verification_mode;
+        $mode_of_verification = $scanned->mode_of_verification;
+        $scanned->mode_of_verification= $mode_of_verification;
         $project_id=$this->input->post('project_id');
         $condition = array(
             'id' => $project_id
