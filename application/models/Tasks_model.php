@@ -1538,7 +1538,7 @@ function get_product_search($sort_by,$order_by,$table_name)
     }
 
     public function get_item_details($tablename,$item_id){
-        $details = $this->db->query("SELECT * FROM ".$tablename." WHERE id =".$item_id." ")->row();
+        $details = $this->db->query("SELECT instance_count FROM ".$tablename." WHERE id =".$item_id." ")->row();
         return $details;
     }
 
