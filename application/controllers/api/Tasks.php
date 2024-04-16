@@ -438,10 +438,7 @@ class Tasks extends CI_Controller {
         $qty_shifted = 0;
 
         $getquantity=$this->tasks->get_data($projectname,$condition);
-        echo '<pre>getquantity ::';
-        print_r($getquantity);
-        echo '</pre>';
-        exit();
+        
         if($scanned->item_scrap_condition =='qty_ok')
         {
             $qty_ok = (int)$getquantity[0]->qty_ok + (int)$scanned->quantity_verified;
@@ -505,7 +502,7 @@ class Tasks extends CI_Controller {
             $updatedat = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
             $scanned->updatedat = $updatedat;
         }
-        
+        $scanned->instance_count = (int)$getquantity[0]->instance_count + 1;
         $mode_of_verification = $scanned->mode_of_verification;
         $scanned->mode_of_verification= $mode_of_verification;
         $new_array[0] = $this->stdToArray($scanned);
