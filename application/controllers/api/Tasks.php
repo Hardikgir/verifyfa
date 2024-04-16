@@ -438,6 +438,10 @@ class Tasks extends CI_Controller {
         $qty_shifted = 0;
 
         $getquantity=$this->tasks->get_data($projectname,$condition);
+        echo '<pre>getquantity ::';
+        print_r($getquantity);
+        echo '</pre>';
+        exit();
         if($scanned->item_scrap_condition =='qty_ok')
         {
             $qty_ok = (int)$getquantity[0]->qty_ok + (int)$scanned->quantity_verified;
