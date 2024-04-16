@@ -1667,6 +1667,25 @@ public function get_project_additionaldata(){
         }
     }
 
+    public function EditVerifyoption(){
+        $item_id=$this->input->post('item_id');
+        $operation_type = $this->input->post('operation_type');
+        $tablename = 'test_demo_01';
+        $Item_Result = $this->tasks->get_item_details($tablename,$item_id);
+        if(!empty($Item_Result))
+        {
+            header('Content-Type: application/json');
+            $data=$Item_Result;
+            echo json_encode(array("success"=>200,"message"=>"Details fetched successfully.","data"=>$data));
+            exit;
+        } 
+        else {
+            header('Content-Type: application/json');
+            echo json_encode(array("success"=>401,"message"=>"No Details Found"));
+            exit;
+        }
+    }
+
 
 }
 

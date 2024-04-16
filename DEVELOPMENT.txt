@@ -297,3 +297,15 @@ verifiedproducts
 -> updated_at
 
 verifiedproduct_logs
+
+
+
+16/4/2024 :- 
+
+3 option 
+-> Update Qty & Details
+	-> Get Number of instance
+	-> 
+-> Updated Details
+-> Rollback
+
