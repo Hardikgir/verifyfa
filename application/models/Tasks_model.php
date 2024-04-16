@@ -1528,9 +1528,10 @@ function get_product_search($sort_by,$order_by,$table_name)
 	}
 
 
-    public function get_verifiedprojects_instance($project_id){
+    public function get_verifiedprojects_instance_by_item($item_id,$project_id){
         $this->db->select('*');
         $this->db->from('verifiedproducts');
+        $this->db->where('item_id',$item_id);
         $this->db->where('project_id',$project_id);
         $gettasks=$this->db->get();
         return $gettasks->result();
