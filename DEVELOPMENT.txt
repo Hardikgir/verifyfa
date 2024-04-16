@@ -296,5 +296,4 @@ verifiedproducts
 -> created_at
 -> updated_at
 
-
 verifiedproduct_logs

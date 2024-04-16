@@ -502,6 +502,8 @@ class Tasks extends CI_Controller {
             $scanned->updatedat = $updatedat;
         }
         
+        $verification_mode = $scanned->verification_remarks;
+        $scanned->mode_of_verification= $verification_mode;
         $project_id=$this->input->post('project_id');
         $condition = array(
             'id' => $project_id
@@ -509,8 +511,8 @@ class Tasks extends CI_Controller {
         $getprojectdetails = $this->tasks->get_data('company_projects',$condition);
         $new_array[0] = $this->stdToArray($scanned);
         unset($new_array[0]['item_scrap_condition']);
-        // $verify=$this->tasks->update_data($projectname,$new_array[0],$condition);
-        $verify = 1;
+        $verify=$this->tasks->update_data($projectname,$new_array[0],$condition);
+        // $verify = 1;
        
 
         $company_id = $getprojectdetails[0]->company_id;
