@@ -517,7 +517,7 @@ class Tasks extends CI_Controller {
             
 
         $company_id = $getprojectdetails[0]->company_id;
-        $mode_of_verification = 'Scan';
+        // $mode_of_verification = 'Scan';
         $new_location_verified = 0;
         $location_id = $getprojectdetails[0]->project_location;
         $entity_code =  $getprojectdetails[0]->entity_code;
