@@ -1655,10 +1655,6 @@ public function get_project_additionaldata(){
         $item_id=$this->input->post('item_id');
         $project_id = $this->input->post('project_id');
         $user_notications=$this->tasks->get_verifiedprojects_instance_by_item($item_id,$project_id);
-        echo '<pre>last_query ';
-        print_r($this->db->last_query());
-        echo '</pre>';
-        exit();
         if(!empty($user_notications))
         {
             header('Content-Type: application/json');
