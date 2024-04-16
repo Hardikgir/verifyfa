@@ -504,18 +504,17 @@ class Tasks extends CI_Controller {
         
         $mode_of_verification = $scanned->mode_of_verification;
         $scanned->mode_of_verification= $mode_of_verification;
-       
+        $new_array[0] = $this->stdToArray($scanned);
+        unset($new_array[0]['item_scrap_condition']);
+        $verify=$this->tasks->update_data($projectname,$new_array[0],$condition);
+        // $verify = 1;
+
         $project_id=$this->input->post('project_id');
         $getprojectdetails_condition = array(
             'id' => $project_id
         );
         $getprojectdetails = $this->tasks->get_data('company_projects',$getprojectdetails_condition);
-        $new_array[0] = $this->stdToArray($scanned);
-        unset($new_array[0]['item_scrap_condition']);
-        $verify=$this->tasks->update_data($projectname,$new_array[0],$condition);
-        // $verify = 1;
-       
-        
+            
 
         $company_id = $getprojectdetails[0]->company_id;
         $mode_of_verification = 'Scan';
