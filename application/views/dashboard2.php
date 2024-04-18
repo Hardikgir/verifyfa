@@ -45,7 +45,7 @@ $this->load->view('layouts/footer');
 
     <div class="container-fluid">
         <?php if($user_role_admin_cnt > 0){ ?>
-        <form action="http://localhost/CODEIGNITER_PHP/Verifyfa/Dev/index.php/dashboard/index" method="post" class="bg-white">
+        <form action="https://verifyfa.developmentdemo.co.in/index.php/dashboard/index" method="post" class="bg-white">
                 <br>
                 <div class="row">
                 <div class="col-md-2 form-row">

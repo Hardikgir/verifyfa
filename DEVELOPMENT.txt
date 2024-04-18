@@ -1,0 +1,311 @@
+
+Hardik Development Server
+
+URL :- https://verifyfa.developmentdemo.co.in/
+
+Database :- 
+URL :- https://auth-db1189.hstgr.io/index.php?db=u337050398_verifyfadb
+Name :- u337050398_verifyfadb
+User :- u337050398_verifyfadmin
+Pass :- 5&AmFvdA
+
+Code :- HMCMM
+User_ID :- 17
+Email :- jasmeet@verifyfa.com
+Pass :- 12345
+
+
+
+TableName :- 
+
+Their is Total 3 point
+1) All Download Remaing that should ne status as Short name se Bharna tha.
+2) Not-Verify -> Download Excel format is not proper
+3) Not-Verify -> Their is Remaing count is not current and also their Format is Wrong
+    Changes in getExceptionThreeReportdownload()
+    Changes in getExceptionThreeReport()
+    Changes in getExceptionOneReport()
+
+What you have to work Today (08/04/2024)
+-> As per Last Meeting(Friday) Discussion. 
+
+Report :- 
+    -> Qty Validation status
+        -> In Not-Verify then download file is download proper but file is not able to open. (Fixed)
+		
+	-> Condition of items Report
+		-> In this if you are selecting Not-Verify then their static of last column (Remaing is not showing proper) [line item hi aa rahi h sum nai aa raha]
+		->
+	
+	File NAme should be :- 
+
+		reportname_verificationStatus
+		ConditionofiItems_AllReport_050424.xls
+		
+	-> Mode of Verification
+		-> In all their is summary 
+			category wise showing (number of line item or qty) their count by verify by (scan or search)
+		-> their status we need to check it store that status or not
+		
+	-> In Report their we need to add Header as per their idetails.
+		Like :- 
+			-> Name of verificatiom
+			-> Verification Status
+			-> Mode of verification (Scan h or Search h)
+			-> File header in First 4 line	(Their is share a file in that showing header)
+		-> In (Additional assets report) category you can download and see their details (you can take reference their is only one issue their 3 row data is setup in single row)
+		-> In Consolidate Report their all project merge with single report generate. (their you did any changes that is reflect here you need to check)
+		-> In Consolidate Report then is Location taken other (Selvasa) and their title is showing different (DEWA Godown)
+		-> Their Report also showing of other location
+		-> Purpose of Consolidate if ek location pr multiple project h then vo club ho jayega.
+		-> if you are setup header like common then in consolidate report their report wise period of verificatation showing multiple project wise so may be they will make conflict so rehnde dete h,
+		
+	-> Discussion Regarding Changes in Verify Record
+	-> You can see multiple qty by using , in {P} Column (New Location Verified)
+				-
+
+Call 5:17 (Evening Call)
+	-> Project Name :- KML - DEWAS (Godown) - ALL STOCK
+	-> Category :- Qty Validation Status
+	-> Project Status :- Finished Verification
+	-> Type :- Verify
+ 
+-> That Download file their column number M Their is Showing Not-Verify that need to check
+Call 8:42
+Download Annexure is not open
+-> Project Name :- KML - MAHAG - STOCK/ OTHERS (STORS/ PACK)
+-> Category :- Qty Validation Status
+-> Project Status :- In Process
+-> Type :- Not-Verify
+-> Location :- STK Mahagaon MH
+
+========================================================
+Call Discussion on 11/4/2024 :- 
+-------------------------------
+Laptop
+
+Tobe Verify : 5(qty)
+Verf Status :- Not-Verified
+Verf Result :- Not-Verified
+
+
+INS - 1
+Verified : 3 
+Total verified :- 3
+Remaing : 2
+Verf Status :- Verified
+Verf Result :- Verified as short
+
+
+INS - 2
+Verified : 1
+Total verified :- 4
+Remaing : 1
+Verf Status :- Verified
+Verf Result :- Verified as short
+
+INS - 3
+Verified : 1
+Total verified :- 5
+Remaing : 0
+Verf Status :- Verified
+Verf Result :- Verified as equal
+
+
+INS - 4
+Verified : 1
+Total verified :- 5+1 = 6
+Remaing : -1
+Verf Status :- Verified
+Verf Result :- Verified as excess
+
+
+
+Editing Scn :- 
+optio1 :- Qty or Details
+optio2 :- details update
+optio3 :- Remove instance (
+
+
+Eidt :- 
+
+
+optio1 :- Qty or Details
+        -> List of instance 
+            -> Select instance
+                -> Qty
+                -> Details
+optio2 :- details update
+optio3 :- Remove instance (
+
+
+========================================================
+
+    
+Date :- 12/04/2024 :- 
+------------------------------------------
+Use the following credentials: 
+
+Entiry :- DEMOCO
+User :- Hardik@test.com
+Pas :- 12345
+
+==================================
+Array
+(
+    [company_id] => 6
+    [location_id] => 20
+    [optradio] => project
+    [projectSelect] => 22
+    [exceptioncategory] => 3
+    [projectstatus] => 0
+    [verificationstatus] => 1
+    [reportHeaders] => Array
+        (
+            [0] => all
+        )
+
+    [original_table_name] => project_1712831886
+)
+
+Project Name :- test_demo_01
+
+Table :- project_1712831886 & test_demo_01 
+
+Verify this product :- SWH-P&M-0003-PRO(rowid = 1)  (Single QTY)
+Verify this product :- SWH-P&M-0036-TVN(rowid = 3)  (Multi QTY :- 34)
+
+Once Verify From Mobile what column is effected :- 
+-> verification_status
+-> quantity_verified
+-> new_location_verified  	[In Multiple Location Verification Value store in Comma Seperate]
+-> verified_by
+-> verified_by_username
+-> verified_datetime
+-> verification_remarks		[In Multiple Location Verification Value store in Comma Seperate]
+-> qty_ok
+-> updated_at
+==================================
+
+
+Genarate Activation Link :- 
+https://verifyfa.developmentdemo.co.in/index.php/generate-activation-link/7
+https://verifyfa.developmentdemo.co.in/index.php/send-activation-link/7
+https://verifyfa.developmentdemo.co.in/index.php/suspend-account/7
+https://verifyfa.developmentdemo.co.in/index.php/unsubscribe-account/7
+
+
+"{"Peter":35,"Ben":37,"Joe":43}';
+
+{"item_scrap_condition":"qty_ok","qty_ok":1,"quantity_verified":1,"verification_status":"","verification_remarks":"","verified_datetime":"","updatedat":"a"}
+
+
+{"item_scrap_condition":"qty_ok","qty_ok":1,"quantity_as_per_invoice":1,"quantity_verified":1,"verification_status":"","verification_remarks":"","verified_datetime":"","updatedat":"a"}
+
+
+
+================
+Notes :- 
+-> New column added with this query (ALTER TABLE `company_projects` ADD `begin_datetime` TIMESTAMP NULL DEFAULT NULL AFTER `project_header_id`;)
+
+
+
+14/04/2024 :- 
+
+You can find Table by searching usign this method
+-> Select * from
+-> db->from('
+
+Working on 15/4/2024 :- 
+User :- 
+======================================
+ID :- 24
+Entity Code :- DEMOCO
+Email :- jasmeet@test.com
+Pass :- 12345
+
+ID :- 25
+Entity Code :- DEMOCO
+Email :- hardik@test.com
+Pass :- 12345
+
+Project :- 
+id :- 22
+Entity Code :- DEMOCO
+project id :- SEER/24/22/CD
+Project Name :- Test Demo - 01
+
+item category :- ["OFFEQP","P&M","COMP","VEH"]
+project Verifier :- 24,25
+Project Location :- 20
+Table Name :- test_demo_01
+Original Table Name :- project_1712831886
+original_file :- https://verifyfa.developmentdemo.co.in/projectfiles/d65495aceb9a4ff0e153a2cfee3ebd5b.xlsx
+
+Company :- 
+Entity Code :- DEMOCO
+id :- 6
+Name :- IT Seer Demo Co.
+Short Code :- SEER
+
+======================================
+Location :- 
+id :- 19
+Entity Code :- DEMOCO
+Location :- Head Office (Delhi)
+
+id :- 20
+Entity Code :- DEMOCO
+Location :- Branch Office (GJ)
+
+project
+user_id :- 25
+company_id
+location_id
+entity_code
+project_id
+project_name
+
+SELECT * FROM u337050398_verifyfadb.test_demo_01;
+SELECT * FROM u337050398_verifyfadb.test_demo_01 WHERE verification_status = 'Not-Verified';
+SELECT * FROM u337050398_verifyfadb.test_demo_01 WHERE verification_status = 'Verified';
+
+-------------------------------
+verifiedproducts
+-> id
+-> company_id
+-> location_id
+-> entity_code
+-> project_id
+-> project_name
+-> original_table_name
+-> item_id
+-> item_category
+-> item_unique_code
+-> item_sub_code
+-> item_description
+-> quantity_as_per_invoice
+-> verification_status
+-> quantity_verified
+-> new_location_verified  	[In Multiple Location Verification Value store in Comma Seperate]
+-> verified_by
+-> verified_by_username
+-> verified_datetime
+-> verification_remarks		[In Multiple Location Verification Value store in Comma Seperate]
+-> qty_ok
+-> created_at
+-> updated_at
+
+verifiedproduct_logs
+
+
+
+16/4/2024 :- 
+
+3 option 
+-> Update Qty & Details
+	-> Get Number of instance
+	-> 
+-> Updated Details
+-> Rollback
+
