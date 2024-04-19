@@ -43,7 +43,7 @@ class Plancycle extends CI_Controller {
 			$this->admin_registered_user_id=$session['admin_registered_user_id'];
 			$this->admin_registered_entity_code=$session['admin_registered_entity_code'];
 			if(isset($_REQUEST['company_id'])){
-				$sd=$this->db->query('SELECT * from Company_projects where company_id='.$_REQUEST['company_id'].' and ('.$session['id'].' IN (project_verifier) OR  '.$session['id'].' IN (manager) OR '.$session['id'].' IN (item_owner) OR '.$session['id'].' IN (process_owner))')->result();
+				$sd=$this->db->query('SELECT * from company_projects where company_id='.$_REQUEST['company_id'].' and ('.$session['id'].' IN (project_verifier) OR  '.$session['id'].' IN (manager) OR '.$session['id'].' IN (item_owner) OR '.$session['id'].' IN (process_owner))')->result();
 				$this->userRoleArray=array();
 				if(!empty($sd))
 			{
@@ -152,7 +152,7 @@ class Plancycle extends CI_Controller {
 
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
-		$data['projects']=$this->db->query('SELECT * FROM Company_projects WHERE '.$conditionnew.' AND status !=2 AND status !=1')->result();
+		$data['projects']=$this->db->query('SELECT * FROM company_projects WHERE '.$conditionnew.' AND status !=2 AND status !=1')->result();
 		foreach($data['projects'] as $project)
 		{
 			$masterTotal=$this->db->query("SELECT count(*) as total from ".$project->original_table_name)->result();
@@ -384,7 +384,8 @@ class Plancycle extends CI_Controller {
 		$data['mandatory_cols']=$getMandatoryColumns;
 		
 		$getOtherColumns=$this->plancycle->getcompleteschema($data['table_name']);
-		$select='SELECT';
+		// $select='SELECT';
+		$select='SELECT *';
 		$i=0;
 		foreach($getOtherColumns as $goc)
 		{
@@ -443,7 +444,7 @@ class Plancycle extends CI_Controller {
 		$data['company_location']=$this->input->post('company_location');
 		$data['table_name']=$this->input->post('table_name');
 
-		$projects=$this->plancycle->get_data('Company_projects',array('original_table_name'=>$data['table_name']));
+		$projects=$this->plancycle->get_data('company_projects',array('original_table_name'=>$data['table_name']));
 		if(count($projects)>0)
 		{
 			$data['original_file']=$projects[0]->original_file;
@@ -470,7 +471,7 @@ class Plancycle extends CI_Controller {
 	public function editverificationcycle($id){
 		$data['page_title']="Plan Cycle";
 
-		$project_data=$this->db->query('SELECT * FROM Company_projects where id="'.$id.'"')->result_array();
+		$project_data=$this->db->query('SELECT * FROM company_projects where id="'.$id.'"')->result_array();
 		$company_name=$this->db->query('SELECT * FROM company where id="'.$project_data[0]['company_id'].'"')->result_array();
 		$company_location=$this->db->query('SELECT * FROM company_locations where id="'.$project_data[0]['project_location'].'"')->result_array();
 		
@@ -500,7 +501,7 @@ class Plancycle extends CI_Controller {
 			"instruction_to_user"=>$instructions_to_user
 		   );
 		   $this->db->where('id',$project_id);
-		   $this->db->update('Company_projects',$data_array);
+		   $this->db->update('company_projects',$data_array);
 		   redirect("index.php/plancycle/editresourcemapping/".$project_id);
 	}
 
@@ -575,7 +576,7 @@ class Plancycle extends CI_Controller {
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		$conditionnew = 'company_id IN ('.$company_id.') AND project_location IN ('.$location_id.')';
-		$projects = $this->db->query('SELECT * FROM Company_projects WHERE '.$conditionnew.' AND status !=2 AND status !=1')->result();
+		$projects = $this->db->query('SELECT * FROM company_projects WHERE '.$conditionnew.' AND status !=2 AND status !=1')->result();
 		if(!empty($projects)){
 			?>
 				<table class="table table-sm small">
@@ -769,7 +770,7 @@ class Plancycle extends CI_Controller {
 		foreach ($words as $w) {
 		$acronym .= $w[0];
 		}
-		$lastid=$this->db->query("SELECT id from Company_projects order by id desc limit 1")->result();
+		$lastid=$this->db->query("SELECT id from company_projects order by id desc limit 1")->result();
 		if(count($lastid) > 0)
 		{
 			$lastid=$lastid[0]->id+1;
@@ -856,18 +857,18 @@ class Plancycle extends CI_Controller {
 			$updateMainTable=$this->db->query("UPDATE ".$table_name." SET is_alotted=1 where is_alotted=0 and item_category in (".$ctgrycheck.")");
 		}
 		
-		$createproject=$this->plancycle->insert_data('Company_projects',$insert);
+		$createproject=$this->plancycle->insert_data('company_projects',$insert);
 		$checkheader=$this->plancycle->get_data('project_headers',array('table_name'=>$table_name,'project_id'=>NULL));
 		if(count($checkheader) > 0)
 		{
 			$updateheaders=$this->plancycle->update_data('project_headers',array('project_id'=>$createproject),array('table_name'=>$table_name,'project_id'=>NULL));
-			$updateheaderid=$this->plancycle->update_data('Company_projects',array('project_header_id'=>$createproject),array('id'=>$createproject));	
+			$updateheaderid=$this->plancycle->update_data('company_projects',array('project_header_id'=>$createproject),array('id'=>$createproject));	
 		
 		}
 		else
 		{
-			$getmainprojectid=$this->plancycle->get_data('Company_projects',array('original_table_name'=>$table_name));
-			$updateheaderid=$this->plancycle->update_data('Company_projects',array('project_header_id'=>$getmainprojectid[0]->id),array('id'=>$createproject));	
+			$getmainprojectid=$this->plancycle->get_data('company_projects',array('original_table_name'=>$table_name));
+			$updateheaderid=$this->plancycle->update_data('company_projects',array('project_header_id'=>$getmainprojectid[0]->id),array('id'=>$createproject));	
 		}
 
 	
@@ -891,7 +892,7 @@ class Plancycle extends CI_Controller {
 	public function editresourcemapping($project_id){
 		$data['page_title']="Plan Cycle";
 
-		$project_data=$this->db->query('SELECT * FROM Company_projects where id="'.$project_id.'"')->result_array();
+		$project_data=$this->db->query('SELECT * FROM company_projects where id="'.$project_id.'"')->result_array();
 		$company_name=$this->db->query('SELECT * FROM company where id="'.$project_data[0]['company_id'].'"')->result_array();
 		$company_location=$this->db->query('SELECT * FROM company_locations where id="'.$project_data[0]['project_location'].'"')->result_array();
 
@@ -982,7 +983,7 @@ class Plancycle extends CI_Controller {
 			'item_owner'=>$io,
 			'manager'=>$pm
 		);
-		$update=$this->plancycle->update_data('Company_projects',$updatedata,$condition);
+		$update=$this->plancycle->update_data('company_projects',$updatedata,$condition);
 		$this->session->set_flashdata("success","Updated Successfully");
 		redirect("index.php/plancycle");
 
@@ -1066,8 +1067,8 @@ class Plancycle extends CI_Controller {
 			'item_owner'=>$io,
 			'manager'=>$pm
 		);
-		$update=$this->plancycle->update_data('Company_projects',$updatedata,$condition);
-		$projectdetail=$this->plancycle->get_data('Company_projects',$condition);
+		$update=$this->plancycle->update_data('company_projects',$updatedata,$condition);
+		$projectdetail=$this->plancycle->get_data('company_projects',$condition);
 		$data['page_title']="Plan Cycle";
 		$data['project_detail']=$projectdetail;
 		$data['allocation_status']=$this->db->query('SELECT COUNT(*) as Remaining FROM '.$projectdetail[0]->original_table_name.' WHERE is_alotted=0')->result();

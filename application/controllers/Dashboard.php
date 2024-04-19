@@ -43,7 +43,7 @@ class Dashboard extends CI_Controller {
 			$this->admin_registered_entity_code=$session['admin_registered_entity_code'];
 		if($session['main_role'] !='5'){
 		if(isset($_REQUEST['company_id'])){
-			$sd=$this->db->query('SELECT * from Company_projects where company_id='.$_REQUEST['company_id'].' and ('.$session['id'].' IN (project_verifier) OR  '.$session['id'].' IN (manager) OR '.$session['id'].' IN (item_owner) OR '.$session['id'].' IN (process_owner))')->result();
+			$sd=$this->db->query('SELECT * from company_projects where company_id='.$_REQUEST['company_id'].' and ('.$session['id'].' IN (project_verifier) OR  '.$session['id'].' IN (manager) OR '.$session['id'].' IN (item_owner) OR '.$session['id'].' IN (process_owner))')->result();
 			$this->userRoleArray=array();
 			if(!empty($sd))
 			{
@@ -136,7 +136,7 @@ class Dashboard extends CI_Controller {
 		$condition=array('company_id'=>$this->input->post('company_id'), 'project_location'=>$this->input->post('location_id'),);
         }
 		
-		$projects=$this->tasks->get_data('Company_projects',$condition);	
+		$projects=$this->tasks->get_data('company_projects',$condition);	
 		// echo $this->db->last_query();
 		// echo $this->db->last_query();
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
@@ -193,7 +193,7 @@ class Dashboard extends CI_Controller {
 	public function projectdetail($id)
 	{
 		$condition=array('id'=>$id);
-		$projects=$this->tasks->get_data('Company_projects',$condition);	
+		$projects=$this->tasks->get_data('company_projects',$condition);	
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
         foreach($projects as $project)
@@ -231,7 +231,7 @@ class Dashboard extends CI_Controller {
 	public function projectprint($id)
 	{
 		$condition=array('id'=>$id);
-		$projects=$this->tasks->get_data('Company_projects',$condition);	
+		$projects=$this->tasks->get_data('company_projects',$condition);	
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
         foreach($projects as $project)
@@ -284,7 +284,7 @@ class Dashboard extends CI_Controller {
 	{
 		
 		if($this->input->post('company_id') && $this->input->post('location_id') ){
-		$lastProj=$this->db->query('Select * from Company_projects where company_id='.$this->input->post('company_id').' and  project_location='.$this->input->post('location_id').' and entity_code="'.$this->admin_registered_entity_code.'"   order by id desc limit 1')->result();
+		$lastProj=$this->db->query('Select * from company_projects where company_id='.$this->input->post('company_id').' and  project_location='.$this->input->post('location_id').' and entity_code="'.$this->admin_registered_entity_code.'"   order by id desc limit 1')->result();
 		if(count($lastProj)>0)
 		{
 			$condition=array(
@@ -293,7 +293,7 @@ class Dashboard extends CI_Controller {
 				'original_table_name'=>$lastProj[0]->original_table_name,
 				'entity_code'=>$this->admin_registered_entity_code
 			);
-			$projects=$this->tasks->get_data('Company_projects',$condition);
+			$projects=$this->tasks->get_data('company_projects',$condition);
 			if(count($projects)>0)
 			{
 				$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
@@ -369,7 +369,7 @@ class Dashboard extends CI_Controller {
 				"report_headers"=>$reportHeaders
 			);
 			
-			$getProject=$this->tasks->get_data('Company_projects',$condition);
+			$getProject=$this->tasks->get_data('company_projects',$condition);
 			
 			if(count($getProject) > 0)
 			{
@@ -405,7 +405,7 @@ class Dashboard extends CI_Controller {
 		else
 		{
 
-			$lastProj=$this->db->query('Select * from Company_projects where status="'.$projectstatus.'" and company_id='.$company_id.'  and entity_code="'.$this->admin_registered_entity_code.'" order by id desc limit 1')->result();
+			$lastProj=$this->db->query('Select * from company_projects where status="'.$projectstatus.'" and company_id='.$company_id.'  and entity_code="'.$this->admin_registered_entity_code.'" order by id desc limit 1')->result();
 			$condition=array(
 				"status"=>$projectstatus,
 				'company_id'=>$company_id,
@@ -419,7 +419,7 @@ class Dashboard extends CI_Controller {
 				"table_name"=>$original_table_name,
 				"report_headers"=>$reportHeaders
 			);
-			$getProject=$this->tasks->get_data('Company_projects',$condition);
+			$getProject=$this->tasks->get_data('company_projects',$condition);
 			
 			if(count($getProject) > 0)
 			{
@@ -478,7 +478,7 @@ class Dashboard extends CI_Controller {
 	{
 
 		if($this->input->post('company_id') && $this->input->post('location_id') ){
-			$lastProj=$this->db->query('Select * from Company_projects where company_id='.$this->input->post('company_id').' and  project_location='.$this->input->post('location_id').'  and  entity_code="'.$this->admin_registered_entity_code.'"   order by id desc limit 1')->result();
+			$lastProj=$this->db->query('Select * from company_projects where company_id='.$this->input->post('company_id').' and  project_location='.$this->input->post('location_id').'  and  entity_code="'.$this->admin_registered_entity_code.'"   order by id desc limit 1')->result();
 
 		if(count($lastProj)>0)
 		{
@@ -489,7 +489,7 @@ class Dashboard extends CI_Controller {
 				// 'entity_code'=>$this->admin_registered_entity_code
 
 			);
-			$projects=$this->tasks->get_data('Company_projects',$condition);
+			$projects=$this->tasks->get_data('company_projects',$condition);
 			if(count($projects)>0)
 			{
 				$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
@@ -565,7 +565,7 @@ class Dashboard extends CI_Controller {
 				"report_headers"=>$reportHeaders
 			);
 			
-			$getProject=$this->tasks->get_data('Company_projects',$condition);
+			$getProject=$this->tasks->get_data('company_projects',$condition);
 			// echo $this->db->last_query();
 			// echo "gaurav";die;
 
@@ -602,6 +602,10 @@ class Dashboard extends CI_Controller {
 				else if($exceptioncategory==3)
 				{
 					// Hardik and View will be call "quantityValidationReport"
+					// echo '<pre>project_name ';
+					// print_r($project_name);
+					// echo '</pre>';
+					// exit(); 
 					error_reporting(0);
 					$getreport=$this->tasks->getExceptionThreeReport($project_name,$verificationstatus,$reportHeaders);
 					$reportView="quantityValidationReport";
@@ -650,7 +654,7 @@ class Dashboard extends CI_Controller {
 		if($type=='consolidated')
 		{		
 
-			$lastProj=$this->db->query('Select * from Company_projects where status="'.$projectstatus.'" and company_id='.$company_id.'  and entity_code="'.$this->admin_registered_entity_code.'" order by id desc limit 1')->result();
+			$lastProj=$this->db->query('Select * from company_projects where status="'.$projectstatus.'" and company_id='.$company_id.'  and entity_code="'.$this->admin_registered_entity_code.'" order by id desc limit 1')->result();
 			$condition=array(
 				"status"=>$projectstatus,
 				'company_id'=>$company_id,
@@ -665,7 +669,7 @@ class Dashboard extends CI_Controller {
 				"table_name"=>$original_table_name,
 				"report_headers"=>$reportHeaders
 			);
-			$getProject=$this->tasks->get_data('Company_projects',$condition);
+			$getProject=$this->tasks->get_data('company_projects',$condition);
 			if(count($getProject) > 0)
 			{
 				$i=0;
@@ -989,7 +993,7 @@ class Dashboard extends CI_Controller {
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		$projCondition=array('id'=>$projectid);
-		$getProject=$this->tasks->get_data('Company_projects',$projCondition);
+		$getProject=$this->tasks->get_data('company_projects',$projCondition);
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
@@ -1146,7 +1150,7 @@ class Dashboard extends CI_Controller {
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		
 		$projCondition=array('id'=>$projectid);
-		$getProject=$this->tasks->get_data('Company_projects',$projCondition);
+		$getProject=$this->tasks->get_data('company_projects',$projCondition);
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
@@ -1303,7 +1307,7 @@ class Dashboard extends CI_Controller {
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		
 		$projCondition=array('id'=>$projectid);
-		$getProject=$this->tasks->get_data('Company_projects',$projCondition);
+		$getProject=$this->tasks->get_data('company_projects',$projCondition);
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
@@ -1455,7 +1459,7 @@ class Dashboard extends CI_Controller {
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		
 		$projCondition=array('id'=>$projectid);
-		$getProject=$this->tasks->get_data('Company_projects',$projCondition);
+		$getProject=$this->tasks->get_data('company_projects',$projCondition);
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
@@ -1604,7 +1608,7 @@ class Dashboard extends CI_Controller {
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		$projCondition=array('id'=>$projectid);
-		$getProject=$this->tasks->get_data('Company_projects',$projCondition);
+		$getProject=$this->tasks->get_data('company_projects',$projCondition);
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
@@ -1735,7 +1739,7 @@ class Dashboard extends CI_Controller {
 		
 		
 		// $projCondition=array('id'=>$projectid);
-		// $getProject=$this->tasks->get_data('Company_projects',$projCondition);
+		// $getProject=$this->tasks->get_data('company_projects',$projCondition);
 		// $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		// $new_pattern = array("_", "_", "");
 		// $project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
@@ -1967,7 +1971,7 @@ class Dashboard extends CI_Controller {
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		
 		$projCondition=array('id'=>$projectid);
-		$getProject=$this->tasks->get_data('Company_projects',$projCondition);
+		$getProject=$this->tasks->get_data('company_projects',$projCondition);
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
@@ -2193,7 +2197,7 @@ class Dashboard extends CI_Controller {
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		
 		$projCondition=array('id'=>$projectid);
-		$getProject=$this->tasks->get_data('Company_projects',$projCondition);
+		$getProject=$this->tasks->get_data('company_projects',$projCondition);
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
@@ -2265,7 +2269,7 @@ class Dashboard extends CI_Controller {
         $writer->save('php://output');
 	}
 
-	// Hardik downloadExceptionThreeVerifiedReport
+	// Hardik
 	public function downloadExceptionThreeVerifiedReport()
 	{
 		$reportOneType='verified';
@@ -2312,10 +2316,6 @@ class Dashboard extends CI_Controller {
 		$reportHeaders=$reportData['reportData']['report_headers'];
 		$headerCondition=array('table_name'=>$table_name);
 
-		// echo '<pre>reportOneType ';
-		// print_r($reportOneType);
-		// echo '</pre>';
-		// exit();
 		$original_verification_status = $verification_status; 
 		if($original_verification_status == 'Not-Verified'){
 			// $reportOneType = 'remaining';
@@ -2324,18 +2324,17 @@ class Dashboard extends CI_Controller {
 
 	
 		$project_headers=$this->tasks->get_data('project_headers',$headerCondition);
-		// echo '<pre>last_query ';
-		// print_r($this->db->last_query());
-		// echo '</pre>';
-		// exit();
-		// echo '<pre>reportHeaders ';
-		// print_r($reportHeaders);
-		// echo '</pre>';
-		// exit();
 		
 		$rowHeads=array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ','BA','BB','BC','BD','BE','BF','BG','BH','BI','BJ','BK','BL','BM','BN','BO','BP','BQ','BR','BS','BT','BU','BV','BW','BX','BY','BZ','CA','CB','CC','CD','CE','CF','CG','CH','CI','CJ','CK','CL','CM','CN','CO','CP','CQ','CR','CS','CT','CU','CV','CW','CX','CY','CZ');
 		$spreadsheet= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 		$sheet = $spreadsheet->getActiveSheet();
+
+
+		
+		
+
+
+
 		$cnt=0;
 		$columns="";
 		$rowCount=1;
@@ -2384,12 +2383,8 @@ class Dashboard extends CI_Controller {
 			}
 
 		}
-		$columns.="quantity_as_per_invoice,total_item_amount_capitalized, verification_status,new_location_verified,updatedat,verification_remarks,qty_ok,qty_damaged,qty_scrapped,qty_not_in_use,qty_missing,qty_shifted,mode_of_verification,quantity_verified";
 
-		// echo '<pre>colsArray ';
-		// print_r($colsArray);
-		// echo '</pre>';
-		// exit();
+		$columns.="quantity_as_per_invoice,total_item_amount_capitalized, verification_status,new_location_verified,updatedat,verification_remarks,qty_ok,qty_damaged,qty_scrapped,qty_not_in_use,qty_missing,qty_shifted,mode_of_verification,quantity_verified";
 
 		array_push($colsArray,'verification_status');
 		$sheet->setCellValue($rowHeads[$cnt].$rowCount, "Verification Status");
@@ -2507,7 +2502,7 @@ class Dashboard extends CI_Controller {
 		
 		
 		$projCondition=array('id'=>$projectid);
-		$getProject=$this->tasks->get_data('Company_projects',$projCondition);
+		$getProject=$this->tasks->get_data('company_projects',$projCondition);
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
@@ -2692,6 +2687,17 @@ class Dashboard extends CI_Controller {
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
 		$writer->setPreCalculateFormulas(false);
 		$filename = 'Exception Report';
+
+		$report_type = 'QtyValidationStatus_';
+		$dateddmmyy = date('dmy'); 
+
+		if($original_verification_status == '1'){
+			$filename = $report_type.'AllReport_'.$dateddmmyy;
+		}else if($original_verification_status == 'Verified'){
+			$filename = $report_type.'VerifiedReport_'.$dateddmmyy;
+		}else{
+			$filename = $report_type.'NotVerifiedReport_'.$dateddmmyy;
+		}
  
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
@@ -2849,7 +2855,7 @@ class Dashboard extends CI_Controller {
 		
 		
 		$projCondition=array('id'=>$projectid);
-		$getProject=$this->tasks->get_data('Company_projects',$projCondition);
+		$getProject=$this->tasks->get_data('company_projects',$projCondition);
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
@@ -3105,7 +3111,7 @@ class Dashboard extends CI_Controller {
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		
 		$projCondition=array('id'=>$projectid);
-		$getProject=$this->tasks->get_data('Company_projects',$projCondition);
+		$getProject=$this->tasks->get_data('company_projects',$projCondition);
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
@@ -3297,7 +3303,7 @@ class Dashboard extends CI_Controller {
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		
 		$projCondition=array('id'=>$projectid);
-		$getProject=$this->tasks->get_data('Company_projects',$projCondition);
+		$getProject=$this->tasks->get_data('company_projects',$projCondition);
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
@@ -3490,7 +3496,7 @@ class Dashboard extends CI_Controller {
 		
 		
 		$projCondition=array('id'=>$projectid);
-		$getProject=$this->tasks->get_data('Company_projects',$projCondition);
+		$getProject=$this->tasks->get_data('company_projects',$projCondition);
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
@@ -3670,7 +3676,7 @@ class Dashboard extends CI_Controller {
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		
 		$projCondition=array('id'=>$projectid);
-		$getProject=$this->tasks->get_data('Company_projects',$projCondition);
+		$getProject=$this->tasks->get_data('company_projects',$projCondition);
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
@@ -3849,7 +3855,7 @@ class Dashboard extends CI_Controller {
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		
 		$projCondition=array('id'=>$projectid);
-		$getProject=$this->tasks->get_data('Company_projects',$projCondition);
+		$getProject=$this->tasks->get_data('company_projects',$projCondition);
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
@@ -4029,7 +4035,7 @@ class Dashboard extends CI_Controller {
 		
 		
 		$projCondition=array('id'=>$projectid);
-		$getProject=$this->tasks->get_data('Company_projects',$projCondition);
+		$getProject=$this->tasks->get_data('company_projects',$projCondition);
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
@@ -4214,7 +4220,7 @@ class Dashboard extends CI_Controller {
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		
 		$projCondition=array('id'=>$projectid);
-		$getProject=$this->tasks->get_data('Company_projects',$projCondition);
+		$getProject=$this->tasks->get_data('company_projects',$projCondition);
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
@@ -4428,7 +4434,7 @@ class Dashboard extends CI_Controller {
 		
 		
 		$projCondition=array('id'=>$projectid);
-		$getProject=$this->tasks->get_data('Company_projects',$projCondition);
+		$getProject=$this->tasks->get_data('company_projects',$projCondition);
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
@@ -4534,7 +4540,7 @@ class Dashboard extends CI_Controller {
 		echo $projectid=$projectidarray[$i];
 
 		  $this->db->select("*");
-		  $this->db->from("Company_projects");
+		  $this->db->from("company_projects");
 		  $this->db->where("id",$projectid);
 		  $query=$this->db->get();
 		  $result= $query->row();
@@ -4552,7 +4558,7 @@ class Dashboard extends CI_Controller {
 			"status"=>"0"
 		);
 		$this->db->where("id",$project_id);
-		$this->db->update("Company_projects",$data);
+		$this->db->update("company_projects",$data);
 		$this->session->set_flashdata("success","Project Reopen Successfully");
 		redirect("index.php/dashboard");
 	}
@@ -4561,7 +4567,7 @@ class Dashboard extends CI_Controller {
 			"status"=>"0"
 		);
 		$this->db->where("id",$project_id);
-		$this->db->update("Company_projects",$data);
+		$this->db->update("company_projects",$data);
 		$this->session->set_flashdata("success","Project Verification Reopen Successfully");
 		redirect("index.php/dashboard");
 	}

@@ -244,7 +244,7 @@ class Tasks extends CI_Controller {
 		$condition=array(
 			"id"=>$userid
         );
-        $projectdetail=$this->tasks->get_data('Company_projects',array('id'=>$projectid));
+        $projectdetail=$this->tasks->get_data('company_projects',array('id'=>$projectid));
         $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
         $new_pattern = array("_", "_", "");
         $projectname=strtolower(preg_replace($old_pattern, $new_pattern , trim($projectname)));
@@ -335,12 +335,16 @@ class Tasks extends CI_Controller {
             $where.=str_replace('"','',$sf).' LIKE "%'.$search_text.'%"';
             else
             $where.=' OR '.str_replace('"','',$sf).' LIKE "%'.$search_text.'%"';
+            
             if(count($search_fields)==$i)
             {
                 $where.=')';
             }
+
             $i++;
         }
+
+        
         if($verification_status !='All')
         {
             $where.=' AND verification_status="'.$verification_status.'"';    
@@ -361,7 +365,7 @@ class Tasks extends CI_Controller {
         $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
         $new_pattern = array("_", "_", "");
         $projectname=strtolower(preg_replace($old_pattern, $new_pattern , trim($projectname)));
-        $projectdetail=$this->tasks->get_data('Company_projects',array('id'=>$projectid));
+        $projectdetail=$this->tasks->get_data('company_projects',array('id'=>$projectid));
         
         $select="SELECT * FROM ".$projectname;
         $scantask=$this->db->query($select.$where)->result();
@@ -424,50 +428,137 @@ class Tasks extends CI_Controller {
         $condition=array(
             "id"=>$itemid
         );
+
+        $verification_remarks = '';
+        $qty_ok = 0;
+        $qty_damaged = 0;
+        $qty_scrapped = 0;
+        $qty_not_in_use = 0;
+        $qty_missing = 0;
+        $qty_shifted = 0;
+
         $getquantity=$this->tasks->get_data($projectname,$condition);
+        
         if($scanned->item_scrap_condition =='qty_ok')
         {
-            $scanned->qty_ok=(int)$getquantity[0]->qty_ok + (int)$scanned->quantity_verified;
+            $qty_ok = (int)$getquantity[0]->qty_ok + (int)$scanned->quantity_verified;
+            $scanned->qty_ok = $qty_ok;
+             
         }
         else if($scanned->item_scrap_condition =='qty_damaged')
         {
-            $scanned->qty_damaged=(int)$getquantity[0]->qty_damaged + (int)$scanned->quantity_verified;
+            $qty_damaged = (int)$getquantity[0]->qty_damaged + (int)$scanned->quantity_verified;
+            $scanned->qty_damaged = $qty_damaged;
         }
         else if($scanned->item_scrap_condition =='qty_scrapped')
         {
-            $scanned->qty_scrapped=(int)$getquantity[0]->qty_scrapped + (int)$scanned->quantity_verified;
+            $qty_scrapped = (int)$getquantity[0]->qty_scrapped + (int)$scanned->quantity_verified;
+            $scanned->qty_scrapped = $qty_scrapped;
         }
         else if($scanned->item_scrap_condition =='qty_not_in_use')
         {
-            $scanned->qty_not_in_use=(int)$getquantity[0]->qty_not_in_use + (int)$scanned->quantity_verified;
+            $qty_not_in_use = (int)$getquantity[0]->qty_not_in_use + (int)$scanned->quantity_verified;
+            $scanned->qty_not_in_use = $qty_not_in_use;
         }
         else if($scanned->item_scrap_condition =='qty_missing')
         {
-            $scanned->qty_missing=(int)$getquantity[0]->qty_missing + (int)$scanned->quantity_verified;
+            $qty_missing = (int)$getquantity[0]->qty_missing + (int)$scanned->quantity_verified;
+            $scanned->qty_missing = $qty_missing;
         }
         else if($scanned->item_scrap_condition =='qty_shifted')
         {
-            $scanned->qty_shifted=(int)$getquantity[0]->qty_shifted + (int)$scanned->quantity_verified;
+            $qty_shifted = (int)$getquantity[0]->qty_shifted + (int)$scanned->quantity_verified;
+            $scanned->qty_shifted = $qty_shifted;
         }
         
-            if($scanned->verification_remarks!='')
-            {
-                $scanned->quantity_verified=(int)$getquantity[0]->quantity_verified + (int)$scanned->quantity_verified;
-                $scanned->verification_status=$scanned->quantity_as_per_invoice <= $scanned->quantity_verified ? "Verified":"Not-Verified";
-                $scanned->verification_remarks=$getquantity[0]->verification_remarks != '' ? $getquantity[0]->verification_remarks.' || '.$scanned->verification_remarks:$scanned->verification_remarks;
-                $scanned->verified_datetime=date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
-                $scanned->updatedat=date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
-            }
-            else{
-                $scanned->quantity_verified=(int)$getquantity[0]->quantity_verified + (int)$scanned->quantity_verified;
-                $scanned->verification_status=$scanned->quantity_as_per_invoice <= $scanned->quantity_verified ? "Verified":"Not-Verified";
-                $scanned->verified_datetime=date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
-                $scanned->updatedat=date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
-            }
+        if($scanned->verification_remarks!='')
+        {
+            $quantity_verified = (int)$getquantity[0]->quantity_verified + (int)$scanned->quantity_verified;
+            $scanned->quantity_verified = $quantity_verified;
+
+            $verification_status = $scanned->quantity_as_per_invoice <= $scanned->quantity_verified ? "Verified":"Not-Verified";
+            $scanned->verification_status = $verification_status;
+
+            $verification_remarks = $getquantity[0]->verification_remarks != '' ? $getquantity[0]->verification_remarks.' || '.$scanned->verification_remarks:$scanned->verification_remarks;
+            $scanned->verification_remarks= $verification_remarks;
+
+            $verified_datetime = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
+            $scanned->verified_datetime = $verified_datetime;
+
+            $updatedat = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
+            $scanned->updatedat = $updatedat;
+        }
+        else{
             
+            $quantity_verified = (int)$getquantity[0]->quantity_verified + (int)$scanned->quantity_verified;
+            $scanned->quantity_verified = $quantity_verified;
+            
+            $verification_status = $scanned->quantity_as_per_invoice <= $scanned->quantity_verified ? "Verified":"Not-Verified";
+            $scanned->verification_status = $verification_status;
+            
+            $verified_datetime = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
+            $scanned->verified_datetime = $verified_datetime;
+            
+            $updatedat = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
+            $scanned->updatedat = $updatedat;
+        }
+        $scanned->instance_count = (int)$getquantity[0]->instance_count + 1;
+        $mode_of_verification = $scanned->mode_of_verification;
+        $scanned->mode_of_verification= $mode_of_verification;
         $new_array[0] = $this->stdToArray($scanned);
         unset($new_array[0]['item_scrap_condition']);
         $verify=$this->tasks->update_data($projectname,$new_array[0],$condition);
+        // $verify = 1;
+
+        $project_id=$this->input->post('project_id');
+        $getprojectdetails_condition = array(
+            'id' => $project_id
+        );
+        $getprojectdetails = $this->tasks->get_data('company_projects',$getprojectdetails_condition);
+            
+
+        $company_id = $getprojectdetails[0]->company_id;
+        // $mode_of_verification = 'Scan';
+        $new_location_verified = 0;
+        $location_id = $getprojectdetails[0]->project_location;
+        $entity_code =  $getprojectdetails[0]->entity_code;
+        $project_id = $getprojectdetails[0]->id;
+        $project_name = $getprojectdetails[0]->project_name;
+        $original_table_name = $getprojectdetails[0]->original_table_name;
+        $verified_by = 0;
+        $verified_by_username = 'ABCD';
+
+        $verifiedproducts_array = array(
+            'company_id' => $company_id,
+            'location_id' => $location_id,
+            'entity_code' => $entity_code,
+            'project_id' => $project_id,
+            'project_name' => $project_name,
+            'original_table_name' => $original_table_name,
+            'item_id' => $getquantity[0]->id,
+            'item_category' => $getquantity[0]->item_category,
+            'item_unique_code' => $getquantity[0]->item_unique_code,
+            'item_sub_code' => $getquantity[0]->item_sub_code,
+            'item_description' => $getquantity[0]->item_description,
+            'quantity_as_per_invoice' => $getquantity[0]->quantity_as_per_invoice,
+            'verification_status' => $verification_status,
+            'quantity_verified' => $quantity_verified,
+            'new_location_verified' => $new_location_verified,
+            'verified_by' => $verified_by,
+            'verified_by_username' => $verified_by_username,
+            'verified_datetime' => $verified_datetime,
+            'verification_remarks' => $verification_remarks,
+            'qty_ok' => $qty_ok,
+            'qty_damaged' => $qty_damaged,
+            'qty_scrapped' => $qty_scrapped,
+            'qty_not_in_use' => $qty_not_in_use,
+            'qty_missing' => $qty_missing,
+            'qty_shifted' => $qty_shifted,
+            'mode_of_verification' => $mode_of_verification,
+            'created_at' => date('Y-m-d H:s:i'),
+        );
+        $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts',$verifiedproducts_array);
+        
         
 		if($verify)
 		{
@@ -504,7 +595,7 @@ class Tasks extends CI_Controller {
             "company_id"=>$companyid,
             "project_verifier"=>$userid
         );
-        $finish=$this->tasks->update_data('Company_projects',$data,$condition);
+        $finish=$this->tasks->update_data('company_projects',$data,$condition);
         
 		if($finish)
 		{
@@ -533,7 +624,7 @@ class Tasks extends CI_Controller {
             "id"=>$projectid,
             "company_id"=>$companyid,
         );
-        $finish=$this->tasks->update_data('Company_projects',$data,$condition);
+        $finish=$this->tasks->update_data('company_projects',$data,$condition);
         
 		if($finish)
 		{
@@ -578,7 +669,7 @@ class Tasks extends CI_Controller {
             "id"=>$projectid,
 
         );
-        $finish=$this->tasks->update_data('Company_projects',$data,$condition);
+        $finish=$this->tasks->update_data('company_projects',$data,$condition);
         
 		if($finish)
 		{
@@ -765,7 +856,7 @@ public function get_company_location(){
 
 
         $this->db->select("*");   
-        $this->db->from("Company_projects");   
+        $this->db->from("company_projects");   
         // $this->db->where("entity_code",$entity_code);
         $this->db->where("project_location",$location_row->id);
         $this->db->where("status !=",'2');
@@ -954,7 +1045,7 @@ public function save_project_contact_info(){
 public function get_graph_datastatus(){
  $entity_code=$this->input->post('entity_code');
  $this->db->select("*");   
- $this->db->from("Company_projects");   
+ $this->db->from("company_projects");   
  $this->db->where("entity_code",$entity_code);
  $query= $this->db->get();   
  $project = $query->result();
@@ -993,7 +1084,7 @@ public function project_completion_by_location(){
     $entity_code=$this->input->post('entity_code');
     $project_location=$this->input->post('project_location');
     $this->db->select("*");   
-    $this->db->from("Company_projects");   
+    $this->db->from("company_projects");   
     $this->db->where("entity_code",$entity_code);
     $this->db->where("project_location",$project_location);
     $query= $this->db->get();   
@@ -1024,7 +1115,11 @@ public function project_completion_by_location(){
 
         
        
-        if($project->VerifiedQuantity!=0){ $project_percent= round(($project->VerifiedQuantity/$project->TotalQuantity)*100,2);}else{ $project_percent= "0";}
+        if($project->VerifiedQuantity!=0){ 
+            $project_percent= round(($project->VerifiedQuantity/$project->TotalQuantity)*100,2);
+        }else{ 
+            $project_percent= "0";
+        }
 
     }
     $data=array();
@@ -1221,7 +1316,7 @@ public function get_project_additionaldata(){
         $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
         $new_pattern = array("_", "_", "");
         $projectname=strtolower(preg_replace($old_pattern, $new_pattern , trim($projectname)));
-        $projectdetail=$this->tasks->get_data('Company_projects',array('id'=>$projectid));
+        $projectdetail=$this->tasks->get_data('company_projects',array('id'=>$projectid));
         
         $select="SELECT * FROM ".$projectname;
         $scantask=$this->db->query($select.$where)->result();
@@ -1312,7 +1407,7 @@ public function get_project_additionaldata(){
 			);
 			
 			
-			$getProject=$this->tasks->get_data('Company_projects',$condition);
+			$getProject=$this->tasks->get_data('company_projects',$condition);
 			
 			if(count($getProject) > 0)
 			{
@@ -1349,7 +1444,7 @@ public function get_project_additionaldata(){
 		else
 		{
 
-			$lastProj=$this->db->query('Select * from Company_projects where status="'.$projectstatus.'" and company_id='.$company_id.'  and entity_code="'.$this->admin_registered_entity_code.'" order by id desc limit 1')->result();
+			$lastProj=$this->db->query('Select * from company_projects where status="'.$projectstatus.'" and company_id='.$company_id.'  and entity_code="'.$this->admin_registered_entity_code.'" order by id desc limit 1')->result();
 			$condition=array(
 				"status"=>$projectstatus,
 				'company_id'=>$company_id,
@@ -1363,7 +1458,7 @@ public function get_project_additionaldata(){
 				"table_name"=>$original_table_name,
 				"report_headers"=>$reportHeaders
 			);
-			$getProject=$this->tasks->get_data('Company_projects',$condition);
+			$getProject=$this->tasks->get_data('company_projects',$condition);
 			
 			if(count($getProject) > 0)
 			{
@@ -1410,7 +1505,7 @@ public function get_project_additionaldata(){
       
     public function get_project_header(){
         $entity_code=$this->input->post('entity_code');
-        $lastProj=$this->db->query('Select * from Company_projects where  entity_code="'.$entity_code.'"   order by id desc limit 1')->result();
+        $lastProj=$this->db->query('Select * from company_projects where  entity_code="'.$entity_code.'"   order by id desc limit 1')->result();
         $headerCondition=array('table_name'=>$lastProj[0]->original_table_name);
         $project_headers=$this->tasks->get_data('project_headers',$headerCondition);
         if(count($project_headers)>0)
@@ -1555,6 +1650,44 @@ public function get_project_additionaldata(){
         
         
     }
+
+    public function get_verifiedprojects_instance(){
+        $item_id=$this->input->post('item_id');
+        $project_id = $this->input->post('project_id');
+        $user_notications=$this->tasks->get_verifiedprojects_instance_by_item($item_id,$project_id);
+        if(!empty($user_notications))
+        {
+            header('Content-Type: application/json');
+            $data=$user_notications;
+            echo json_encode(array("success"=>200,"message"=>"Get Verified Project Phases.","data"=>$data));
+            exit;
+        } 
+        else {
+            header('Content-Type: application/json');
+            echo json_encode(array("success"=>401,"message"=>"No Found Verified Project Phases"));
+            exit;
+        }
+    }
+
+    public function EditVerifyoption(){
+        $item_id=$this->input->post('item_id');
+        $operation_type = $this->input->post('operation_type');
+        $tablename = 'test_demo_01';
+        $Item_Result = $this->tasks->get_item_details($tablename,$item_id);
+        if(!empty($Item_Result))
+        {
+            header('Content-Type: application/json');
+            $data=$Item_Result;
+            echo json_encode(array("success"=>200,"message"=>"Details fetched successfully.","data"=>$data));
+            exit;
+        } 
+        else {
+            header('Content-Type: application/json');
+            echo json_encode(array("success"=>401,"message"=>"No Details Found"));
+            exit;
+        }
+    }
+
 
 }
 

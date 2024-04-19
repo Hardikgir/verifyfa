@@ -189,10 +189,10 @@ Once Verify From Mobile what column is effected :-
 
 
 Genarate Activation Link :- 
-https://verifyfa.developmentdemo.co.in/index.php/generate-activation-link/7
-https://verifyfa.developmentdemo.co.in/index.php/send-activation-link/7
-https://verifyfa.developmentdemo.co.in/index.php/suspend-account/7
-https://verifyfa.developmentdemo.co.in/index.php/unsubscribe-account/7
+http://localhost/CODEIGNITER_PHP/Verifyfa/Dev/index.php/generate-activation-link/7
+http://localhost/CODEIGNITER_PHP/Verifyfa/Dev/index.php/send-activation-link/7
+http://localhost/CODEIGNITER_PHP/Verifyfa/Dev/index.php/suspend-account/7
+http://localhost/CODEIGNITER_PHP/Verifyfa/Dev/index.php/unsubscribe-account/7
 
 
 "{"Peter":35,"Ben":37,"Joe":43}';
