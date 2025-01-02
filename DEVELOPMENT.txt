@@ -15,6 +15,10 @@ Email :- jasmeet@verifyfa.com
 Pass :- 12345
 
 
+u337050398_verifyfadb
+u337050398_verifyfadmin
+/tG4@pV+Q
+
 
 TableName :- 
 
@@ -25,6 +29,10 @@ Their is Total 3 point
     Changes in getExceptionThreeReportdownload()
     Changes in getExceptionThreeReport()
     Changes in getExceptionOneReport()
+
+
+
+
 
 What you have to work Today (08/04/2024)
 -> As per Last Meeting(Friday) Discussion. 
@@ -69,6 +77,11 @@ Call 5:17 (Evening Call)
 	-> Category :- Qty Validation Status
 	-> Project Status :- Finished Verification
 	-> Type :- Verify
+-> 
+-> Project Name :- KML - DEWAS (Godown) - ALL STOCK
+-> Category :- Qty Validation Status
+-> Project Status :- Finished Verification
+-> Type :- Verify
  
 -> That Download file their column number M Their is Showing Not-Verify that need to check
 Call 8:42
@@ -309,3 +322,4 @@ verifiedproduct_logs
 -> Updated Details
 -> Rollback
 
+    
