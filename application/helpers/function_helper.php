@@ -376,6 +376,21 @@ function get_all_notification($entity_code){
     return $query->result();
 }
 
+function get_all_notification_by_userspecific($entity_code){
+    $user_id = $_SESSION['logged_in']['id'];
+    $CI =& get_instance();
+    $CI->load->database();
+    $CI->db->select('notification.*,notification_user.notification_id,notification_user.user_id,notification_user.is_read');
+    $CI->db->from('notification');
+    $CI->db->join('notification_user','notification_user.notification_id=notification.id');
+    $CI->db->where('notification_user.user_id',$user_id);
+    $CI->db->where('notification.type','Notification');
+    $CI->db->where('notification.entity_code',$entity_code);
+    $CI->db->order_by('notification.id','DESC');
+    $query=$CI->db->get();
+    return $query->result();
+}
+
 function check_main_notificationread($user_id,$notification_id){
     $CI =& get_instance();
     $CI->load->database();
@@ -641,9 +656,35 @@ function get_project_row($project_id){
     $CI =& get_instance();
     $CI->load->database();       
     $query=$CI->db->query("SELECT * FROM `company_projects` where id='".$project_id."'");
-     $CI->db->last_query();
+    $CI->db->last_query();
     return $query->row();
 }
 
+
+function get_role_name($role_id){
+    switch($role_id) {
+        case "0":
+            $rolename = "Manager";
+            break;
+        case "1":
+            $rolename = "Verifier";
+            break;
+        case "2":
+            $rolename = "Process Owner";
+            break;
+        case "3":
+            $rolename = "Entity Owner";
+            break;
+        case "4":
+            $rolename = "Sub Admin";
+            break;
+        case "5":
+            $rolename = "Group Admin";
+            break;
+        default:
+            $rolename = "Not Identify";
+    }
+    return $rolename;
+}
 
 ?>

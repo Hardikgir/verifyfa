@@ -1,13 +1,20 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+require_once APPPATH."/third_party/PHPExcel.php";
+
 class Tasks extends CI_Controller {
 
 	public function __construct()
 	{
         parent::__construct();
-        $this->load->helper('function_helper');
-		$this->load->model('tasks_model','tasks');	
+        $this->load->helper('function_helper','file','download');
+		$this->load->model('tasks_model','tasks');
+        // $this->load->helper('file');
+        // $this->load->helper('download');
+        // $this->load->library('Excel');
+        $this->load->library('PHPExcel');
+
 	}
 
 	public function getprojects()
@@ -89,7 +96,7 @@ class Tasks extends CI_Controller {
     }
 
 
-    public function get_all_company_user_role($entity_code,$user_id){
+    public function get_all_company_user_role($entity_code,$user_id){           //[NOT IN POSTMAN]
 		$this->db->select("*");
 		$this->db->from("user_role");
 		$this->db->where("entity_code",$entity_code);
@@ -99,35 +106,49 @@ class Tasks extends CI_Controller {
 
 	}
 
+    public function get_all_company_user_role_by_location_id($entity_code,$user_id,$location_id){           //[NOT IN POSTMAN]
+        $this->db->select("*");
+		$this->db->from("user_role");
+		$this->db->where("entity_code",$entity_code);
+        $this->db->where("location_id",$location_id);
+		$this->db->where("user_id",$user_id);
+		$query = $this->db->get();
+		return $query->result();
+    }
+
+
+
     public function getDashboard()
     {
         $userid=$this->input->post('user_id');
         $entity_code=$this->input->post('entity_code');
+        $location_id=$this->input->post('location_id');
 
         $company_id_imp='';
-        $location_id='';
+        
         $role_result_com = $this->get_all_company_user_role($entity_code,$userid);
+        // $role_result_com = $this->get_all_company_user_role_by_location_id($entity_code,$userid,$location_id);
+        $location_id='';
         if(!empty($role_result_com)){
 
         
-        foreach($role_result_com as $row_role){
-            $roledata[]=$row_role->company_id;
-            $roledata1[]=$row_role->location_id;
-        }
+            foreach($role_result_com as $row_role){
+                $roledata[]=$row_role->company_id;
+                $roledata1[]=$row_role->location_id;
+            }
 
-        $company_id_imp = implode(',',$roledata);
-        $location_id = implode(',',$roledata1);
-    }
+            $company_id_imp = implode(',',$roledata);
+            $location_id = implode(',',$roledata1);
+            }
 
 		$condition=array(
 			"id"=>$userid
 		);
 
         
-
+        $location_id=$this->input->post('location_id');
         
         $projects=$this->tasks->getProjectsdashboard('users',$userid,$entity_code,$company_id_imp,$location_id);
-        // echo $this->db->last_query();
         $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
         foreach($projects as $project)
@@ -182,10 +203,11 @@ class Tasks extends CI_Controller {
     public function getsearchprojects()
 	{
 		$userid=$this->input->post('user_id');
+        $location_id =$this->input->post('location_id');
 		$condition=array(
 			"id"=>$userid
 		);
-        $projects=$this->tasks->getSearchProjects('users',$userid);
+        $projects=$this->tasks->getSearchProjects('users',$userid,$location_id);
         $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
         foreach($projects as $project)
@@ -245,6 +267,7 @@ class Tasks extends CI_Controller {
 			"id"=>$userid
         );
         $projectdetail=$this->tasks->get_data('company_projects',array('id'=>$projectid));
+        
         $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
         $new_pattern = array("_", "_", "");
         $projectname=strtolower(preg_replace($old_pattern, $new_pattern , trim($projectname)));
@@ -316,6 +339,8 @@ class Tasks extends CI_Controller {
     }
     public function manualscanitem()
     {
+
+
         $projectid=$this->input->post('project_id');
         $userid=$this->input->post('user_id');
         $verification_status=$this->input->post('verification_status');
@@ -324,7 +349,8 @@ class Tasks extends CI_Controller {
         $item_sub_category =$this->input->post('item_sub_category');
         $projectname=$this->input->post('project_name');
         $search_text =$this->input->post('search_text');
-        $search_fields =$this->input->post('search_fields');
+        $search_fields = $this->input->post('search_fields');
+        $order_by = $this->input->post('order_by');
         $cond=array();
         
         $where=' Where (';
@@ -345,15 +371,15 @@ class Tasks extends CI_Controller {
         }
 
         
-        if($verification_status !='All')
+        if($verification_status != 'All')
         {
             $where.=' AND verification_status="'.$verification_status.'"';    
         }
-        if($tag_status_y_n_na !='All')
+        if($tag_status_y_n_na != 'All')
         {
             $where.=' AND tag_status_y_n_na="'.$tag_status_y_n_na.'"';    
         }
-        if($item_category !='All')
+        if($item_category != 'All')
         {
             $where.=' AND item_category="'.$item_category.'"';    
         }
@@ -361,6 +387,8 @@ class Tasks extends CI_Controller {
         {
             $where.=' AND item_sub_category="'.$item_sub_category.'"';    
         }
+
+        $where .= ' ORDER BY id '.$order_by;
         
         $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
         $new_pattern = array("_", "_", "");
@@ -369,6 +397,13 @@ class Tasks extends CI_Controller {
         
         $select="SELECT * FROM ".$projectname;
         $scantask=$this->db->query($select.$where)->result();
+        $result_count = count($scantask);
+        // echo '<pre>last_query ';
+        // print_r($this->db->last_query());
+        // echo '</pre>';
+        // exit();
+
+       
         
 		if(!empty($scantask) && count($scantask) > 0)
 		{
@@ -396,7 +431,7 @@ class Tasks extends CI_Controller {
             if(!empty($projectdetail) && in_array($scantask[0]->item_category,json_decode($projectdetail[0]->item_category)))
             {
                 header('Content-Type: application/json');
-                echo json_encode(array("success"=>200,"message"=>"Tasks fetched successfully.","data"=>$scantask));
+                echo json_encode(array("success"=>200,"message"=>"Tasks fetched successfully.","count"=>$result_count,"data"=>$scantask));
                 exit;
             }
             else
@@ -1687,6 +1722,1011 @@ public function get_project_additionaldata(){
             exit;
         }
     }
+
+
+    public function editverified()
+    {
+        $itemid=$this->input->post('item_id');
+        $projectname=$this->input->post('project_name');
+        $update_details=json_decode($this->input->post('scanned_data'));
+        $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+        $new_pattern = array("_", "_", "");
+        $projectname=strtolower(preg_replace($old_pattern, $new_pattern , trim($projectname)));
+        $condition=array(
+            "id"=>$itemid
+        );
+
+        $verification_remarks = '';
+        $qty_ok = 0;
+        $qty_damaged = 0;
+        $qty_scrapped = 0;
+        $qty_not_in_use = 0;
+        $qty_missing = 0;
+        $qty_shifted = 0;
+
+
+
+        // {"item_scrap_condition":"qty_ok","qty_ok":1,"quantity_as_per_invoice":1,"quantity_verified":1,"verification_status":"","verification_remarks":"","verified_datetime":"","updatedat":"a","mode_of_verification":"Scan","new_location_verified":"ASDASDASDSD"}
+
+   
+
+
+        $getquantity=$this->tasks->get_data($projectname,$condition);
+
+        if($update_details->item_scrap_condition =='qty_ok')
+        {
+            $qty_ok = (int)$getquantity[0]->qty_ok + (int)$update_details->quantity_verified;
+            $update_details->qty_ok = $qty_ok;
+             
+        }
+        else if($update_details->item_scrap_condition =='qty_damaged')
+        {
+            $qty_damaged = (int)$getquantity[0]->qty_damaged + (int)$update_details->quantity_verified;
+            $update_details->qty_damaged = $qty_damaged;
+        }
+        else if($update_details->item_scrap_condition =='qty_scrapped')
+        {
+            $qty_scrapped = (int)$getquantity[0]->qty_scrapped + (int)$update_details->quantity_verified;
+            $update_details->qty_scrapped = $qty_scrapped;
+        }
+        else if($update_details->item_scrap_condition =='qty_not_in_use')
+        {
+            $qty_not_in_use = (int)$getquantity[0]->qty_not_in_use + (int)$update_details->quantity_verified;
+            $update_details->qty_not_in_use = $qty_not_in_use;
+        }
+        else if($update_details->item_scrap_condition =='qty_missing')
+        {
+            $qty_missing = (int)$getquantity[0]->qty_missing + (int)$update_details->quantity_verified;
+            $update_details->qty_missing = $qty_missing;
+        }
+        else if($update_details->item_scrap_condition =='qty_shifted')
+        {
+            $qty_shifted = (int)$getquantity[0]->qty_shifted + (int)$update_details->quantity_verified;
+            $update_details->qty_shifted = $qty_shifted;
+        }
+        
+        if($update_details->verification_remarks!='')
+        {
+            $quantity_verified = (int)$getquantity[0]->quantity_verified + (int)$update_details->quantity_verified;
+            $update_details->quantity_verified = $quantity_verified;
+
+            $verification_status = $update_details->quantity_as_per_invoice <= $update_details->quantity_verified ? "Verified":"Not-Verified";
+            $update_details->verification_status = $verification_status;
+
+            $verification_remarks = $getquantity[0]->verification_remarks != '' ? $getquantity[0]->verification_remarks.' || '.$update_details->verification_remarks:$update_details->verification_remarks;
+            $update_details->verification_remarks= $verification_remarks;
+
+            $verified_datetime = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
+            $update_details->verified_datetime = $verified_datetime;
+
+            $updatedat = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
+            $update_details->updatedat = $updatedat;
+        }
+        else{
+            
+            $quantity_verified = (int)$getquantity[0]->quantity_verified + (int)$update_details->quantity_verified;
+            $update_details->quantity_verified = $quantity_verified;
+            
+            $verification_status = $update_details->quantity_as_per_invoice <= $update_details->quantity_verified ? "Verified":"Not-Verified";
+            $update_details->verification_status = $verification_status;
+            
+            $verified_datetime = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
+            $update_details->verified_datetime = $verified_datetime;
+            
+            $updatedat = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
+            $update_details->updatedat = $updatedat;
+        }
+        // $update_details->instance_count = (int)$getquantity[0]->instance_count + 1;
+        $mode_of_verification = $update_details->mode_of_verification;
+        $update_details->mode_of_verification= $mode_of_verification;
+        $new_array[0] = $this->stdToArray($update_details);
+        unset($new_array[0]['item_scrap_condition']);
+        $verify=$this->tasks->update_data($projectname,$new_array[0],$condition);
+        
+
+        $project_id=$this->input->post('project_id');
+        $getprojectdetails_condition = array(
+            'id' => $project_id
+        );
+        $getprojectdetails = $this->tasks->get_data('company_projects',$getprojectdetails_condition);
+            
+
+        $company_id = $getprojectdetails[0]->company_id;
+        $new_location_verified = 0;
+        $location_id = $getprojectdetails[0]->project_location;
+        $entity_code =  $getprojectdetails[0]->entity_code;
+        $project_id = $getprojectdetails[0]->id;
+        $project_name = $getprojectdetails[0]->project_name;
+        $original_table_name = $getprojectdetails[0]->original_table_name;
+        $verified_by = 0;
+        $verified_by_username = 'ABCD';
+
+        $verifiedproducts_array = array(
+            'roW_id' => $company_id,
+            'edit_opration' => "asdasd",
+            'previous_company_id' => $company_id,
+            'company_id' => $company_id,
+            'previous_location_id' => $location_id,
+            'location_id' => $location_id,
+            'previous_entity_code' => $entity_code,
+            'entity_code' => $entity_code,
+            'previous_project_id' => $project_id,
+            'project_id' => $project_id,
+            'previous_project_name' => $project_name,
+            'project_name' => $project_name,
+            'previous_original_table_name' => $original_table_name,
+            'original_table_name' => $original_table_name,
+            'previous_item_id' => $getquantity[0]->id,
+            'item_id' => $getquantity[0]->id,
+            'previous_item_category' => $getquantity[0]->item_category,
+            'item_category' => $getquantity[0]->item_category,
+            'previous_item_unique_code' => $getquantity[0]->item_unique_code,
+            'item_unique_code' => $getquantity[0]->item_unique_code,
+            'previous_item_sub_code' => $getquantity[0]->item_sub_code,
+            'item_sub_code' => $getquantity[0]->item_sub_code,
+            'previous_item_description' => $getquantity[0]->item_description,
+            'item_description' => $getquantity[0]->item_description,
+            'previous_quantity_as_per_invoice' => $getquantity[0]->quantity_as_per_invoice,
+            'quantity_as_per_invoice' => $getquantity[0]->quantity_as_per_invoice,
+            'previous_verification_status' => $verification_status,
+            'verification_status' => $verification_status,
+            'previous_quantity_verified' => $quantity_verified,
+            'quantity_verified' => $quantity_verified,
+            'previous_new_location_verified' => $new_location_verified,
+            'new_location_verified' => $new_location_verified,
+            'previous_verified_by' => $verified_by,
+            'verified_by' => $verified_by,
+            'previous_verified_by_username' => $verified_by_username,
+            'verified_by_username' => $verified_by_username,
+            'previous_verified_datetime' => $verified_datetime,
+            'verified_datetime' => $verified_datetime,
+            'previous_verification_remarks' => $verification_remarks,
+            'verification_remarks' => $verification_remarks,
+            'previous_qty_ok' => $qty_ok,
+            'qty_ok' => $qty_ok,
+            'previous_qty_damaged' => $qty_damaged,
+            'qty_damaged' => $qty_damaged,
+            'previous_qty_scrapped' => $qty_scrapped,
+            'qty_scrapped' => $qty_scrapped,
+            'previous_qty_not_in_use' => $qty_not_in_use,
+            'qty_not_in_use' => $qty_not_in_use,
+            'previous_qty_missing' => $qty_missing,
+            'qty_missing' => $qty_missing,
+            'previous_qty_shifted' => $qty_shifted,
+            'qty_shifted' => $qty_shifted,
+            'previous_mode_of_verification' => $mode_of_verification,
+            'mode_of_verification' => $mode_of_verification,
+            'previous_created_at' => date('Y-m-d H:s:i'),
+            'created_at' => date('Y-m-d H:s:i'),
+        );
+        // $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts',$verifiedproducts_array);
+        $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts_log',$verifiedproducts_array);
+        
+        
+        
+		if($verify)
+		{
+            header('Content-Type: application/json');
+            echo json_encode(array("success"=>200,"message"=>"Item verified update successfully."));
+            exit;
+
+		} 
+		else {
+			header('Content-Type: application/json');
+			echo json_encode(array("success"=>401,"message"=>"Item not verified"));
+			exit;
+		}
+    }
+
+   
+
+    public function getdepartments()
+    {
+        $verification_status=$this->input->post('verification_status');
+        $tag_status_y_n_na=$this->input->post('tag_status_y_n_na');
+        $item_category=$this->input->post('item_category');
+        $item_sub_category=$this->input->post('item_sub_category');
+        $projectname=$this->input->post('project_name');
+        $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+        $new_pattern = array("_", "_", "");
+        $projectname=strtolower(preg_replace($old_pattern, $new_pattern , trim($projectname)));
+        $select="SELECT user_department FROM ".$projectname;
+
+        $where= '';
+        $is_where = 0;
+        if($verification_status !='All')
+        {
+            $where.=' WHERE verification_status="'.$verification_status.'"';    
+            $is_where = 1;
+        }
+        if($tag_status_y_n_na !='All')
+        {
+            if($is_where == 1){
+                $where.=' AND tag_status_y_n_na="'.$tag_status_y_n_na.'"';    
+            }else{
+                $where.=' WHERE tag_status_y_n_na="'.$tag_status_y_n_na.'"';    
+            }
+            $is_where = 1;
+            
+        }
+        if($item_category !='All')
+        {
+            if($is_where == 1){
+                $where.=' AND item_category="'.$item_category.'"';    
+            }else{
+                $where.=' WHERE item_category="'.$item_category.'"';    
+            }
+            $is_where = 1;
+        }
+      
+        if($item_sub_category !='' && $item_sub_category !='All')
+        {
+            if($is_where == 1){
+                $where.=' AND item_sub_category="'.$item_sub_category.'"';
+            }else{
+                $where.=' WHERE item_sub_category="'.$item_sub_category.'"';
+            }       
+        } 
+        $where .= ' GROUP BY user_department';
+
+        $scantask=$this->db->query($select.$where)->result();
+        if(empty($scantask)){
+            $scantask[0]['user_department'] = 'All';
+        }
+        
+
+        // echo '<pre>scantask ';
+        // print_r($scantask);
+        // echo '</pre>';
+        // exit(); 
+        
+        $result_count = count($scantask);
+
+        if($scantask)
+        {
+            header('Content-Type: application/json');
+            echo json_encode(array("success"=>200,"message"=>"Tasks fetched successfully.","count"=>$result_count,"data"=>$scantask));
+            exit;
+        }
+        else
+        {
+            header('Content-Type: application/json');
+            echo json_encode(array("success"=>401,"message"=>"Permission to scan this category item is not granted."));
+            exit;
+        }
+    }
+
+
+    public function getassets()
+    {
+        $verification_status=$this->input->post('verification_status');
+        $tag_status_y_n_na=$this->input->post('tag_status_y_n_na');
+        $item_category=$this->input->post('item_category');
+        $item_sub_category=$this->input->post('item_sub_category');
+        $user_department=$this->input->post('user_department');
+        $projectname=$this->input->post('project_name');
+        $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+        $new_pattern = array("_", "_", "");
+        $projectname=strtolower(preg_replace($old_pattern, $new_pattern , trim($projectname)));
+        $select="SELECT item_classification FROM ".$projectname;
+
+        $where= '';
+        $is_where = 0;
+        if($verification_status !='All')
+        {
+            $where.=' WHERE verification_status="'.$verification_status.'"';    
+            $is_where = 1;
+        }
+        if($tag_status_y_n_na !='All')
+        {
+            if($is_where == 1){
+                $where.=' AND tag_status_y_n_na="'.$tag_status_y_n_na.'"';    
+            }else{
+                $where.=' WHERE tag_status_y_n_na="'.$tag_status_y_n_na.'"';    
+            }
+            $is_where = 1;
+            
+        }
+        if($item_category !='All')
+        {
+            if($is_where == 1){
+                $where.=' AND item_category="'.$item_category.'"';    
+            }else{
+                $where.=' WHERE item_category="'.$item_category.'"';    
+            }
+            $is_where = 1;
+        }
+        if($user_department !='All')
+        {
+            if($is_where == 1){
+                $where.=' AND user_department="'.$user_department.'"';    
+            }else{
+                $where.=' WHERE user_department="'.$user_department.'"';    
+            }
+            $is_where = 1;
+        }
+        if($item_sub_category !='' && $item_sub_category !='All')
+        {
+            if($is_where == 1){
+                $where.=' AND item_sub_category="'.$item_sub_category.'"';
+            }else{
+                $where.=' WHERE item_sub_category="'.$item_sub_category.'"';
+            }       
+        } 
+        $where .= ' GROUP BY item_classification';
+
+        $scantask=$this->db->query($select.$where)->result();
+        // echo '<pre>last_query ';
+        // print_r($this->db->last_query());
+        // echo '</pre>';
+        // exit();
+        $result_count = count($scantask);
+
+        if($scantask)
+        {
+            header('Content-Type: application/json');
+            echo json_encode(array("success"=>200,"message"=>"Tasks fetched successfully.","count"=>$result_count,"data"=>$scantask));
+            exit;
+        }
+        else
+        {
+            header('Content-Type: application/json');
+            echo json_encode(array("success"=>401,"message"=>"Permission to scan this category item is not granted."));
+            exit;
+        }
+
+    }
+
+
+    public function verifybylist()
+    {
+        $projectid=$this->input->post('project_id');
+        $userid=$this->input->post('user_id');
+        $verification_status=$this->input->post('verification_status');
+        // $tag_status_y_n_na =$this->input->post('tag_status_y_n_na');
+        // $item_category  =$this->input->post('item_category');
+        // $item_sub_category =$this->input->post('item_sub_category');
+        $projectname=$this->input->post('project_name');
+        $search_text =$this->input->post('search_text');
+        // $search_fields = $this->input->post('search_fields');
+
+        // echo '<pre>search_fields ';
+        // print_r($search_fields);
+        // echo '</pre>';
+        // exit(); 
+
+        $search_fields = array();
+        if(!empty($this->input->post('search_fields'))){
+            $search_fields = explode(",",$this->input->post('search_fields'));
+        }
+        
+        // echo '<pre>search_fields ';
+        // print_r($search_fields);
+        // echo '</pre>';
+        // exit(); 
+
+
+        $item_classification=$this->input->post('item_classification');
+        $user_department=$this->input->post('user_department');
+
+        $order_by = $this->input->post('order_by');
+        $cond=array();
+        
+        $where= '';
+        $is_where = 0;
+        if(!empty($search_text)){
+            $where=' Where (';
+            $i=1;
+            foreach($search_fields as $sf)
+            {
+                if($i==1)
+                $where.=str_replace('"','',$sf).' LIKE "%'.$search_text.'%"';
+                else
+                $where.=' OR '.str_replace('"','',$sf).' LIKE "%'.$search_text.'%"';
+                
+                if(count($search_fields)==$i)
+                {
+                    $where.=')';
+                }
+    
+                $i++;
+            }
+            $is_where = 1;
+        }
+        
+
+        /*
+        if($verification_status !='All')
+        {
+            $where.=' AND verification_status="'.$verification_status.'"';    
+        }
+        if($tag_status_y_n_na !='All')
+        {
+            $where.=' AND tag_status_y_n_na="'.$tag_status_y_n_na.'"';    
+        }
+        if($item_category !='All')
+        {
+            $where.=' AND item_category="'.$item_category.'"';    
+        }
+        if($item_sub_category !='' && $item_sub_category !='All')
+        {
+            $where.=' AND item_sub_category="'.$item_sub_category.'"';    
+        } 
+        */
+
+        
+        if($verification_status !='All')
+        {
+            if($is_where == 1){
+                $where.=' AND verification_status="'.$verification_status.'"';    
+            }else{
+                $where.=' WHERE verification_status="'.$verification_status.'"';    
+            }
+            
+            $is_where = 1;
+        }
+
+        if($item_classification !='All')
+        {
+            if((isset($item_classification)) && (!empty($item_classification)))
+            {
+                if($is_where == 1){
+                    $where.=' AND item_classification="'.$item_classification.'"';    
+                }else{
+                    $where.=' WHERE item_classification="'.$item_classification.'"';    
+                }
+                $is_where = 1;
+            }
+        }
+      
+
+        
+        if($user_department !='All')
+        {
+           
+            if((isset($user_department)) && (!empty($user_department)))
+            {
+                if($is_where == 1){
+                    $where.=' AND user_department="'.$user_department.'"';
+                }else{
+                    $where.=' WHERE user_department="'.$user_department.'"';
+                }
+                    
+            }
+        }
+
+
+
+        $where .= ' ORDER BY id '.$order_by;
+        
+        $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+        $new_pattern = array("_", "_", "");
+        $projectname=strtolower(preg_replace($old_pattern, $new_pattern , trim($projectname)));
+        $projectdetail=$this->tasks->get_data('company_projects',array('id'=>$projectid));
+        
+        $select="SELECT * FROM ".$projectname;
+        $scantask=$this->db->query($select.$where)->result();
+        // echo '<pre>last_query ';
+        // print_r($this->db->last_query());
+        // echo '</pre>';
+        // exit();
+        $result_count = count($scantask);
+        
+		if(!empty($scantask) && count($scantask) > 0)
+		{
+            foreach($scantask as $st)
+            {
+
+                if($st->verified_by != ''){
+                    $verifiername= $this->tasks->get_verifire_namesingle($st->verified_by);
+                    // echo '<pre>last_query ';
+                    // print_r($this->db->last_query());
+                    // echo '</pre>';
+                    // exit();
+                   }else{
+                       $verifiername='';
+                   }
+
+                $st->createdat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->createdat)));
+                $st->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->updatedat)));
+                if($st->verified_datetime)
+                {
+                    $st->verified_datetime=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->verified_datetime)));
+                    $st->verified_by_username= $verifiername;
+                    $st->verified_by_name= $verifiername;
+    
+                }
+                
+               // $st->date_of_purchase_invoice_date=date('d-m-Y',strtotime($st->date_of_purchase_invoice_date)); 
+            } 
+            if(!empty($projectdetail) && in_array($scantask[0]->item_category,json_decode($projectdetail[0]->item_category)))
+            {
+                header('Content-Type: application/json');
+                echo json_encode(array("success"=>200,"message"=>"Tasks fetched successfully.","count"=>$result_count,"data"=>$scantask));
+                exit;
+            }
+            else
+            {
+                header('Content-Type: application/json');
+                echo json_encode(array("success"=>401,"message"=>"Permission to scan this category item is not granted."));
+                exit;
+            }
+			
+		} 
+		else {
+			header('Content-Type: application/json');
+			echo json_encode(array("success"=>401,"message"=>"Item not available"));
+			exit;
+		}
+    }
+
+
+
+
+
+
+
+
+
+
+
+    public function downloadExceptionFiveConsolidatedReport()       //[NOT IN POSTMAN]
+	{
+		require 'vendor/autoload.php';
+        $projectid = 1;
+        
+        echo '<pre>';
+        print_r("asdasdasd");
+        echo '</pre>';
+        // exit();
+		// $reportData=$this->session->get_userdata('reportData');
+		// $type=$reportData['reportData']['type'];
+		// $project_status=$reportData['reportData']['project_status'];
+		// $verification_status=$reportData['reportData']['verification_status'];
+		// $table_name=$reportData['reportData']['table_name'];
+		// $reportHeaders=$reportData['reportData']['report_headers'];
+        $reportHeaders = 'all';
+        $table_name = 'test';
+		$headerCondition=array('table_name'=>$table_name);
+		$project_headers=$this->tasks->get_data('project_headers',$headerCondition);
+		$rowHeads=array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ','BA','BB','BC','BD','BE','BF','BG','BH','BI','BJ','BK','BL','BM','BN','BO','BP','BQ','BR','BS','BT','BU','BV','BW','BX','BY','BZ','CA','CB','CC','CD','CE','CF','CG','CH','CI','CJ','CK','CL','CM','CN','CO','CP','CQ','CR','CS','CT','CU','CV','CW','CX','CY','CZ');
+		$spreadsheet= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+		$sheet = $spreadsheet->getActiveSheet();
+		$cnt=0;
+		$columns="";
+		$rowCount=1;
+		$colsArray=array();
+		if($reportHeaders=='all')
+		{
+			foreach($project_headers as $ph)
+			{
+				if($ph->keyname!='is_alotted')
+				{
+					$sheet->setCellValue($rowHeads[$cnt].$rowCount, ucwords($ph->keylabel));
+					$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+					$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+					$columns.=" ".$ph->keyname.",";
+					array_push($colsArray,$ph->keyname);
+					$cnt++;
+				}
+			}
+		}
+		else
+		{
+			for($i=0;$i<9;$i++)
+			{
+				if($project_headers[$i]->keyname!='is_alotted')
+				{
+					$sheet->setCellValue($rowHeads[$cnt].$rowCount, ucwords($project_headers[$i]->keylabel));
+					$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+					$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+					
+					$columns.=" ".$project_headers[$i]->keyname.",";
+					array_push($colsArray,$project_headers[$i]->keyname);
+					$cnt++;
+				}
+			}
+			// for($i=0;$i<count($reportHeaders);$i++)
+			// {
+			// 	if($reportHeaders[$i]!='is_alotted')
+			// 	{
+			// 		$sheet->setCellValue($rowHeads[$cnt].$rowCount, ucwords(str_replace("_"," ",$reportHeaders[$i])));
+			// 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE] );
+			// 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+			// 		$columns.=" ".$reportHeaders[$i].",";
+			// 		array_push($colsArray,$reportHeaders[$i]);
+			// 		$cnt++;
+			// 	}
+			// }
+
+		}
+		$columns.="verification_status,updatedat,verified_datetime,item_note,mode_of_verification";
+		array_push($colsArray,'verification_status');
+
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, "Verification Status");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+		
+		array_push($colsArray,'updatedat');
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Last Updated on");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+		array_push($colsArray,'verified_datetime');
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Item Note Date");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+		array_push($colsArray,'item_note');
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Item Note Remarks");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+		array_push($colsArray,'mode_of_verification');
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Mode of Verification");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Allocation Status");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Project ID");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Project Name");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Start Date");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+    	$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Period of Verification");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Allocated Resources");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+		
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Project Status");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+		
+		
+		$projCondition=array('id'=>$projectid);
+		$getProject=$this->tasks->get_data('company_projects',$projCondition);
+		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+		$new_pattern = array("_", "_", "");
+		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
+		$rowCount=2;
+        /*
+		$getreport=$this->tasks->getDetailedExceptionFiveAllReport($project_name,$verification_status,$columns);
+		foreach($getreport as $gr)
+		{
+			$cnt=0;
+			for($rh=0;$rh<count($colsArray);$rh++)
+			{
+				$sheet->setCellValue($rowHeads[$cnt].$rowCount,$gr[$colsArray[$rh]] );
+				$cnt++;
+			}
+			$verifier=explode(',',$getProject[0]->project_verifier);
+			$verifier_name="";
+			for($ii=0;$ii<count($verifier);$ii++)
+			{
+				if($ii==count($verifier)-1)
+				{
+					$verifier_name.=get_UserName($verifier[$ii]);
+				}
+				else
+				{
+					$verifier_name.=get_UserName($verifier[$ii]).", ";
+				}
+			}
+			$startdate=date_create($getProject[0]->start_date);
+			$duedate=date_create($getProject[0]->due_date);
+			$projectStatus='';
+			if($getProject[0]->status==0)
+			{
+				$projectStatus='In Process';
+			}
+			else if($getProject[0]->status==1)
+			{
+				$projectStatus='Completed';
+			}
+			else if($getProject[0]->status==2)
+			{
+				$projectStatus='Cancelled';
+			}
+			else if($getProject[0]->status==3)
+			{
+				$projectStatus='Finished Verification';
+			}
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, "Allocated");
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $getProject[0]->project_id);
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $getProject[0]->project_name);
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, date_format($startdate,"d-m-Y"));
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, date_format($duedate,"d-m-Y"));
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $getProject[0]->period_of_verification);
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $verifier_name);
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $projectStatus);
+			$rowCount++;
+		}
+		*/
+		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
+		$writer->setPreCalculateFormulas(false);
+		$filename = 'HHH_Exception_Report.xlsx';
+
+
+        // //var_dump($_FILES['test']['name']);die;
+		// $config['upload_path'] = './projectfiles/';
+        // $config['allowed_types'] = 'xls|xlsx';
+		// $config['encrypt_name']=true;
+
+        // $this->load->library('upload', $config);
+		// $filename='';
+        // if (!$this->upload->do_upload('project_file')) {
+        //     $error = array('error' => $this->upload->display_errors());
+
+		// 	print_r($error);
+		// 	exit;
+        // } else {
+        //     $data = $this->upload->data();
+		// 	$filename="./projectfiles/".$data['file_name'];
+		// }
+
+        $writer->save('projectfiles/' . $filename);
+ 
+        echo '<pre>filename111 ';
+        print_r($filename);
+        echo '</pre>';
+        exit();
+        // header('Content-Type: application/vnd.ms-excel');
+        // header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+        // header('Cache-Control: max-age=0');
+        
+        // $writer->save('php://output');
+	}
+
+
+
+    public function generateExcel() {
+
+       
+
+        // Load data or create your Excel content here
+        $data = array(
+            array('Name', 'Email', 'Phone'),
+            array('John Doe', 'john@example.com', '123456789'),
+            array('Jane Doe', 'jane@example.com', '987654321')
+        );
+
+        // Create a new PHPExcel object
+        $objPHPExcel = new PHPExcel();
+
+        // Set properties etc.
+
+        // Add some data
+        $objPHPExcel->getActiveSheet()->fromArray($data, NULL, 'A1');
+
+        // Set active sheet index to the first sheet, so Excel opens this as the first sheet
+        $objPHPExcel->setActiveSheetIndex(0);
+
+        // Save Excel 2007 file
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+
+        // Set a file name for the Excel file
+        $filename = 'example.xlsx';
+
+        // Save the Excel file to a directory
+        $objWriter->save('path/to/your/directory/' . $filename);
+
+        // Optionally, you can force download the file:
+        // force_download('path/to/your/directory/' . $filename, NULL);
+
+        // Display success message or redirect
+        echo "Excel file generated and saved to directory successfully!";
+    }
+
+
+    
+
+    public function emailsending(){     //[NOT IN POSTMAN]
+
+        // Ref :- https://stackoverflow.com/questions/50604268/excel-generate-and-send-email-using-phpexcel-library-in-codeigniter
+        // Ref :- https://stackoverflow.com/questions/13108508/how-can-i-attach-the-file-in-codeigniter-which-i-have-created-through-coding
+        // Ref :- https://forum.codeigniter.com/showthread.php?tid=64101
+
+        $html=$this->load->view('sendmail_template',$data,TRUE);
+
+include("simple_html_dom.php");
+$rowRecords = str_get_html($html);
+
+//echo $html;
+$filename="Report-".$dtimeFile.".xls";
+$path='./reports/';
+$csv_handler = fopen ($path.$filename,'w');
+fwrite ($csv_handler,$rowRecords);
+fclose ($csv_handler);
+
+$msg='Report';
+
+$file = $path.$filename;
+$file_size = filesize($file);
+$handle = fopen($file, "r");
+$content = fread($handle, $file_size);
+fclose($handle);
+$content = chunk_split(base64_encode($content));
+$uid = md5(uniqid(time()));
+
+$file_path=base_url('reports/'.$filename);
+
+
+$config = Array(
+'protocol' => 'smtp',
+'smtp_host' => 'ssl://smtp.googlemail.com',
+'smtp_port' => 465,
+'smtp_user' => 'xxxxxxxxxx@gmail.com',
+'smtp_pass' => 'xxxxxxxxxx',
+'mailtype'  => 'html', 
+'charset'   => 'iso-8859-1'
+);
+$this->load->library('email', $config);
+$this->email->set_newline("\r\n");
+
+// Set to, from, message, etc.
+
+$email = $result->to_addr;
+
+$info = "info@xxxx.xx";
+$infoname = "info";
+$message = "PFA Report";
+$this->email->set_mailtype("html");
+$this->email->from($info, $infoname);
+$this->email->to($email);
+
+$subject = 'Report';
+$this->email->subject($subject);
+$this->email->message($message);
+$this->email->attach($file_path);
+
+ $r = $this->email->send();
+    if (!$r) {
+    echo "Failed to send email:" . $this->email->print_debugger(array("header"));
+} else {
+     echo "Mail Sent";
+}
+    }
+
+
+
+
+
+
+
+    public function setemail()      //[NOT IN POSTMAN]
+    {
+        $email="hardik.meghnathi12@gmail.com";
+        $subject="some text";
+        $message="some text";
+        $this->sendEmail($email,$subject,$message);
+    }
+    public function sendEmail($email,$subject,$message)     //[NOT IN POSTMAN]
+    {
+
+        $config = Array(
+        'protocol' => 'smtp',
+        'smtp_host' => 'ssl://smtp.googlemail.com',
+        'smtp_port' => 465,
+        'smtp_user' => 'abc@gmail.com', 
+        'smtp_pass' => 'passwrd', 
+        'mailtype' => 'html',
+        'charset' => 'iso-8859-1',
+        'wordwrap' => TRUE
+        );
+
+
+          $this->load->library('email', $config);
+          $this->email->set_newline("\r\n");
+          $this->email->from('hardikgirim@gmail.com');
+          $this->email->to($email);
+          $this->email->subject($subject);
+          $this->email->message($message);
+            $this->email->attach('C:\Users\xyz\Desktop\images\abc.png');
+          if($this->email->send())
+         {
+          echo 'Email send.';
+         }
+         else
+        {
+         show_error($this->email->print_debugger());
+        }
+
+    }
+
+
+   
+    public function EditVerificationNew()
+    {
+        $userid=$this->input->post('user_id');
+        $companyid=$this->input->post('company_id');
+        $projectid=$this->input->post('project_id');
+        $projectname=$this->input->post('project_name');
+        $instance_id=$this->input->post('instance_id');
+        // $scancode=$this->input->post('scan_code');
+		$condition=array(
+			"id"=>$userid
+        );
+        $projectdetail=$this->tasks->get_data('company_projects',array('id'=>$projectid));
+        
+        $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+        $new_pattern = array("_", "_", "");
+        $projectname=strtolower(preg_replace($old_pattern, $new_pattern , trim($projectname)));
+        // $scantask=$this->tasks->scanitem($userid,$companyid,$projectname,$projectid,$scancode);
+        $scantask=$this->tasks->scanitem2($userid,$companyid,$projectname,$projectid,$instance_id);
+        
+        foreach($scantask as $st)
+        {
+            if($st->verified_by !=''){
+             $verifiername= $this->tasks->get_verifire_namesingle($st->verified_by);
+            }else{
+                $verifiername='';
+            }
+            $st->createdat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->createdat)));
+            $st->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->updatedat)));
+            if($st->verified_datetime)
+            {
+                $st->verified_by_username= $verifiername;
+                $st->verified_by_name= $verifiername;
+                $st->verified_datetime=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->verified_datetime)));
+            }
+            
+           // $st->date_of_purchase_invoice_date=date('d-m-Y',strtotime($st->date_of_purchase_invoice_date)); 
+        }
+		if(!empty($scantask) && count($scantask) > 0)
+		{
+            $tag='CD';
+            
+            $projectdetail[0]->project_type=='TG'? $tag='Y':($projectdetail[0]->project_type=='NT'?$tag='N':($projectdetail[0]->project_type=='UN'?$tag='NA':$tag='CD'));
+            if($tag!='CD')
+            {
+                if(!empty($projectdetail) && in_array($scantask[0]->item_category,json_decode($projectdetail[0]->item_category)) && $scantask[0]->tag_status_y_n_na==$tag)
+                {
+                    header('Content-Type: application/json');
+                    echo json_encode(array("success"=>200,"message"=>"Tasks fetched successfully.","data"=>$scantask));
+                    exit;
+                }
+                else
+                {
+                    header('Content-Type: application/json');
+                    echo json_encode(array("success"=>401,"message"=>"Permission to scan this category/tag item is not granted."));
+                    exit;
+                }
+
+            }
+            else
+            {
+                if(!empty($projectdetail) && in_array($scantask[0]->item_category,json_decode($projectdetail[0]->item_category)))
+                {
+                    header('Content-Type: application/json');
+                    echo json_encode(array("success"=>200,"message"=>"Tasks fetched successfully.","data"=>$scantask));
+                    exit;
+                }
+                else
+                {
+                    header('Content-Type: application/json');
+                    echo json_encode(array("success"=>401,"message"=>"Permission to scan this category item is not granted."));
+                    exit;
+                }
+            }
+            
+            
+			
+		} 
+		else {
+			header('Content-Type: application/json');
+			echo json_encode(array("success"=>401,"message"=>"Item not available"));
+			exit;
+		}
+    }
+
+
 
 
 }

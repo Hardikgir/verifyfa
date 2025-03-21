@@ -38,10 +38,14 @@ class Login extends CI_Controller {
 		$login=$this->login->get_data('users',$condition);
 		if(!empty($login) && count($login) > 0)
 		{
+
+			if($login[0]->is_login == '1'){
+				$this->session->set_flashdata('error_message', 'This User is Already Login Some Where you Can not Login');
+				redirect(base_url(),$condition);
+			}
+
 			if ($remember)
 			{
-
-			// Set remember me value in session
 				$this->session->set_userdata('remember_me', TRUE);
 			}
 			$sess_data = array(
@@ -54,6 +58,15 @@ class Login extends CI_Controller {
 			'main_role'=>$login[0]->userRole
 			);
 			$this->session->set_userdata('logged_in', $sess_data);
+
+			$updatedata=array(
+				'is_login'=>1,
+			);
+			$condition=array(
+				'id'=>$login[0]->id
+			);
+			$update=$this->login->update_data('users ',$updatedata,$condition);	
+
 			redirect(base_url()."index.php/dashboard");
 		} 
 		else {
@@ -64,6 +77,14 @@ class Login extends CI_Controller {
 	}
 	public function logout()
 	{
+		$updatedata=array(
+			'is_login'=>0,
+		);
+		$condition=array(
+			'id'=>$_SESSION['logged_in']['id']
+		);
+		$update=$this->login->update_data('users ',$updatedata,$condition);	
+
 		$this->session->unset_userdata('logged_in');
 		$this->session->sess_destroy();
 		redirect(base_url()."index.php/login",'refresh');

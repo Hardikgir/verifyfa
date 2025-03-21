@@ -615,7 +615,6 @@ $role=implode(',',$this->input->post('user_role'));
     public function brodcast_notification(){
         $data['page_title']="Manage Notification";
 
-       
         $company_id = $_SESSION['logged_in']['company_id'];
         $admin_registered_user_id = $_SESSION['logged_in']['admin_registered_user_id'];
         $admin_registered_entity_code = $_SESSION['logged_in']['admin_registered_entity_code'];
@@ -636,25 +635,65 @@ $role=implode(',',$this->input->post('user_role'));
        $all_ProcessOwner = array();
        $all_Manager = array();
        $all_Verify = array();
+
+       $entity_code = $_SESSION['logged_in']['admin_registered_entity_code'];
+       
         if(!empty($user_roles)){
             foreach(array_unique($user_roles) as $user_role_key=>$user_role_value){
                 if($user_role_value == '5'){
-                    $all_GroupAdmin = $this->Admin_model->get_users_by_role($user_role_value);
+                    // $all_GroupAdmin = $this->Admin_model->get_users_by_role($user_role_value);
+                    $all_GroupAdmin_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
+                    $all_GroupAdmin_array = array();
+                    foreach($all_GroupAdmin_roles as $all_GroupAdmin_roleskey=>$all_GroupAdmin_rolesvalue){
+                        $all_GroupAdmin_roles_array[] = $all_GroupAdmin_rolesvalue->user_id;
+                    }
+                    $all_GroupAdmin = $this->Admin_model->get_users_by_ids(implode(',', $all_GroupAdmin_roles_array));
                 }
+
                 if($user_role_value == '4'){
-                    $all_SubAdmin = $this->Admin_model->get_users_by_role($user_role_value);
+                    $all_SubAdmin_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
+                    $all_SubAdmin_roles_array = array();
+                    foreach($all_SubAdmin_roles as $all_SubAdmin_roleskey=>$all_SubAdmin_rolesvalue){
+                        $all_SubAdmin_roles_array[] = $all_SubAdmin_rolesvalue->user_id;
+                    }
+                    $all_SubAdmin = $this->Admin_model->get_users_by_ids(implode(',', $all_SubAdmin_roles_array));
                 }
                 if($user_role_value == '3'){
-                    $all_EntityOwner = $this->Admin_model->get_users_by_role($user_role_value);
+                    // $all_EntityOwner = $this->Admin_model->get_users_by_role($user_role_value);
+                    $all_EntityOwner_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
+                    $all_EntityOwner_roles_array = array();
+                    foreach($all_EntityOwner_roles as $all_EntityOwner_roleskey=>$all_EntityOwner_rolesvalue){
+                        $all_EntityOwner_roles_array[] = $all_EntityOwner_rolesvalue->user_id;
+                    }
+                    $all_EntityOwner = $this->Admin_model->get_users_by_ids(implode(',', $all_EntityOwner_roles_array));
                 }
                 if($user_role_value == '2'){
-                    $all_ProcessOwner = $this->Admin_model->get_users_by_role($user_role_value);
+                    // $all_ProcessOwner = $this->Admin_model->get_users_by_role($user_role_value);
+                    $all_ProcessOwner_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
+                    $all_ProcessOwner_roles_array = array();
+                    foreach($all_ProcessOwner_roles as $all_ProcessOwner_roleskey=>$all_ProcessOwner_rolesvalue){
+                        $all_ProcessOwner_roles_array[] = $all_ProcessOwner_rolesvalue->user_id;
+                    }
+                    $all_ProcessOwner = $this->Admin_model->get_users_by_ids(implode(',', $all_ProcessOwner_roles_array));
                 }
                 if($user_role_value == '0'){
-                    $all_Manager = $this->Admin_model->get_users_by_role($user_role_value);
+                    // $all_Manager = $this->Admin_model->get_users_by_role($user_role_value);
+                    $all_Manager_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
+                    $all_Manager_roles_array = array();
+                    foreach($all_Manager_roles as $all_Manager_roleskey=>$all_Manager_rolesvalue){
+                        $all_Manager_roles_array[] = $all_Manager_rolesvalue->user_id;
+                    }
+                    $all_Manager = $this->Admin_model->get_users_by_ids(implode(',', $all_Manager_roles_array));
                 }
                 if($user_role_value == '1'){
-                    $all_Verify = $this->Admin_model->get_users_by_role($user_role_value);
+                    // $all_Verify = $this->Admin_model->get_users_by_role($user_role_value);
+                    $all_Verify_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
+                    $all_Verify_roles_array = array();
+                    foreach($all_Verify_roles as $all_Verify_roleskey=>$all_Verify_rolesvalue){
+                        $all_Verify_roles_array[] = $all_Verify_rolesvalue->user_id;
+                    }
+                    $all_Verify = $this->Admin_model->get_users_by_ids(implode(',', $all_Verify_roles_array));
+                    // las
                 }
             }
         }
@@ -825,6 +864,19 @@ $role=implode(',',$this->input->post('user_role'));
 
         $data['notification_data']=$this->Admin_model->get_single_notification($id);
         $data['reply_data']=$this->Admin_model->get_reply_data($id);
+
+        $data['sender_to_user'] = array();
+
+        if($_SESSION['logged_in']['id'] == $data['notification_data']->created_by){
+            $this->db->select('notification_user.*,users.*');
+            $this->db->from('users');
+            $this->db->join('notification_user','notification_user.user_id=users.id');
+            $this->db->where('notification_user.notification_id',$data['notification_data']->id);
+            $this->db->order_by('notification_user.user_role','DESC');
+            $getnotifications=$this->db->get();
+            $result =  $getnotifications->result();
+            $data['sender_to_user'] = $result;
+        }
         $this->load->view('view-reply-notification',$data);
     }
 
@@ -905,6 +957,32 @@ $role=implode(',',$this->input->post('user_role'));
         $this->db->delete('users');
         $this->session->set_flashdata("success","Deleted Successfully");
         redirect('index.php/manage-user-admin');
+    }
+
+
+
+    public function request_for_delete(){
+        
+        $project_id = $this->input->post("hdn_project_id");
+        $data=array(
+            "status" => 4,
+         );
+
+        $this->db->where("id",$project_id);
+        $this->db->update("company_projects",$data);
+        
+        $data=array(
+            "project_id"=>$this->input->post("hdn_project_id"),
+            "reason_for_delete"=>$this->input->post("reason_for_detele"),
+            "requester_id"=>$this->input->post("hdn_user_id"),
+            "status"=>1            
+        );
+        $data["notification"]=$this->Admin_model->save_delete_request($data);
+        $insert_id = $this->db->insert_id();
+
+        $this->session->set_flashdata('success', "Delete Requesting Successfull..");
+        redirect("index.php/dashboard");
+        
     }
     
 }

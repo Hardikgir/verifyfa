@@ -176,7 +176,7 @@ class Superadmin_controller extends CI_Controller {
 			$gst_org_address='';
 		}
 		// $password=rand(0,9).rand(9,0).rand(0,9).rand(0,9);
-		    $password='12345';
+		$password='12345';		//Hardik Fix Password Generate From Here
 		
 		$urer_registration_no=date("Ym")."VFA".rand(0,9).rand(0,9).rand(0,9).rand(0,9).rand(0,9);
 		$data_user= array(
@@ -234,11 +234,31 @@ $transection_id=date("YmdHis").rand(0,9).rand(0,9).rand(0,9);
 		"created_at"=>date("Y-m-d H:i:s")
 	);
 	$this->Super_admin_model->save_registered_user_payment($data_payment);
+
+
+	// Hardik Comment :- Email Should be Send from here.
+	// Email Send While Adding
+	/*
+	$toemail = $this->input->post('email_id');
+	$password_view=$password;
+	$firstname=$this->input->post('first_name');
+	$lastname=$this->input->post('last_name');
+
+	// $activation_link=$userdata->activation_link;
+	$activation_link = base_url().'index.php/send-activation-link/'.$registered_user_id;
+	$subject="verifyfa.com Activation Account Email";
+	$login_link= base_url()."index.php/registered-user-login";
+	$message="Dear ".$firstname." ". $lastname."<br> <br> Your account activation link given below. Click below given link and activate your account.<br> Once you are activate your account login your account with given login credentials.<br> <b>Activate your account:</b> <a href='".$activation_link."' target='_blank'>Click Here</a>.<br><br>
+	<b>Login Url:</b> <a href='".$login_link."' target='_blank' >Click Here For login</a>
+	<b>Email-Id:</b> ".$toemail."
+	<b>Password:</b> ".$password_view."<br><br>Thank You.";
+	$this->sent_email($toemail,$subject,$message);
+	*/
+	
 	$this->session->set_flashdata('success', 'User Created Successfully Now you Are In Confirmation Page');
 	redirect("index.php/confirmation-user-detail/".$registered_user_id);
-
 	}
- // ??step 3 data save//
+ 	// ??step 3 data save//
 
 
 
@@ -390,6 +410,18 @@ $transection_id=date("YmdHis").rand(0,9).rand(0,9).rand(0,9);
 	$data['user_data']=$this->Super_admin_model->get_registerd_user($id);
 	$data['payment_data']=$this->Super_admin_model->get_registred_users_payment($id);
 	$data['plan_data']=$this->Super_admin_model->get_registered_user_plan($id);
+
+
+	
+	$this->db->select('register_user_plan_log.*, subscription_plan.*');
+	$this->db->from(' subscription_plan');
+	$this->db->join('register_user_plan_log','register_user_plan_log.plan_id= subscription_plan.id');
+	$this->db->where('register_user_plan_log.register_user_id',$id);
+	$getnotifications=$this->db->get();
+	$result = $getnotifications->result();
+	$data['payment_history'] = $result;
+
+	
 	$this->load->view("super-admin/view-user",$data);
  }
  
@@ -463,7 +495,19 @@ $data_payment= array(
 	"created_at"=>date("Y-m-d H:i:s")
 );
 $this->Super_admin_model->save_registered_user_payment($data_payment);
- }
+
+
+$data_array=array(
+"plan_id"=>0,
+"upgrated_plan_id"=>$this->input->post('plan'),
+"register_user_id"=>$registered_user_id,
+"created_at"=>date("Y-m-d H:i:s"),
+);
+$this->Super_admin_model->save_upgradePlan($data_array);
+
+
+
+}
 $this->session->set_flashdata('success', 'User Details Updated Successfully Now you Are In Confirmation Page');
 redirect("index.php/confirmation-user-detail/".$registered_user_id);
 
@@ -471,7 +515,7 @@ redirect("index.php/confirmation-user-detail/".$registered_user_id);
 
  //Email Function//
  public function sent_email($toemail,$subject,$message){
-	$to = "gaurav.elanwrap@gmail.com"; 
+	$to = "hardik.meghnathi12@gmail.com"; 
 	$from = 'support@verifyfa.com'; 
 	$fromName = 'Verifyfa';  
 	// Additional headers 
@@ -531,15 +575,15 @@ public function upgrade_plan_save(){
 	$register_user_id=$this->input->post('register_user_id');
 
 	$data_array=array(
-		"plan_id"=>$plan_id,
-		"upgrated_plan_id"=>$upgrated_plan_id,
-		"register_user_id"=>$register_user_id,
-		"created_at"=>date("Y-m-d H:i:s"),
-        );
+	"plan_id"=>$plan_id,
+	"upgrated_plan_id"=>$upgrated_plan_id,
+	"register_user_id"=>$register_user_id,
+	"created_at"=>date("Y-m-d H:i:s"),
+	);
 
-		$data_array1=array(
-			"plan_id"=>$upgrated_plan_id,
-			);
+	$data_array1=array(
+		"plan_id"=>$upgrated_plan_id,
+	);
 	$this->Super_admin_model->save_upgradePlan($data_array);
 	$this->Super_admin_model->update_plan($data_array1,$register_user_id);
 	$this->Super_admin_model->update_plan_plan($data_array1,$register_user_id);
@@ -550,3 +594,4 @@ public function upgrade_plan_save(){
 
 
 }
+

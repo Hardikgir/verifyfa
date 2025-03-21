@@ -187,7 +187,7 @@ class Plancycle extends CI_Controller {
 		// require_once dirname(__FILE__) . '/PHPExcel/PHPExcel.php';
 		require 'vendor/autoload.php';
 
-//var_dump($_FILES['test']['name']);die;
+		//var_dump($_FILES['test']['name']);die;
 		$config['upload_path'] = './projectfiles/';
         $config['allowed_types'] = 'xls|xlsx';
 		$config['encrypt_name']=true;
@@ -213,7 +213,7 @@ class Plancycle extends CI_Controller {
 		$sheet = $objPHPExcel->getActiveSheet();
 
 		$array_data = array();
-		$tablename="project_".time();
+		$tablename="project_".time();				//Hardik Excel To Table Name Generate from here.
 		$main=0;
 		$insertRow=array();
 		$rowCount=0;
@@ -296,7 +296,7 @@ class Plancycle extends CI_Controller {
 				}
 				
 			
-				$createquery.="verification_status VARCHAR(50) NOT NULL DEFAULT 'Not-Verified' ,quantity_verified INT(11) NOT NULL DEFAULT '0',new_location_verified VARCHAR(255) NULL,verified_by VARCHAR(255) NULL,verified_by_username VARCHAR(255) NULL,verified_datetime DATETIME NULL,verification_remarks TEXT NULL,item_note TEXT NULL,qty_ok INT(11) NOT NULL DEFAULT '0', qty_damaged INT(11) NOT NULL DEFAULT '0', qty_scrapped INT(11) NOT NULL DEFAULT '0',qty_not_in_use INT(11) NOT NULL DEFAULT '0',qty_missing INT(11) NOT NULL DEFAULT '0',qty_shifted INT(11) NOT NULL DEFAULT '0', is_alotted TINYINT(4) NOT NULL DEFAULT '0',mode_of_verification  VARCHAR(200) NOT NULL DEFAULT 'Not Verified',createdat DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, updatedat DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP)";		
+				$createquery.="verification_status VARCHAR(50) NOT NULL DEFAULT 'Not-Verified' ,quantity_verified INT(11) NOT NULL DEFAULT '0',new_location_verified VARCHAR(255) NULL,verified_by VARCHAR(255) NULL,verified_by_username VARCHAR(255) NULL,verified_datetime DATETIME NULL,verification_remarks TEXT NULL,item_note TEXT NULL,qty_ok INT(11) NOT NULL DEFAULT '0', qty_damaged INT(11) NOT NULL DEFAULT '0', qty_scrapped INT(11) NOT NULL DEFAULT '0',qty_not_in_use INT(11) NOT NULL DEFAULT '0',qty_missing INT(11) NOT NULL DEFAULT '0',qty_shifted INT(11) NOT NULL DEFAULT '0', is_alotted TINYINT(4) NOT NULL DEFAULT '0',is_edit INT(11) NOT NULL DEFAULT '0',instance_count INT(11) NOT NULL DEFAULT '0',mode_of_verification  VARCHAR(200) NOT NULL DEFAULT 'Not Verified',createdat DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, updatedat DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP)";		
 				$this->db->query($createquery);
 				
 			}
@@ -596,9 +596,6 @@ class Plancycle extends CI_Controller {
 					$i=0;
 					foreach($projects as $pro)
 					{ 
-						// echo "<pre>";
-						// 	print_r($pro);
-						// echo "</pre>";
 						$masterTotal=$this->db->query("SELECT count(*) as total from ".$pro->original_table_name)->result();
 						$pro->masterTotal=$masterTotal[0]->total;
 						$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($pro->project_name)));
@@ -638,13 +635,11 @@ class Plancycle extends CI_Controller {
 						<td><?php echo $pro->item_category;?></td>
 						<td><?php echo $pro->status==0 ? "In-Process":($pro->status==3?"Verification Finished":"Cancelled");?></td>
 						<td>
-                <?php if($pro->status==3){?> 
-                       <a href="<?php echo base_url();?>index.php/dashboard/projectdetail/<?php echo $pro->id;?>" id="contact_detail">
-						<i class="fa fa-check"></i> Close & Finish
-
-						</a>
-
-             <?php }?>
+                		<?php if($pro->status==3){ ?> 
+                       		<a href="<?php echo base_url();?>index.php/dashboard/projectdetail/<?php echo $pro->id;?>" id="contact_detail">
+								<i class="fa fa-check"></i> Close & Finish
+							</a>
+             			<?php } ?>
 
 						<a href="#" id="contact_detail" onclick="save_contact_detail('<?php echo $pro->id;?>')">
 						<i class="fa fa-address-book"></i> Contact Detail
@@ -827,10 +822,13 @@ class Plancycle extends CI_Controller {
 			'project_type'=>$project_type,
 			'project_location'=>$company_location,
 			'original_table_name'=>$table_name,
+			'project_table_name'=>$project_table_name,
 			'original_file'=>$original_file,
 			'assigned_by'=>$this->user_id,
 			'entity_code'=>$this->admin_registered_entity_code
 		);
+
+		//Hardik Excel To Table Name Generate from here. in Below
 
 		if($project_type=="TG")
 		{
@@ -983,7 +981,7 @@ class Plancycle extends CI_Controller {
 			'item_owner'=>$io,
 			'manager'=>$pm
 		);
-		$update=$this->plancycle->update_data('company_projects',$updatedata,$condition);
+		$update=$this->plancycle->update_data('company_projects',$updatedata,$condition);		
 		$this->session->set_flashdata("success","Updated Successfully");
 		redirect("index.php/plancycle");
 

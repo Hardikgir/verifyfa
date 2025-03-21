@@ -210,9 +210,9 @@ class Login_model extends CI_Model {
 	}
 
 	public function deleteprojecdatabyid($projectid, $original_table_name){
-		$deletepro = $this->db->where('id',$projectid)->delete('company_projects');
+		$deletepro = $this->db->where('id',$projectid)->delete('Company_projects');
 		$this->db->select('original_table_name	');
-		$this->db->from('company_projects');
+		$this->db->from('Company_projects');
 		$this->db->where('original_table_name',$original_table_name);
 		$query = $this->db->get();
 		$result= $query->row();
@@ -227,9 +227,9 @@ class Login_model extends CI_Model {
 
 
 	public function clearprojecdatabyid($projectid, $original_table_name){
-		$deletepro = $this->db->where('id',$projectid)->delete('company_projects');
+		$deletepro = $this->db->where('id',$projectid)->delete('Company_projects');
 		// $this->db->select('original_table_name	');
-		// $this->db->from('company_projects');
+		// $this->db->from('Company_projects');
 		// $this->db->where('original_table_name',$original_table_name);
 		// $query = $this->db->get();
 		// $result= $query->row();
