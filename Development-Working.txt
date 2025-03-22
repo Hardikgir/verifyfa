@@ -1,0 +1,12 @@
+Their is 2 environment
+
+1) Localhost :- 
+    URL :- https://localhost/verifyfa/
+    Database :- 
+    
+2) Hostinger-Development Server :- 
+    URL :- https://verifyfa.developmentdemo.co.in/
+    Database :- 
+        URL :- https://auth-db1189.hstgr.io/index.php?db=u337050398_verifyfadb
+        User :- 
+        Pass :- 
