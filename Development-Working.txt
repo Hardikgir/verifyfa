@@ -1,7 +1,7 @@
 Their is 2 environment
 
 -> Localhost :- 
-    URL :- https://localhost/verifyfa/
+    URL :- https://localhost/CODEIGNITER_PHP/verifyfa/
     Database :- 
     
 -> Hostinger-Development Server :- 
