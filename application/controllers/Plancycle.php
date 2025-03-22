@@ -384,8 +384,9 @@ class Plancycle extends CI_Controller {
 		$data['mandatory_cols']=$getMandatoryColumns;
 		
 		$getOtherColumns=$this->plancycle->getcompleteschema($data['table_name']);
-		// $select='SELECT';
-		$select='SELECT *';
+		$is_condition = 0;
+		$select='SELECT';
+		// $select='SELECT *';
 		$i=0;
 		foreach($getOtherColumns as $goc)
 		{
@@ -398,11 +399,19 @@ class Plancycle extends CI_Controller {
 						$select.=", count(".$goc->COLUMN_NAME.") as ".$goc->COLUMN_NAME;
 					}
 					$i++;
+					$is_condition = 1;
 			}
 			
 			
 		}
-		$select.=" FROM ".$data['table_name'];
+
+		if($is_condition == '1'){
+			$select.=" FROM ".$data['table_name'];
+		}else{
+			$select.=" * FROM ".$data['table_name'];
+		}
+
+		
 		$getColumnsCount=$this->db->query($select)->result_array();
 		$getNonMandatory=array_keys(array_filter($getColumnsCount[0]));
 		$data['nonmandatory_cols']=$getNonMandatory;
