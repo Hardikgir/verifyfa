@@ -14,7 +14,7 @@ select option:disabled {
 				<div class="container-fluid">
 
 				<!-- <form action="https://verifyfa.developmentdemo.co.in/index.php/dashboard/exceptions" method="post" class="bg-white"> -->
-					<form action="http://verifyfa.com/Dev/index.php/dashboard/exceptions" method="post" class="bg-white">
+					<form action="http://localhost/CODEIGNITER_PHP/verifyfa/index.php/dashboard/exceptions" method="post" class="bg-white">
                 <br>
                 <div class="row">
                 <div class="col-md-2 form-row">

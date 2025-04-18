@@ -47,7 +47,7 @@ $this->load->view('layouts/footer');
         <?php 
         // $user_role_admin_cnt = 1;   //TEMPORARTY
         if($user_role_admin_cnt > 0){ ?>
-        <form action="http://verifyfa.com/Dev/index.php/dashboard/index" method="post" class="bg-white">
+        <form action="http://localhost/CODEIGNITER_PHP/verifyfa/index.php/dashboard/index" method="post" class="bg-white">
                 <br>
                 <div class="row">
                 <div class="col-md-2 form-row">

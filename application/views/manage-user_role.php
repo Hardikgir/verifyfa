@@ -49,6 +49,7 @@ $this->load->view('layouts/sidebar');
             <?php foreach($user_role as $row){
                 $userid=$row->user_id;
                 $userrow= get_user_row($userid);
+               
                 $company_id=$row->company_id;
                 $user_company_id=$userrow->company_id;
                 $company_row=get_company_row($company_id);
@@ -118,6 +119,13 @@ if($row->company_id=='0'){
                      <i class="fa fa-edit"></i>Edit
                     </a>
                     <?php } ?>
+
+                    <?php if($userrow->is_login == '1'){ ?>
+                    <a href="<?php echo base_url();?>index.php/reset-user-login/<?php echo $userid;?>">
+                     <i class="fa fa-eraser"></i>Reset
+                    </a>
+                    <?php } ?>
+
                    
                 
                 </td>

@@ -160,7 +160,74 @@ class Superadmin_controller extends CI_Controller {
 	}
 	public function confirmation_userdetail($id){
 		$data['page_title']="Manage User";
-		 $data['user']=$this->Super_admin_model->get_registerd_user($id);
+		$data['user']=$this->Super_admin_model->get_registerd_user($id);
+
+		$to = $data['user']->email_id;
+		// $to = 'hardik.meghnathi12@gmail.com';
+		$subject = 'Active your Account';
+		$email_updated_content = '<a href="'.base_url().'index.php/generate-activation-link/'.$id.'">Active Your Account</a>';
+		
+		$CI = setEmailProtocol();
+		$from_email = 'solutions@ethicalminds.in';
+		$CI->email->set_newline("\r\n");
+		$CI->email->set_mailtype("html");
+		$CI->email->set_header('Content-Type', 'text/html');
+		$CI->email->from($from_email);
+		$CI->email->to($to);
+		$CI->email->subject($subject);
+		$CI->email->message($email_updated_content);
+
+		$mailsend = 0;
+		if(server_check() == 'live'){
+			if($CI->email->send()){
+				$mailsend = 1;
+			}
+		}
+
+		// echo '<pre>mailsend';
+		// print_r($mailsend);
+		// echo '</pre>';
+		// exit(); 
+
+		// echo '<pre>';
+		// print_r($_SESSION);
+		// echo '</pre>';
+		// exit(); 
+
+		$plan_data_details = $this->Super_admin_model->get_registered_user_plan($id);
+		$data['plan_data'] = $plan_data_details;
+		$data['plan_details'] = get_plan_row($plan_data_details->plan_id);
+		// echo '<pre>';
+		// print_r($data);
+		// echo '</pre>';
+		// exit(); 
+
+		// $this->db->select('register_user_plan_log.*, subscription_plan.*');
+		// $this->db->from(' subscription_plan');
+		// $this->db->join('register_user_plan_log','register_user_plan_log.plan_id= subscription_plan.id');
+		// $this->db->where('register_user_plan_log.register_user_id',$id);
+		// $getnotifications=$this->db->get();
+		// $result = $getnotifications->result();
+
+
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
+
+		// echo '<pre>result ::';
+		// print_r($result);
+		// echo '</pre>';
+		// exit(); 
+
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// echo '<pre>';
+		// print_r($data['plan_data']);
+		// echo '</pre>';
+		// exit(); 
+
         $this->load->view("super-admin/confirmation-user-detail",$data);
 	}
 
@@ -175,8 +242,10 @@ class Superadmin_controller extends CI_Controller {
 			$gst_org_name='';
 			$gst_org_address='';
 		}
-		// $password=rand(0,9).rand(9,0).rand(0,9).rand(0,9);
-		$password='12345';		//Hardik Fix Password Generate From Here
+		$password=rand(0,9).rand(9,0).rand(0,9).rand(0,9);
+		$digits = 5;
+        $password = rand(pow(10, $digits-1), pow(10, $digits)-1);
+		// $password='12345';		//Hardik Fix Password Generate From Here
 		
 		$urer_registration_no=date("Ym")."VFA".rand(0,9).rand(0,9).rand(0,9).rand(0,9).rand(0,9);
 		$data_user= array(
@@ -198,6 +267,30 @@ class Superadmin_controller extends CI_Controller {
 			"created_at"=>date("Y-m-d H:i:s")
 		);
 	$registered_user_id= $this->Super_admin_model->save_registered_user($data_user);
+
+
+	
+		$to = $this->input->post('userEmail');
+		// $to = 'hardik.meghnathi12@gmail.com';
+		$subject = 'Registration Successfull';
+		$email_updated_content = '<p>Your Password :- <b>'.$password.'</b></p>';
+		
+		$CI = setEmailProtocol();
+		$from_email = 'solutions@ethicalminds.in';
+		$CI->email->set_newline("\r\n");
+		$CI->email->set_mailtype("html");
+		$CI->email->set_header('Content-Type', 'text/html');
+		$CI->email->from($from_email);
+		$CI->email->to($to);
+		$CI->email->subject($subject);
+		$CI->email->message($email_updated_content);
+		$mailsend = 1;
+		if(server_check() == 'live'){
+			if($CI->email->send()){
+				$mailsend = 1;
+			}
+		}
+
 
 
 //step 2 data save//

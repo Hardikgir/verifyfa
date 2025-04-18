@@ -196,6 +196,7 @@ class Admin_controller extends CI_Controller {
 
 
     public function create_department(){
+        
         $data['page_title']="Manage Department";
         $this->load->view('create-department',$data);
     }
@@ -253,6 +254,8 @@ class Admin_controller extends CI_Controller {
     }
 
     public function admin_create_user(){
+
+        
         $data['page_title']="Manage User";
         $register_user_id = $this->admin_registered_user_id;
         $entity_code = $this->admin_registered_entity_code;
@@ -266,6 +269,10 @@ class Admin_controller extends CI_Controller {
         $entity_code = $this->admin_registered_entity_code;
         $user_id = $this->user_id;
 
+        $digits = 5;
+        $temp_password = rand(pow(10, $digits-1), pow(10, $digits)-1);
+        // exit();
+
         $data=array(
             "created_by"=>$user_id,
             "registered_user_id"=>$register_user_id,
@@ -273,7 +280,8 @@ class Admin_controller extends CI_Controller {
             "firstName" => $this->input->post('firstName'),
             "lastName"=> $this->input->post('lastName'),
             "userEmail"=>$this->input->post('userEmail'),
-            "password"=>md5('12345'),
+            // "password"=>md5('12345'),
+            "password"=>md5($temp_password),
             "phone_no"=>$this->input->post('phone_no'),
             "department_id"=>$this->input->post('department_id'),
             "designation"=>$this->input->post('designation'),
@@ -282,6 +290,31 @@ class Admin_controller extends CI_Controller {
             "created_on"=>date("Y-m-d H:i:s")
         );
         $this->Admin_model->save_admin_user($data);
+
+
+
+        $to = $this->input->post('userEmail');
+		// $to = 'hardik.meghnathi12@gmail.com';
+		$subject = 'Registration Successfull';
+		$email_updated_content = '<p>Your Password :- <b>'.$temp_password.'</b></p>';
+		
+		$CI = setEmailProtocol();
+		$from_email = 'solutions@ethicalminds.in';
+		$CI->email->set_newline("\r\n");
+		$CI->email->set_mailtype("html");
+		$CI->email->set_header('Content-Type', 'text/html');
+		$CI->email->from($from_email);
+		$CI->email->to($to);
+		$CI->email->subject($subject);
+		$CI->email->message($email_updated_content);
+        $mailsend = 1;
+		if(server_check() == 'live'){
+			if($CI->email->send()){
+				$mailsend = 1;
+			}
+		}
+
+
         $this->session->set_flashdata('success', "User Created Successfully");
         redirect("index.php/manage-user-admin/");
     }
@@ -333,6 +366,8 @@ class Admin_controller extends CI_Controller {
         $register_user_id = $this->admin_registered_user_id;
         $entity_code = $this->admin_registered_entity_code;
         $data['user_role'] = $this->Admin_model->get_all_user_role($register_user_id,$entity_code);
+        
+       
         $this->load->view('manage-user_role',$data);
      }
 
@@ -983,6 +1018,20 @@ $role=implode(',',$this->input->post('user_role'));
         $this->session->set_flashdata('success', "Delete Requesting Successfull..");
         redirect("index.php/dashboard");
         
+    }
+
+
+
+
+    public function reset_user_login($id){
+        $data=array(
+            "is_login" => 0,
+        );
+        $this->db->where("id",$id);
+        $this->db->update("users",$data);
+
+        $this->session->set_flashdata("success","Login Reset Successfully");
+        redirect('index.php/manage-user-role');
     }
     
 }

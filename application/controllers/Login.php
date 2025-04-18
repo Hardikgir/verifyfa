@@ -10,6 +10,45 @@ class Login extends CI_Controller {
 	}
 	public function index()
 	{
+
+		// echo '<pre>';
+		// print_r("Asdasd");
+		// echo '</pre>';
+		// exit(); 
+
+		/*
+		$id = '123456';
+		// $to = ;
+		$to = 'hardik.meghnathi12@gmail.com';
+		$subject = 'Active your Account';
+		$email_updated_content = '<a href="'.base_url().'index.php/generate-activation-link/'.$id.'">Active Your Account</a>';
+		
+		$CI = setEmailProtocol();
+		$from_email = 'solutions@ethicalminds.in';
+		$CI->email->set_newline("\r\n");
+		$CI->email->set_mailtype("html");
+		$CI->email->set_header('Content-Type', 'text/html');
+		$CI->email->from($from_email);
+		$CI->email->to($to);
+		$CI->email->subject($subject);
+		$CI->email->message($email_updated_content);
+
+		$mailsend = 0;		
+		if($CI->email->send()){
+			$mailsend = 1;
+		}else{
+			$errors = $CI->email->print_debugger();
+    		print_r($errors);
+		}
+
+		echo '<pre>mailsend :: ';
+		print_r($mailsend);
+		echo '</pre>';
+		// exit(); 
+
+		exit("test");
+		*/
+
 		$this->data['title']="VerifyFa Login";
 		if ($this->session->userdata('logged_in')!='') {
 			$session=$this->session->userdata('logged_in');
@@ -40,7 +79,7 @@ class Login extends CI_Controller {
 		{
 
 			if($login[0]->is_login == '1'){
-				$this->session->set_flashdata('error_message', 'This User is Already Login Some Where you Can not Login');
+				$this->session->set_flashdata('error_message', 'This User is already logged in. Contact your Group Admin to Reset the session, if required.');
 				redirect(base_url(),$condition);
 			}
 

@@ -27,7 +27,7 @@ class Plancycle extends CI_Controller {
 		// Load form validation library
 		$this->load->library('form_validation');
 		$this->load->helper('function_helper');
-
+		$this->load->model('Super_admin_model');
 		// Load session library
 		$this->load->library('session');	
 		if (!$this->session->userdata('logged_in')) {
@@ -104,6 +104,7 @@ class Plancycle extends CI_Controller {
 	
 	public function index()
 	{	
+		
 		$session = $this->session->userdata('logged_in');
 		$user_id = $session['id'];
 
@@ -214,6 +215,7 @@ class Plancycle extends CI_Controller {
 
 		$array_data = array();
 		$tablename="project_".time();				//Hardik Excel To Table Name Generate from here.
+		$inserting_array = array();
 		$main=0;
 		$insertRow=array();
 		$rowCount=0;
@@ -337,11 +339,12 @@ class Plancycle extends CI_Controller {
 					$i++;
 					
 				}
+				$inserting_array[] = $insertarray;
 				array_push($insertRow,$insertarray);
 				if($row->getRowIndex()>5 && ($rowCount==2000 || $row->getRowIndex()==$highestRow))
 				{
 					$ins=$insertRow;
-					$insert=$this->db->insert_batch($tablename,$ins);
+					// $insert=$this->db->insert_batch($tablename,$ins);
 					$rowCount=0;
 					$insertRow=array();
 					
@@ -362,6 +365,47 @@ class Plancycle extends CI_Controller {
 			$main++;
 			
 		}
+
+		// echo '<pre>';
+		// print_r($_SESSION);
+		// echo '</pre>';
+		// exit(); 
+		
+		$plan_data = $this->Super_admin_model->get_registered_user_plan($_SESSION['logged_in']['admin_registered_user_id']);
+		
+		$plan_row=get_plan_row($plan_data->plan_id);
+		// echo '<pre>tablename ';
+		// print_r($tablename);
+		// echo '</pre>';
+		// // exit(); 
+		// $new_insert_array = array();
+		$insert_count = 0;
+		foreach($inserting_array as $inserting_array_key=>$inserting_array_value){
+			if($insert_count < $plan_row->line_item_avaliable){
+				$new_insert_array[] = $inserting_array_value;
+				$this->db->insert($tablename,$inserting_array_value);		
+			}
+			$insert_count++;
+		}
+
+		// $insert=$this->db->insert_batch($tablename,$new_insert_array);
+		
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
+
+
+		// echo '<pre>new_insert_array ';
+		// print_r($new_insert_array);
+		// echo '</pre>';
+		// exit(); 
+		// $insert=$this->db->insert_batch($tablename,$inserting_array);
+		// echo '<pre>inserting_array ';
+		// print_r($inserting_array);
+		// echo '</pre>';
+		// exit(); 
+
 		$data['page_title']="Plan Cycle";
 		$data['company_name']=$this->input->post('company_name');
 		$data['company_location']=$this->input->post('company_location');

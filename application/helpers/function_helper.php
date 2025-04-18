@@ -1,6 +1,59 @@
 <?php 
 ini_set('allow_url_fopen', 'On');
 ini_set('allow_url_fopen', 1);
+
+
+if(!function_exists('setEmailProtocol'))
+{
+    function setEmailProtocol()
+    {
+        $CI = &get_instance();
+        $CI->load->library('email');
+        // $config['protocol'] = "smtp";
+        // $config['smtp_host'] = 'smtp.office365.com';
+        $config['smtp_host'] = 'smtp.gmail.com';
+        $config['smtp_port'] = '587';
+        // $config['smtp_user'] = 'grievance_alert@ptcfinancial.com';
+        $config['smtp_user'] = 'solutions@ethicalminds.in';
+        $config['_smtp_auth'] = TRUE;
+        // $config['smtp_pass'] = 'Pfs!Q1#789w2#E3$';
+        // $config['smtp_pass'] = 'Ethj@s123';
+        $config['smtp_pass'] = 'gtroozhuovdrgnob';
+        $config['smtp_crypto'] = 'tls';
+        $config['protocol'] = 'smtp';
+        $config['mailtype'] = 'html';
+        // $config['crlf'] = '\r\n';
+        $config['send_multipart'] = FALSE;
+        // $config['charset'] = 'utf-8';
+        $config['charset'] = 'iso-8859-1';
+        $config['wordwrap'] = TRUE;
+        $config['crlf'] = "\r\n";
+        $config['newline'] = "\r\n";
+        $CI->email->initialize($config);
+
+       
+
+        return $CI;
+    }
+}
+
+
+
+function server_check(){
+    $CI =& get_instance();
+    $url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+
+    if (strpos($url,'localhost') !== false) {
+        $server_type = 'live';
+    }else{
+        $server_type = 'live';
+    }
+    return $server_type;
+}
+
+
+
+
 function get_UserName($id)
 {
     $CI =& get_instance();
