@@ -22,7 +22,8 @@ class Admin_controller extends CI_Controller {
 
 		parent::__construct();
         $this->load->library('session');	
-        $this->load->model('Admin_model');	
+        $this->load->model('Admin_model');
+        $this->load->model('Registered_user_model');
         if (!$this->session->userdata('logged_in')) {
             redirect(base_url()."index.php/login", 'refresh');
 		}
@@ -196,6 +197,7 @@ class Admin_controller extends CI_Controller {
 
 
     public function create_department(){
+        
         $data['page_title']="Manage Department";
         $this->load->view('create-department',$data);
     }
@@ -253,6 +255,8 @@ class Admin_controller extends CI_Controller {
     }
 
     public function admin_create_user(){
+
+        
         $data['page_title']="Manage User";
         $register_user_id = $this->admin_registered_user_id;
         $entity_code = $this->admin_registered_entity_code;
@@ -266,6 +270,10 @@ class Admin_controller extends CI_Controller {
         $entity_code = $this->admin_registered_entity_code;
         $user_id = $this->user_id;
 
+        $digits = 5;
+        $temp_password = rand(pow(10, $digits-1), pow(10, $digits)-1);
+        // exit();
+
         $data=array(
             "created_by"=>$user_id,
             "registered_user_id"=>$register_user_id,
@@ -273,7 +281,9 @@ class Admin_controller extends CI_Controller {
             "firstName" => $this->input->post('firstName'),
             "lastName"=> $this->input->post('lastName'),
             "userEmail"=>$this->input->post('userEmail'),
-            "password"=>md5('12345'),
+            // "password"=>md5('12345'),
+            "password"=>md5($temp_password),
+            "password_view"=>$temp_password,
             "phone_no"=>$this->input->post('phone_no'),
             "department_id"=>$this->input->post('department_id'),
             "designation"=>$this->input->post('designation'),
@@ -282,6 +292,30 @@ class Admin_controller extends CI_Controller {
             "created_on"=>date("Y-m-d H:i:s")
         );
         $this->Admin_model->save_admin_user($data);
+
+
+
+        $to = $this->input->post('userEmail');
+		$subject = 'Registration Successfull';
+		$email_updated_content = '<p>Your Password :- <b>'.$temp_password.'</b></p>';
+		
+		$CI = setEmailProtocol();
+		$from_email = 'solutions@ethicalminds.in';
+		$CI->email->set_newline("\r\n");
+		$CI->email->set_mailtype("html");
+		$CI->email->set_header('Content-Type', 'text/html');
+		$CI->email->from($from_email);
+		$CI->email->to($to);
+		$CI->email->subject($subject);
+		$CI->email->message($email_updated_content);
+        $mailsend = 1;
+		if(server_check() == 'live'){
+			if($CI->email->send()){
+				$mailsend = 1;
+			}
+		}
+
+
         $this->session->set_flashdata('success', "User Created Successfully");
         redirect("index.php/manage-user-admin/");
     }
@@ -333,6 +367,8 @@ class Admin_controller extends CI_Controller {
         $register_user_id = $this->admin_registered_user_id;
         $entity_code = $this->admin_registered_entity_code;
         $data['user_role'] = $this->Admin_model->get_all_user_role($register_user_id,$entity_code);
+        
+       
         $this->load->view('manage-user_role',$data);
      }
 
@@ -589,12 +625,23 @@ $role=implode(',',$this->input->post('user_role'));
 
 
       public function admin_user_passwod_save(){
+
         $user_id=$this->user_id;
         $data=array( 
             "password"=>md5($this->input->post('password')),
-            // "password_view"=>$this->input->post('password'),
+            "password_view"=>$this->input->post('password'),
         );
-     $this->Admin_model->update_password($user_id,$data);
+        $this->Admin_model->update_password($user_id,$data);
+
+
+        $user_id=$this->session->userdata('admin_registered_user_id');
+        $data=array( 
+            "password"=>md5($this->input->post('password')),
+            "password_view"=>$this->input->post('password'),
+        );
+        $this->Registered_user_model->update_password($user_id,$data);
+
+
      $this->session->set_flashdata("success","Password Changed Successfully");
      redirect("index.php/change-my-password");
     }
@@ -615,7 +662,6 @@ $role=implode(',',$this->input->post('user_role'));
     public function brodcast_notification(){
         $data['page_title']="Manage Notification";
 
-       
         $company_id = $_SESSION['logged_in']['company_id'];
         $admin_registered_user_id = $_SESSION['logged_in']['admin_registered_user_id'];
         $admin_registered_entity_code = $_SESSION['logged_in']['admin_registered_entity_code'];
@@ -636,25 +682,65 @@ $role=implode(',',$this->input->post('user_role'));
        $all_ProcessOwner = array();
        $all_Manager = array();
        $all_Verify = array();
+
+       $entity_code = $_SESSION['logged_in']['admin_registered_entity_code'];
+       
         if(!empty($user_roles)){
             foreach(array_unique($user_roles) as $user_role_key=>$user_role_value){
                 if($user_role_value == '5'){
-                    $all_GroupAdmin = $this->Admin_model->get_users_by_role($user_role_value);
+                    // $all_GroupAdmin = $this->Admin_model->get_users_by_role($user_role_value);
+                    $all_GroupAdmin_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
+                    $all_GroupAdmin_array = array();
+                    foreach($all_GroupAdmin_roles as $all_GroupAdmin_roleskey=>$all_GroupAdmin_rolesvalue){
+                        $all_GroupAdmin_roles_array[] = $all_GroupAdmin_rolesvalue->user_id;
+                    }
+                    $all_GroupAdmin = $this->Admin_model->get_users_by_ids(implode(',', $all_GroupAdmin_roles_array));
                 }
+
                 if($user_role_value == '4'){
-                    $all_SubAdmin = $this->Admin_model->get_users_by_role($user_role_value);
+                    $all_SubAdmin_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
+                    $all_SubAdmin_roles_array = array();
+                    foreach($all_SubAdmin_roles as $all_SubAdmin_roleskey=>$all_SubAdmin_rolesvalue){
+                        $all_SubAdmin_roles_array[] = $all_SubAdmin_rolesvalue->user_id;
+                    }
+                    $all_SubAdmin = $this->Admin_model->get_users_by_ids(implode(',', $all_SubAdmin_roles_array));
                 }
                 if($user_role_value == '3'){
-                    $all_EntityOwner = $this->Admin_model->get_users_by_role($user_role_value);
+                    // $all_EntityOwner = $this->Admin_model->get_users_by_role($user_role_value);
+                    $all_EntityOwner_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
+                    $all_EntityOwner_roles_array = array();
+                    foreach($all_EntityOwner_roles as $all_EntityOwner_roleskey=>$all_EntityOwner_rolesvalue){
+                        $all_EntityOwner_roles_array[] = $all_EntityOwner_rolesvalue->user_id;
+                    }
+                    $all_EntityOwner = $this->Admin_model->get_users_by_ids(implode(',', $all_EntityOwner_roles_array));
                 }
                 if($user_role_value == '2'){
-                    $all_ProcessOwner = $this->Admin_model->get_users_by_role($user_role_value);
+                    // $all_ProcessOwner = $this->Admin_model->get_users_by_role($user_role_value);
+                    $all_ProcessOwner_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
+                    $all_ProcessOwner_roles_array = array();
+                    foreach($all_ProcessOwner_roles as $all_ProcessOwner_roleskey=>$all_ProcessOwner_rolesvalue){
+                        $all_ProcessOwner_roles_array[] = $all_ProcessOwner_rolesvalue->user_id;
+                    }
+                    $all_ProcessOwner = $this->Admin_model->get_users_by_ids(implode(',', $all_ProcessOwner_roles_array));
                 }
                 if($user_role_value == '0'){
-                    $all_Manager = $this->Admin_model->get_users_by_role($user_role_value);
+                    // $all_Manager = $this->Admin_model->get_users_by_role($user_role_value);
+                    $all_Manager_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
+                    $all_Manager_roles_array = array();
+                    foreach($all_Manager_roles as $all_Manager_roleskey=>$all_Manager_rolesvalue){
+                        $all_Manager_roles_array[] = $all_Manager_rolesvalue->user_id;
+                    }
+                    $all_Manager = $this->Admin_model->get_users_by_ids(implode(',', $all_Manager_roles_array));
                 }
                 if($user_role_value == '1'){
-                    $all_Verify = $this->Admin_model->get_users_by_role($user_role_value);
+                    // $all_Verify = $this->Admin_model->get_users_by_role($user_role_value);
+                    $all_Verify_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
+                    $all_Verify_roles_array = array();
+                    foreach($all_Verify_roles as $all_Verify_roleskey=>$all_Verify_rolesvalue){
+                        $all_Verify_roles_array[] = $all_Verify_rolesvalue->user_id;
+                    }
+                    $all_Verify = $this->Admin_model->get_users_by_ids(implode(',', $all_Verify_roles_array));
+                    // las
                 }
             }
         }
@@ -825,6 +911,19 @@ $role=implode(',',$this->input->post('user_role'));
 
         $data['notification_data']=$this->Admin_model->get_single_notification($id);
         $data['reply_data']=$this->Admin_model->get_reply_data($id);
+
+        $data['sender_to_user'] = array();
+
+        if($_SESSION['logged_in']['id'] == $data['notification_data']->created_by){
+            $this->db->select('notification_user.*,users.*');
+            $this->db->from('users');
+            $this->db->join('notification_user','notification_user.user_id=users.id');
+            $this->db->where('notification_user.notification_id',$data['notification_data']->id);
+            $this->db->order_by('notification_user.user_role','DESC');
+            $getnotifications=$this->db->get();
+            $result =  $getnotifications->result();
+            $data['sender_to_user'] = $result;
+        }
         $this->load->view('view-reply-notification',$data);
     }
 
@@ -905,6 +1004,46 @@ $role=implode(',',$this->input->post('user_role'));
         $this->db->delete('users');
         $this->session->set_flashdata("success","Deleted Successfully");
         redirect('index.php/manage-user-admin');
+    }
+
+
+
+    public function request_for_delete(){
+        
+        $project_id = $this->input->post("hdn_project_id");
+        $data=array(
+            "status" => 4,
+         );
+
+        $this->db->where("id",$project_id);
+        $this->db->update("company_projects",$data);
+        
+        $data=array(
+            "project_id"=>$this->input->post("hdn_project_id"),
+            "reason_for_delete"=>$this->input->post("reason_for_detele"),
+            "requester_id"=>$this->input->post("hdn_user_id"),
+            "status"=>1            
+        );
+        $data["notification"]=$this->Admin_model->save_delete_request($data);
+        $insert_id = $this->db->insert_id();
+
+        $this->session->set_flashdata('success', "Delete Requesting Successfull..");
+        redirect("index.php/dashboard");
+        
+    }
+
+
+
+
+    public function reset_user_login($id){
+        $data=array(
+            "is_login" => 0,
+        );
+        $this->db->where("id",$id);
+        $this->db->update("users",$data);
+
+        $this->session->set_flashdata("success","Login Reset Successfully");
+        redirect('index.php/manage-user-role');
     }
     
 }

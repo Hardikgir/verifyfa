@@ -256,6 +256,38 @@ border: none;
              </div>
              <br>
 
+             <div class="row">
+                <div class="col-md-12 form-row">
+
+                        <div class="text-center">
+                            <h3>Plan History</h3>
+                        </div>
+
+                        <table class="table">
+                            <tr>
+                                <th>Sr.No</th>
+                                <th>Plan Name</th>
+                                <th>Purchase Date</th>
+                                <th>Amount</th>
+                            </tr>
+                            <?php 
+                                $i = 1;
+                                foreach($payment_history as $payment_history_key=>$payment_history_value){ ?>
+                                <tr>
+                                    <td><?php echo $i; ?></td>
+                                    <td><?php echo $payment_history_value->title; ?></td>
+                                    <td><?php echo $payment_history_value->created_at; ?></td>
+                                    <td><?php echo $payment_history_value->amount; ?></td>
+                                </tr>
+                            <?php 
+                            $i++;
+                            } ?>
+                            
+                        </table>
+                </div>
+            </div>
+
+
            
                     <a data-href="nav-profile" class="back">
                     <button class="btn btn-warning"  type="button">Back</button>

@@ -24,9 +24,19 @@ class Registeredusercontroller extends CI_Controller {
     }
 
     public function check_current_pass(){
+        // echo '<pre>';
+        // print_r("ASdasdasdsdd");
+        // echo '</pre>';
+        // exit(); 
         $user_id=$this->session->userdata('registered_user_id');
         $current_pass=$this->input->post('current_pass');
         $rowpass= $this->Registered_user_model->check_current_pass($user_id,$current_pass);
+
+        // echo '<pre>last_query ';
+        // print_r($this->db->last_query());
+        // echo '</pre>';
+        // exit();
+
         echo $rowpass;
     }
 

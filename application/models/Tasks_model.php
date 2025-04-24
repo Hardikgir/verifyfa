@@ -82,7 +82,8 @@ class Tasks_model extends CI_Model {
         $this->db->join('company_locations','company_locations.id=company_projects.project_location');
         // $this->db->where(array('user_role.user_id'=>$userid,'company_projects.status'=>0));
         // $this->db->where(array('user_role.user_id'=>$userid,'company_projects.status'=>0));
-        $this->db->where($condition);
+        // $this->db->where($condition);
+        $this->db->where($condition[0]);
         $this->db->where('company_projects.status !=','2');
 
         // $this->db->where(array('company_projects.company_id'=>$company_id,'company_projects.project_location'=>$location_id));
@@ -94,7 +95,7 @@ class Tasks_model extends CI_Model {
     }
 
 
-    function getSearchProjects($table,$userid) { 
+    function getSearchProjects($table,$userid,$location_id=0) { 
 
         $condition1='FIND_IN_SET('.$userid.',company_projects.project_verifier) || FIND_IN_SET('.$userid.',company_projects.manager) || FIND_IN_SET('.$userid.',company_projects.process_owner) || FIND_IN_SET('.$userid.',company_projects.item_owner)';
 
@@ -104,7 +105,10 @@ class Tasks_model extends CI_Model {
         $this->db->join('company','company.id=users.company_id');
         $this->db->join('company_locations','company_locations.id=company_projects.project_location');
         $this->db->where(array('users.id'=>$userid));
-        $this->db->where( 'company_projects.status !=','2');
+        $this->db->where('company_projects.status !=','2');
+        if(!empty($location_id)){
+            $this->db->where('company_locations.id',$location_id);
+        }
 
         // $this->db->where($condition1);
         $gettasks=$this->db->get();
@@ -127,6 +131,16 @@ class Tasks_model extends CI_Model {
         $result=$this->db->get($projectname)->result();
         return $result;
     }
+
+
+    function scanitem2($userid,$companyid,$projectname,$projectid,$instance_value)
+    {
+        $this->db->where(array('instance_count'=>$instance_value));
+        $result=$this->db->get($projectname)->result();
+        return $result;
+    }
+
+
     function get_schema($table)
 	{
 		return $this->db->query("SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS`  WHERE `TABLE_SCHEMA`='verifyfa_db'  AND `TABLE_NAME`='".$table."' AND `IS_NULLABLE`='No'")->result();
@@ -1281,7 +1295,11 @@ public function get_project_company_location($userid,$company_id,$location_id){
     $this->db->where('id',$verifierids);
     $query=$this->db->get();
     $result=$query->row();
-     $verifiername= $result->firstName.' '.$result->lastName;
+    $verifiername = '';
+    if(!empty($result)){
+        $verifiername= $result->firstName.' '.$result->lastName;
+    }
+    
     return $verifiername;
  }
     

@@ -333,29 +333,48 @@ if($usercntrole > 0){
 
 
 						<!-- for notification -->
+					<?php 
+					
+					$main_notification= get_all_notification_by_userspecific($entity_code);
+					// echo '<pre>last_query ';
+					// print_r($this->db->last_query());
+					// echo '</pre>';
+					// exit();
+					?>
 						<li class="nav-item">								
 								<li class="nav-item dropdown">
-									<a class="nav-link" href="#pablo" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: #fff;"> <i class="fa fa-bell"></i><span id="notificationcnt">(0)</span>
+									<a class="nav-link" href="#pablo" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: #fff;"> <i class="fa fa-bell"></i><span id="notificationcnt" class="123213">(<?php echo count($main_notification); ?>)</span>
 									</a>
 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile" style="overflow-y: scroll;height: 350px;"> 
 
-<?php $main_notification= get_all_notification($entity_code);?>
+
 <?php 
 $i=0;
 $j=0;
+$unread_count = 0;
 foreach($main_notification as $main_notification_row){
 	$i++;
 	$userrownt= get_user_row($main_notification_row->created_by);
 	$cntmain_notify= check_main_notificationread($this->user_id,$main_notification_row->id);
-	if($cntmain_notify == '0'){
+	// if($cntmain_notify == '0'){
 		$i++;
 	?>
-	<a class="dropdown-item d-block" href="<?php echo base_url();?>index.php/view-reply-notofication/<?php echo $main_notification_row->id;?>?main_not=1" style="background: #5ca1e2;color:#fff;font-size: 18px;
-		font-weight: bold;border-bottom: 2px solid #11589b;margin: 0;"><?php echo ucfirst($userrownt->firstName).' '.ucfirst($userrownt->lastName);?> Brodcast a New <?php echo $main_notification_row->type;?><br>
+	<a class="dropdown-item d-block" href="<?php echo base_url();?>index.php/view-reply-notofication/<?php echo $main_notification_row->id;?>?main_not=1" 
+		<?php 
+		if($cntmain_notify != '0'){ 
+			
+			echo 'style="background: #abb5bd;color:#fff;font-size: 18px;font-weight: bold;border-bottom: 2px solid #11589b;margin: 0;"';
+		}else{
+			$unread_count++;
+			echo 'style="background: #5ca1e2;color:#fff;font-size: 18px;font-weight: bold;border-bottom: 2px solid #11589b;margin: 0;"';
+		} ?>
+		><?php echo ucfirst($userrownt->firstName).' '.ucfirst($userrownt->lastName);?> Brodcast a New <?php echo $main_notification_row->type;?><br>
 		<p style="font-size: 15px;font-weight: normal;" class="pb-0 mb-0"> <?php echo $main_notification_row->title;?> <span style="color:blue;">Check now<span></p>
 		<p style="margin: 0;padding: 0;font-size: 12px;"><b>At:</b> <?php echo date("d-M-Y g:i:a", strtotime($main_notification_row->created_at));?></p>  
 	</a>
-<?php } ?>
+<?php 
+// }
+ ?>
 
 <?php 
 // $usercntrole=Count_user_role();
@@ -368,7 +387,7 @@ if($usercntrole == 0){
 
 
 <?php
-
+/*
 $allreply = get_all_reply($main_notification_row->id);
 foreach($allreply as $reply_row){ 
 	$userrownt1= get_user_row($reply_row->reply_from);
@@ -382,12 +401,14 @@ foreach($allreply as $reply_row){
 		<p style="margin: 0;padding: 0;font-size: 12px;"><b>At:</b> <?php echo date("d-M-Y g:i:a", strtotime($reply_row->reply_at));?></p>  
 
 	</a>
- <?php } }?>
+ <?php } }
+ */
+ ?>
 
 <?php } ?>
 <p class="notall"><a href="<?php echo base_url();?>index.php/view-all-notification">See All Notification</a></p>
 <script>
-	document.getElementById("notificationcnt").innerHTML='(<?php echo $j;?>)';
+document.getElementById("notificationcnt").innerHTML='(<?php echo $unread_count;?>)'; 
 </script>
 </div>					</li>
 							</li>	

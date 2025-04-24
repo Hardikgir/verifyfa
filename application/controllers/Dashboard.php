@@ -107,38 +107,37 @@ class Dashboard extends CI_Controller {
 
 	public function index()
 	{   
-		    $user_id=$this->user_id;
-           
-			$entity_code=$this->admin_registered_entity_code;
-			$company_id_imp='';
-			$location_id='';
-		    $role_result_com = $this->get_all_company_user_role($entity_code);
-			if(!empty($role_result_com)){
-
-			
+		$user_id=$this->user_id;
+		
+		$entity_code=$this->admin_registered_entity_code;
+		
+		$company_id_imp='';
+		$location_id='';
+		$role_result_com = $this->get_all_company_user_role($entity_code);
+		if(!empty($role_result_com)){
 			foreach($role_result_com as $row_role){
 				$roledata[]=$row_role->company_id;
 				$roledata1[]=$row_role->location_id;
 			}
-
 			$company_id_imp = implode(',',$roledata);
 			$location_id = implode(',',$roledata1);
 		}
-			$register_user_id=$this->admin_registered_user_id;
+		$register_user_id=$this->admin_registered_user_id;
             
 		// $condition=array('company_id'=>$this->company_id);
        $condition=array('company_id IN ('.$company_id_imp.') AND project_location IN ('.$location_id.')',"entity_code"=>$this->admin_registered_entity_code);
 
         if($this->input->post('company_id') && $this->input->post('company_id') !=''){
-		$condition=array('company_id'=>$this->input->post('company_id'));
+			$condition=array('company_id'=>$this->input->post('company_id'));
         }
-      if($this->input->post('location_id') && $this->input->post('location_id') !=''){
-		$condition=array('company_id'=>$this->input->post('company_id'), 'project_location'=>$this->input->post('location_id'),);
+
+      	if($this->input->post('location_id') && $this->input->post('location_id') !=''){
+			$condition=array('company_id'=>$this->input->post('company_id'), 'project_location'=>$this->input->post('location_id'),);
         }
+
+		// $condition = array();
 		
 		$projects=$this->tasks->get_data('company_projects',$condition);	
-		// echo $this->db->last_query();
-		// echo $this->db->last_query();
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
         foreach($projects as $project)
@@ -165,8 +164,7 @@ class Dashboard extends CI_Controller {
 		$data['projects']=$projects;
 		$data['page_title']="Dashboard";
 		$data['company_data_list']=$this->company_data_list();
-		$this->load->view('dashboard2',$data);
-		
+		$this->load->view('dashboard2',$data);		
 	}
 
 	public function company_data_list(){
@@ -601,11 +599,6 @@ class Dashboard extends CI_Controller {
 				}
 				else if($exceptioncategory==3)
 				{
-					// Hardik and View will be call "quantityValidationReport"
-					// echo '<pre>project_name ';
-					// print_r($project_name);
-					// echo '</pre>';
-					// exit(); 
 					error_reporting(0);
 					$getreport=$this->tasks->getExceptionThreeReport($project_name,$verificationstatus,$reportHeaders);
 					$reportView="quantityValidationReport";
@@ -1776,44 +1769,44 @@ class Dashboard extends CI_Controller {
 	public function downloadExceptionOneGoodReport()
 	{
 		$reportOneType='qty_ok';
-		$this->downloadExceptionOneReport($reportOneType);
+		$this->downloadExceptionOneReport($reportOneType,'ExceptionGoodReport');
 	}
 	public function downloadExceptionOneDamagedReport()
 	{
 		$reportOneType='qty_damaged';
-		$this->downloadExceptionOneReport($reportOneType);
+		$this->downloadExceptionOneReport($reportOneType,'ExceptionDamagedReport');
 	}
 	public function downloadExceptionOneScrappedReport()
 	{
 		$reportOneType='qty_scrapped';
-		$this->downloadExceptionOneReport($reportOneType);
+		$this->downloadExceptionOneReport($reportOneType,'ExceptionScrappedReport');
 	}
 	public function downloadExceptionOneMissingReport()
 	{
 		$reportOneType='qty_missing';
-		$this->downloadExceptionOneReport($reportOneType);
+		$this->downloadExceptionOneReport($reportOneType,'ExceptionMissingReport');
 	}
 	public function downloadExceptionOneShiftedReport()
 	{
 		$reportOneType='qty_shifted';
-		$this->downloadExceptionOneReport($reportOneType);
+		$this->downloadExceptionOneReport($reportOneType,'ExceptionShiftedReport');
 	}
 	public function downloadExceptionOneNotinuseReport()
 	{
 		$reportOneType='qty_not_in_use';
-		$this->downloadExceptionOneReport($reportOneType);
+		$this->downloadExceptionOneReport($reportOneType,'ExceptionNotinuseReport');
 	}
 	public function downloadExceptionOneRemainingReport()
 	{
 		$reportOneType='qty_remaining';
-		$this->downloadExceptionOneReport($reportOneType);
+		$this->downloadExceptionOneReport($reportOneType,'ExceptionRemainingReport');
 	}
 	public function downloadExceptionOneReportAllocated($projectid)
 	{
 		$reportOneType='consolidated';
 		$this->downloadExceptionOneAllocatedReport($projectid,$reportOneType);
 	}
-	public function downloadExceptionOneReport($reportOneType)
+	public function downloadExceptionOneReport($reportOneType,$ReportTitle)
 	{
 		require 'vendor/autoload.php';
 		$reportData=$this->session->get_userdata('reportData');
@@ -1821,18 +1814,62 @@ class Dashboard extends CI_Controller {
 		$projectid=$reportData['reportData']['id'];
 		$project_status=$reportData['reportData']['project_status'];
 		$verification_status=$reportData['reportData']['verification_status'];
-		 $table_name=$reportData['reportData']['table_name'];
+		$table_name=$reportData['reportData']['table_name'];
 		$reportHeaders=$reportData['reportData']['report_headers'];
+
+		// echo '<pre>table_name ';
+		// print_r($table_name);
+		// echo '</pre>';
+		// exit(); 
+
 		$headerCondition=array('table_name'=>$table_name);
+		
 		$project_headers=$this->tasks->get_data('project_headers',$headerCondition);
 
 		$rowHeads=array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ','BA','BB','BC','BD','BE','BF','BG','BH','BI','BJ','BK','BL','BM','BN','BO','BP','BQ','BR','BS','BT','BU','BV','BW','BX','BY','BZ','CA','CB','CC','CD','CE','CF','CG','CH','CI','CJ','CK','CL','CM','CN','CO','CP','CQ','CR','CS','CT','CU','CV','CW','CX','CY','CZ');
 		$spreadsheet= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 		$sheet = $spreadsheet->getActiveSheet();
+
+
+		
 		$cnt=0;
-		$columns="";
 		$rowCount=1;
+		$columns="";
 		$colsArray=array();
+		
+		$details_content = "Name Of Company : ABCD ";
+		// $sheet->mergeCells("A1:F1");
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=2;
+		$details_content = "Name Of Location : Delhi ";
+		// $sheet->mergeCells("A1:F1");
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=3;
+		$details_content = "Period of Verification : XXX ";
+		// $sheet->mergeCells("A1:F1");
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+
+		$rowCount=4;
+		$details_content = "Name of the Report : XXX ";
+		// $sheet->mergeCells("A1:F1");
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		// array_push($colsArray,'My title');
+		
+		$cnt=0;
+		$rowCount=6;
+		
 		if($reportHeaders[0]=='all')
 		{
 			foreach($project_headers as $ph)
@@ -1877,11 +1914,20 @@ class Dashboard extends CI_Controller {
 			}
 
 		}
-		$columns.="quantity_as_per_invoice,total_item_amount_capitalized, verification_status,new_location_verified,updatedat,verification_remarks,qty_ok,qty_damaged,qty_scrapped,qty_not_in_use,qty_missing,qty_shifted,mode_of_verification,quantity_verified";
+		$columns.="quantity_as_per_invoice,total_item_amount_capitalized, verification_status,new_location_verified,updatedat,verification_remarks,qty_ok,qty_damaged,qty_scrapped,qty_not_in_use,qty_missing,qty_shifted,mode_of_verification,quantity_verified,verified_by";
+		// $columns.="quantity_as_per_invoice,total_item_amount_capitalized, verification_status,new_location_verified,updatedat,verification_remarks,qty_ok,qty_damaged,qty_scrapped,qty_not_in_use,qty_missing,qty_shifted,mode_of_verification,quantity_verified";
+
 		array_push($colsArray,'quantity_as_per_invoice');
 		$sheet->setCellValue($rowHeads[$cnt].$rowCount, "To be Verified");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		// array_push($colsArray,'verified_by');
+		// array_push($colsArray,'verified_by');
+		// $sheet->setCellValue($rowHeads[$cnt].$rowCount, "Verify By");
+		// $sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		// $sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
 		array_push($colsArray,'total_item_amount_capitalized');
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "To be Verified Amount");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
@@ -1895,77 +1941,101 @@ class Dashboard extends CI_Controller {
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "New Location Verified");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
 		array_push($colsArray,'updatedat');
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Last Updated on");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
 		array_push($colsArray,'verification_remarks');
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Verification Remarks");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
 		array_push($colsArray,'qty_ok');
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Condition of Item Verified: Good Condition");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
 		array_push($colsArray,'qty_damaged');
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Condition of Item Verified: Damaged");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
 		array_push($colsArray,'qty_scrapped');
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Condition of Item Verified: Scrapped");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
 		array_push($colsArray,'qty_not_in_use');
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Condition of Item Verified: Not in Use");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
 		array_push($colsArray,'qty_missing');
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Condition of Item Verified: Missing");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
 		array_push($colsArray,'qty_shifted');
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Condition of Item Verified: Shifted");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
 		array_push($colsArray,'mode_of_verification');
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Mode of Verification");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
 		array_push($colsArray,'quantity_verified');
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Verified Qty");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Verified Amount");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Allocation Status");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Project ID");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Project Name");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Start Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
     	$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Period of Verification");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Allocated Resources");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Verify By");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Project Status");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Remaining To be verified: Qty");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Remaining To be verified: Amount");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
@@ -1975,8 +2045,12 @@ class Dashboard extends CI_Controller {
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
-		$rowCount=2;
+		$rowCount=7;
 		$getreport=$this->tasks->getDetailedExceptionOneReport($project_name,$verification_status,$columns,$reportOneType);
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
 		foreach($getreport as $gr)
 		{
 			$cnt=0;
@@ -2017,6 +2091,15 @@ class Dashboard extends CI_Controller {
 			{
 				$projectStatus='Finished Verification';
 			}
+
+			// echo '<pre>';
+			// print_r($gr);
+			// echo '</pre>';
+			// exit(); 
+
+			$verifier_by_name = get_UserName($gr['verified_by']);
+
+
 			$remainingAmount=$gr['total_item_amount_capitalized']/$gr['quantity_as_per_invoice'];
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $remainingAmount*$gr['quantity_verified']);
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, "Allocated");
@@ -2026,6 +2109,7 @@ class Dashboard extends CI_Controller {
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, date_format($duedate,"d-m-Y"));
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $getProject[0]->period_of_verification);
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $verifier_name);
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $verifier_by_name);
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $projectStatus);
 			
 			$rowCount++;
@@ -2034,7 +2118,7 @@ class Dashboard extends CI_Controller {
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
 		$writer->setPreCalculateFormulas(false);
 		$filename = 'Exception Report';
- 
+		$filename = $ReportTitle;
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
         header('Cache-Control: max-age=0');
@@ -2332,12 +2416,49 @@ class Dashboard extends CI_Controller {
 
 		
 		
-
-
-
 		$cnt=0;
-		$columns="";
 		$rowCount=1;
+		$columns="";
+		$colsArray=array();
+		
+		$details_content = "Name Of Company : ABCD ";
+		// $sheet->mergeCells("A1:F1");
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=2;
+		$details_content = "Name Of Location : Delhi ";
+		// $sheet->mergeCells("A1:F1");
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=3;
+		$details_content = "Period of Verification : XXX ";
+		// $sheet->mergeCells("A1:F1");
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+
+		$rowCount=4;
+		$details_content = "Name of the Report : XXX ";
+		// $sheet->mergeCells("A1:F1");
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		// array_push($colsArray,'My title');
+		
+		$cnt=0;
+		$rowCount=6;
+
+
+
+		// $cnt=0;
+		$columns="";
+		// $rowCount=1;
 		$colsArray=array();
 		if($reportHeaders[0]=='all')
 		{
@@ -2506,7 +2627,7 @@ class Dashboard extends CI_Controller {
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
-		$rowCount=2;
+		$rowCount=7;
 
 		
 		// echo '<pre>reportOneType ::';
@@ -4583,6 +4704,83 @@ class Dashboard extends CI_Controller {
 		$data['page_title']="Reports";
 		$this->load->view('reports-additional',$data);
 	}
+
+
+	public function requestdeleteproject($project_id)
+	{		
+
+		$condition=array('id'=>$project_id);
+		$projects=$this->tasks->get_data('company_projects',$condition);	
+		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+		$new_pattern = array("_", "_", "");
+        foreach($projects as $project)
+        {
+            $project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($project->project_name)));
+            $getprojectdetails=$this->tasks->projectdetail($project_name);
+			// echo $this->db->last_query();
+           
+            if(!empty($getprojectdetails))
+            {
+                $project->TotalQuantity= ((int)$getprojectdetails[0]->TotalQuantity);
+                if($getprojectdetails[0]->VerifiedQuantity !='')
+                $project->VerifiedQuantity=$getprojectdetails[0]->VerifiedQuantity;
+                else
+                $project->VerifiedQuantity=0;
+            }
+            else
+            {   
+                $project->TotalQuantity=0;
+                $project->VerifiedQuantity=0;
+			}
+			$condition2=array('id'=>$project->company_id);
+			$company=$this->tasks->get_data('company',$condition2);
+			$companylocation=$this->tasks->get_data('company_locations',array('id'=>$project->project_location));
+			$project->company_name=$company[0]->company_name;
+            $project->project_location=$companylocation[0]->location_name;
+		}
+
+		// print_r($projects);
+		
+
+		$this->db->select("company_projects.id as company_project_id,company_projects.project_name as company_project_name,");
+		$this->db->join('company_projects', 'request_for_delete_project.project_id = company_projects.id', 'inner'); 
+		$query = $this->db->get('request_for_delete_project');
+		$result = $query->row();
+
+		$data['projects']=$projects;
+		$data['requestdeteleprojectdetails']=$result;
+		$data['page_title']="Reports";
+		$this->load->view('request_delete_project_details',$data);		
+
+	}
+
+
+
+	public function acceptrequestdeleteproject($project_id)
+	{	
+		$data=array(
+			"status"=>"5"
+		);
+		$this->db->where("id",$project_id);
+		$this->db->update("company_projects",$data);
+		$this->session->set_flashdata("success","Project Accept Request Delete Successfully");
+		redirect("index.php/dashboard");		
+
+	}
+	
+	public function declinerequestdeleteproject($project_id)
+	{		
+		$data=array(
+			"status"=>"6"
+		);
+		$this->db->where("id",$project_id);
+		$this->db->update("company_projects",$data);
+		$this->session->set_flashdata("success","Project Accept Request Delete Successfully");
+		redirect("index.php/dashboard");	
+
+	}
+
+	
 
 	
 }

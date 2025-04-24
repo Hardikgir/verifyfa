@@ -168,6 +168,9 @@ $route['check-department-shortcode'] = 'Admin_controller/check_department_shortc
 $route['delete-department/(:num)'] = 'Admin_controller/delete_department/$1';
 $route['get-role'] = 'Admin_controller/get_role';
 $route['delete-user/(:num)'] = 'Admin_controller/delete_user/$1';
+$route['reset-user-login/(:num)'] = 'Admin_controller/reset_user_login/$1';
+
+
 
 
 // API ROUTES//

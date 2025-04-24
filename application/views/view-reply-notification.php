@@ -83,7 +83,8 @@ chat-offline {
 							</div>
 						</div>
 					</div>
-
+					<?php 
+					if($notification_data->type != 'Notification'){ ?>
 					<div class="position-relative">
 						<div class="chat-messages p-4">
 
@@ -119,35 +120,66 @@ chat-offline {
 
 						</div>
 					</div>
-      <?php 
-		 $user_role_addmin_cnt=get_user_role_cnt_admin($user_id,$entity_code);
-         $user_role_manager_cnt=get_user_role_cnt_managers($user_id,$entity_code);
+				<?php 
+					
+						$user_role_addmin_cnt=get_user_role_cnt_admin($user_id,$entity_code);
+						$user_role_manager_cnt=get_user_role_cnt_managers($user_id,$entity_code);					
+						if(($user_role_addmin_cnt > 0 || $user_role_manager_cnt > 0)){ 
+							?>
+							<div class="flex-grow-0 py-3 px-4 border-top">
+								<form action="<?php echo base_url();?>index.php/save-notification-reply" method="post">
+									<input type="hidden" value="<?php echo $notification_data->id;?>" name="notification_id">
+									<div class="input-group">
+										<input type="text" name="reply_message" class="form-control" placeholder="Type your Feedback or Message">
+										<button type="submit" class="btn btn-primary">Submit</button>
+									</div>
+								</form>
+							</div>
+							<?php 
+						}
+					}
+				?>
 
-		if(($user_role_addmin_cnt > 0 || $user_role_manager_cnt > 0)){ 
-		?>
-
+				<?php /*  //I Think this is not require now becuase as we have already check above if their is role is 5 or not
+				
+				if($this->main_role == '5'){ ?>
 					<div class="flex-grow-0 py-3 px-4 border-top">
-                        <form action="<?php echo base_url();?>index.php/save-notification-reply" method="post">
-                            <input type="hidden" value="<?php echo $notification_data->id;?>" name="notification_id">
-                            <div class="input-group">
-                                <input type="text" name="reply_message" class="form-control" placeholder="Type your Feedback or Message">
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                            </div>
-                       </form>
-					</div>
-      <?php } ?>
+									<form action="<?php echo base_url();?>index.php/save-notification-reply" method="post">
+										<input type="hidden" value="<?php echo $notification_data->id;?>" name="notification_id">
+										<div class="input-group">
+											<input type="text" name="reply_message" class="form-control" placeholder="Type your Feedback or Message">
+											<button type="submit" class="btn btn-primary">Submit</button>
+										</div>
+								</form>
+								</div>
+					<?php } */ ?>
 
-      <?php if($this->main_role == '5'){ ?>
-        <div class="flex-grow-0 py-3 px-4 border-top">
-                        <form action="<?php echo base_url();?>index.php/save-notification-reply" method="post">
-                            <input type="hidden" value="<?php echo $notification_data->id;?>" name="notification_id">
-                            <div class="input-group">
-                                <input type="text" name="reply_message" class="form-control" placeholder="Type your Feedback or Message">
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                            </div>
-                       </form>
+					<!-- <hr> -->
+
+					<div class="notification_users">
+						<h3 class="text-center mb-3 mt-5">SEND NOTIFICATION TO USERS</h3>
+						<table class="table table-border">
+							<tr>
+								<th>FirstName</th>
+								<th>LastName</th>
+								<th>Designation</th>
+								<th>Role</th>
+							</tr>
+							<?php foreach($sender_to_user as $sender_to_user_key=>$sender_to_user_value){ ?>
+								<tr>
+									<td><?php echo $sender_to_user_value->firstName; ?></td>
+									<td><?php echo $sender_to_user_value->lastName; ?></td>
+									<td><?php echo $sender_to_user_value->designation; ?></td>
+									<td>
+										<?php 
+											echo get_role_name($sender_to_user_value->user_role);
+										?>
+									</td>
+								</tr>
+							<?php } ?>
+							
+						</table>
 					</div>
-        <?php } ?>
 
 				</div>
 			</div>

@@ -27,7 +27,7 @@ class Plancycle extends CI_Controller {
 		// Load form validation library
 		$this->load->library('form_validation');
 		$this->load->helper('function_helper');
-
+		$this->load->model('Super_admin_model');
 		// Load session library
 		$this->load->library('session');	
 		if (!$this->session->userdata('logged_in')) {
@@ -104,6 +104,7 @@ class Plancycle extends CI_Controller {
 	
 	public function index()
 	{	
+		
 		$session = $this->session->userdata('logged_in');
 		$user_id = $session['id'];
 
@@ -121,6 +122,23 @@ class Plancycle extends CI_Controller {
 		// 	}
 		// }
 		
+
+		// echo '<pre>';
+		// print_r($_SESSION['logged_in']);
+		// echo '</pre>';
+		// exit(); 
+		
+
+		$this->db->select('register_user_plan_log.*, subscription_plan.*');
+		$this->db->from(' subscription_plan');
+		$this->db->join('register_user_plan_log','register_user_plan_log.plan_id= subscription_plan.id');
+		$this->db->where('register_user_plan_log.register_user_id',$_SESSION['logged_in']['admin_registered_user_id']);
+		$getnotifications=$this->db->get();
+		$result = $getnotifications->row();
+		
+		$data['payment_history'] = $result;
+		
+
 		$condition=array(
 			'id' => $this->company_id,
 		);
@@ -187,7 +205,7 @@ class Plancycle extends CI_Controller {
 		// require_once dirname(__FILE__) . '/PHPExcel/PHPExcel.php';
 		require 'vendor/autoload.php';
 
-//var_dump($_FILES['test']['name']);die;
+		//var_dump($_FILES['test']['name']);die;
 		$config['upload_path'] = './projectfiles/';
         $config['allowed_types'] = 'xls|xlsx';
 		$config['encrypt_name']=true;
@@ -213,7 +231,8 @@ class Plancycle extends CI_Controller {
 		$sheet = $objPHPExcel->getActiveSheet();
 
 		$array_data = array();
-		$tablename="project_".time();
+		$tablename="project_".time();				//Hardik Excel To Table Name Generate from here.
+		$inserting_array = array();
 		$main=0;
 		$insertRow=array();
 		$rowCount=0;
@@ -296,7 +315,7 @@ class Plancycle extends CI_Controller {
 				}
 				
 			
-				$createquery.="verification_status VARCHAR(50) NOT NULL DEFAULT 'Not-Verified' ,quantity_verified INT(11) NOT NULL DEFAULT '0',new_location_verified VARCHAR(255) NULL,verified_by VARCHAR(255) NULL,verified_by_username VARCHAR(255) NULL,verified_datetime DATETIME NULL,verification_remarks TEXT NULL,item_note TEXT NULL,qty_ok INT(11) NOT NULL DEFAULT '0', qty_damaged INT(11) NOT NULL DEFAULT '0', qty_scrapped INT(11) NOT NULL DEFAULT '0',qty_not_in_use INT(11) NOT NULL DEFAULT '0',qty_missing INT(11) NOT NULL DEFAULT '0',qty_shifted INT(11) NOT NULL DEFAULT '0', is_alotted TINYINT(4) NOT NULL DEFAULT '0',mode_of_verification  VARCHAR(200) NOT NULL DEFAULT 'Not Verified',createdat DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, updatedat DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP)";		
+				$createquery.="verification_status VARCHAR(50) NOT NULL DEFAULT 'Not-Verified' ,quantity_verified INT(11) NOT NULL DEFAULT '0',new_location_verified VARCHAR(255) NULL,verified_by VARCHAR(255) NULL,verified_by_username VARCHAR(255) NULL,verified_datetime DATETIME NULL,verification_remarks TEXT NULL,item_note TEXT NULL,qty_ok INT(11) NOT NULL DEFAULT '0', qty_damaged INT(11) NOT NULL DEFAULT '0', qty_scrapped INT(11) NOT NULL DEFAULT '0',qty_not_in_use INT(11) NOT NULL DEFAULT '0',qty_missing INT(11) NOT NULL DEFAULT '0',qty_shifted INT(11) NOT NULL DEFAULT '0', is_alotted TINYINT(4) NOT NULL DEFAULT '0',is_edit INT(11) NOT NULL DEFAULT '0',instance_count INT(11) NOT NULL DEFAULT '0',mode_of_verification  VARCHAR(200) NOT NULL DEFAULT 'Not Verified',createdat DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, updatedat DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP)";		
 				$this->db->query($createquery);
 				
 			}
@@ -337,11 +356,12 @@ class Plancycle extends CI_Controller {
 					$i++;
 					
 				}
+				$inserting_array[] = $insertarray;
 				array_push($insertRow,$insertarray);
 				if($row->getRowIndex()>5 && ($rowCount==2000 || $row->getRowIndex()==$highestRow))
 				{
 					$ins=$insertRow;
-					$insert=$this->db->insert_batch($tablename,$ins);
+					// $insert=$this->db->insert_batch($tablename,$ins);
 					$rowCount=0;
 					$insertRow=array();
 					
@@ -362,6 +382,47 @@ class Plancycle extends CI_Controller {
 			$main++;
 			
 		}
+
+		// echo '<pre>';
+		// print_r($_SESSION);
+		// echo '</pre>';
+		// exit(); 
+		
+		$plan_data = $this->Super_admin_model->get_registered_user_plan($_SESSION['logged_in']['admin_registered_user_id']);
+		
+		$plan_row=get_plan_row($plan_data->plan_id);
+		// echo '<pre>tablename ';
+		// print_r($tablename);
+		// echo '</pre>';
+		// // exit(); 
+		// $new_insert_array = array();
+		$insert_count = 0;
+		foreach($inserting_array as $inserting_array_key=>$inserting_array_value){
+			if($insert_count < $plan_row->line_item_avaliable){
+				$new_insert_array[] = $inserting_array_value;
+				$this->db->insert($tablename,$inserting_array_value);		
+			}
+			$insert_count++;
+		}
+
+		// $insert=$this->db->insert_batch($tablename,$new_insert_array);
+		
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
+
+
+		// echo '<pre>new_insert_array ';
+		// print_r($new_insert_array);
+		// echo '</pre>';
+		// exit(); 
+		// $insert=$this->db->insert_batch($tablename,$inserting_array);
+		// echo '<pre>inserting_array ';
+		// print_r($inserting_array);
+		// echo '</pre>';
+		// exit(); 
+
 		$data['page_title']="Plan Cycle";
 		$data['company_name']=$this->input->post('company_name');
 		$data['company_location']=$this->input->post('company_location');
@@ -384,8 +445,9 @@ class Plancycle extends CI_Controller {
 		$data['mandatory_cols']=$getMandatoryColumns;
 		
 		$getOtherColumns=$this->plancycle->getcompleteschema($data['table_name']);
-		// $select='SELECT';
-		$select='SELECT *';
+		$is_condition = 0;
+		$select='SELECT';
+		// $select='SELECT *';
 		$i=0;
 		foreach($getOtherColumns as $goc)
 		{
@@ -398,11 +460,19 @@ class Plancycle extends CI_Controller {
 						$select.=", count(".$goc->COLUMN_NAME.") as ".$goc->COLUMN_NAME;
 					}
 					$i++;
+					$is_condition = 1;
 			}
 			
 			
 		}
-		$select.=" FROM ".$data['table_name'];
+
+		if($is_condition == '1'){
+			$select.=" FROM ".$data['table_name'];
+		}else{
+			$select.=" * FROM ".$data['table_name'];
+		}
+
+		
 		$getColumnsCount=$this->db->query($select)->result_array();
 		$getNonMandatory=array_keys(array_filter($getColumnsCount[0]));
 		$data['nonmandatory_cols']=$getNonMandatory;
@@ -596,9 +666,6 @@ class Plancycle extends CI_Controller {
 					$i=0;
 					foreach($projects as $pro)
 					{ 
-						// echo "<pre>";
-						// 	print_r($pro);
-						// echo "</pre>";
 						$masterTotal=$this->db->query("SELECT count(*) as total from ".$pro->original_table_name)->result();
 						$pro->masterTotal=$masterTotal[0]->total;
 						$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($pro->project_name)));
@@ -638,13 +705,11 @@ class Plancycle extends CI_Controller {
 						<td><?php echo $pro->item_category;?></td>
 						<td><?php echo $pro->status==0 ? "In-Process":($pro->status==3?"Verification Finished":"Cancelled");?></td>
 						<td>
-                <?php if($pro->status==3){?> 
-                       <a href="<?php echo base_url();?>index.php/dashboard/projectdetail/<?php echo $pro->id;?>" id="contact_detail">
-						<i class="fa fa-check"></i> Close & Finish
-
-						</a>
-
-             <?php }?>
+                		<?php if($pro->status==3){ ?> 
+                       		<a href="<?php echo base_url();?>index.php/dashboard/projectdetail/<?php echo $pro->id;?>" id="contact_detail">
+								<i class="fa fa-check"></i> Close & Finish
+							</a>
+             			<?php } ?>
 
 						<a href="#" id="contact_detail" onclick="save_contact_detail('<?php echo $pro->id;?>')">
 						<i class="fa fa-address-book"></i> Contact Detail
@@ -827,10 +892,13 @@ class Plancycle extends CI_Controller {
 			'project_type'=>$project_type,
 			'project_location'=>$company_location,
 			'original_table_name'=>$table_name,
+			'project_table_name'=>$project_table_name,
 			'original_file'=>$original_file,
 			'assigned_by'=>$this->user_id,
 			'entity_code'=>$this->admin_registered_entity_code
 		);
+
+		//Hardik Excel To Table Name Generate from here. in Below
 
 		if($project_type=="TG")
 		{
@@ -983,7 +1051,7 @@ class Plancycle extends CI_Controller {
 			'item_owner'=>$io,
 			'manager'=>$pm
 		);
-		$update=$this->plancycle->update_data('company_projects',$updatedata,$condition);
+		$update=$this->plancycle->update_data('company_projects',$updatedata,$condition);		
 		$this->session->set_flashdata("success","Updated Successfully");
 		redirect("index.php/plancycle");
 

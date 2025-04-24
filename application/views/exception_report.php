@@ -13,7 +13,8 @@ select option:disabled {
 	<div class="content">
 				<div class="container-fluid">
 
-				<form action="http://localhost/CODEIGNITER_PHP/Verifyfa/Dev/index.php/dashboard/exceptions" method="post" class="bg-white">
+				<!-- <form action="https://verifyfa.developmentdemo.co.in/index.php/dashboard/exceptions" method="post" class="bg-white"> -->
+					<form action="http://localhost/CODEIGNITER_PHP/verifyfa/index.php/dashboard/exceptions" method="post" class="bg-white">
                 <br>
                 <div class="row">
                 <div class="col-md-2 form-row">
@@ -119,16 +120,16 @@ select option:disabled {
 														<option value="" selected>Exception Category <span class="mandatory_star">*</span>
 														</option>
 														<option value="1">Condition of Item</option>
-														<option value="2" disabled>Changes/ Updations of Items</option>
+														<option value="2" class="OptionEnable">Changes/ Updations of Items</option>
 														<option value="3">Qty Validation Status</option>
 														<option value="4">Updated with Verification Remarks</option>
 														<option value="5">Updated with Item Notes</option>
-														<option value="6" disabled>Calculate Risk Exposure</option>
-														<option value="7" disabled>Marked for Review</option>
+														<option value="6" class="OptionEnable">Calculate Risk Exposure</option>
+														<!-- <option value="7" disabled>Marked for Review</option> -->
 														<option value="8">Mode of Verification</option>
-														<option value="9" disabled>Duplicate Item Codes verified</option>
-														<option value="10" disabled>Duplicate Item Codes Identified</option>
-														<option value="11" disabled>Revalidation Status</option>
+														<option value="9" class="OptionEnable">Duplicate Item Codes verified</option>
+														<option value="10" class="OptionEnable">Duplicate Item Codes Identified</option>
+														<!-- <option value="11" disabled>Revalidation Status</option> -->
 														
 														
 														

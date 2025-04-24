@@ -55,7 +55,7 @@ class Admin_model extends CI_Model {
 
     public function check_location_shortcode($location_shortcode,$register_user_id,$entity_code,$company_id){
         $this->db->select('*');
-        $this->db->from('company_locations');
+        $this->db->from(' company_locations');
         $this->db->where('location_shortcode',$location_shortcode);
         $this->db->where('company_id',$company_id);
         $this->db->where('registered_user_id',$register_user_id);
@@ -101,7 +101,7 @@ class Admin_model extends CI_Model {
     
     public function get_total_company_row_entity($register_user_id,$entity_code,$company_id){
         $this->db->select('*');
-        $this->db->from('company_locations');
+        $this->db->from(' company_locations');
         $this->db->where('company_id',$company_id);
         $this->db->where('entity_code',$entity_code);
         $this->db->where('registered_user_id',$register_user_id);
@@ -199,7 +199,7 @@ class Admin_model extends CI_Model {
     
     public function check_userEmail_admin($userEmail,$register_user_id,$entity_code){
         $this->db->select('*');
-        $this->db->from('users');
+        $this->db->from(' users');
         $this->db->where('userEmail',$userEmail);
         $this->db->where('registered_user_id',$register_user_id);
         $this->db->where('entity_code',$entity_code);
@@ -209,7 +209,7 @@ class Admin_model extends CI_Model {
 
     public function get_single_user($user_id){
         $this->db->select('*');
-        $this->db->from('users');
+        $this->db->from(' users');
         $this->db->where('id',$user_id);
         $query=$this->db->get();
         return $query->result();
@@ -229,7 +229,7 @@ class Admin_model extends CI_Model {
     
     public function check_user_role_location_cmpany($company_id,$location_id,$user_id){
         $this->db->select('*');
-        $this->db->from('user_role');
+        $this->db->from(' user_role');
         $this->db->where('company_id',$company_id);
         $this->db->where('location_id',$location_id);
         $this->db->where('user_id',$user_id);
@@ -239,7 +239,7 @@ class Admin_model extends CI_Model {
 
   public function get_company_all_location($company_id){
         $this->db->select('*');
-        $this->db->from('company_locations');
+        $this->db->from(' company_locations');
         $this->db->where('company_id',$company_id);
         $query=$this->db->get();
         return $query->result();
@@ -248,7 +248,7 @@ class Admin_model extends CI_Model {
 
     public function get_company_all_location_subadmin($company_id,$location_id){
         $this->db->select('*');
-        $this->db->from('company_locations');
+        $this->db->from(' company_locations');
         $this->db->where('company_id',$company_id);
         $this->db->where('id',$location_id);
         $query=$this->db->get();
@@ -266,7 +266,7 @@ class Admin_model extends CI_Model {
 
     public function get_department_row($department_id){
         $this->db->select('*');
-        $this->db->from('department');
+        $this->db->from(' department');
         $this->db->where('id',$department_id);
         $query=$this->db->get();
         return $query->row();
@@ -274,7 +274,7 @@ class Admin_model extends CI_Model {
  
  public function get_all_user_role($register_user_id,$entity_code){
         $this->db->select('*');
-        $this->db->from('user_role');
+        $this->db->from(' user_role');
         $this->db->where('registered_user_id',$register_user_id);
         // $this->db->where('user_id !=',$this->user_id);
         $this->db->where('entity_code',$entity_code);

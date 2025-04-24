@@ -126,6 +126,7 @@ $this->load->view('layouts/sidebar');
 											
 										<div class="clearfix"></div>
 									</form>
+									
 
 									
 									<div id="show_all_result_by_id" style="display:none;">
@@ -183,16 +184,31 @@ $this->load->view('layouts/sidebar');
 										</div>
 										<div class="clearfix"></div>
 									</form>
-									<div class="row">
+									
+									
+
+									<?php 
+									}
+									?>
+
+									<div class="row" id="totalLineContent" style="display:none">
+										<div class="col-md-12">
+											<div class="text-center" style="color:red">
+												<p>Important to Note : Your Current Subscription plan allows you to upload <b><?= $payment_history->line_item_avaliable; ?></b> rows of data. If more rows are needed to be uploaded, kindly upgrade your subscription plan.</p>
+											</div>
+										</div>
+									</div>
+
+									<div class="row" id="Downloadsample" style="display:none">
 										<div class="col-md-12">
 											<div class="text-center" style="border-top:1px solid #cccccc;padding:5px;">
 												<a class="btn pull-right-sec my-4" href="<?php echo base_url()."sample.xlsx";?>"><i class="fa fa-file-excel"></i> Download Sample File</a>
 											</div>
 										</div>
 									</div>
-									<?php 
-									}
-									?>
+
+									
+
 								</div>
 							</div>
 						</div>
@@ -407,12 +423,24 @@ document.getElementById('company_location_new').onchange = function() {
 			documentupload.style.display = "block";
 			var show_all_result_by_id = document.getElementById("show_all_result_by_id");
 			show_all_result_by_id.style.display = "none";
+			var Downloadsample = document.getElementById("Downloadsample");
+			Downloadsample.style.display = "block";
+			
+			var totalLineContent = document.getElementById("totalLineContent");
+			totalLineContent.style.display = "block";
+
+			
+			
 		}else{
 			var documentupload = document.getElementById("documentupload");
 			documentupload.style.display = "none";
 			var show_all_result_by_id = document.getElementById("show_all_result_by_id");
 			show_all_result_by_id.style.display = "block";
 			$("#show_all_result_by_id").html(data);
+
+			var Downloadsample = document.getElementById("Downloadsample");
+			Downloadsample.style.display = "block";
+
 		}
 
 		// $('#company_location_new').find('option').remove().end().append(data);
