@@ -122,6 +122,23 @@ class Plancycle extends CI_Controller {
 		// 	}
 		// }
 		
+
+		// echo '<pre>';
+		// print_r($_SESSION['logged_in']);
+		// echo '</pre>';
+		// exit(); 
+		
+
+		$this->db->select('register_user_plan_log.*, subscription_plan.*');
+		$this->db->from(' subscription_plan');
+		$this->db->join('register_user_plan_log','register_user_plan_log.plan_id= subscription_plan.id');
+		$this->db->where('register_user_plan_log.register_user_id',$_SESSION['logged_in']['admin_registered_user_id']);
+		$getnotifications=$this->db->get();
+		$result = $getnotifications->row();
+		
+		$data['payment_history'] = $result;
+		
+
 		$condition=array(
 			'id' => $this->company_id,
 		);

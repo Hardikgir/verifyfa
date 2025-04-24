@@ -1,0 +1,13 @@
+22 March 2025 :- 
+
+-> EXCEPTION REPORT
+    {
+        -> File Name not as per Report Name
+        -> Mode of Verification shows “Scan” option only, whereas “Search “ option has also been used for verification . May be Mobile App is not giving the correct data / status
+        -> name of the verifying person still not visible.
+        -> File Headers on the top not shown (see the sample file report)
+    }
+
+
+Database Changes (22 March 2025)
+-> In table users passowrd showing encrypted you have to add one column for showing existing password. (password_view)

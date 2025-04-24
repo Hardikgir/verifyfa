@@ -22,7 +22,8 @@ class Admin_controller extends CI_Controller {
 
 		parent::__construct();
         $this->load->library('session');	
-        $this->load->model('Admin_model');	
+        $this->load->model('Admin_model');
+        $this->load->model('Registered_user_model');
         if (!$this->session->userdata('logged_in')) {
             redirect(base_url()."index.php/login", 'refresh');
 		}
@@ -282,6 +283,7 @@ class Admin_controller extends CI_Controller {
             "userEmail"=>$this->input->post('userEmail'),
             // "password"=>md5('12345'),
             "password"=>md5($temp_password),
+            "password_view"=>$temp_password,
             "phone_no"=>$this->input->post('phone_no'),
             "department_id"=>$this->input->post('department_id'),
             "designation"=>$this->input->post('designation'),
@@ -294,7 +296,6 @@ class Admin_controller extends CI_Controller {
 
 
         $to = $this->input->post('userEmail');
-		// $to = 'hardik.meghnathi12@gmail.com';
 		$subject = 'Registration Successfull';
 		$email_updated_content = '<p>Your Password :- <b>'.$temp_password.'</b></p>';
 		
@@ -624,12 +625,23 @@ $role=implode(',',$this->input->post('user_role'));
 
 
       public function admin_user_passwod_save(){
+
         $user_id=$this->user_id;
         $data=array( 
             "password"=>md5($this->input->post('password')),
-            // "password_view"=>$this->input->post('password'),
+            "password_view"=>$this->input->post('password'),
         );
-     $this->Admin_model->update_password($user_id,$data);
+        $this->Admin_model->update_password($user_id,$data);
+
+
+        $user_id=$this->session->userdata('admin_registered_user_id');
+        $data=array( 
+            "password"=>md5($this->input->post('password')),
+            "password_view"=>$this->input->post('password'),
+        );
+        $this->Registered_user_model->update_password($user_id,$data);
+
+
      $this->session->set_flashdata("success","Password Changed Successfully");
      redirect("index.php/change-my-password");
     }
