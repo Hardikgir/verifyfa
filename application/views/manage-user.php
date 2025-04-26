@@ -87,6 +87,13 @@ $this->load->view('layouts/sidebar');
                      <i class="fa fa-trash"></i>Delete
                     </a>
                     <?php } ?>
+
+                    <?php if($row->is_login == '1'){ ?>
+                    <a href="<?php echo base_url();?>index.php/reset-user-login/<?php echo $row->id;?>">
+                    Reset
+                    </a>
+                    <?php } ?>
+
                 </td>
             </tr>
             <?php } ?>

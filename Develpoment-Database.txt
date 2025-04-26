@@ -1,7 +1,8 @@
-Main Table :- 
+Basic / Main Table :- 
 
 -> company
 -> company_locations
 -> company_projects
 -> contact_detail
 -> department
+-> 

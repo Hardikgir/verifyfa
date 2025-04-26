@@ -6,7 +6,7 @@ $this->load->view('layouts/sidebar');
 ?>
 	<div class="content">
 				<div class="container-fluid">
-				<form action="http://localhost/CODEIGNITER_PHP/verifyfa/index.php/dashboard/reports" method="post" class="bg-white">
+				<form action="http://localhost/codeigniter/verifyfa/index.php/dashboard/reports" method="post" class="bg-white">
                 <br>
                 <div class="row">
                 <div class="col-md-2 form-row">
