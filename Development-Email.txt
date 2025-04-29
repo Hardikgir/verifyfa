@@ -1,3 +1,8 @@
+Currently Email Used :- 
+	1. Superadmin_controller.php > confirmation_userdetail (Received this Email)
+	2. Superadmin_controller.php > save_registred_user
+	3. Admin_controller.php > save_admin_user (Without Format)
+
 Used with function :- '';
 
 

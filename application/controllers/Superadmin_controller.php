@@ -13,6 +13,8 @@ class Superadmin_controller extends CI_Controller {
             redirect(base_url()."index.php/super-admin-login", 'refresh');
 		}
 		$this->load->model('Super_admin_model');
+		$this->load->model('Registered_user_model');
+		
 	}
 
     public function super_admin_dashboard(){
@@ -166,12 +168,16 @@ class Superadmin_controller extends CI_Controller {
 		// $to = 'hardik.meghnathi12@gmail.com';
 		
 		$activation_link = '<a href="'.base_url().'index.php/generate-activation-link/'.$id.'">Active Your Account</a>';
-		$TRANSACTIONRECORDDATETIME = date('d-m-Y');
+		$TRANSACTIONRECORDDATETIME = date('d-m-Y h:i:s');
+
 		$APPLICATIONNAME = 'VerifyFa';
-		$RECEIVERNAME = 'User';
-		$digits = 5;
+		$RECEIVERNAME = $data['user']->first_name;		
 		$subject = $APPLICATIONNAME.' Activate Your Account and Setup New 1';
+
+		$digits = 5;
 		$TEMPORARYPASSWORD = rand(pow(10, $digits-1), pow(10, $digits)-1);
+		$COMPANYNAME = $data['user']->organisation_name;
+
 		$email_updated_content = '<body style="font-family: Helvetica, Arial, sans-serif; margin: 0px; padding: 0px; background-color: #ffffff;">
             <table role="presentation"
                 style="width: 100%;border-collapse: collapse;border: 0px;border-spacing: 0px;font-family: Arial, Helvetica, sans-serif;background-color: rgb(250, 250, 250);">
@@ -184,7 +190,7 @@ class Superadmin_controller extends CI_Controller {
                             <td style="padding: 40px 0px 0px;">
                             <div style="text-align: left;">
                                 <div style="padding-bottom: 20px;text-align: center;">
-                                    <img src="https://abhiyoga.developmentdemo.co.in/assets/CompanyDetails/images/APPLICATIONLOGO" alt="APPLICATIONLOGOCompany" style="width: 56px;">
+                                    <img src="https://verifyfa.developmentdemo.co.in/assets/img/logo.png" alt="APPLICATIONLOGOCompany" style="width: 56px;">
                                 </div>
                             </div>
                             <div style="padding: 20px;background-color: rgb(255, 255, 255);border: 1px solid grey;">
@@ -209,10 +215,10 @@ class Superadmin_controller extends CI_Controller {
 
                                 <p style="font-size: 18px;">Thanks for your support and understanding. <br>
                                 Regards, <br>
-                                <b>COMPANYNAME</b></p>
+                                <b>'.$COMPANYNAME.'</b></p>
                                  <div style="text-align: left;">
                                      <div style="padding-bottom: 20px">
-                                        <img src="https://abhiyoga.developmentdemo.co.in/assets/CompanyDetails/images/COMPANYLOGO" alt="Company" style="width: 56px;">
+                                        <img src="https://verifyfa.developmentdemo.co.in/assets/img/logo.png" alt="Company" style="width: 56px;">
                                     </div>
                                 </div>
 
@@ -221,7 +227,7 @@ class Superadmin_controller extends CI_Controller {
                                 </div>
                             </div>
                             <div style="padding-top: 20px; color: rgb(153, 153, 153); text-align: justify;">
-                                Copyright <b>COMPANYNAME</b>. All rights reserved. Terms & Conditions Please do not share your Login details, such as User ID / Password / OTP with anyone, either over phone or through email.
+                                Copyright <b>'.$COMPANYNAME.'</b>. All rights reserved. Terms & Conditions Please do not share your Login details, such as User ID / Password / OTP with anyone, either over phone or through email.
                                 Do not click on link from unknown/ unsecured sources that seek your confidential information. 
                                 This email is confidential. It may also be legally privileged. If you are not the addressee, you may not copy, forward, disclose or use any part of it. Internet communications cannot be guaranteed to be timely, secure, error or virus free. The sender does not accept liability for any errors or omissions. We maintain strict security standards and procedures to prevent unauthorised access to any personal information about you.
                                 Kindly read through the Privacy Policy on our website for use of Personal Information.
@@ -230,7 +236,7 @@ class Superadmin_controller extends CI_Controller {
 
                             </div>
                             <div style="padding-top: 20px; color: rgb(153, 153, 153); text-align: center;">
-                            <a href="https://abhiyoga.developmentdemo.co.in/FOOTERHOMEPAGELINK">Home</a> | <a href="https://abhiyoga.developmentdemo.co.in/FOOTERPRIVECYPOLICYPAGELINK">Privacy Policy</a> | <a href="https://abhiyoga.developmentdemo.co.in/FOOTERDISCLAIMERPAGELINK">Disclaimer</a> | <a href="https://abhiyoga.developmentdemo.co.in/FOOTERSIGNINPAGELINK">Sign in</a>
+                            <a href="javascript:void(0)">Home</a> | <a href="javascript:void(0)">Privacy Policy</a> | <a href="javascript:void(0)">Disclaimer</a> | <a href="javascript:void(0)">Sign in</a>
                             </div>
                             </td>
                         </tr>
@@ -318,16 +324,14 @@ class Superadmin_controller extends CI_Controller {
 			$gst_org_name='';
 			$gst_org_address='';
 		}
-		$password=rand(0,9).rand(9,0).rand(0,9).rand(0,9);
 		$digits = 5;
-        $password = rand(pow(10, $digits-1), pow(10, $digits)-1);
-		// $password='12345';		//Hardik Fix Password Generate From Here
+		$TEMPORARYPASSWORD = rand(pow(10, $digits-1), pow(10, $digits)-1);
 		
 		$urer_registration_no=date("Ym")."VFA".rand(0,9).rand(0,9).rand(0,9).rand(0,9).rand(0,9);
 		$data_user= array(
 			"urer_registration_no"=>$urer_registration_no,
-			"password"=>md5($password),
-			"password_view"=>$password,
+			"password"=>md5($TEMPORARYPASSWORD),
+			"password_view"=>$TEMPORARYPASSWORD,
 			"balance_due"=>$this->input->post('balance_refundable'),
 			"plan_id"=>$this->input->post('plan'),
 			"first_name"=>$this->input->post('first_name'),
@@ -344,17 +348,17 @@ class Superadmin_controller extends CI_Controller {
 		);
 	$registered_user_id= $this->Super_admin_model->save_registered_user($data_user);
 
-
-
-	$to = $data['user']->email_id;
+	$to = $this->input->post('email_id');
 	// $to = 'hardik.meghnathi12@gmail.com';
+
+	$user_details =$this->Registered_user_model->get_registerd_user($registered_user_id);
+
 	
 	$activation_link = '<a href="'.base_url().'index.php/generate-activation-link/'.$registered_user_id.'">Active Your Account</a>';
 	$TRANSACTIONRECORDDATETIME = date('d-m-Y');
 	$APPLICATIONNAME = 'VerifyFa';
 	$RECEIVERNAME = 'User';
-	$digits = 5;
-	$TEMPORARYPASSWORD = rand(pow(10, $digits-1), pow(10, $digits)-1);
+	$COMPANYNAME = $user_details->organisation_name;
 	$subject = $APPLICATIONNAME.' Activate Your Account and Setup New 2';
 
 	$email_updated_content = '<body style="font-family: Helvetica, Arial, sans-serif; margin: 0px; padding: 0px; background-color: #ffffff;">
@@ -386,7 +390,7 @@ class Superadmin_controller extends CI_Controller {
 								<p style="font-size: 18px;line-height: 28px;">
 								Thanks for registering on <b>'.$APPLICATIONNAME.'</b>. It is important to activate your account in due time to continue further.
 								<br>
-								Your Temporary Password for 1st time login is: '.$password.'.
+								Your Temporary Password for 1st time login is: '.$TEMPORARYPASSWORD.'.
 								<br>
 								Please click on the link to Activate and setup your New Password: '.$activation_link.'
 								</p>
@@ -394,10 +398,10 @@ class Superadmin_controller extends CI_Controller {
 
 							<p style="font-size: 18px;">Thanks for your support and understanding. <br>
 							Regards, <br>
-							<b>COMPANYNAME</b></p>
+							<b>'.$COMPANYNAME.'</b></p>
 							 <div style="text-align: left;">
 								 <div style="padding-bottom: 20px">
-									<img src="https://abhiyoga.developmentdemo.co.in/assets/CompanyDetails/images/COMPANYLOGO" alt="Company" style="width: 56px;">
+									<img src="https://verifyfa.developmentdemo.co.in/assets/img/logo.png" alt="Company" style="width: 56px;">
 								</div>
 							</div>
 
