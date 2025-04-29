@@ -167,6 +167,13 @@ class Dashboard extends CI_Controller {
 		$this->load->view('dashboard2',$data);		
 	}
 
+	public function Two(){
+		// $data['projects']=$projects;
+		$data['page_title']="Dashboard";
+		$data['company_data_list']=$this->company_data_list();
+		$this->load->view('dashboardgraph',$data);	
+	}
+
 	public function company_data_list(){
         $entity_code=$this->admin_registered_entity_code;
         $userid=$this->user_id;
