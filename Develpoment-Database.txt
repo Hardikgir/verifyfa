@@ -5,4 +5,67 @@ Basic / Main Table :-
 -> company_projects
 -> contact_detail
 -> department
--> 
+-> notification
+-> notification_read
+-> transfered_account
+
+
+
+
+
+Basic Structure of Generated Table :- 
+{
+    1 id
+    2 item_category
+    3 item_sub_category
+    4 item_unique_code
+    5 item_sub_code
+    6 dept_internal_item_code
+    7 item_description 	
+    8 item_classification
+    9 component_details
+    10 serial_product_number
+    11 make
+    12 model
+    13 item_user
+    14 user_department
+    15 cost_centre
+    16 item_owner_dept
+    17 location_of_the_item_last_verified
+    18 quantity_as_per_invoice
+    19 uom
+    20 verifiable_status_y_n_na
+    21 tag_status_y_n_na
+    22 accounting_voucher_no
+    23 accounting_voucher_date
+    24 supplier_code
+    25 supplier_s_detail
+    26 po_wo_ref_no
+    27 po_wo_date
+    28 invoice_reference
+    29 date_of_purchase_invoice_date
+    30 date_of_item_capitalization
+    31 date_of_last_physical_verification
+    32 total_item_amount_capitalized
+    33 wdv_at_the_end_of_reporting_period
+    34 verification_status
+    35 quantity_verified
+    36 new_location_verified
+    37 verified_by
+    38 verified_by_username
+    39 verified_datetime
+    40 verification_remarks
+    41 item_note
+    42 qty_ok
+    43 qty_damaged
+    44 qty_scrapped
+    45 qty_not_in_use
+    46 qty_missing
+    47 qty_shifted
+    48 is_alotted
+    49 is_edit
+    50 instance_count
+    51 mode_of_verification
+    52 createdat 	
+    53 updatedat
+}
