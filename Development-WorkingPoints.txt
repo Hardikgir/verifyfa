@@ -108,3 +108,14 @@ Issue With Mobile app
     
     
 
+
+log_manage (created on 29 April)
+
+id
+module :- company
+operation :- Add|Update|Delete
+previous_value :- (Applicable if Update|Delete) 
+updated_value :- (Applicable if Update|Delete) 
+created_by :- User_id
+created_at :- TimeStamp
+updated_at :- TimeStamp
