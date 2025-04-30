@@ -167,10 +167,10 @@ class Superadmin_controller extends CI_Controller {
 		$to = $data['user']->email_id;
 		// $to = 'hardik.meghnathi12@gmail.com';
 		
-		$activation_link = '<a href="'.base_url().'index.php/generate-activation-link/'.$id.'">Active Your Account</a>';
+		$activation_link = '<a href="'.base_url().'index.php/generate-activation-link/'.$id.'">Activate Your Account</a>';
 		$TRANSACTIONRECORDDATETIME = date('d-m-Y h:i:s');
 
-		$APPLICATIONNAME = 'VerifyFa';
+		$APPLICATIONNAME = 'VerifyFA';
 		$RECEIVERNAME = $data['user']->first_name;		
 		$subject = $APPLICATIONNAME.' Activate Your Account and Setup New 1';
 
@@ -207,20 +207,17 @@ class Superadmin_controller extends CI_Controller {
                                     <p style="font-size: 18px;line-height: 28px;">
                                     Thanks for registering on <b>'.$APPLICATIONNAME.'</b>. It is important to activate your account in due time to continue further.
                                     <br>
-                                    Your Temporary Password for 1st time login is: '.$TEMPORARYPASSWORD.'.
+									<br>
+                                    Your Temporary Password for 1st time login is: <b>'.$TEMPORARYPASSWORD.'</b>.
                                     <br>
-                                    Please click on the link to Activate and setup your New Password: '.$activation_link.'
+									<br>
+                                    Please click on the link to Activate and setup your New Password. '.$activation_link.'
                                     </p>
 
 
                                 <p style="font-size: 18px;">Thanks for your support and understanding. <br>
                                 Regards, <br>
                                 <b>'.$COMPANYNAME.'</b></p>
-                                 <div style="text-align: left;">
-                                     <div style="padding-bottom: 20px">
-                                        <img src="https://verifyfa.developmentdemo.co.in/assets/img/logo.png" alt="Company" style="width: 56px;">
-                                    </div>
-                                </div>
 
                                 <p style="font-size: 14px;color: gray;text-align: center;">*****This is a system generated communication and does not require signature. *****</p>
 
@@ -236,7 +233,7 @@ class Superadmin_controller extends CI_Controller {
 
                             </div>
                             <div style="padding-top: 20px; color: rgb(153, 153, 153); text-align: center;">
-                            <a href="javascript:void(0)">Home</a> | <a href="javascript:void(0)">Privacy Policy</a> | <a href="javascript:void(0)">Disclaimer</a> | <a href="javascript:void(0)">Sign in</a>
+                            <a href="javascript:void(0)">Home</a> | <a href="javascript:void(0)">Privacy Policy</a> | <a href="javascript:void(0)">Disclaimer</a>
                             </div>
                             </td>
                         </tr>
@@ -354,9 +351,9 @@ class Superadmin_controller extends CI_Controller {
 	$user_details =$this->Registered_user_model->get_registerd_user($registered_user_id);
 
 	
-	$activation_link = '<a href="'.base_url().'index.php/generate-activation-link/'.$registered_user_id.'">Active Your Account</a>';
+	$activation_link = '<a href="'.base_url().'index.php/generate-activation-link/'.$registered_user_id.'">Activate Your Account</a>';
 	$TRANSACTIONRECORDDATETIME = date('d-m-Y');
-	$APPLICATIONNAME = 'VerifyFa';
+	$APPLICATIONNAME = 'VerifyFA';
 	$RECEIVERNAME = 'User';
 	$COMPANYNAME = $user_details->organisation_name;
 	$subject = $APPLICATIONNAME.' Activate Your Account and Setup New 2';
@@ -390,20 +387,18 @@ class Superadmin_controller extends CI_Controller {
 								<p style="font-size: 18px;line-height: 28px;">
 								Thanks for registering on <b>'.$APPLICATIONNAME.'</b>. It is important to activate your account in due time to continue further.
 								<br>
-								Your Temporary Password for 1st time login is: '.$TEMPORARYPASSWORD.'.
 								<br>
-								Please click on the link to Activate and setup your New Password: '.$activation_link.'
+								Your Temporary Password for 1st time login is: <b>'.$TEMPORARYPASSWORD.'.</b>
+								<br>
+								<br>
+								Please click on the link to Activate and setup your New Password. '.$activation_link.'
 								</p>
 
 
 							<p style="font-size: 18px;">Thanks for your support and understanding. <br>
 							Regards, <br>
 							<b>'.$COMPANYNAME.'</b></p>
-							 <div style="text-align: left;">
-								 <div style="padding-bottom: 20px">
-									<img src="https://verifyfa.developmentdemo.co.in/assets/img/logo.png" alt="Company" style="width: 56px;">
-								</div>
-							</div>
+							 
 
 							<p style="font-size: 14px;color: gray;text-align: center;">*****This is a system generated communication and does not require signature. *****</p>
 

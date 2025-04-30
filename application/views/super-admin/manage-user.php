@@ -41,7 +41,8 @@ $cancelled_projects=2;
              foreach($user_data as $row){ 
                 $plan_row=get_plan_row($row->plan_id);    
                 $user_plan_row=get_user_plan_row($row->id);   
-                $time_remain=get_diff_twodate($user_plan_row->plan_end_date);
+                // $time_remain=get_diff_twodate($user_plan_row->plan_end_date);
+                $time_remain = 5;
                 ?>
             <tr>
                 <td style="padding: 15px 0px !important;"><?php echo $row->first_name .' '. $row->last_name;?></td>

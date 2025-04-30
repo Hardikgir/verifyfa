@@ -78,19 +78,20 @@ $this->load->view('layouts/sidebar');
                     </a>
                     <?php $prjcnt = check_user_projects($row->id);
                     if($prjcnt > 0){?>
-                    <a href="#" onclick="alertnotdelete()">
+                    | <a href="#" onclick="alertnotdelete()">
                       <i class="fa fa-trash"></i>Delete
                     </a>
                     <?php }else{
                     ?>
-                    <a href="#" onclick="archiveFunction('<?php echo $row->id;?>')">
+                    | <a href="#" onclick="archiveFunction('<?php echo $row->id;?>')">
                      <i class="fa fa-trash"></i>Delete
                     </a>
                     <?php } ?>
 
                     <?php if($row->is_login == '1'){ ?>
-                    <a href="<?php echo base_url();?>index.php/reset-user-login/<?php echo $row->id;?>">
-                    Reset
+                        
+                    | <a href="<?php echo base_url();?>index.php/reset-user-login/<?php echo $row->id;?>">
+                    <i class="fa fa-refresh"></i>Reset
                     </a>
                     <?php } ?>
 

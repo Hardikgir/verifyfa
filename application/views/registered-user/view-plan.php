@@ -196,7 +196,7 @@ border: none;
                 <div class="col-md-6 form-row">
  <?php if($user_data->is_active != '6'){ ?>
   <a href="<?php echo base_url();?>index.php/unsubscribe-account/<?php echo $user_data->id;?>">
-   <button class="btn btn-success">Unsubscripe Subscribe Account</button>
+   <button class="btn btn-success">Unsubscribe Account</button>
  </a>
    <?php }else{ ?>
        <button class="btn btn-warning"> Account Unsubscribed</button>
@@ -274,7 +274,7 @@ border: none;
 <div class="col-md-12" style="    margin: 0px 10px;">
 <nav style="margin: 25px 0;">
     <div class="nav nav-tabs nav-fill p-0" id="nav-tab" role="tablist">
-        <a disabled="" class="nav-item nav-link active text-left" id="nav-home-tab">Transection History</a>
+        <a disabled="" class="nav-item nav-link active text-left" id="nav-home-tab">Transaction History</a>
     
     </div>
 </nav>

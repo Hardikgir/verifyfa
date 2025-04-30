@@ -633,6 +633,10 @@ class Dashboard extends CI_Controller {
 				else if($exceptioncategory==8)
 				{
 					$getreport=$this->tasks->getExceptionEightReport($project_name,$verificationstatus,$reportHeaders);
+					// echo '<pre>last_query ';
+					// print_r($this->db->last_query());
+					// echo '</pre>';
+					// exit();
 					$reportView="modeReport";
 				}
 				$getreport['project']=$getProject;
@@ -1880,7 +1884,7 @@ class Dashboard extends CI_Controller {
 
 
 		$rowCount=4;
-		$details_content = "Name of the Report : ".$ReportTitle;
+		$details_content = "Name of the Report : Condition of Items";
 		// $sheet->mergeCells("A1:F1");
 		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
@@ -2017,6 +2021,10 @@ class Dashboard extends CI_Controller {
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Verify By");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Allocation Status");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
@@ -2045,9 +2053,7 @@ class Dashboard extends CI_Controller {
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 
-		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Verify By");
-		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
-		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+		
 		
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Project Status");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
@@ -2123,6 +2129,7 @@ class Dashboard extends CI_Controller {
 
 			$remainingAmount=$gr['total_item_amount_capitalized']/$gr['quantity_as_per_invoice'];
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $remainingAmount*$gr['quantity_verified']);
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $verifier_by_name);
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, "Allocated");
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $getProject[0]->project_id);
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $getProject[0]->project_name);
@@ -2130,7 +2137,6 @@ class Dashboard extends CI_Controller {
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, date_format($duedate,"d-m-Y"));
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $getProject[0]->period_of_verification);
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $verifier_name);
-			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $verifier_by_name);
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $projectStatus);
 			
 			$rowCount++;
@@ -2469,7 +2475,7 @@ class Dashboard extends CI_Controller {
 
 
 		$rowCount=4;
-		$details_content = "Name of the Report : ".$ReportTitle;
+		$details_content = "Name of the Report : Qty Validation Status";
 		// $sheet->mergeCells("A1:F1");
 		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
@@ -4479,7 +4485,7 @@ class Dashboard extends CI_Controller {
 
 
 		$rowCount=4;
-		$details_content = "Name of the Report : Mode of Verification ".$mode;
+		$details_content = "Name of the Report : Mode of Verification";
 		// $sheet->mergeCells("A1:F1");
 		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
