@@ -822,7 +822,7 @@ class Plancycle extends CI_Controller {
 		$start_date=$this->input->post('start_date');
 		$end_date=$this->input->post('end_date');
 		$item_category=$this->input->post('item_category');
-		$instruction_to_user=$this->input->post('instruction_to_user');
+		$instructions_to_user=$this->input->post('instructions_to_user');
 		$original_file=$this->input->post('original_file');
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
@@ -888,7 +888,7 @@ class Plancycle extends CI_Controller {
 			'start_date'=>$start_date,
 			'period_of_verification'=>$period_of_verification,
 			'item_category'=>$ctgry,
-			'instruction_to_user'=>$instruction_to_user,
+			'instruction_to_user'=>$instructions_to_user,
 			'project_type'=>$project_type,
 			'project_location'=>$company_location,
 			'original_table_name'=>$table_name,

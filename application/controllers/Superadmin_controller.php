@@ -13,6 +13,8 @@ class Superadmin_controller extends CI_Controller {
             redirect(base_url()."index.php/super-admin-login", 'refresh');
 		}
 		$this->load->model('Super_admin_model');
+		$this->load->model('Registered_user_model');
+		
 	}
 
     public function super_admin_dashboard(){
@@ -165,13 +167,19 @@ class Superadmin_controller extends CI_Controller {
 		$to = $data['user']->email_id;
 		// $to = 'hardik.meghnathi12@gmail.com';
 		
-		$activation_link = '<a href="'.base_url().'index.php/generate-activation-link/'.$id.'">Active Your Account</a>';
-		$TRANSACTIONRECORDDATETIME = date('d-m-Y');
-		$APPLICATIONNAME = 'VerifyFa';
-		$RECEIVERNAME = 'User';
+		// $activation_link = '<a href="'.base_url().'index.php/registered-user-login/">Activate Your Account</a>';
+		// $activation_link = '<a href="'.base_url().'index.php/activation-registered-user/">Activate Your Account</a>';
+		$activation_link = '<a href="'.base_url().'index.php/generate-active-register-user/'.$id.'">Activate Your Account</a>';
+		$TRANSACTIONRECORDDATETIME = date('d-m-Y h:i:s');
+
+		$APPLICATIONNAME = 'VerifyFA';
+		$RECEIVERNAME = $data['user']->first_name;		
+		$subject = $APPLICATIONNAME.' Activate Your Account and Setup New';
+
 		$digits = 5;
-		$subject = $APPLICATIONNAME.' Activate Your Account and Setup New 1';
 		$TEMPORARYPASSWORD = rand(pow(10, $digits-1), pow(10, $digits)-1);
+		$COMPANYNAME = $data['user']->organisation_name;
+
 		$email_updated_content = '<body style="font-family: Helvetica, Arial, sans-serif; margin: 0px; padding: 0px; background-color: #ffffff;">
             <table role="presentation"
                 style="width: 100%;border-collapse: collapse;border: 0px;border-spacing: 0px;font-family: Arial, Helvetica, sans-serif;background-color: rgb(250, 250, 250);">
@@ -184,7 +192,7 @@ class Superadmin_controller extends CI_Controller {
                             <td style="padding: 40px 0px 0px;">
                             <div style="text-align: left;">
                                 <div style="padding-bottom: 20px;text-align: center;">
-                                    <img src="https://abhiyoga.developmentdemo.co.in/assets/CompanyDetails/images/APPLICATIONLOGO" alt="APPLICATIONLOGOCompany" style="width: 56px;">
+                                    <img src="https://verifyfa.developmentdemo.co.in/assets/img/logo.png" alt="APPLICATIONLOGOCompany" style="width: 56px;">
                                 </div>
                             </div>
                             <div style="padding: 20px;background-color: rgb(255, 255, 255);border: 1px solid grey;">
@@ -201,27 +209,24 @@ class Superadmin_controller extends CI_Controller {
                                     <p style="font-size: 18px;line-height: 28px;">
                                     Thanks for registering on <b>'.$APPLICATIONNAME.'</b>. It is important to activate your account in due time to continue further.
                                     <br>
-                                    Your Temporary Password for 1st time login is: '.$TEMPORARYPASSWORD.'.
+									<br>
+                                    Your Temporary Password for 1st time login is: <b>'.$TEMPORARYPASSWORD.'</b>.
                                     <br>
-                                    Please click on the link to Activate and setup your New Password: '.$activation_link.'
+									<br>
+                                    Please click on the link to Activate and setup your New Password. '.$activation_link.'
                                     </p>
 
 
                                 <p style="font-size: 18px;">Thanks for your support and understanding. <br>
                                 Regards, <br>
-                                <b>COMPANYNAME</b></p>
-                                 <div style="text-align: left;">
-                                     <div style="padding-bottom: 20px">
-                                        <img src="https://abhiyoga.developmentdemo.co.in/assets/CompanyDetails/images/COMPANYLOGO" alt="Company" style="width: 56px;">
-                                    </div>
-                                </div>
+                                <b>'.$COMPANYNAME.'</b></p>
 
                                 <p style="font-size: 14px;color: gray;text-align: center;">*****This is a system generated communication and does not require signature. *****</p>
 
                                 </div>
                             </div>
                             <div style="padding-top: 20px; color: rgb(153, 153, 153); text-align: justify;">
-                                Copyright <b>COMPANYNAME</b>. All rights reserved. Terms & Conditions Please do not share your Login details, such as User ID / Password / OTP with anyone, either over phone or through email.
+                                Copyright <b>'.$COMPANYNAME.'</b>. All rights reserved. Terms & Conditions Please do not share your Login details, such as User ID / Password / OTP with anyone, either over phone or through email.
                                 Do not click on link from unknown/ unsecured sources that seek your confidential information. 
                                 This email is confidential. It may also be legally privileged. If you are not the addressee, you may not copy, forward, disclose or use any part of it. Internet communications cannot be guaranteed to be timely, secure, error or virus free. The sender does not accept liability for any errors or omissions. We maintain strict security standards and procedures to prevent unauthorised access to any personal information about you.
                                 Kindly read through the Privacy Policy on our website for use of Personal Information.
@@ -230,7 +235,7 @@ class Superadmin_controller extends CI_Controller {
 
                             </div>
                             <div style="padding-top: 20px; color: rgb(153, 153, 153); text-align: center;">
-                            <a href="https://abhiyoga.developmentdemo.co.in/FOOTERHOMEPAGELINK">Home</a> | <a href="https://abhiyoga.developmentdemo.co.in/FOOTERPRIVECYPOLICYPAGELINK">Privacy Policy</a> | <a href="https://abhiyoga.developmentdemo.co.in/FOOTERDISCLAIMERPAGELINK">Disclaimer</a> | <a href="https://abhiyoga.developmentdemo.co.in/FOOTERSIGNINPAGELINK">Sign in</a>
+                            <a href="javascript:void(0)">Home</a> | <a href="javascript:void(0)">Privacy Policy</a> | <a href="javascript:void(0)">Disclaimer</a>
                             </div>
                             </td>
                         </tr>
@@ -260,51 +265,11 @@ class Superadmin_controller extends CI_Controller {
 			}
 		}
 
-		// echo '<pre>mailsend';
-		// print_r($mailsend);
-		// echo '</pre>';
-		// exit(); 
-
-		// echo '<pre>';
-		// print_r($_SESSION);
-		// echo '</pre>';
-		// exit(); 
-
+		
 		$plan_data_details = $this->Super_admin_model->get_registered_user_plan($id);
 		$data['plan_data'] = $plan_data_details;
 		$data['plan_details'] = get_plan_row($plan_data_details->plan_id);
-		// echo '<pre>';
-		// print_r($data);
-		// echo '</pre>';
-		// exit(); 
-
-		// $this->db->select('register_user_plan_log.*, subscription_plan.*');
-		// $this->db->from(' subscription_plan');
-		// $this->db->join('register_user_plan_log','register_user_plan_log.plan_id= subscription_plan.id');
-		// $this->db->where('register_user_plan_log.register_user_id',$id);
-		// $getnotifications=$this->db->get();
-		// $result = $getnotifications->result();
-
-
-		// echo '<pre>last_query ';
-		// print_r($this->db->last_query());
-		// echo '</pre>';
-		// exit();
-
-		// echo '<pre>result ::';
-		// print_r($result);
-		// echo '</pre>';
-		// exit(); 
-
-		// echo '<pre>last_query ';
-		// print_r($this->db->last_query());
-		// echo '</pre>';
-		// echo '<pre>';
-		// print_r($data['plan_data']);
-		// echo '</pre>';
-		// exit(); 
-
-        $this->load->view("super-admin/confirmation-user-detail",$data);
+		$this->load->view("super-admin/confirmation-user-detail",$data);
 	}
 
 	public function save_registred_user(){
@@ -318,16 +283,14 @@ class Superadmin_controller extends CI_Controller {
 			$gst_org_name='';
 			$gst_org_address='';
 		}
-		$password=rand(0,9).rand(9,0).rand(0,9).rand(0,9);
 		$digits = 5;
-        $password = rand(pow(10, $digits-1), pow(10, $digits)-1);
-		// $password='12345';		//Hardik Fix Password Generate From Here
+		$TEMPORARYPASSWORD = rand(pow(10, $digits-1), pow(10, $digits)-1);
 		
 		$urer_registration_no=date("Ym")."VFA".rand(0,9).rand(0,9).rand(0,9).rand(0,9).rand(0,9);
 		$data_user= array(
 			"urer_registration_no"=>$urer_registration_no,
-			"password"=>md5($password),
-			"password_view"=>$password,
+			"password"=>md5($TEMPORARYPASSWORD),
+			"password_view"=>$TEMPORARYPASSWORD,
 			"balance_due"=>$this->input->post('balance_refundable'),
 			"plan_id"=>$this->input->post('plan'),
 			"first_name"=>$this->input->post('first_name'),
@@ -344,99 +307,8 @@ class Superadmin_controller extends CI_Controller {
 		);
 	$registered_user_id= $this->Super_admin_model->save_registered_user($data_user);
 
-
-
-	$to = $data['user']->email_id;
-	// $to = 'hardik.meghnathi12@gmail.com';
 	
-	$activation_link = '<a href="'.base_url().'index.php/generate-activation-link/'.$registered_user_id.'">Active Your Account</a>';
-	$TRANSACTIONRECORDDATETIME = date('d-m-Y');
-	$APPLICATIONNAME = 'VerifyFa';
-	$RECEIVERNAME = 'User';
-	$digits = 5;
-	$TEMPORARYPASSWORD = rand(pow(10, $digits-1), pow(10, $digits)-1);
-	$subject = $APPLICATIONNAME.' Activate Your Account and Setup New 2';
-
-	$email_updated_content = '<body style="font-family: Helvetica, Arial, sans-serif; margin: 0px; padding: 0px; background-color: #ffffff;">
-		<table role="presentation"
-			style="width: 100%;border-collapse: collapse;border: 0px;border-spacing: 0px;font-family: Arial, Helvetica, sans-serif;background-color: rgb(250, 250, 250);">
-			<tbody>
-			<tr>
-				<td align="center" style="padding: 1rem 2rem; vertical-align: top; width: 100%;">
-				<table role="presentation" style="max-width: 600px; border-collapse: collapse; border: 0px; border-spacing: 0px; text-align: left;">
-					<tbody>
-					<tr>
-						<td style="padding: 40px 0px 0px;">
-						<div style="text-align: left;">
-							<div style="padding-bottom: 20px;text-align: center;">
-								<img src="https://abhiyoga.developmentdemo.co.in/assets/CompanyDetails/images/APPLICATIONLOGO" alt="APPLICATIONLOGOCompany" style="width: 56px;">
-							</div>
-						</div>
-						<div style="padding: 20px;background-color: rgb(255, 255, 255);border: 1px solid grey;">
-							<div style="color: rgb(0, 0, 0); text-align: left;">
-
-								<p style="font-size: 14px;color: gray;text-align: center;">
-								***** This is an auto generated NO REPLY communication and replies to this email id are
-								not attended to. (Business Hours from Mon To Sat : 10:00am to 6:00pm) *****
-								</p>
-
-								<p style="font-size: 18px;"> '.$TRANSACTIONRECORDDATETIME.' </p>
-								<p style="font-size: 18px;">Dear <b>'.$RECEIVERNAME.'</b>,</p>
-
-								<p style="font-size: 18px;line-height: 28px;">
-								Thanks for registering on <b>'.$APPLICATIONNAME.'</b>. It is important to activate your account in due time to continue further.
-								<br>
-								Your Temporary Password for 1st time login is: '.$password.'.
-								<br>
-								Please click on the link to Activate and setup your New Password: '.$activation_link.'
-								</p>
-
-
-							<p style="font-size: 18px;">Thanks for your support and understanding. <br>
-							Regards, <br>
-							<b>COMPANYNAME</b></p>
-							 <div style="text-align: left;">
-								 <div style="padding-bottom: 20px">
-									<img src="https://abhiyoga.developmentdemo.co.in/assets/CompanyDetails/images/COMPANYLOGO" alt="Company" style="width: 56px;">
-								</div>
-							</div>
-
-							<p style="font-size: 14px;color: gray;text-align: center;">*****This is a system generated communication and does not require signature. *****</p>
-
-							</div>
-						</div>
-						
-						</td>
-					</tr>
-					</tbody>
-				</table>
-				</td>
-			</tr>
-			</tbody>
-		</table>
-		</body>';
-
-	
-	$CI = setEmailProtocol();
-	$from_email = 'solutions@ethicalminds.in';
-	$CI->email->set_newline("\r\n");
-	$CI->email->set_mailtype("html");
-	$CI->email->set_header('Content-Type', 'text/html');
-	$CI->email->from($from_email);
-	$CI->email->to($to);
-	$CI->email->subject($subject);
-	$CI->email->message($email_updated_content);
-	if($CI->email->send()){
-		$mailsend = 1;
-	}
-
-
-	
-		
-
-
-
-//step 2 data save//
+	//step 2 data save//
 	$data_plan= array(
 		"regiistered_user_id"=>$registered_user_id,
 		"plan_id"=>$this->input->post('plan'),
@@ -449,10 +321,10 @@ class Superadmin_controller extends CI_Controller {
 		"created_at"=>date("Y-m-d H:i:s")
 	);
 	$this->Super_admin_model->save_registered_user_plan($data_plan);
-//step 2 data save//
+	//step 2 data save//
 
-// ??step 3 data save//
-$transection_id=date("YmdHis").rand(0,9).rand(0,9).rand(0,9);
+	// ??step 3 data save//
+	$transection_id=date("YmdHis").rand(0,9).rand(0,9).rand(0,9);
 	$data_payment= array(
 		"regiistered_user_id"=>$registered_user_id,
 		"plan_id"=>$this->input->post('plan'),
@@ -470,27 +342,6 @@ $transection_id=date("YmdHis").rand(0,9).rand(0,9).rand(0,9);
 		"created_at"=>date("Y-m-d H:i:s")
 	);
 	$this->Super_admin_model->save_registered_user_payment($data_payment);
-
-
-	// Hardik Comment :- Email Should be Send from here.
-	// Email Send While Adding
-	/*
-	$toemail = $this->input->post('email_id');
-	$password_view=$password;
-	$firstname=$this->input->post('first_name');
-	$lastname=$this->input->post('last_name');
-
-	// $activation_link=$userdata->activation_link;
-	$activation_link = base_url().'index.php/send-activation-link/'.$registered_user_id;
-	$subject="verifyfa.com Activation Account Email";
-	$login_link= base_url()."index.php/registered-user-login";
-	$message="Dear ".$firstname." ". $lastname."<br> <br> Your account activation link given below. Click below given link and activate your account.<br> Once you are activate your account login your account with given login credentials.<br> <b>Activate your account:</b> <a href='".$activation_link."' target='_blank'>Click Here</a>.<br><br>
-	<b>Login Url:</b> <a href='".$login_link."' target='_blank' >Click Here For login</a>
-	<b>Email-Id:</b> ".$toemail."
-	<b>Password:</b> ".$password_view."<br><br>Thank You.";
-	$this->sent_email($toemail,$subject,$message);
-	*/
-	
 	$this->session->set_flashdata('success', 'User Created Successfully Now you Are In Confirmation Page');
 	redirect("index.php/confirmation-user-detail/".$registered_user_id);
 	}
@@ -515,6 +366,7 @@ $transection_id=date("YmdHis").rand(0,9).rand(0,9).rand(0,9);
 	 $this->session->set_flashdata('success', 'Link Generated Successfully');
 	 redirect("index.php/confirmation-user-detail/".$id);
  }
+
 
 
  public function send_activation_link($id){

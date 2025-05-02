@@ -7,6 +7,7 @@ class Login extends CI_Controller {
 	{
 		parent::__construct();
 		$this->load->model('login_model','login');	
+		$this->load->model('Super_admin_model');
 	}
 	public function index()
 	{
@@ -199,4 +200,40 @@ class Login extends CI_Controller {
         $data['page_title']="Connfirmation Session Use";
         $this->load->view("registered-user/confirmation-window-transfer",$data);
      }
+
+	 public function generate_active_register_user($id){
+		$date = date("Y-m-d");
+	   	$activation_link = base_url().'index.php/activation-registered-user/'.$id;
+	
+		$expire_date= date('Y-m-d', strtotime($date. ' + 1 days'));
+		$data=array(
+			"activation_generete_link"=>"1",
+			"activation_generete_link_date"=>$date,
+			"activation_link"=>$activation_link,
+		 );
+		 $this->Super_admin_model->update_confirmation_data_user($id,$data);
+
+		/*
+		$userrow = $this->login->activate_register_user($id);
+		$date=date("Y-m-d");
+		$expiry_date= $userrow->link_expiry_date;
+		if( $expiry_date < $date){
+		
+			$this->session->set_flashdata('error_message', 'Your activation link expire kindly connect with verifyfa team.');
+			redirect("index.php/registered-user-login");
+		}else{
+			$data=array("is_active"=>"4");
+			$this->login->activate_register_user_save($user_id,$data);
+			$this->session->set_flashdata('error_message', 'Your account is active please login here');
+			redirect("index.php/registered-user-login");
+		 }
+		 */
+
+		$data=array("is_active"=>"4");
+		$this->login->activate_register_user_save($id,$data);
+		$this->session->set_flashdata('error_message', 'Your account is active please login here');
+		redirect("index.php/registered-user-login");
+		
+	 }
+	
 }

@@ -170,7 +170,8 @@ $route['get-role'] = 'Admin_controller/get_role';
 $route['delete-user/(:num)'] = 'Admin_controller/delete_user/$1';
 $route['reset-user-login/(:num)'] = 'Admin_controller/reset_user_login/$1';
 
-
+//routes for super admin//
+$route['generate-active-register-user/(:num)'] = 'login/generate_active_register_user/$1';
 
 
 // API ROUTES//

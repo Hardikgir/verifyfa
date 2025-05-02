@@ -120,11 +120,7 @@ if($row->company_id=='0'){
                     </a>
                     <?php } ?>
 
-                    <?php if($userrow->is_login == '1'){ ?>
-                    <a href="<?php echo base_url();?>index.php/reset-user-login/<?php echo $userid;?>">
-                     <i class="fa fa-eraser"></i>Reset
-                    </a>
-                    <?php } ?>
+                    
 
                    
                 

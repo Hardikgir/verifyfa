@@ -124,7 +124,15 @@ border: none;
                 <div class="col-md-6 form-row">
                     <label class="form-label">Subscription Plan</label>
                     <?php $plan_row=get_plan_row($plan_data->plan_id);?>
+                    <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="
+                    <b>Subscription Plan Breakup</b> <br><br>
+                    <b>No. of Entities</b>: <u><?php echo ($plan_row->amount * $plan_data->subscription_time_value);?></u><br>
+                    <b> No. of Locations under each Entity</b>:  <u><?php echo get_total_payment_charges_user($plan_data->regiistered_user_id);?></u><br>
+                    <b>Total No. of Users</b>:  <u><?php echo get_total_payment_discount_user($plan_data->regiistered_user_id);?></u><br>
+                    <b>No. of Rows for upload</b>:  <u><?php echo get_total_payment_discount_user($plan_data->regiistered_user_id);?></u>">
                     <?php echo $plan_row->title;?>
+                    </a>
+
                 </div>
                 <div class="col-md-6 form-row">
                 <label class="form-label">Period of Subscription </label>
@@ -182,6 +190,24 @@ border: none;
                 <label class="form-label">Amount of Subscription Due </label>
                 RS. <?php echo $user_data->balance_due;?>
                 </div>
+
+
+
+                <div class="col-md-6 form-row">
+ <?php if($user_data->is_active != '6'){ ?>
+  <a href="<?php echo base_url();?>index.php/unsubscribe-account/<?php echo $user_data->id;?>">
+   <button class="btn btn-success">Unsubscribe Account</button>
+ </a>
+   <?php }else{ ?>
+       <button class="btn btn-warning"> Account Unsubscribed</button>
+       <label class="form-label">Date of Unsubscribed:</label>
+                     <?php 
+                     if($user_data->unsubscribe_date !='' ){
+                     echo date('d-M-Y',strtotime($user_data->unsubscribe_date));
+                     }else{ echo "N/A";}
+                     ?>
+      <?php } ?>
+ </div>
                 
              </div>
              <br>
@@ -248,7 +274,7 @@ border: none;
 <div class="col-md-12" style="    margin: 0px 10px;">
 <nav style="margin: 25px 0;">
     <div class="nav nav-tabs nav-fill p-0" id="nav-tab" role="tablist">
-        <a disabled="" class="nav-item nav-link active text-left" id="nav-home-tab">Transection History</a>
+        <a disabled="" class="nav-item nav-link active text-left" id="nav-home-tab">Transaction History</a>
     
     </div>
 </nav>

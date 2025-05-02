@@ -154,6 +154,16 @@ table th,table td{
 									
 									<div class="clearfix"></div>
 								</form>
+								
+								<?php 
+
+								// echo '<pre>data';
+								// print_r($data['all']);
+								// echo '</pre>';
+								// exit();
+														
+								?>
+
 								<div class="col-md-12" style="overflow-x:scroll;">
 									<table border="1">
 										<tr>
@@ -168,6 +178,8 @@ table th,table td{
 										foreach($data['all'] as $allcat)
 										{
 											$manualItems=0;
+											// $scanItems=0;
+											/*
 											$scanItems=0;
 											foreach($data['manual'] as $manual)
 											{
@@ -179,6 +191,11 @@ table th,table td{
 											}
 											$totalManualItems=$totalManualItems+$manualItems;
 											$totalScanItems=$totalScanItems+$scanItems;
+											*/
+											$scanItems = $allcat->items;
+											$totalScanItems=$totalScanItems+$scanItems;
+											
+
 										?>
 										<tr>
 											<td><?php echo $allcat->item_category; ?></td>
