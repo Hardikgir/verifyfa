@@ -1,0 +1,121 @@
+Register users :- 
+    1. Tooltips (http://localhost/codeigniter/verifyfa/index.php/registered-user-subscription)
+    2. Unsubscript Button  (http://localhost/codeigniter/verifyfa/index.php/registered-user-subscription) [Need to Conform]
+    3. Suspend Button & Other Button Also Setup in Above page (Discussion on 15 April 2025 11:24 AM)
+
+User :- 
+    1. Email Need to check. (While new Register adding)
+    2. Reset Button for Mobile app (How to Manage need to Discuss with Avinash)
+    3. Audit Trail (Log Store karna h)
+        -> Company (Add/Edit/Delete)
+        -> Location (Add/Edit/Delete)
+        -> Department (Add/Edit/Delete)
+        -> User (Add/Edit/Delete)
+        -> UserRole (Add/Edit)
+        -> Register User (Add/Edit/Upgrade) [In Superadmin Profile]
+        -> Transfer My Account [In Register User]
+    4. passowrd Forcefully changes from temporary password (Then they are going to further process)[First Time Login Process]
+    5. Exception Report > Mode of Verification showing wrong data in table. (Download Excel is showing proper but count is not showing proper)
+
+
+Other :- 
+    1. Theri is 2-3 Email is setup please conform which is need (they are no need to use this many of email)
+    2. Request for Delete (Additional point) that is not working.
+    3. In Dashboard if you are selecting any option and click on go then previous selected option should be selected.
+
+Need to Conformation 
+    1. Clear Project | Clear Data | & Related to Other option need to conform that is working or not (Previous their is some error i fixed) On call they will be solve
+    
+
+Major
+    1. Notification & Issu Management
+    2. Dashboard Graphs (Discussion on 15 April 11:50 AM)
+    3. Email Template (Need to Discuss)
+
+
+Additional Work :-
+    -> Request for Delete Project (if user are not able to delete then they request to admin and admin can take action on that)
+
+
+
+
+Issue With Mobile app
+    1. Project Finish verificatn is done but in mobile app their is not effecting their. (15 April 11:39 am)
+    2. Verify by Search/Scan that is not identifier. (Manually search but mode of verificatn is showing scan)
+
+
+    /* Report Section */ 
+
+    1 :- Condition of Item
+    2 :- Changes/ Updations of Items [Not Used]
+    3 :- Qty Validation Status
+    4 :- Updated with Verification Remarks
+    5 :- Updated with Item Notes
+    6 :- Calculate Risk Exposure [Not Used]
+    7 :- Marked for Review [Removed]
+    8 :- Mode of Verification
+    9 :- Duplicate Item Codes verified [Not Used]
+    10 :- Duplicate Item Codes Identified [Not Used]
+    11 :- Revalidation Status [Removed]
+
+    Common Function :- generateExceptionReport
+
+    1 :- Condition of Item
+        -> conditionReport [downloadExceptionOneReport]
+            -> downloadExceptionOneGoodReport
+            -> downloadExceptionOneDamagedReport
+            -> downloadExceptionOneScrappedReport
+            -> downloadExceptionOneMissingReport
+            -> downloadExceptionOneShiftedReport
+            -> downloadExceptionOneNotinuseReport
+            -> downloadExceptionOneRemainingReport
+
+    2 :- Changes/ Updations of Items [Not Used]
+        -> updationReport
+
+    3 :- Qty Validation Status  
+        -> quantityValidationReport(downloadExceptionThreeReport)
+            -> downloadExceptionThreeVerifiedReport
+            -> downloadExceptionThreeEqualReport
+            -> downloadExceptionThreeShortReport
+            -> downloadExceptionThreeExcessReport
+            -> downloadExceptionThreeRemainingReport
+
+    4 :- Updated with Verification Remarks
+        -> verificationRemarksReport
+            -> downloadExceptionFourAllReport
+            -> downloadExceptionFourReport
+
+    5 :- Updated with Item Notes 
+        -> itemNotesReport
+            -> downloadExceptionFiveReport
+            -> downloadExceptionFiveAllReport
+
+    6 :- Calculate Risk Exposure [Not Used]
+        -> markedForReviewReport
+
+    7 :- Marked for Review [Removed]
+        -> riskExposerReport
+
+    8 :- Mode of Verification
+        -> modeReport
+            -> downloadExceptionEightReport/scan
+            -> downloadExceptionEightReport/manual
+
+
+    9 :- Duplicate Item Codes verified [Not Used]
+    10 :- Duplicate Item Codes Identified [Not Used]
+    
+    
+
+
+log_manage (created on 29 April)
+
+id
+module :- company
+operation :- Add|Update|Delete
+previous_value :- (Applicable if Update|Delete) 
+updated_value :- (Applicable if Update|Delete) 
+created_by :- User_id
+created_at :- TimeStamp
+updated_at :- TimeStamp

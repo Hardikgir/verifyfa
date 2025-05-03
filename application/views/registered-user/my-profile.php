@@ -50,9 +50,7 @@ border: none;
   border-radius:0;
   transition:background 0.20s linear;
 }
-.nav-link>.active{
-    /* background: #e74c3c; */
-}
+
 .form-row {
     display: flex;
     flex-wrap: wrap;

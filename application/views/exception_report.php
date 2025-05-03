@@ -9,12 +9,16 @@ select option:disabled {
     color: #cccccc;
     
 }
+
+.OptionEnable {
+	color:red
+}
 </style>
 	<div class="content">
 				<div class="container-fluid">
 
 				<!-- <form action="https://verifyfa.developmentdemo.co.in/index.php/dashboard/exceptions" method="post" class="bg-white"> -->
-					<form action="http://localhost/CODEIGNITER_PHP/verifyfa/index.php/dashboard/exceptions" method="post" class="bg-white">
+					<form action="http://localhost/codeigniter/verifyfa/index.php/dashboard/exceptions" method="post" class="bg-white">
                 <br>
                 <div class="row">
                 <div class="col-md-2 form-row">
@@ -113,6 +117,7 @@ select option:disabled {
 												</div>
 											</div>
 										</div>
+
 										<div class="row my-3">
 											<div class="col-md-6">
 												<div class="form-group">

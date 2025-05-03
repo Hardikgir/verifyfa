@@ -293,29 +293,6 @@ class Admin_controller extends CI_Controller {
         );
         $this->Admin_model->save_admin_user($data);
 
-
-
-        $to = $this->input->post('userEmail');
-		$subject = 'Registration Successfull';
-		$email_updated_content = '<p>Your Password :- <b>'.$temp_password.'</b></p>';
-		
-		$CI = setEmailProtocol();
-		$from_email = 'solutions@ethicalminds.in';
-		$CI->email->set_newline("\r\n");
-		$CI->email->set_mailtype("html");
-		$CI->email->set_header('Content-Type', 'text/html');
-		$CI->email->from($from_email);
-		$CI->email->to($to);
-		$CI->email->subject($subject);
-		$CI->email->message($email_updated_content);
-        $mailsend = 1;
-		if(server_check() == 'live'){
-			if($CI->email->send()){
-				$mailsend = 1;
-			}
-		}
-
-
         $this->session->set_flashdata('success', "User Created Successfully");
         redirect("index.php/manage-user-admin/");
     }
