@@ -1,18 +1,10 @@
 Their is 2 environment
 
-<<<<<<< HEAD
-1) Localhost :- 
-    URL :- https://localhost/verifyfa/
-    Database :- 
-    
-2) Hostinger-Development Server :- 
-=======
 -> Localhost :- 
     URL :- https://localhost/CODEIGNITER_PHP/verifyfa/
     Database :- 
     
 -> Hostinger-Development Server :- 
->>>>>>> 52a26f8b91b33569a4987192bfc6040bd52e4870
     URL :- https://verifyfa.developmentdemo.co.in/
     Database :- 
         URL :- https://auth-db1189.hstgr.io/index.php?db=u337050398_verifyfadb
