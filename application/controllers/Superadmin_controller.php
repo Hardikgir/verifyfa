@@ -167,7 +167,9 @@ class Superadmin_controller extends CI_Controller {
 		$to = $data['user']->email_id;
 		// $to = 'hardik.meghnathi12@gmail.com';
 		
-		$activation_link = '<a href="'.base_url().'index.php/registered-user-login/">Activate Your Account</a>';
+		// $activation_link = '<a href="'.base_url().'index.php/registered-user-login/">Activate Your Account</a>';
+		// $activation_link = '<a href="'.base_url().'index.php/activation-registered-user/">Activate Your Account</a>';
+		$activation_link = '<a href="'.base_url().'index.php/generate-active-register-user/'.$id.'">Activate Your Account</a>';
 		$TRANSACTIONRECORDDATETIME = date('d-m-Y h:i:s');
 
 		$APPLICATIONNAME = 'VerifyFA';
@@ -364,6 +366,7 @@ class Superadmin_controller extends CI_Controller {
 	 $this->session->set_flashdata('success', 'Link Generated Successfully');
 	 redirect("index.php/confirmation-user-detail/".$id);
  }
+
 
 
  public function send_activation_link($id){

@@ -428,6 +428,10 @@ class Admin_model extends CI_Model {
         $this->db->insert('notification_user',$data);
         return 1;
     }
+
+    public function get_all_user_of_role_by_entity(){
+        return true;
+    }
     
 }
 ?>

@@ -46,8 +46,9 @@ $this->load->view('layouts/footer');
     <div class="container-fluid">
         <?php 
         // $user_role_admin_cnt = 1;   //TEMPORARTY
-        if($user_role_admin_cnt > 0){ ?>
-        <form action="http://localhost/codeigniter/verifyfa/index.php/dashboard/index" method="post" class="bg-white">
+        // if($user_role_admin_cnt > 0){
+             ?>
+        <form action="<?php echo base_url();?>index.php/dashboard/index" method="post" class="bg-white">
                 <br>
                 <div class="row">
                 <div class="col-md-2 form-row">
@@ -78,38 +79,21 @@ $this->load->view('layouts/footer');
                 
                 <br>
         </form>
-    <?php } ?>
-        <div class="row">
-            <div class="col-md-12">
-                <div id="carousel-example-1" class="carousel no-flex testimonial-carousel slide carousel-fade" data-ride="carousel" data-interval="false">
-                    <!--Slides-->
-                    <div class="carousel-inner" role="listbox">
+    <?php // }
+     ?>
 
-                        <!--First slide-->
-                        <div class="carousel-item active">
-                            <div class="testimonial">
-                                <div class="row" id="#myCarousel">
-                                    <?php if(!empty($projects))
-                                    {
-                                    ?>
-                                    <canvas id="myChart" height="140"></canvas>
-                                    <?php
-                                    }else
-                                    {
-                                    ?>
-                                    <canvas id="myChart" height="140"></canvas>
-                                    <div class="col-md-12"><h3 class="text-center" style="width:100%;">No projects Available</h3></div>
-                                    <?php
-                                    }?>
-                                    
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!--Second slide-->
-                        <div class="carousel-item ">
-                            <div class="testimonial">
-                                <div class="row">
+
+
+    <div class="row">
+                                    <div class="col-md-12">
+                                        
+
+                                          
+                                       
+                                            
+                                                        
+                                                    
+                                                    <div class="row">
                                     <div class="col-md-12">
                                         <nav>
                                             <div class="nav nav-tabs nav-fill nav-justified" id="nav-tab" role="tablist">
@@ -532,6 +516,54 @@ $this->load->view('layouts/footer');
                                         </div>
                                     </div>
                                 </div>
+
+                                                  
+
+                                                    <div class="row" id="#myCarousel">
+                                    <?php if(!empty($projects))
+                                    {
+                                    ?>
+                                    <canvas id="myChart" height="140"></canvas>
+                                    <?php
+                                    }else
+                                    {
+                                    ?>
+                                    <canvas id="myChart" height="140"></canvas>
+                                    <div class="col-md-12"><h3 class="text-center" style="width:100%;">No projects Available</h3></div>
+                                    <?php
+                                    }?>
+                                    
+                                </div>
+                                                   
+                                    
+
+
+
+
+
+                    
+
+
+    
+
+        <?php /*
+        <div class="row">
+            <div class="col-md-12">
+                <div id="carousel-example-1" class="carousel no-flex testimonial-carousel slide carousel-fade" data-ride="carousel" data-interval="false">
+                    <!--Slides-->
+                    <div class="carousel-inner" role="listbox">
+
+                        <!--First slide-->
+                        <div class="carousel-item active">
+                            <div class="testimonial">
+                                
+                            </div>
+                        </div>
+                        
+                        <!--Second slide-->
+                        <div class="carousel-item ">
+                            <div class="testimonial">
+                                
                             </div>
                         </div>
 
@@ -543,7 +575,7 @@ $this->load->view('layouts/footer');
                     </ol>
                 </div>
             </div>
-        </div>
+        </div> */  ?>
     </div>
 </div>
 

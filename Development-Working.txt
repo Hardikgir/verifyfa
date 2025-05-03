@@ -18,3 +18,43 @@ Their is 2 environment
         URL :- https://auth-db1189.hstgr.io/index.php?db=u337050398_verifyfadb
         User :- 
         Pass :- 
+
+
+
+Link For :- 
+Generate Activation Link : http://localhost/codeigniter/verifyfa/index.php/generate-activation-link/22
+Superadmin_controller.php :- 
+ public function generate_activation_link($id){
+	$date = date("Y-m-d");
+   // Use date_add() function to add date object
+   $activation_link = base_url().'index.php/activation-registered-user/'.$id;
+
+    $expire_date= date('Y-m-d', strtotime($date. ' + 1 days'));
+	$data=array(
+        "activation_generete_link"=>"1",
+		"activation_generete_link_date"=>$date,
+		"activation_link"=>$activation_link,
+	 );
+	 $this->Super_admin_model->update_confirmation_data_user($id,$data);
+
+	 $this->session->set_flashdata('success', 'Link Generated Successfully');
+	 redirect("index.php/confirmation-user-detail/".$id);
+ }
+
+
+ public function activation_registered_user($user_id){
+	
+		$userrow = $this->login->activate_register_user($user_id);
+		$date=date("Y-m-d");
+		$expiry_date= $userrow->link_expiry_date;
+		if( $expiry_date < $date){
+		
+			$this->session->set_flashdata('error_message', 'Your activation link expire kindly connect with verifyfa team.');
+			redirect("index.php/registered-user-login");
+		}else{
+			$data=array("is_active"=>"4");
+			$this->login->activate_register_user_save($user_id,$data);
+			$this->session->set_flashdata('error_message', 'Your account is active please login here');
+			redirect("index.php/registered-user-login");
+		 }
+	}

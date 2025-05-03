@@ -58,6 +58,8 @@ $this->load->view('registered-user/layout/sidebar');
               </div>
                 </div>
                 <br>
+
+                <b class="text-danger text-left ml-2">Password must contain at least one number, one uppercase and a lowercase letter and a special character and at least 8 characters</b>
               
 					</div></form>			
 				</div></section>
