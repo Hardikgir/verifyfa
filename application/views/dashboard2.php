@@ -46,7 +46,8 @@ $this->load->view('layouts/footer');
     <div class="container-fluid">
         <?php 
         // $user_role_admin_cnt = 1;   //TEMPORARTY
-        if($user_role_admin_cnt > 0){ ?>
+        // if($user_role_admin_cnt > 0){
+             ?>
         <form action="<?php echo base_url();?>index.php/dashboard/index" method="post" class="bg-white">
                 <br>
                 <div class="row">
@@ -78,7 +79,8 @@ $this->load->view('layouts/footer');
                 
                 <br>
         </form>
-    <?php } ?>
+    <?php // }
+     ?>
 
 
 
