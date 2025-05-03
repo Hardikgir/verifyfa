@@ -50,6 +50,8 @@ $this->load->view('layouts/sidebar');
                 </div>
                 <p id="checkpassalert" style="color:red;font-weight:bold;"></p>
                 </div><br>
+
+                <b class="text-danger text-left ml-2">Password must contain at least one number, one uppercase and a lowercase letter and a special character and at least 8 characters</b>
                
                 <div class="row">
                 <div class="col-md-12 form-row">

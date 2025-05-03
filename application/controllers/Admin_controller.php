@@ -1020,7 +1020,7 @@ $role=implode(',',$this->input->post('user_role'));
         $this->db->update("users",$data);
 
         $this->session->set_flashdata("success","Login Reset Successfully");
-        redirect('index.php/manage-user-role');
+        redirect('index.php/manage-user-admin');
     }
     
 }

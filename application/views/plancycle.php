@@ -194,7 +194,7 @@ $this->load->view('layouts/sidebar');
 									<div class="row" id="totalLineContent" style="display:none">
 										<div class="col-md-12">
 											<div class="text-center" style="color:red">
-												<p>Important to Note : Your Current Subscription plan allows you to upload <b><?= $payment_history->line_item_avaliable; ?></b> rows of data. If more rows are needed to be uploaded, kindly upgrade your subscription plan.</p>
+												<p>Important to Note : Your Current Subscription plan allows you to upload <b><?php if(!empty($payment_history)){ echo $payment_history->line_item_avaliable; } ?></b> rows of data. If more rows are needed to be uploaded, kindly upgrade your subscription plan.</p>
 											</div>
 										</div>
 									</div>
