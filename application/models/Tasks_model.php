@@ -1560,4 +1560,14 @@ function get_product_search($sort_by,$order_by,$table_name)
         return $details;
     }
 
+
+    public function get_single_user($user_id){
+        $this->db->select('*');
+        $this->db->from('users');
+        $this->db->where('id',$user_id);
+        $query=$this->db->get();
+        return $query->row();
+    }
+
+
 }

@@ -484,7 +484,7 @@ class Dashboard extends CI_Controller {
 
 		if($this->input->post('company_id') && $this->input->post('location_id') ){
 			$lastProj=$this->db->query('Select * from company_projects where company_id='.$this->input->post('company_id').' and  project_location='.$this->input->post('location_id').'  and  entity_code="'.$this->admin_registered_entity_code.'"   order by id desc limit 1')->result();
-
+			
 		if(count($lastProj)>0)
 		{
 			$condition=array(
