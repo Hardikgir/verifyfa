@@ -172,7 +172,7 @@ $route['reset-user-login/(:num)'] = 'Admin_controller/reset_user_login/$1';
 
 //routes for super admin//
 $route['generate-active-register-user/(:num)'] = 'login/generate_active_register_user/$1';
-
+$route['request-for-delete'] = 'Admin_controller/request_for_delete';
 
 // API ROUTES//
 

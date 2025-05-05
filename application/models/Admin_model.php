@@ -429,8 +429,24 @@ class Admin_model extends CI_Model {
         return 1;
     }
 
-    public function get_all_user_of_role_by_entity(){
-        return true;
+    public function get_all_user_of_role_by_entity($user_role,$entity_code){
+        $query=$this->db->query("select * from user_role where  entity_code='".$entity_code."'  AND FIND_IN_SET(".$user_role.",user_role)");
+        return $query->result();
+    }
+
+    public function get_users_by_ids($user_ids){
+        $this->db->select('*');
+        $this->db->from('users');
+        // $this->db->where('id',$user_ids);
+        // $this->db->where_in('id',$user_ids);
+        $this->db->where("id IN (".$user_ids.")",NULL, false);
+        $query=$this->db->get();
+        return $query->result();
+    }
+
+    public function save_delete_request($data){
+        $this->db->insert('request_for_delete_project',$data);
+        return 1;
     }
     
 }

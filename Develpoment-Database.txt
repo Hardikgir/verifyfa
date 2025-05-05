@@ -1,6 +1,7 @@
 Database Updates :- 
 -> Add new Table (log_manage)
 -> Add Column in User table (Purpose :- Manage Temporay passoword is updated or not)[is_pasword_changes] In Table :- registred_users | users {Date :- 29 April 2025}
+-> Add New Table (request_for_delete_project)
 -> 
 
 
