@@ -86,14 +86,13 @@ $this->load->view('layouts/footer');
             <div id="IndexDataLabelchartContainer" style="height: 370px; width: 100%;"></div>
         </div> 
 
-        <div class="col-md-12 mt-5">
-            <div id="LineAreaColumnchartContainer" style="height: 370px; width: 100%;"></div>
+		<div class="col-md-12 mt-5">
+            <div id="IndexDataLabelchartContainer2" style="height: 370px; width: 100%;"></div>
         </div> 
 
         <div class="col-md-12 mt-5">
-            <div id="RangeBarchartContainer" style="height: 370px; width: 100%;"></div>
+            <div id="LineAreaColumnchartContainer" style="height: 370px; width: 100%;"></div>
         </div> 
-        
 
         <div class="col-md-12 mt-5">
             <div id="stackedBarchartContainer" style="height: 370px; width: 100%;"></div>
@@ -123,8 +122,8 @@ var chart = new CanvasJS.Chart("Spline_chartContainer", {
 		text: "Spline Charts"
 	},
 	axisY :{
-		title: "Number of Viewers",
-		suffix: "mn"
+		title: "",
+		suffix: ""
 	},
 	toolTip: {
 		shared: "true"
@@ -133,145 +132,56 @@ var chart = new CanvasJS.Chart("Spline_chartContainer", {
 		cursor:"pointer",
 		itemclick : toggleDataSeries
 	},
-	data: [{
-		type: "spline",
-		visible: false,
+	data: [
+	{
+		type: "spline", 
 		showInLegend: true,
-		yValueFormatString: "##.00mn",
-		name: "Season 1",
+		yValueFormatString: "##.00",
+		name: "Original",
 		dataPoints: [
-			{ label: "Ep. 1", y: 2.22 },
-			{ label: "Ep. 2", y: 2.20 },
-			{ label: "Ep. 3", y: 2.44 },
-			{ label: "Ep. 4", y: 2.45 },
-			{ label: "Ep. 5", y: 2.58 },
-			{ label: "Ep. 6", y: 2.44 },
-			{ label: "Ep. 7", y: 2.40 },
-			{ label: "Ep. 8", y: 2.72 },
-			{ label: "Ep. 9", y: 2.66 },
-			{ label: "Ep. 10", y: 3.04 }
+			{ label: "Day 1", y: 8 },
+			{ label: "Day 2", y: 6.81 },
+			{ label: "Day 3", y: 6.71 },
+			{ label: "Day 4", y: 6.82 },
+			{ label: "Day 5", y: 6.56 },
+			{ label: "Day 6", y: 6.24 },
+			{ label: "Day 7", y: 5.40 },
+			{ label: "Day 8", y: 7.01 },
+			{ label: "Day 9", y: 7.14 },
+			{ label: "Day 10", y: 8.11 }
 		]
 	},
 	{
 		type: "spline", 
 		showInLegend: true,
-		visible: false,
-		yValueFormatString: "##.00mn",
-		name: "Season 2",
+		yValueFormatString: "##.00",
+		name: "Renewals",
 		dataPoints: [
-			{ label: "Ep. 1", y: 3.86 },
-			{ label: "Ep. 2", y: 3.76 },
-			{ label: "Ep. 3", y: 3.77 },
-			{ label: "Ep. 4", y: 3.65 },
-			{ label: "Ep. 5", y: 3.90 },
-			{ label: "Ep. 6", y: 3.88 },
-			{ label: "Ep. 7", y: 3.69 },
-			{ label: "Ep. 8", y: 3.86 },
-			{ label: "Ep. 9", y: 3.38 },
-			{ label: "Ep. 10", y: 4.20 }
-		]
-	},
-	{
-		type: "spline",
-		visible: false,
-		showInLegend: true,
-		yValueFormatString: "##.00mn",
-		name: "Season 3",
-		dataPoints: [
-			{ label: "Ep. 1", y: 4.37 },
-			{ label: "Ep. 2", y: 4.27 },
-			{ label: "Ep. 3", y: 4.72 },
-			{ label: "Ep. 4", y: 4.87 },
-			{ label: "Ep. 5", y: 5.35 },
-			{ label: "Ep. 6", y: 5.50 },
-			{ label: "Ep. 7", y: 4.84 },
-			{ label: "Ep. 8", y: 4.13 },
-			{ label: "Ep. 9", y: 5.22 },
-			{ label: "Ep. 10", y: 5.39 }
-		]
-	},
-	{
-		type: "spline",
-      	visible: false,
-		showInLegend: true,
-		yValueFormatString: "##.00mn",
-		name: "Season 4",
-		dataPoints: [
-			{ label: "Ep. 1", y: 6.64 },
-			{ label: "Ep. 2", y: 6.31 },
-			{ label: "Ep. 3", y: 6.59 },
-			{ label: "Ep. 4", y: 6.95 },
-			{ label: "Ep. 5", y: 7.16 },
-			{ label: "Ep. 6", y: 6.40 },
-			{ label: "Ep. 7", y: 7.20 },
-			{ label: "Ep. 8", y: 7.17 },
-			{ label: "Ep. 9", y: 6.95 },
-			{ label: "Ep. 10", y: 7.09 }
+			{ label: "Day 1", y: 7.94 },
+			{ label: "Day 2", y: 7.29 },
+			{ label: "Day 3", y: 7.28 },
+			{ label: "Day 4", y: 7.82 },
+			{ label: "Day 5", y: 7.89 },
+			{ label: "Day 6", y: 6.71 },
+			{ label: "Day 7", y: 7.80 },
+			{ label: "Day 8", y: 7.60 },
+			{ label: "Day 9", y: 7.66 },
+			{ label: "Day 10", y: 8.89 }
 		]
 	},
 	{
 		type: "spline", 
 		showInLegend: true,
-		yValueFormatString: "##.00mn",
-		name: "Season 5",
+		yValueFormatString: "##.00",
+		name: "Resubscriptions",
 		dataPoints: [
-			{ label: "Ep. 1", y: 8 },
-			{ label: "Ep. 2", y: 6.81 },
-			{ label: "Ep. 3", y: 6.71 },
-			{ label: "Ep. 4", y: 6.82 },
-			{ label: "Ep. 5", y: 6.56 },
-			{ label: "Ep. 6", y: 6.24 },
-			{ label: "Ep. 7", y: 5.40 },
-			{ label: "Ep. 8", y: 7.01 },
-			{ label: "Ep. 9", y: 7.14 },
-			{ label: "Ep. 10", y: 8.11 }
-		]
-	},
-	{
-		type: "spline", 
-		showInLegend: true,
-		yValueFormatString: "##.00mn",
-		name: "Season 6",
-		dataPoints: [
-			{ label: "Ep. 1", y: 7.94 },
-			{ label: "Ep. 2", y: 7.29 },
-			{ label: "Ep. 3", y: 7.28 },
-			{ label: "Ep. 4", y: 7.82 },
-			{ label: "Ep. 5", y: 7.89 },
-			{ label: "Ep. 6", y: 6.71 },
-			{ label: "Ep. 7", y: 7.80 },
-			{ label: "Ep. 8", y: 7.60 },
-			{ label: "Ep. 9", y: 7.66 },
-			{ label: "Ep. 10", y: 8.89 }
-		]
-	},
-	{
-		type: "spline", 
-		showInLegend: true,
-		yValueFormatString: "##.00mn",
-		name: "Season 7",
-		dataPoints: [
-			{ label: "Ep. 1", y: 10.11 },
-			{ label: "Ep. 2", y: 9.27 },
-			{ label: "Ep. 3", y: 9.25 },
-			{ label: "Ep. 4", y: 10.17 },
-			{ label: "Ep. 5", y: 10.72 },
-			{ label: "Ep. 6", y: 10.24 },
-			{ label: "Ep. 7", y: 12.07 }
-		]
-	},
-          {
-		type: "spline", 
-		showInLegend: true,
-		yValueFormatString: "##.00mn",
-		name: "Season 8",
-		dataPoints: [
-			{ label: "Ep. 1", y: 11.76 },
-			{ label: "Ep. 2", y: 10.29 },
-			{ label: "Ep. 3", y: 12.02 },
-			{ label: "Ep. 4", y: 11.80 },
-			{ label: "Ep. 5", y: 12.48 },
-			{ label: "Ep. 6", y: 13.61 }
+			{ label: "Day 1", y: 10.11 },
+			{ label: "Day 2", y: 9.27 },
+			{ label: "Day 3", y: 9.25 },
+			{ label: "Day 4", y: 10.17 },
+			{ label: "Day 5", y: 10.72 },
+			{ label: "Day 6", y: 10.24 },
+			{ label: "Day 7", y: 12.07 }
 		]
 	}]
 });
@@ -304,11 +214,10 @@ var chart = new CanvasJS.Chart("ChartsGraphs_chartContainer", {
 	},
 	axisX: {
 		interval: 1,
-		intervalType: "year",
-		valueFormatString: "YYYY"
+		valueFormatString: "Sub Type"
 	},
 	axisY: {
-		suffix: "%"
+		suffix: ""
 	},
 	toolTip: {
 		shared: true
@@ -320,66 +229,44 @@ var chart = new CanvasJS.Chart("ChartsGraphs_chartContainer", {
 	},
 	data: [{
 		type: "stackedColumn100",
-		name: "Real-Time",
+		name: "Resubscriptions",
 		showInLegend: true,
-		xValueFormatString: "YYYY",
+		xValueFormatString: "Sub Type 1",
 		yValueFormatString: "#,##0\"%\"",
 		dataPoints: [
-			{ x: new Date(2010,0), y: 40 },
-			{ x: new Date(2011,0), y: 50 },
-			{ x: new Date(2012,0), y: 60 },
-			{ x: new Date(2013,0), y: 61 },
-			{ x: new Date(2014,0), y: 63 },
-			{ x: new Date(2015,0), y: 65 },
-			{ x: new Date(2016,0), y: 67 }
+			{ x: 1, y: 40 },
+			{ x: 2, y: 50 },
+			{ x: 3, y: 60 },
+			{ x: 4, y: 61 },
+			
 		]
 	}, 
 	{
 		type: "stackedColumn100",
-		name: "Web Browsing",
+		name: "Renewals",
 		showInLegend: true,
-		xValueFormatString: "YYYY",
+		xValueFormatString: "Sub Type 2",
 		yValueFormatString: "#,##0\"%\"",
 		dataPoints: [
-			{ x: new Date(2010,0), y: 28 },
-			{ x: new Date(2011,0), y: 18 },
-			{ x: new Date(2012,0), y: 12 },
-			{ x: new Date(2013,0), y: 10 },
-			{ x: new Date(2014,0), y: 10 },
-			{ x: new Date(2015,0), y: 7 },
-			{ x: new Date(2016,0), y: 5 }
+			{ x: 1, y: 10 },
+			{ x: 2, y: 18 },
+			{ x: 3, y: 12 },
+			{ x: 4, y: 10 },
+			
 		]
 	}, 
 	{
 		type: "stackedColumn100",
-		name: "File Sharing",
+		name: "Original",
 		showInLegend: true,
-		xValueFormatString: "YYYY",
+		xValueFormatString: "Sub Type 3",
 		yValueFormatString: "#,##0\"%\"",
 		dataPoints: [
-			{ x: new Date(2010,0), y: 15 },
-			{ x: new Date(2011,0), y: 12 },
-			{ x: new Date(2012,0), y: 10 },
-			{ x: new Date(2013,0), y: 9 },
-			{ x: new Date(2014,0), y: 7 },
-			{ x: new Date(2015,0), y: 5 },
-			{ x: new Date(2016,0), y: 1 }
-		]
-	},
-	{
-		type: "stackedColumn100",
-		name: "Others",
-		showInLegend: true,
-		xValueFormatString: "YYYY",
-		yValueFormatString: "#,##0\"%\"",
-		dataPoints: [
-			{ x: new Date(2010,0), y: 17 },
-			{ x: new Date(2011,0), y: 20 },
-			{ x: new Date(2012,0), y: 18 },
-			{ x: new Date(2013,0), y: 20 },
-			{ x: new Date(2014,0), y: 20 },
-			{ x: new Date(2015,0), y: 23 },
-			{ x: new Date(2016,0), y: 27 }
+			{ x: 1, y: 15 },
+			{ x: 2, y: 12 },
+			{ x: 3, y: 10 },
+			{ x: 4, y: 9 },
+			
 		]
 	}]
 });
@@ -407,23 +294,25 @@ var chart = new CanvasJS.Chart("IndexDataLabelchartContainer", {
 	data: [{
 		type: "column", //change type to bar, line, area, pie, etc
 		//indexLabel: "{y}", //Shows y value on all Data Points
-		indexLabelFontColor: "#5A5757",
+		indexLabelFontColor: "#000",
       	indexLabelFontSize: 16,
 		indexLabelPlacement: "outside",
 		dataPoints: [
-			{ x: 10, y: 71 },
-			{ x: 20, y: 55 },
-			{ x: 30, y: 50 },
-			{ x: 40, y: 65 },
-			{ x: 50, y: 92, indexLabel: "\u2605 Highest" },
-			{ x: 60, y: 68 },
-			{ x: 70, y: 38 },
-			{ x: 80, y: 71 },
-			{ x: 90, y: 54 },
-			{ x: 100, y: 60 },
-			{ x: 110, y: 36 },
-			{ x: 120, y: 49 },
-			{ x: 130, y: 21, indexLabel: "\u2691 Lowest" }
+			{ x: 1, y: 71,label: "1",color: "#4f81bc"},
+			{ x: 2, y: 0,label: "2",color: "#4f81bc"},
+			{ x: 3, y: 50,label: "3",color: "#4f81bc"},
+			{ x: 4, y: 0,label: "4",color: "#4f81bc"},
+			{ x: 5, y: 92,label: "5",color: "#4f81bc"},
+			{ x: 6, y: 0,label: "6",color: "#4f81bc"},
+			{ x: 7, y: 38,label: "7",color: "#4f81bc"},
+			{ x: 8, y: 0,label: "8",color: "#4f81bc"},
+			{ x: 9, y: 54,label: "9",color: "#4f81bc"},
+			{ x: 10, y: 0,label: "10",color: "#4f81bc"},
+			{ x: 11, y: 36,label: "11",color: "#4f81bc"},
+			{ x: 12, y: 0,label: "12",color: "#4f81bc"},
+			{ x: 13, y: 21,label: "13",color: "#4f81bc"},
+			{ x: 14, y: 0,label: "14",color: "#4f81bc"},
+			{ x: 15, y: 49,label: "15",color: "#4f81bc"},
 		]
 	}]
 });
@@ -432,6 +321,37 @@ chart.render();
 
 
 
+var chart = new CanvasJS.Chart("IndexDataLabelchartContainer2", {
+	animationEnabled: true,
+	exportEnabled: true,
+	theme: "light1", // "light1", "light2", "dark1", "dark2"
+	title:{
+		text: "Index / Data Label"
+	},
+  	axisY: {
+      includeZero: true
+    },
+	axisX: {
+		interval: 1,
+		valueFormatString: "#"
+	},
+	data: [{
+		type: "column", //change type to bar, line, area, pie, etc
+		//indexLabel: "{y}", //Shows y value on all Data Points
+		indexLabelFontColor: "#000",
+      	indexLabelFontSize: 16,
+		indexLabelPlacement: "outside",
+		dataPoints: [
+			{ x: 1, y: 71,label: "10000 (min) - 10000",color: "#4f81bc" },
+			{ x: 2, y: 10,label: "10001 - 20000",color: "#4f81bc" },
+			{ x: 3, y: 50,label: "20001 - 30000",color: "#4f81bc" },
+			{ x: 4, y: 25,label: "30001 - 40000",color: "#4f81bc" },
+			{ x: 5, y: 92,label: "40001 - 50000",color: "#4f81bc"},
+			{ x: 6, y: 35,label: "50001 - 60000 (max)",color: "#4f81bc" },
+		]
+	}]
+});
+chart.render();
 
 
 
@@ -448,7 +368,7 @@ var chart = new CanvasJS.Chart("LineAreaColumnchartContainer", {
 		valueFormatString: "MMM"
 	},
 	axisY: {
-		prefix: "$",
+		prefix: "",
 		labelFormatter: addSymbols
 	},
 	toolTip: {
@@ -466,18 +386,13 @@ var chart = new CanvasJS.Chart("LineAreaColumnchartContainer", {
 		xValueFormatString: "MMMM YYYY",
 		yValueFormatString: "$#,##0",
 		dataPoints: [
-			{ x: new Date(2016, 0), y: 20000 },
-			{ x: new Date(2016, 1), y: 30000 },
-			{ x: new Date(2016, 2), y: 25000 },
-			{ x: new Date(2016, 3), y: 70000, indexLabel: "High Renewals" },
-			{ x: new Date(2016, 4), y: 50000 },
-			{ x: new Date(2016, 5), y: 35000 },
-			{ x: new Date(2016, 6), y: 30000 },
-			{ x: new Date(2016, 7), y: 43000 },
-			{ x: new Date(2016, 8), y: 35000 },
-			{ x: new Date(2016, 9), y:  30000},
-			{ x: new Date(2016, 10), y: 40000 },
-			{ x: new Date(2016, 11), y: 50000 }
+			{ x: 0, y: 20,label: "0 (Min) - 30" },
+			{ x: 1, y: 30,label: "30-60" },
+			{ x: 2, y: 25,label: "61-90" },
+			{ x: 3, y: 70,label: "91-120" },
+			{ x: 4, y: 50,label: "121-150" },
+			{ x: 5, y: 35,label: "151-180" },
+			
 		]
 	}, 
 	{
@@ -486,40 +401,12 @@ var chart = new CanvasJS.Chart("LineAreaColumnchartContainer", {
 		showInLegend: true,
 		yValueFormatString: "$#,##0",
 		dataPoints: [
-			{ x: new Date(2016, 0), y: 40000 },
-			{ x: new Date(2016, 1), y: 42000 },
-			{ x: new Date(2016, 2), y: 45000 },
-			{ x: new Date(2016, 3), y: 45000 },
-			{ x: new Date(2016, 4), y: 47000 },
-			{ x: new Date(2016, 5), y: 43000 },
-			{ x: new Date(2016, 6), y: 42000 },
-			{ x: new Date(2016, 7), y: 43000 },
-			{ x: new Date(2016, 8), y: 41000 },
-			{ x: new Date(2016, 9), y: 45000 },
-			{ x: new Date(2016, 10), y: 42000 },
-			{ x: new Date(2016, 11), y: 50000 }
-		]
-	},
-	{
-		type: "area",
-		name: "Profit",
-		markerBorderColor: "white",
-		markerBorderThickness: 2,
-		showInLegend: true,
-		yValueFormatString: "$#,##0",
-		dataPoints: [
-			{ x: new Date(2016, 0), y: 5000 },
-			{ x: new Date(2016, 1), y: 7000 },
-			{ x: new Date(2016, 2), y: 6000},
-			{ x: new Date(2016, 3), y: 30000 },
-			{ x: new Date(2016, 4), y: 20000 },
-			{ x: new Date(2016, 5), y: 15000 },
-			{ x: new Date(2016, 6), y: 13000 },
-			{ x: new Date(2016, 7), y: 20000 },
-			{ x: new Date(2016, 8), y: 15000 },
-			{ x: new Date(2016, 9), y:  10000},
-			{ x: new Date(2016, 10), y: 19000 },
-			{ x: new Date(2016, 11), y: 22000 }
+			{ x: 0, y: 40,label: "0 (Min) - 30"},
+			{ x: 1, y: 2,label: "30-60"},
+			{ x: 2, y: 45,label: "61-90"},
+			{ x: 3, y: 45,label: "91-120"},
+			{ x: 4, y: 47,label: "121-150"},
+			{ x: 5, y: 43,label: "151-180"},
 		]
 	}]
 });
@@ -545,44 +432,6 @@ function toggleDataSeries(e) {
 	e.chart.render();
 }
 
-
-
-
-var chart = new CanvasJS.Chart("RangeBarchartContainer", {
-	animationEnabled: true,
-	exportEnabled: true,
-	title: {
-		text: "Range Bar"
-	},
-	axisX: {
-		title: "Departments"
-	},
-	axisY: {
-		title: "Salary in USD",
-		interval: 10,
-		suffix: "k",
-		prefix: "$"
-	}, 
-	data: [{
-		type: "rangeBar",
-		showInLegend: true,
-		yValueFormatString: "$#0.#K",
-		indexLabel: "{y[#index]}",
-		legendText: "Department wise Min and Max Salary",
-		toolTipContent: "<b>{label}</b>: {y[0]} to {y[1]}",
-		dataPoints: [
-			{ x: 10, y:[80, 115], label: "Data Scientist" },
-			{ x: 20, y:[95, 141], label: "Product Manager" },
-			{ x: 30, y:[98, 115], label: "Web Developer" },
-			{ x: 40, y:[90, 160], label: "Software Engineer" },
-			{ x: 50, y:[100,152], label: "Quality Assurance" }
-		]
-	}]
-});
-chart.render();
-
-
-
 var chart = new CanvasJS.Chart("stackedBarchartContainer", {
 	animationEnabled: true,
 	title:{
@@ -592,7 +441,7 @@ var chart = new CanvasJS.Chart("stackedBarchartContainer", {
 		valueFormatString: "DDD"
 	},
 	axisY: {
-		prefix: "$"
+		prefix: ""
 	},
 	toolTip: {
 		shared: true
@@ -606,15 +455,15 @@ var chart = new CanvasJS.Chart("stackedBarchartContainer", {
 		name: "Meals",
 		showInLegend: "true",
 		xValueFormatString: "DD, MMM",
-		yValueFormatString: "$#,##0",
+		yValueFormatString: "#,##0",
 		dataPoints: [
-			{ x: new Date(2017, 0, 30), y: 56 },
-			{ x: new Date(2017, 0, 31), y: 45 },
-			{ x: new Date(2017, 1, 1), y: 71 },
-			{ x: new Date(2017, 1, 2), y: 41 },
-			{ x: new Date(2017, 1, 3), y: 60 },
-			{ x: new Date(2017, 1, 4), y: 75 },
-			{ x: new Date(2017, 1, 5), y: 98 }
+			{ x: new Date(2017, 0, 30), y: 5,color: "transparent",label: "Project-7"},
+			{ x: new Date(2017, 0, 31), y: 45,color: "transparent",label: "Project-6"},
+			{ x: new Date(2017, 1, 1), y: 71,color: "transparent",label: "Project-5"},
+			{ x: new Date(2017, 1, 2), y: 12,color: "transparent",label: "Project-4"},
+			{ x: new Date(2017, 1, 3), y: 60,color: "transparent",label: "Project-3"},
+			{ x: new Date(2017, 1, 4), y: 23,color: "transparent",label: "Project-2"},
+			{ x: new Date(2017, 1, 5), y: 98,color: "transparent",label: "Project-1"}
 		]
 	},
 	{
@@ -622,65 +471,34 @@ var chart = new CanvasJS.Chart("stackedBarchartContainer", {
 		name: "Snacks",
 		showInLegend: "true",
 		xValueFormatString: "DD, MMM",
-		yValueFormatString: "$#,##0",
+		yValueFormatString: "#,##0",
 		dataPoints: [
-			{ x: new Date(2017, 0, 30), y: 86 },
-			{ x: new Date(2017, 0, 31), y: 95 },
-			{ x: new Date(2017, 1, 1), y: 71 },
-			{ x: new Date(2017, 1, 2), y: 58 },
-			{ x: new Date(2017, 1, 3), y: 60 },
-			{ x: new Date(2017, 1, 4), y: 65 },
-			{ x: new Date(2017, 1, 5), y: 89 }
+			{ x: new Date(2017, 0, 30), y: 20,color: "#4f81bc",label: "Project-7"},
+			{ x: new Date(2017, 0, 31), y: 95,color: "#4f81bc",label: "Project-6"},
+			{ x: new Date(2017, 1, 1), y: 71,color: "#4f81bc",label: "Project-5"},
+			{ x: new Date(2017, 1, 2), y: 58,color: "#4f81bc",label: "Project-4"},
+			{ x: new Date(2017, 1, 3), y: 60,color: "#4f81bc",label: "Project-3"},
+			{ x: new Date(2017, 1, 4), y: 65,color: "#4f81bc",label: "Project-2"},
+			{ x: new Date(2017, 1, 5), y: 89,color: "#4f81bc",label: "Project-1"}
 		]
 	},
 	{
 		type: "stackedBar",
-		name: "Drinks",
+		name: "Snacks",
 		showInLegend: "true",
 		xValueFormatString: "DD, MMM",
-		yValueFormatString: "$#,##0",
+		yValueFormatString: "#,##0",
 		dataPoints: [
-			{ x: new Date(2017, 0, 30), y: 48 },
-			{ x: new Date(2017, 0, 31), y: 45 },
-			{ x: new Date(2017, 1, 1), y: 41 },
-			{ x: new Date(2017, 1, 2), y: 55 },
-			{ x: new Date(2017, 1, 3), y: 80 },
-			{ x: new Date(2017, 1, 4), y: 85 },
-			{ x: new Date(2017, 1, 5), y: 83 }
+			{ x: new Date(2017, 0, 30), y: 20,color: "#f29e65",label: "Project-7"},
+			{ x: new Date(2017, 0, 31), y: 95,color: "#f29e65",label: "Project-6"},
+			{ x: new Date(2017, 1, 1), y: 71,color: "#f29e65",label: "Project-5"},
+			{ x: new Date(2017, 1, 2), y: 58,color: "#f29e65",label: "Project-4"},
+			{ x: new Date(2017, 1, 3), y: 60,color: "#f29e65",label: "Project-3"},
+			{ x: new Date(2017, 1, 4), y: 65,color: "#f29e65",label: "Project-2"},
+			{ x: new Date(2017, 1, 5), y: 89,color: "#f29e65",label: "Project-1"}
 		]
-	},
-	{
-		type: "stackedBar",
-		name: "Dessert",
-		showInLegend: "true",
-		xValueFormatString: "DD, MMM",
-		yValueFormatString: "$#,##0",
-		dataPoints: [
-			{ x: new Date(2017, 0, 30), y: 61 },
-			{ x: new Date(2017, 0, 31), y: 55 },
-			{ x: new Date(2017, 1, 1), y: 61 },
-			{ x: new Date(2017, 1, 2), y: 75 },
-			{ x: new Date(2017, 1, 3), y: 80 },
-			{ x: new Date(2017, 1, 4), y: 85 },
-			{ x: new Date(2017, 1, 5), y: 105 }
-		]
-	},
-	{
-		type: "stackedBar",
-		name: "Takeaway",
-		showInLegend: "true",
-		xValueFormatString: "DD, MMM",
-		yValueFormatString: "$#,##0",
-		dataPoints: [
-			{ x: new Date(2017, 0, 30), y: 52 },
-			{ x: new Date(2017, 0, 31), y: 55 },
-			{ x: new Date(2017, 1, 1), y: 20 },
-			{ x: new Date(2017, 1, 2), y: 35 },
-			{ x: new Date(2017, 1, 3), y: 30 },
-			{ x: new Date(2017, 1, 4), y: 45 },
-			{ x: new Date(2017, 1, 5), y: 25 }
-		]
-	}]
+	}
+	]
 });
 chart.render();
 
