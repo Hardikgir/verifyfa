@@ -126,9 +126,9 @@ border: none;
 
                     <?php
                     
-                    echo '<pre>Subscription_plan ';
-                    print_r($Subscription_plan);
-                    echo '</pre>';
+                    // echo '<pre>Subscription_plan ';
+                    // print_r($Subscription_plan);
+                    // echo '</pre>';
                     // exit(); 
                     
                     /*
