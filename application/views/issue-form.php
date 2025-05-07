@@ -1,29 +1,23 @@
 <?php
-defined('BASEPATH') or exit('No direct script access allowed');
-$this->load->view('layouts/header');
-$this->load->view('layouts/sidebar');
+    defined('BASEPATH') or exit('No direct script access allowed');
+    $this->load->view('layouts/header');
+    $this->load->view('layouts/sidebar');
 ?>
 
 
-<link href="<?php echo base_url();?>assets/multipledropdown/multiselect.css" rel="stylesheet"/>
-<script src="<?php echo base_url();?>assets/multipledropdown/multiselect.min.js"></script>
+<link href="<?php echo base_url(); ?>assets/multipledropdown/multiselect.css" rel="stylesheet"/>
+<script src="<?php echo base_url(); ?>assets/multipledropdown/multiselect.min.js"></script>
 <style>
-    /* example of setting the width for multiselect */
     #selectUserType_multiSelect {
         width: 100%;
     }
     .multiselect-wrapper ul li.active label{
         color: white;
     }
-    /* .multiselect-wrapper ul li.active{
-        background-color: #5ca1e2;
-    } */
-
     .multiselect-count {
         background-color: #5ca1e2;
         color:white;
     }
-
 </style>
 <style>
 .row {
@@ -32,7 +26,6 @@ $this->load->view('layouts/sidebar');
     margin-right: -15px;
     margin-left: -15px;
     width: 100% !important;
-    /* margin: 0 !important; */
 }
 .usertypeselection {
     margin: 15px 0px;
@@ -69,9 +62,9 @@ $this->load->view('layouts/sidebar');
                         <label class="form-label">Reporting Person (GropAdmin)</label>
                         <select name="selectGropAdmin[]" id="selectGropAdmin" class="form-control">
                             <option>Select GroupAdmin</option>
-                            <?php foreach($all_GroupAdmin as $GroupAdminkey=>$GroupAdminvalue){
-                                echo '<option value="'.$GroupAdminvalue->id.'">'.$GroupAdminvalue->firstName.' '.$GroupAdminvalue->lastName.'</option>';    
-                            } ?>
+                            <?php foreach ($all_GroupAdmin as $GroupAdminkey => $GroupAdminvalue) {
+                                    echo '<option value="' . $GroupAdminvalue->id . '">' . $GroupAdminvalue->firstName . ' ' . $GroupAdminvalue->lastName . '</option>';
+                            }?>
                         </select>
                     </div>
                 </div>
@@ -81,9 +74,9 @@ $this->load->view('layouts/sidebar');
                         <label class="form-label">Reporting Person (Manager)</label>
                         <select name="selectManager[]" id="selectManager" class="form-control">
                             <option>Select Manager</option>
-                            <?php foreach($all_Manager as $Managerkey=>$Managervalue){
-                                echo '<option value="'.$Managervalue->id.'">'.$Managervalue->firstName.' '.$Managervalue->lastName.'</option>';    
-                            } ?>
+                            <?php foreach ($all_Manager as $Managerkey => $Managervalue) {
+                                    echo '<option value="' . $Managervalue->id . '">' . $Managervalue->firstName . ' ' . $Managervalue->lastName . '</option>';
+                            }?>
                         </select>
                     </div>
                 </div>
@@ -94,9 +87,9 @@ $this->load->view('layouts/sidebar');
                         <label class="form-label">Project</label>
                         <select name="issueofproject" id="selectGropAdmin" onchange="SelectProject(this)" class="form-control">
                             <option>Select Project</option>
-                            <?php foreach($company_project as $company_projectkey=>$company_projectvalue){
-                                echo '<option value="'.$company_projectvalue->company_id.'">'.$company_projectvalue->project_name.'</option>';    
-                            } ?>
+                            <?php foreach ($company_project as $company_projectkey => $company_projectvalue) {
+                                    echo '<option value="' . $company_projectvalue->company_id . '">' . $company_projectvalue->project_name . '</option>';
+                            }?>
                         </select>
                     </div>
 
@@ -117,7 +110,7 @@ $this->load->view('layouts/sidebar');
                     </div>
                 </div>
 
-                
+
                 <div class="row my-4">
                     <div class="col-md-12 form-row">
                         <label class="form-label">Issue Description</label>
@@ -131,24 +124,14 @@ $this->load->view('layouts/sidebar');
                         <input type="file" name="title" id="title" class="form-control" placeholder="Enter Title" required="">
                     </div>
                 </div>
-
-                    
-
-                    
-
                 
-
-               
-         
-
-              
                 <div class="row">
                 <div class="col-md-12 form-row">
                 <button type="reset" class="btn btn-danger">Cancel</button>
                 <button type="submit" class="btn btn-success">Save</button>
               </div>
                 </div>
-                
+
 
 					</div></form>
 				</div></section>
@@ -167,9 +150,9 @@ $this->load->view('layouts/sidebar');
 
 </div>
 <?php
-$this->load->view('layouts/scripts');
-// $this->load->view('super-admin/layouts/dashboard_script');
-$this->load->view('layouts/footer');
+    $this->load->view('layouts/scripts');
+    // $this->load->view('super-admin/layouts/dashboard_script');
+    $this->load->view('layouts/footer');
 ?>
 
 <script>
@@ -187,103 +170,13 @@ $("#userEmail").change(function(){
 </script>
 
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-
 <script>
-    function alertentity(){
-
- swal({
-  title: "Your Location Create Limit Cross Kindly Connect with Super Admin!",
-  text: "",
-  icon: "warning",
-  buttons: true,
-})
-
-}
-</script>
-
-<script>
-
-	document.multiselect('#selectUserType')
-    .setCheckBoxClick("checkboxAll", function(target, args) {
-        console.log("target")
-        console.log(target)
-        console.log("args")
-        console.log(args)
-        console.log("Checkbox 'Select All 11' was 11 clicked and got value ", args.checked);
-    })
-    .setCheckBoxClick("1", function(target, args) {
-        console.log("target")
-        console.log(target)
-        console.log("args")
-        console.log(args)
-        console.log("Checkbox for item with value '1' 222 was clicked and got value ", args.checked);
-    });
-
-
-
-    document.multiselect('#selectGropAdmin')
-    .setCheckBoxClick("checkboxAll", function(target, args) {
-        console.log("Checkbox 'Select All 22' was clicked and got value ", args.checked);
-    })
-    .setCheckBoxClick("1", function(target, args) {
-        console.log("Checkbox for item with value '1' was clicked and got value ", args.checked);
-    });
-
-    document.multiselect('#selectSubAdmin')
-    .setCheckBoxClick("checkboxAll", function(target, args) {
-        console.log("Checkbox 'Select All 33' was clicked and got value ", args.checked);
-    })
-    .setCheckBoxClick("1", function(target, args) {
-        console.log("Checkbox for item with value '1' was clicked and got value ", args.checked);
-    });
-
-    document.multiselect('#selectEntityOwner')
-    .setCheckBoxClick("checkboxAll", function(target, args) {
-        console.log("Checkbox 'Select All 44' was clicked and got value ", args.checked);
-    })
-    .setCheckBoxClick("1", function(target, args) {
-        console.log("Checkbox for item with value '1' was clicked and got value ", args.checked);
-    });
-
-    document.multiselect('#selectProcessOwner')
-    .setCheckBoxClick("checkboxAll", function(target, args) {
-        console.log("Checkbox 'Select All 55' was clicked and got value ", args.checked);
-    })
-    .setCheckBoxClick("1", function(target, args) {
-        console.log("Checkbox for item with value '1' was clicked and got value ", args.checked);
-    });
-
-    document.multiselect('#selectManager')
-    .setCheckBoxClick("checkboxAll", function(target, args) {
-        console.log("Checkbox 'Select All 66' was clicked and got value ", args.checked);
-    })
-    .setCheckBoxClick("1", function(target, args) {
-        console.log("Checkbox for item with value '1' was clicked and got value ", args.checked);
-    });
-
-    document.multiselect('#selectVerify')
-    .setCheckBoxClick("checkboxAll", function(target, args) {
-        console.log("target")
-        console.log(target)
-        console.log("args")
-        console.log(args)
-        console.log("Checkbox 'Select All 77' was clicked and got value ", args.checked);
-    })
-    .setCheckBoxClick("1", function(target, args) {
-        console.log("target")
-        console.log(target)
-        console.log("args")
-        console.log(args)
-        console.log("Checkbox for item with value '1' was clicked and got value ", args.checked);
-    });
-
-
     function SelectProject(event){
         var company_id = $(event).val();
         var fd = new FormData();
         fd.append('company_id',[company_id]);
         $.ajax({
-        url: "<?php echo base_url();?>index.php/plancycle/getlocationdata",
+        url: "<?php echo base_url(); ?>index.php/plancycle/getlocationdata",
         type: 'POST',
         cache: false,
         contentType: false,
@@ -294,8 +187,6 @@ $("#userEmail").change(function(){
         }
         });
     }
-
-
     function SelectTypeofIssue(event){
         var TypeofIssue_value = $(event).val();
         if (TypeofIssue_value == 'general') {
@@ -307,19 +198,6 @@ $("#userEmail").change(function(){
             $("#SectionGropAdmin").css('display','none')
             $("#SectionManager").css('display','block')
             $("#SectionProject").css('display','block')
-            
         }
     }
-    /*
-    $(document).ready(function(){
-
-            console.log("Test");
-            if (this.value == 'general') {
-                console.log("In General Section")
-            }
-            else if (this.value == 'projectbase') {
-                console.log("In Project Base Section")
-            }
-        });
-    }); */ 
 </script>
