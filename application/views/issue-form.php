@@ -53,7 +53,7 @@
                     <div class="col-md-12 form-row SectionUserType" id="SectionTypeofIssue">
                         <label class="form-label">Type of Issue</label>
                         <input type="radio" name="IssueType" class="mx-1" onchange="SelectTypeofIssue(this)" value="general"><lable class="mr-3">General Issue</lable>
-                        <input type="radio" name="IssueType" class="mx-1" onchange="SelectTypeofIssue(this)" value="projectbase"><lable class="mr-3">Project Base Issue</lable>
+                        <input type="radio" name="IssueType" class="mx-1" onchange="SelectTypeofIssue(this)" value="projectbase"><lable class="mr-3">Project Based Issue</lable>
                     </div>
                 </div>
 
