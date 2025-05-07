@@ -12,8 +12,8 @@ class Superadmin_controller extends CI_Controller {
 		if (!$this->session->userdata('super_admin_logged_in')) {
             redirect(base_url()."index.php/super-admin-login", 'refresh');
 		}
-		$this->load->model('Super_admin_model');
-		$this->load->model('Registered_user_model');
+		// $this->load->model('Super_admin_model');
+		// $this->load->model('Registered_user_model');
 		
 	}
 
