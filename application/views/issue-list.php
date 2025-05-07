@@ -27,11 +27,12 @@ $this->load->view('layouts/sidebar');
  <table id="example" class="display" style="width:100%">
         <thead>
             <tr>
-            <th>Notification Type</th>
-            <th>Notification Title</th>
-            <th>Created By</th>
+            <th>Tracking id</th>
+            <th>Subject Title</th>
+            <th>Type of issue</th>
             <th>Status</th>
-            <th>Change Staus</th>
+            <th>Raised By</th>
+            <th>Resolved By</th>
             <th>Action </th>
             </tr>
         </thead>
@@ -41,6 +42,7 @@ $this->load->view('layouts/sidebar');
                 ?>
             <tr>
                 <td ><?php echo $row->type;?></td>
+                <td ><?php echo $row->title;?></td>
                 <td ><?php echo $row->title;?></td>
                 <td ><?php echo $user_row->firstName.' '.$user_row->lastName;?></td>
                 <td ><?php 
