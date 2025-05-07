@@ -174,6 +174,11 @@ $route['reset-user-login/(:num)'] = 'Admin_controller/reset_user_login/$1';
 $route['generate-active-register-user/(:num)'] = 'login/generate_active_register_user/$1';
 $route['request-for-delete'] = 'Admin_controller/request_for_delete';
 
+$route['manage-issue'] = 'Admin_controller/manage_issue';
+$route['add-issue'] = 'Admin_controller/add_issue';
+$route['view-issue'] = 'Admin_controller/view_issue';
+
+
 // API ROUTES//
 
 // $route['verify-dashboard-company-data'] = 'Admin_controller/save_notification_reply';
