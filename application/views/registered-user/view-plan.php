@@ -123,13 +123,30 @@ border: none;
              <div class="row">
                 <div class="col-md-6 form-row">
                     <label class="form-label">Subscription Plan</label>
-                    <?php $plan_row=get_plan_row($plan_data->plan_id);?>
-                    <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="
+
+                    <?php
+                    
+                    echo '<pre>Subscription_plan ';
+                    print_r($Subscription_plan);
+                    echo '</pre>';
+                    // exit(); 
+                    
+                    /*
+                    $plan_row=get_plan_row($plan_data->plan_id);?>
                     <b>Subscription Plan Breakup</b> <br><br>
                     <b>No. of Entities</b>: <u><?php echo ($plan_row->amount * $plan_data->subscription_time_value);?></u><br>
                     <b> No. of Locations under each Entity</b>:  <u><?php echo get_total_payment_charges_user($plan_data->regiistered_user_id);?></u><br>
                     <b>Total No. of Users</b>:  <u><?php echo get_total_payment_discount_user($plan_data->regiistered_user_id);?></u><br>
-                    <b>No. of Rows for upload</b>:  <u><?php echo get_total_payment_discount_user($plan_data->regiistered_user_id);?></u>">
+                    <b>No. of Rows for upload</b>:  <u><?php echo get_total_payment_discount_user($plan_data->regiistered_user_id);?></u>
+                    */ ?>
+                    
+                    <?php $plan_row=get_plan_row($plan_data->plan_id);?>
+                    <a href="#" data-toggle="tooltip" data-placement="right" data-html="true" title="
+                    <b>Subscription Plan Breakup</b> <br><br>
+                    <b>No. of Entities</b>: <u><?php echo $Subscription_plan->allowed_entities_no;?></u><br>
+                    <b> No. of Locations under each Entity</b>:  <u><?php echo $Subscription_plan->location_each_entity;?></u><br>
+                    <b>Total No. of Users</b>:  <u><?php echo $Subscription_plan->user_number_register;?></u><br>
+                    <b>No. of Rows for upload</b>:  <u><?php echo $Subscription_plan->line_item_avaliable;?></u>">
                     <?php echo $plan_row->title;?>
                     </a>
 
