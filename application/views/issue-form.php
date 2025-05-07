@@ -57,6 +57,26 @@
                     </div>
                 </div>
 
+                <div class="row my-4" id="SectionProject" style="display:none">
+                    <div class="col-md-6 form-row SectionLocation" id="SectionLocation">
+                        <label class="form-label">Location</label>
+                        <select name="company_location" id="company_location" class="form-control">
+                            <option>Select Location</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 form-row SectionProject" id="SectionProject">
+                        <label class="form-label">Project</label>
+                        <select name="issueofproject" id="selectGropAdmin" onchange="SelectProject(this)" class="form-control">
+                            <option>Select Project</option>
+                            <?php foreach ($company_project as $company_projectkey => $company_projectvalue) {
+                                    echo '<option value="' . $company_projectvalue->company_id . '">' . $company_projectvalue->project_name . '</option>';
+                            }?>
+                        </select>
+                    </div>
+                </div>
+
+
                 <div class="row my-4" id="SectionGropAdmin" style="display:none">
                     <div class="col-md-12 form-row SectionGropAdmin"  >
                         <label class="form-label">Reporting Person (GropAdmin)</label>
@@ -82,26 +102,7 @@
                 </div>
 
 
-                <div class="row my-4" id="SectionProject" style="display:none">
-                    <div class="col-md-6 form-row SectionProject" id="SectionProject">
-                        <label class="form-label">Project</label>
-                        <select name="issueofproject" id="selectGropAdmin" onchange="SelectProject(this)" class="form-control">
-                            <option>Select Project</option>
-                            <?php foreach ($company_project as $company_projectkey => $company_projectvalue) {
-                                    echo '<option value="' . $company_projectvalue->company_id . '">' . $company_projectvalue->project_name . '</option>';
-                            }?>
-                        </select>
-                    </div>
-
-
-                    <div class="col-md-6 form-row SectionLocation" id="SectionLocation">
-                        <label class="form-label">Location</label>
-                        <select name="company_location" id="company_location" class="form-control">
-                            <option>Select Location</option>
-                        </select>
-                    </div>
-                </div>
-
+              
 
                 <div class="row my-4">
                     <div class="col-md-12 form-row">
@@ -124,7 +125,7 @@
                         <input type="file" name="title" id="title" class="form-control" placeholder="Enter Title" required="">
                     </div>
                 </div>
-                
+
                 <div class="row">
                 <div class="col-md-12 form-row">
                 <button type="reset" class="btn btn-danger">Cancel</button>
