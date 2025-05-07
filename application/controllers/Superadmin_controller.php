@@ -7,7 +7,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Superadmin_controller extends CI_Controller {
 	public function __construct() {
-		parent::__construct();		
+		// parent::__construct();		
 		$this->load->library('session');	
 		if (!$this->session->userdata('super_admin_logged_in')) {
             redirect(base_url()."index.php/super-admin-login", 'refresh');

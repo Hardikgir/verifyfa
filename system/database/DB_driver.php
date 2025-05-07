@@ -64,28 +64,28 @@ abstract class CI_DB_driver {
 	 *
 	 * @var	string
 	 */
-	public $username;
+	public $username = 'u337050398_verifyfaadmin';
 
 	/**
 	 * Password
 	 *
 	 * @var	string
 	 */
-	public $password;
+	public $password = '|Pkdk4Zu]';
 
 	/**
 	 * Hostname
 	 *
 	 * @var	string
 	 */
-	public $hostname;
+	public $hostname = 'srv1189.hstgr.io';
 
 	/**
 	 * Database name
 	 *
 	 * @var	string
 	 */
-	public $database;
+	public $database = 'u337050398_verifyfadatabs';
 
 	/**
 	 * Database driver
@@ -179,7 +179,7 @@ abstract class CI_DB_driver {
 	 *
 	 * @var	int
 	 */
-	public $benchmark		= 0;
+	public $benchmark = 0;
 
 	/**
 	 * Executed queries count

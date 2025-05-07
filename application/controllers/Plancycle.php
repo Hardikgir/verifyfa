@@ -135,7 +135,10 @@ class Plancycle extends CI_Controller {
 		$this->db->where('register_user_plan_log.register_user_id',$_SESSION['logged_in']['admin_registered_user_id']);
 		$getnotifications=$this->db->get();
 		$result = $getnotifications->row();
-		
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
 		$data['payment_history'] = $result;
 		
 
@@ -647,6 +650,12 @@ class Plancycle extends CI_Controller {
 		$new_pattern = array("_", "_", "");
 		$conditionnew = 'company_id IN ('.$company_id.') AND project_location IN ('.$location_id.')';
 		$projects = $this->db->query('SELECT * FROM company_projects WHERE '.$conditionnew.' AND status !=2 AND status !=1')->result();
+
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
+
 		if(!empty($projects)){
 			?>
 				<table class="table table-sm small">
@@ -667,9 +676,17 @@ class Plancycle extends CI_Controller {
 					foreach($projects as $pro)
 					{ 
 						$masterTotal=$this->db->query("SELECT count(*) as total from ".$pro->original_table_name)->result();
+						// echo '<pre>last_query ';
+						// print_r($this->db->last_query());
+						// echo '</pre>';
+						// exit();
 						$pro->masterTotal=$masterTotal[0]->total;
 						$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($pro->project_name)));
 						$getprojectdetails=$this->tasks->projectdetail($project_name);
+						// echo '<pre>last_query ';
+						// print_r($this->db->last_query());
+						// echo '</pre>';
+						// exit();
 						
 						if(!empty($getprojectdetails))
 						{
