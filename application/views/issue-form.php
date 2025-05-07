@@ -79,9 +79,9 @@
 
                 <div class="row my-4" id="SectionGropAdmin" style="display:none">
                     <div class="col-md-12 form-row SectionGropAdmin"  >
-                        <label class="form-label">Reporting Person (GropAdmin)</label>
+                        <label class="form-label">Reporting Person (Group Admin)</label>
                         <select name="selectGropAdmin[]" id="selectGropAdmin" class="form-control">
-                            <option>Select GroupAdmin</option>
+                            <option>Select Group Admin</option>
                             <?php foreach ($all_GroupAdmin as $GroupAdminkey => $GroupAdminvalue) {
                                     echo '<option value="' . $GroupAdminvalue->id . '">' . $GroupAdminvalue->firstName . ' ' . $GroupAdminvalue->lastName . '</option>';
                             }?>
