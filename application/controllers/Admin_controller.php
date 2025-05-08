@@ -1043,6 +1043,11 @@ $role=implode(',',$this->input->post('user_role'));
         $gettasks=$this->db->get();
         $company_project_result = $gettasks->result();
 
+
+        $register_user_id = $this->admin_registered_user_id;
+        $entity_code = $this->admin_registered_entity_code;
+        $data['locationdata'] = $this->Admin_model->get_all_location($register_user_id,$entity_code);
+
         $data['page_title']="Manage Issue";
 
         $company_id = $_SESSION['logged_in']['company_id'];

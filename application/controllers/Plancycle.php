@@ -1224,4 +1224,52 @@ class Plancycle extends CI_Controller {
 		$this->session->set_flashdata("success","Deleted Successfully");
 		redirect("index.php/plancycle");
 	}
+
+
+
+	public function getprojectbylocation(){
+		$location_id = $_POST['location_id'];
+		// $resulttttt = $this->plancycle->GetLocationdatabyid($company_id);
+
+
+		$resulttttt=$this->db->query('SELECT * from company_projects where project_location='.$_POST['location_id'])->result();
+		$this->userRoleArray=array();
+		?>
+				<option value="">Select Project</option>
+		<?php
+		foreach($resulttttt as $dataa){
+			?>
+				<option value="<?php echo $dataa->id; ?>"><?php echo $dataa->project_name; ?></option>	
+			<?php
+		}
+	}
+
+
+
+	public function getreportinguserbylocation(){
+		$project_id = $_POST['project_id'];
+		// $resulttttt = $this->plancycle->GetLocationdatabyid($company_id);
+
+		$user_role = 0;
+		// $user_role = 5; //Group Admin
+		$register_user_id = $this->admin_registered_user_id;
+        $entity_code = $this->admin_registered_entity_code;
+
+		$resulttttt=$this->db->query('SELECT user_role.*,users.* from user_role INNER JOIN users ON users.id=user_role.user_id where FIND_IN_SET('.$user_role.',user_role) AND user_role.location_id='.$_POST['location_id'])->result();
+
+
+
+		$this->userRoleArray=array();
+		?>
+				<option value="">Select User</option>
+		<?php
+		foreach($resulttttt as $dataa){
+			?>
+				<option value="<?php echo $dataa->user_id; ?>"><?php echo $dataa->firstName; ?></option>	
+			<?php
+		}
+	}
+
+
+
 }

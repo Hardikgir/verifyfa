@@ -49,7 +49,7 @@
 						<!-- Carousel Wrapper -->
               <form action="<?php echo base_url(); ?>index.php/save-brodcast-message" method="post">
 
-                <div class="row my-4">
+                <div class="row ">
                     <div class="col-md-12 form-row SectionUserType" id="SectionTypeofIssue">
                         <label class="form-label">Type of Issue</label>
                         <input type="radio" name="IssueType" class="mx-1" onchange="SelectTypeofIssue(this)" value="general"><lable class="mr-3">General Issue</lable>
@@ -57,17 +57,20 @@
                     </div>
                 </div>
 
-                <div class="row my-4" id="SectionProject" style="display:none">
-                    <div class="col-md-6 form-row SectionLocation" id="SectionLocation">
+                <div class="row " id="SectionProject" style="display:none">
+                    <div class="col-md-6 my-4 form-row SectionLocation" id="SectionLocation">
                         <label class="form-label">Location</label>
-                        <select name="company_location" id="company_location" class="form-control">
+                        <select name="SelectLocation" id="SelectLocation" onchange="SectionLocationFun(this)" class="form-control">
                             <option>Select Location</option>
+                            <?php foreach($locationdata as $locationdata_value){
+                                echo '<option value="'.$locationdata_value->id.'">'.$locationdata_value->location_name.'</option>';
+                            } ?>
                         </select>
                     </div>
 
-                    <div class="col-md-6 form-row SectionProject" id="SectionProject">
+                    <div class="col-md-6 my-4 form-row SectionProject" id="SectionProject">
                         <label class="form-label">Project</label>
-                        <select name="issueofproject" id="selectGropAdmin" onchange="SelectProject(this)" class="form-control">
+                        <select name="issueofproject" id="selectProject" onchange="SelectProject(this)" class="form-control">
                             <option>Select Project</option>
                             <?php foreach ($company_project as $company_projectkey => $company_projectvalue) {
                                     echo '<option value="' . $company_projectvalue->company_id . '">' . $company_projectvalue->project_name . '</option>';
@@ -77,10 +80,10 @@
                 </div>
 
 
-                <div class="row my-4" id="SectionGropAdmin" style="display:none">
-                    <div class="col-md-12 form-row SectionGropAdmin"  >
+                <div class="row " id="SectionGropAdmin" style="display:none">
+                    <div class="col-md-12 my-4 form-row SectionGropAdmin"  >
                         <label class="form-label">Reporting Person (Group Admin)</label>
-                        <select name="selectGropAdmin[]" id="selectGropAdmin" class="form-control">
+                        <select name="selectGropAdmin" id="selectGropAdmin" class="form-control">
                             <option>Select Group Admin</option>
                             <?php foreach ($all_GroupAdmin as $GroupAdminkey => $GroupAdminvalue) {
                                     echo '<option value="' . $GroupAdminvalue->id . '">' . $GroupAdminvalue->firstName . ' ' . $GroupAdminvalue->lastName . '</option>';
@@ -89,14 +92,14 @@
                     </div>
                 </div>
 
-                <div class="row my-4" id="SectionManager" style="display:none">
-                    <div class="col-md-12 form-row SectionManager" >
+                <div class="row " id="SectionManager" style="display:none">
+                    <div class="col-md-12 my-4 form-row SectionManager" >
                         <label class="form-label">Reporting Person (Manager)</label>
-                        <select name="selectManager[]" id="selectManager" class="form-control">
+                        <select name="selectManager" id="selectManager" class="form-control">
                             <option>Select Manager</option>
-                            <?php foreach ($all_Manager as $Managerkey => $Managervalue) {
+                            <?php /* foreach ($all_Manager as $Managerkey => $Managervalue) {
                                     echo '<option value="' . $Managervalue->id . '">' . $Managervalue->firstName . ' ' . $Managervalue->lastName . '</option>';
-                            }?>
+                            } */ ?>
                         </select>
                     </div>
                 </div>
@@ -172,19 +175,39 @@ $("#userEmail").change(function(){
 
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script>
-    function SelectProject(event){
-        var company_id = $(event).val();
+    function SectionLocationFun(event){
+        var location_id = $(event).val();
         var fd = new FormData();
-        fd.append('company_id',[company_id]);
+        fd.append('location_id',[location_id]);
         $.ajax({
-        url: "<?php echo base_url(); ?>index.php/plancycle/getlocationdata",
+        url: "<?php echo base_url(); ?>index.php/plancycle/getprojectbylocation",
         type: 'POST',
         cache: false,
         contentType: false,
         processData: false,
         data: fd,
         success: function(data) {
-            $('#company_location').find('option').remove().end().append(data);
+           $('#selectProject').find('option').remove().end().append(data);
+        }
+        });
+    }
+
+
+    function SelectProject(event){
+        var project_id = $(event).val();
+        var location_id = $("#SelectLocation").val();
+        var fd = new FormData();
+        fd.append('project_id',[project_id]);
+        fd.append('location_id',[location_id]);
+        $.ajax({
+        url: "<?php echo base_url(); ?>index.php/plancycle/getreportinguserbylocation",
+        type: 'POST',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: fd,
+        success: function(data) {
+            $('#selectManager').find('option').remove().end().append(data);
         }
         });
     }
