@@ -1,8 +1,4 @@
 <?php
-// ini_set('display_errors', 1);
-// ini_set('display_startup_errors', 1);
-// error_reporting(E_ALL);
-
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Superadmin_controller extends CI_Controller {
@@ -12,8 +8,8 @@ class Superadmin_controller extends CI_Controller {
 		if (!$this->session->userdata('super_admin_logged_in')) {
             redirect(base_url()."index.php/super-admin-login", 'refresh');
 		}
-		// $this->load->model('Super_admin_model');
-		// $this->load->model('Registered_user_model');
+		$this->load->model('Super_admin_model');
+		$this->load->model('Registered_user_model');
 		
 	}
 
