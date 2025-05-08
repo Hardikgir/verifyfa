@@ -227,15 +227,51 @@ class Login_model extends CI_Model {
 
 
 	public function clearprojecdatabyid($projectid, $original_table_name){
+
+		$this->db->select('*');
+		$this->db->from('company_projects');
+		$this->db->where('id',$projectid);
+		$query = $this->db->get();
+		$result= $query->row();
+		
+		$item_category_array = json_decode($result->item_category);
+
+		foreach($item_category_array as $item_category_array_value){
+			$condition=array(
+				'item_category'=>$item_category_array_value
+			);
+			$data=array(
+				'is_alotted'=>0
+			);
+			$this->db->where($condition);
+			$query = $this->db->update($original_table_name,$data);
+		}
+
+		// Code Added on 8 May Start
+		$this->db->select('id');
+		$this->db->from($original_table_name);
+		$this->db->where('is_alotted',1);
+		$query = $this->db->get();
+		$result= $query->row();
+		$num = $query->num_rows();
+		if(empty($num)){
+			$this->load->dbforge();
+			$this->dbforge->drop_table($original_table_name);
+		}
+		$this->dbforge->drop_table($result->project_table_name);
+		// Code Added on 8 May End
+		
+
+
 		$deletepro = $this->db->where('id',$projectid)->delete('company_projects');
-		// $this->db->select('original_table_name	');
+		// $this->db->select('original_table_name');
 		// $this->db->from('company_projects');
 		// $this->db->where('original_table_name',$original_table_name);
 		// $query = $this->db->get();
 		// $result= $query->row();
 		// $num = $query->num_rows();
-			// $this->load->dbforge();
-			// $this->dbforge->drop_table($original_table_name);
+		// $this->load->dbforge();
+		// $this->dbforge->drop_table($original_table_name);
 		
 		// echo $this->db->last_query();
 
