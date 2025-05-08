@@ -37,7 +37,7 @@ $this->load->view('layouts/sidebar');
             </tr>
         </thead>
         <tbody>
-            <?php foreach($notification as $row){
+            <?php /* foreach($issue as $row){
                 $user_row=get_user_row($row->created_by);
                 ?>
             <tr>
@@ -65,7 +65,7 @@ $this->load->view('layouts/sidebar');
                     </a> -->
                 </td>
             </tr>
-            <?php } ?>
+            <?php } */ ?>
         </tbody>
         </table>
 					</div>			

@@ -72,9 +72,9 @@
                         <label class="form-label">Project</label>
                         <select name="issueofproject" id="selectProject" onchange="SelectProject(this)" class="form-control">
                             <option>Select Project</option>
-                            <?php foreach ($company_project as $company_projectkey => $company_projectvalue) {
+                            <?php /* foreach ($company_project as $company_projectkey => $company_projectvalue) {
                                     echo '<option value="' . $company_projectvalue->company_id . '">' . $company_projectvalue->project_name . '</option>';
-                            }?>
+                            } */ ?>
                         </select>
                     </div>
                 </div>

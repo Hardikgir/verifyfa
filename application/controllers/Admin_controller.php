@@ -1027,7 +1027,7 @@ $role=implode(',',$this->input->post('user_role'));
     public function manage_issue(){
         $data['page_title']="Manage Issue";
         $entity_code=$this->admin_registered_entity_code;
-        $data["notification"]=$this->Admin_model->get_all_notification($entity_code);
+        // $data["issue"]=$this->Admin_model->get_all_notification($entity_code);
         $this->load->view('issue-list',$data);
     }
 
