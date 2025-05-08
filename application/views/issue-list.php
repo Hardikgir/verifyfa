@@ -30,6 +30,7 @@ $this->load->view('layouts/sidebar');
             <th>Tracking id</th>
             <th>Subject Title</th>
             <th>Type of issue</th>
+            <th>Project Id</th>
             <th>Status</th>
             <th>Raised By</th>
             <th>Resolved By</th>
