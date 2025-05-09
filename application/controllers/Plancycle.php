@@ -449,7 +449,7 @@ class Plancycle extends CI_Controller {
 		echo '<pre>getMandatoryColumns ';
 		print_r($getMandatoryColumns);
 		echo '</pre>';
-		exit();
+		// exit();
 
 		$data['mandatory_cols']=$getMandatoryColumns;
 		
@@ -484,6 +484,11 @@ class Plancycle extends CI_Controller {
 		
 		$getColumnsCount=$this->db->query($select)->result_array();
 		$getNonMandatory=array_keys(array_filter($getColumnsCount[0]));
+
+		echo '<pre>getNonMandatory ';
+		print_r($getNonMandatory);
+		echo '</pre>';
+		exit();
 		$data['nonmandatory_cols']=$getNonMandatory;
 		$this->load->view('markheaders',$data);
 	}
