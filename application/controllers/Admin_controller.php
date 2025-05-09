@@ -1164,71 +1164,20 @@ $role=implode(',',$this->input->post('user_role'));
         redirect("index.php/manage-my-issue");
     }
 
-    public function view_issue(){
-
+    public function view_issue($issue_id){
+        $data['page_title']="View Issue"; 
         $company_id = $_SESSION['logged_in']['company_id'];
         $user_id = $_SESSION['logged_in']['id'];
         $registered_user_id = $_SESSION['logged_in']['admin_registered_user_id'];
 
-        $this->db->select('company_projects.*');
-        $this->db->from('company_projects');
-        $this->db->where('company_projects.company_id',$company_id);
-        $gettasks=$this->db->get();
-        $company_project_result = $gettasks->result();
+        $this->db->select('issue_manage.*');
+        $this->db->from('issue_manage');
+        $this->db->where('issue_manage.id',$issue_id);
+        $issue_row=$this->db->get();
+        $issue_result = $issue_row->row();
 
-        $data['page_title']="Manage Issue";
-
-        $company_id = $_SESSION['logged_in']['company_id'];
-        $admin_registered_user_id = $_SESSION['logged_in']['admin_registered_user_id'];
-        $admin_registered_entity_code = $_SESSION['logged_in']['admin_registered_entity_code'];
-
-        $all_users_roles = $this->Admin_model->get_all_user_role_company_registerid_entity($company_id,$admin_registered_user_id,$admin_registered_entity_code);
-        $user_roles = array();
-        $user_id = array();
-        foreach($all_users_roles as $all_users_role_key=>$all_users_role_value){
-            $user_roles_value = explode(",",$all_users_role_value->user_role);
-            foreach($user_roles_value as $user_roles_key=>$user_roles_value){
-                $user_roles[] = $user_roles_value;
-            }
-            $user_id[$all_users_role_value->user_id] = $all_users_role_value->user_role;
-        }
-       $all_GroupAdmin = array();
-       $all_SubAdmin = array();
-       $all_EntityOwner = array();
-       $all_ProcessOwner = array();
-       $all_Manager = array();
-       $all_Verify = array();
-
-       $entity_code = $_SESSION['logged_in']['admin_registered_entity_code'];
-       
-        if(!empty($user_roles)){
-            foreach(array_unique($user_roles) as $user_role_key=>$user_role_value){
-                if($user_role_value == '5'){
-                    // $all_GroupAdmin = $this->Admin_model->get_users_by_role($user_role_value);
-                    $all_GroupAdmin_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
-                    $all_GroupAdmin_array = array();
-                    foreach($all_GroupAdmin_roles as $all_GroupAdmin_roleskey=>$all_GroupAdmin_rolesvalue){
-                        $all_GroupAdmin_roles_array[] = $all_GroupAdmin_rolesvalue->user_id;
-                    }
-                    $all_GroupAdmin = $this->Admin_model->get_users_by_ids(implode(',', $all_GroupAdmin_roles_array));
-                }
-                if($user_role_value == '0'){
-                    // $all_Manager = $this->Admin_model->get_users_by_role($user_role_value);
-                    $all_Manager_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
-                    $all_Manager_roles_array = array();
-                    foreach($all_Manager_roles as $all_Manager_roleskey=>$all_Manager_rolesvalue){
-                        $all_Manager_roles_array[] = $all_Manager_rolesvalue->user_id;
-                    }
-                    $all_Manager = $this->Admin_model->get_users_by_ids(implode(',', $all_Manager_roles_array));
-                }
-                
-            }
-        }
-        $data['all_GroupAdmin'] = $all_GroupAdmin;
-        $data['all_Manager'] = $all_Manager;
-        $data['company_project'] = $company_project_result;
-        $entity_code=$this->admin_registered_entity_code;
-        $this->load->view('issue-form',$data);
+        $data['issue_result'] = $issue_result;
+        $this->load->view('issue-view',$data);
     }
     
 }
