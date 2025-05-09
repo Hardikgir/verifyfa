@@ -439,6 +439,10 @@ class Plancycle extends CI_Controller {
 		$data['company_name']=$this->input->post('company_name');
 		$data['company_location']=$this->input->post('company_location');
 		$data['table_name']=$this->input->post('table_name');
+		echo '<pre>table_name ';
+		print_r($data['table_name']);
+		echo '</pre>';
+		exit();
 		$getColumns=$this->plancycle->get_schema($data['table_name']);
 		$getMandatoryColumns=array();
 		foreach($getColumns as $gc)
