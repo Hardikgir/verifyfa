@@ -227,14 +227,14 @@ class Login_model extends CI_Model {
 
 
 	public function clearprojecdatabyid($projectid, $original_table_name){
-
+		
 		$this->db->select('*');
 		$this->db->from('company_projects');
 		$this->db->where('id',$projectid);
 		$query = $this->db->get();
-		$result= $query->row();
+		$company_projects_result= $query->row();
 		
-		$item_category_array = json_decode($result->item_category);
+		$item_category_array = json_decode($company_projects_result->item_category);
 
 		foreach($item_category_array as $item_category_array_value){
 			$condition=array(
@@ -260,10 +260,10 @@ class Login_model extends CI_Model {
 		}		
 		// Code Added on 8 May End
 		
-
+		
 
 		$deletepro = $this->db->where('id',$projectid)->delete('company_projects');
-		$this->dbforge->drop_table($result->project_table_name);	
+		$this->dbforge->drop_table($company_projects_result->project_table_name);	
 		// $this->db->select('original_table_name');
 		// $this->db->from('company_projects');
 		// $this->db->where('original_table_name',$original_table_name);
