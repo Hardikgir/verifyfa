@@ -177,6 +177,9 @@ $route['request-for-delete'] = 'Admin_controller/request_for_delete';
 $route['manage-issue'] = 'Admin_controller/manage_issue';
 $route['add-issue'] = 'Admin_controller/add_issue';
 $route['view-issue'] = 'Admin_controller/view_issue';
+$route['save-issue'] = 'Admin_controller/save_issue';
+
+
 
 
 // API ROUTES//

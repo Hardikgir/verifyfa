@@ -1113,6 +1113,137 @@ $role=implode(',',$this->input->post('user_role'));
         $this->load->view('issue-form',$data);
     }
 
+    public function save_issue(){
+        $created_by=$this->user_id;
+        $issue_attachment = '';
+        $tracking_id_value = '001';
+
+        // echo '<pre>';
+        // print_r($_POST);
+        // echo '</pre>';
+        // exit();
+
+        $data=array(
+            "tracking_id"=>$tracking_id_value,
+            "issue_type"=>$this->input->post("issue_type"),
+            "company_name"=>$this->input->post("company_name"),
+            "location_name"=>$this->input->post("location_name"),
+            "project_name"=>$this->input->post("project_name"),
+
+            "manage_name"=>$this->input->post("manage_name"),
+            "groupadmin_name"=>$this->input->post("groupadmin_name"),
+            "issue_title"=>$this->input->post("issue_title"),
+            "issue_description"=>$this->input->post("issue_description"),
+            "issue_attachment"=>$issue_attachment,
+            
+            "created_by"=>$created_by,
+            "created_at"=>date("Y-m-d H:i:s")
+        );
+        // exit();
+        // echo '<pre>data ';
+        // print_r($data);
+        // echo '</pre>';
+        // exit();
+
+        $data["notification"]=$this->Admin_model->save_issue($data);
+        $insert_id = $this->db->insert_id();
+        echo '<pre>insert_id';
+        print_r($insert_id);
+        echo '</pre>';
+        exit();
+        $notification_type = $this->input->post("type");
+        if($notification_type == 'Notification'){
+
+            if(isset($_POST['selectGropAdmin'])){
+                $selectGropAdmin = $this->input->post("selectGropAdmin");
+                if(!empty($selectGropAdmin)){
+                    foreach($selectGropAdmin as $selectGropAdmin_key=>$selectGropAdmin_value){
+                        $save_notification_user_assign_data=array(
+                            "notification_id"=>$insert_id,
+                            "user_id"=>$selectGropAdmin_value,
+                            "user_role"=>5,
+                        );
+                        $this->Admin_model->save_notification_user_assign($save_notification_user_assign_data);
+                    }
+                }
+            }
+
+            if(isset($_POST['selectSubAdmin'])){
+                $selectSubAdmin = $this->input->post("selectSubAdmin");
+                if(!empty($selectSubAdmin)){
+                    foreach($selectSubAdmin as $selectSubAdmin_key=>$selectSubAdmin_value){
+                        $save_notification_user_assign_data=array(
+                            "notification_id"=>$insert_id,
+                            "user_id"=>$selectSubAdmin_value,
+                            "user_role"=>4,
+                        );
+                        $this->Admin_model->save_notification_user_assign($save_notification_user_assign_data);
+                    }
+                }
+            }
+
+            if(isset($_POST['selectEntityOwner'])){
+                $selectEntityOwner = $this->input->post("selectEntityOwner");
+                if(!empty($selectEntityOwner)){
+                    foreach($selectEntityOwner as $selectEntityOwner_key=>$selectEntityOwner_value){
+                        $save_notification_user_assign_data=array(
+                            "notification_id"=>$insert_id,
+                            "user_id"=>$selectEntityOwner_value,
+                            "user_role"=>3,
+                        );
+                        $this->Admin_model->save_notification_user_assign($save_notification_user_assign_data);
+                    }
+                }
+            }
+
+            if(isset($_POST['selectProcessOwner'])){
+                $selectProcessOwner = $this->input->post("selectProcessOwner");
+                if(!empty($selectProcessOwner)){
+                    foreach($selectProcessOwner as $selectProcessOwner_key=>$selectProcessOwner_value){
+                        $save_notification_user_assign_data=array(
+                            "notification_id"=>$insert_id,
+                            "user_id"=>$selectProcessOwner_value,
+                            "user_role"=>2,
+                        );
+                        $this->Admin_model->save_notification_user_assign($save_notification_user_assign_data);
+                    }
+                }
+            }
+            
+            if(isset($_POST['selectManager'])){
+                $selectManager = $this->input->post("selectManager");
+                if(!empty($selectManager)){
+                    foreach($selectManager as $selectManager_key=>$selectManager_value){
+                        $save_notification_user_assign_data=array(
+                            "notification_id"=>$insert_id,
+                            "user_id"=>$selectManager_value,
+                            "user_role"=>0,
+                        );
+                        $this->Admin_model->save_notification_user_assign($save_notification_user_assign_data);
+                    }
+                }
+            }
+            
+            if(isset($_POST['selectVerify'])){
+                $selectVerify = $this->input->post("selectVerify");
+                if(!empty($selectVerify)){
+                    foreach($selectVerify as $selectVerify_key=>$selectVerify_value){
+                        $save_notification_user_assign_data=array(
+                            "notification_id"=>$insert_id,
+                            "user_id"=>$selectVerify_value,
+                            "user_role"=>1,
+                        );
+                        $this->Admin_model->save_notification_user_assign($save_notification_user_assign_data);
+                    }
+                }
+            }
+            
+        }
+        // exit();
+        $this->session->set_flashdata("success","Notification Brodcast Successfully");
+        redirect("index.php/manage-notification");
+    }
+
     public function view_issue(){
 
         $company_id = $_SESSION['logged_in']['company_id'];

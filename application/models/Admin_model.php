@@ -448,6 +448,13 @@ class Admin_model extends CI_Model {
         $this->db->insert('request_for_delete_project',$data);
         return 1;
     }
+
+
+      
+    public function save_issue($data){
+        $this->db->insert('issue_manage',$data);
+        return 1;
+    }
     
 }
 ?>

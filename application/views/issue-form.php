@@ -47,13 +47,13 @@
 					<!-- Section heading -->
            <div class="wrapper-carousel-fix">
 						<!-- Carousel Wrapper -->
-              <form action="<?php echo base_url(); ?>index.php/save-brodcast-message" method="post">
+              <form action="<?php echo base_url(); ?>index.php/save-issue" method="post">
 
                 <div class="row ">
                     <div class="col-md-12 form-row SectionUserType" id="SectionTypeofIssue">
                         <label class="form-label">Type of Issue</label>
-                        <input type="radio" name="IssueType" class="mx-1" onchange="SelectTypeofIssue(this)" value="general"><lable class="mr-3">General Issue</lable>
-                        <input type="radio" name="IssueType" class="mx-1" onchange="SelectTypeofIssue(this)" value="projectbase"><lable class="mr-3">Project Based Issue</lable>
+                        <input type="radio" name="issue_type" class="mx-1" onchange="SelectTypeofIssue(this)" value="general"><lable class="mr-3">General Issue</lable>
+                        <input type="radio" name="issue_type" class="mx-1" onchange="SelectTypeofIssue(this)" value="projectbase"><lable class="mr-3">Project Based Issue</lable>
                     </div>
                 </div>
 
@@ -97,7 +97,7 @@
                 <div class="row " id="SectionForGeneralIssue" style="display:none">
                     <div class="col-md-12 my-4 form-row SectionForGeneralIssue"  >
                         <label class="form-label">Reporting Person (Group Admin)</label>
-                        <select name="selectGropAdmin" id="selectGropAdmin" class="form-control">
+                        <select name="groupadmin_name" id="groupadmin_name" class="form-control">
                             <option>Select Group Admin</option>
                             <?php foreach ($group_admin as $group_admin_key => $group_admin_value) {
                                     echo '<option value="' . $group_admin_value->id . '">' . $group_admin_value->firstName . ' ' . $group_admin_value->lastName . '</option>';
@@ -113,7 +113,7 @@
                 <div class="row my-4">
                     <div class="col-md-12 form-row">
                         <label class="form-label">Issue Title</label>
-                        <input type="text" name="title" id="title" class="form-control" placeholder="Enter Title" required="">
+                        <input type="text" name="issue_title" id="issue_title" class="form-control" placeholder="Enter Title" required="">
                     </div>
                 </div>
 
@@ -121,14 +121,14 @@
                 <div class="row my-4">
                     <div class="col-md-12 form-row">
                         <label class="form-label">Issue Description</label>
-                        <textarea  name="description" id="description" class="form-control editornew" placeholder="Enter Issue Description"></textarea>
+                        <textarea  name="issue_description" id="issue_description" class="form-control editornew" placeholder="Enter Issue Description"></textarea>
                     </div>
                 </div>
 
                 <div class="row my-4">
                     <div class="col-md-12 form-row">
                         <label class="form-label">Attachment</label>
-                        <input type="file" name="title" id="title" class="form-control" placeholder="Enter Title" required="">
+                        <input type="file" name="issue_attachment" id="issue_attachment" class="form-control" required="">
                     </div>
                 </div>
 

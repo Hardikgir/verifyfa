@@ -5,6 +5,28 @@ Database Updates :-
 -> 
 
 
+New Issue Table Creating :- 
+
+issue_manage
+
+id
+tracking_id
+issue_type
+company_name
+location_name
+project_name
+manage_name
+groupadmin_name
+issue_title
+issue_description
+issue_attachment
+status
+created_by
+resolved_by
+created_at
+updated_at
+
+
 Basic / Main Table :- 
 
 -> company
