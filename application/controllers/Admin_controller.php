@@ -1152,12 +1152,7 @@ $role=implode(',',$this->input->post('user_role'));
             "resolved_by" => $resolved_by,
             "created_at"=>date("Y-m-d H:i:s")
         );
-        // exit();
-        // echo '<pre>data ';
-        // print_r($data);
-        // echo '</pre>';
-        // exit();
-
+       
         $data["notification"]=$this->Admin_model->save_issue($data);
         $insert_id = $this->db->insert_id();
         $this->session->set_flashdata("success","Issue Created Successfully");
