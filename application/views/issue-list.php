@@ -32,32 +32,31 @@ $this->load->view('layouts/sidebar');
             <th>Type of issue</th>
             <th>Project Id</th>
             <th>Status</th>
-            <th>Raised By</th>
             <th>Resolved By</th>
             <th>Action </th>
             </tr>
         </thead>
         <tbody>
-            <?php /* foreach($issue as $row){
+            <?php foreach($issue as $row){
                 $user_row=get_user_row($row->created_by);
                 ?>
             <tr>
-                <td ><?php echo $row->type;?></td>
-                <td ><?php echo $row->title;?></td>
-                <td ><?php echo $row->title;?></td>
-                <td ><?php echo $user_row->firstName.' '.$user_row->lastName;?></td>
+                <td ><?php echo $row->tracking_id;?></td>
+                <td ><?php echo $row->issue_title;?></td>
+                <td ><?php echo $row->issue_type;?></td>
+                <td ><?php echo $row->project_name;?></td>
                 <td ><?php 
-                if($row->staus =='0'){echo "Progress";}
-                if($row->staus =='1'){echo "Resolve & Closed";}
+                if($row->status =='1'){echo "New";}
+                if($row->status =='2'){echo "Escalted";}
                 ?></td>
                 <td >
                 <select name="change_staus" id="change_status" class="form-control" style="border: 1px solid #cfcaca;padding: 4px;background: aliceblue;font-weight: bold;border-radius: 5px;">
-                 <option value="0" <?php if($row->staus =='0'){echo "selected";} ?>>Progress</option>
-                 <option value="1" <?php if($row->staus =='1'){echo "selected";} ?>>Resolve & Closed</option>
+                 <option value="0" <?php if($row->status =='0'){echo "selected";} ?>>Progress</option>
+                 <option value="1" <?php if($row->status =='1'){echo "selected";} ?>>Resolve & Closed</option>
                 </select>    
                
                 <td>
-                    <a href="<?php echo base_url();?>index.php/view-reply-notofication/<?php echo $row->id;?>">
+                    <a href="<?php echo base_url();?>index.php/view-issue/<?php echo $row->id;?>">
                      <i class="fa fa-eye"></i>view
                     </a>
                     <!-- ||
@@ -66,7 +65,7 @@ $this->load->view('layouts/sidebar');
                     </a> -->
                 </td>
             </tr>
-            <?php } */ ?>
+            <?php } ?>
         </tbody>
         </table>
 					</div>			

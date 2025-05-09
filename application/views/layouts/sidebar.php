@@ -252,9 +252,17 @@ if($usercntrole > 0){
 
 					
 					<?php if(($user_role_addmin_cnt > 0) || ($user_role_manager_cnt > 0) ){ ?>
-						<li class="nav-item <?php echo $page_title=='Manage Issue'?'active':'';?>  ">
-						<a class="nav-link" href="<?php echo base_url();?>index.php/manage-issue"><i class="fa fa-bug"></i>
-							<p>Manage Issue</p>
+						<li class="nav-item <?php echo $page_title=='Manage My Issue'?'active':'';?>  ">
+						<a class="nav-link" href="<?php echo base_url();?>index.php/manage-my-issue"><i class="fa fa-bug"></i>
+							<p>Manage My Issue</p>
+						</a>
+					</li>
+                    <?php } ?>
+
+					<?php if(($user_role_addmin_cnt > 0) || ($user_role_manager_cnt > 0) ){ ?>
+						<li class="nav-item <?php echo $page_title=='Manage Issue For Me'?'active':'';?>  ">
+						<a class="nav-link" href="<?php echo base_url();?>index.php/manage-issue-for-me"><i class="fa fa-bug"></i>
+							<p>Issue For Me</p>
 						</a>
 					</li>
                     <?php } ?>

@@ -456,5 +456,24 @@ class Admin_model extends CI_Model {
         return 1;
     }
     
+
+
+    public function get_all_issue_for_me($user_id){
+        $this->db->select('*');
+        $this->db->from('issue_manage');
+        $this->db->where('resolved_by',$user_id);
+        $query=$this->db->get();
+        return $query->result();
+    }
+
+     public function get_all_my_issue($user_id){
+        $this->db->select('*');
+        $this->db->from('issue_manage');
+        $this->db->where('created_by',$user_id);
+        $query=$this->db->get();
+        return $query->result();
+    }
+    
+    
 }
 ?>

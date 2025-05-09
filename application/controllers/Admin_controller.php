@@ -1022,10 +1022,17 @@ $role=implode(',',$this->input->post('user_role'));
     }
 
 
-    public function manage_issue(){
+    public function manage_issue_for_me(){
         $data['page_title']="Manage Issue";
         $entity_code=$this->admin_registered_entity_code;
-        // $data["issue"]=$this->Admin_model->get_all_notification($entity_code);
+        $data["issue"]=$this->Admin_model->get_all_issue_for_me($_SESSION['logged_in']['id']);
+        $this->load->view('issue-list',$data);
+    }
+
+    public function manage_my_issue(){
+        $data['page_title']="Manage Issue";
+        $entity_code=$this->admin_registered_entity_code;
+        $data["issue"]=$this->Admin_model->get_all_my_issue($_SESSION['logged_in']['id']);
         $this->load->view('issue-list',$data);
     }
 
@@ -1118,6 +1125,11 @@ $role=implode(',',$this->input->post('user_role'));
         $issue_attachment = '';
         $tracking_id_value = '001';
 
+        $resolved_by = $this->input->post("groupadmin_name");
+        if($this->input->post("issue_type") == 'projectbase'){
+            $resolved_by = $this->input->post("manage_name");
+        }
+       
         // echo '<pre>';
         // print_r($_POST);
         // echo '</pre>';
@@ -1137,6 +1149,7 @@ $role=implode(',',$this->input->post('user_role'));
             "issue_attachment"=>$issue_attachment,
             
             "created_by"=>$created_by,
+            "resolved_by" => $resolved_by,
             "created_at"=>date("Y-m-d H:i:s")
         );
         // exit();
@@ -1147,101 +1160,8 @@ $role=implode(',',$this->input->post('user_role'));
 
         $data["notification"]=$this->Admin_model->save_issue($data);
         $insert_id = $this->db->insert_id();
-        echo '<pre>insert_id';
-        print_r($insert_id);
-        echo '</pre>';
-        exit();
-        $notification_type = $this->input->post("type");
-        if($notification_type == 'Notification'){
-
-            if(isset($_POST['selectGropAdmin'])){
-                $selectGropAdmin = $this->input->post("selectGropAdmin");
-                if(!empty($selectGropAdmin)){
-                    foreach($selectGropAdmin as $selectGropAdmin_key=>$selectGropAdmin_value){
-                        $save_notification_user_assign_data=array(
-                            "notification_id"=>$insert_id,
-                            "user_id"=>$selectGropAdmin_value,
-                            "user_role"=>5,
-                        );
-                        $this->Admin_model->save_notification_user_assign($save_notification_user_assign_data);
-                    }
-                }
-            }
-
-            if(isset($_POST['selectSubAdmin'])){
-                $selectSubAdmin = $this->input->post("selectSubAdmin");
-                if(!empty($selectSubAdmin)){
-                    foreach($selectSubAdmin as $selectSubAdmin_key=>$selectSubAdmin_value){
-                        $save_notification_user_assign_data=array(
-                            "notification_id"=>$insert_id,
-                            "user_id"=>$selectSubAdmin_value,
-                            "user_role"=>4,
-                        );
-                        $this->Admin_model->save_notification_user_assign($save_notification_user_assign_data);
-                    }
-                }
-            }
-
-            if(isset($_POST['selectEntityOwner'])){
-                $selectEntityOwner = $this->input->post("selectEntityOwner");
-                if(!empty($selectEntityOwner)){
-                    foreach($selectEntityOwner as $selectEntityOwner_key=>$selectEntityOwner_value){
-                        $save_notification_user_assign_data=array(
-                            "notification_id"=>$insert_id,
-                            "user_id"=>$selectEntityOwner_value,
-                            "user_role"=>3,
-                        );
-                        $this->Admin_model->save_notification_user_assign($save_notification_user_assign_data);
-                    }
-                }
-            }
-
-            if(isset($_POST['selectProcessOwner'])){
-                $selectProcessOwner = $this->input->post("selectProcessOwner");
-                if(!empty($selectProcessOwner)){
-                    foreach($selectProcessOwner as $selectProcessOwner_key=>$selectProcessOwner_value){
-                        $save_notification_user_assign_data=array(
-                            "notification_id"=>$insert_id,
-                            "user_id"=>$selectProcessOwner_value,
-                            "user_role"=>2,
-                        );
-                        $this->Admin_model->save_notification_user_assign($save_notification_user_assign_data);
-                    }
-                }
-            }
-            
-            if(isset($_POST['selectManager'])){
-                $selectManager = $this->input->post("selectManager");
-                if(!empty($selectManager)){
-                    foreach($selectManager as $selectManager_key=>$selectManager_value){
-                        $save_notification_user_assign_data=array(
-                            "notification_id"=>$insert_id,
-                            "user_id"=>$selectManager_value,
-                            "user_role"=>0,
-                        );
-                        $this->Admin_model->save_notification_user_assign($save_notification_user_assign_data);
-                    }
-                }
-            }
-            
-            if(isset($_POST['selectVerify'])){
-                $selectVerify = $this->input->post("selectVerify");
-                if(!empty($selectVerify)){
-                    foreach($selectVerify as $selectVerify_key=>$selectVerify_value){
-                        $save_notification_user_assign_data=array(
-                            "notification_id"=>$insert_id,
-                            "user_id"=>$selectVerify_value,
-                            "user_role"=>1,
-                        );
-                        $this->Admin_model->save_notification_user_assign($save_notification_user_assign_data);
-                    }
-                }
-            }
-            
-        }
-        // exit();
-        $this->session->set_flashdata("success","Notification Brodcast Successfully");
-        redirect("index.php/manage-notification");
+        $this->session->set_flashdata("success","Issue Created Successfully");
+        redirect("index.php/manage-my-issue");
     }
 
     public function view_issue(){
