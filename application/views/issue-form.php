@@ -58,6 +58,7 @@
                 </div>
 
                 <div class="row " id="SectionProject" style="display:none">
+
                     <div class="col-md-6 my-4 form-row SectionLocation" id="SectionLocation">
                         <label class="form-label">Location</label>
                         <select name="SelectLocation" id="SelectLocation" onchange="SectionLocationFun(this)" class="form-control">
@@ -68,15 +69,34 @@
                         </select>
                     </div>
 
-                    <div class="col-md-6 my-4 form-row SectionProject" id="SectionProject">
+                    <div class="col-md-6 my-4 form-row SectionLocation" id="SectionLocation">
+                        <label class="form-label">Location</label>
+                        <select name="SelectLocation" id="SelectLocation" onchange="SectionLocationFun(this)" class="form-control">
+                            <option>Select Location</option>
+                            <?php foreach($locationdata as $locationdata_value){
+                                echo '<option value="'.$locationdata_value->id.'">'.$locationdata_value->location_name.'</option>';
+                            } ?>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 my-4 form-row SectionProject1" id="SectionProject1">
                         <label class="form-label">Project</label>
                         <select name="issueofproject" id="selectProject" onchange="SelectProject(this)" class="form-control">
                             <option>Select Project</option>
-                            <?php /* foreach ($company_project as $company_projectkey => $company_projectvalue) {
-                                    echo '<option value="' . $company_projectvalue->company_id . '">' . $company_projectvalue->project_name . '</option>';
+                            
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 my-4 form-row SectionManager" >
+                        <label class="form-label">Reporting Person (Manager)</label>
+                        <select name="selectManager" id="selectManager" class="form-control">
+                            <option>Select Manager</option>
+                            <?php /* foreach ($all_Manager as $Managerkey => $Managervalue) {
+                                    echo '<option value="' . $Managervalue->id . '">' . $Managervalue->firstName . ' ' . $Managervalue->lastName . '</option>';
                             } */ ?>
                         </select>
                     </div>
+
                 </div>
 
 
@@ -92,17 +112,6 @@
                     </div>
                 </div>
 
-                <div class="row " id="SectionManager" style="display:none">
-                    <div class="col-md-12 my-4 form-row SectionManager" >
-                        <label class="form-label">Reporting Person (Manager)</label>
-                        <select name="selectManager" id="selectManager" class="form-control">
-                            <option>Select Manager</option>
-                            <?php /* foreach ($all_Manager as $Managerkey => $Managervalue) {
-                                    echo '<option value="' . $Managervalue->id . '">' . $Managervalue->firstName . ' ' . $Managervalue->lastName . '</option>';
-                            } */ ?>
-                        </select>
-                    </div>
-                </div>
 
 
               
@@ -214,13 +223,13 @@ $("#userEmail").change(function(){
     function SelectTypeofIssue(event){
         var TypeofIssue_value = $(event).val();
         if (TypeofIssue_value == 'general') {
-            $("#SectionManager").css('display','none')
+            // $("#SectionManager").css('display','none')
             $("#SectionGropAdmin").css('display','block')
             $("#SectionProject").css('display','none')
         }
         else if (TypeofIssue_value == 'projectbase') {
             $("#SectionGropAdmin").css('display','none')
-            $("#SectionManager").css('display','block')
+            // $("#SectionManager").css('display','block')
             $("#SectionProject").css('display','block')
         }
     }
