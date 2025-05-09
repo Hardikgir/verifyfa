@@ -1262,13 +1262,15 @@ class Plancycle extends CI_Controller {
 		// $resulttttt = $this->plancycle->GetLocationdatabyid($company_id);
 
 		$user_role = 0;
-		// $user_role = 5; //Group Admin
 		$register_user_id = $this->admin_registered_user_id;
         $entity_code = $this->admin_registered_entity_code;
 
-		$resulttttt=$this->db->query('SELECT user_role.*,users.* from user_role INNER JOIN users ON users.id=user_role.user_id where FIND_IN_SET('.$user_role.',user_role) AND user_role.location_id='.$_POST['location_id'])->result();
+		$resulttttt=$this->db->query('SELECT user_role.*,users.* from user_role INNER JOIN users ON users.id=user_role.user_id where FIND_IN_SET('.$user_role.',user_role) AND user_role.location_id='.$_POST['location_id'].' AND user_role.entity_code="'.$entity_code.'"')->result();
 
-
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
 
 		$this->userRoleArray=array();
 		?>

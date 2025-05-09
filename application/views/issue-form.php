@@ -57,31 +57,28 @@
                     </div>
                 </div>
 
-                <div class="row " id="SectionProject" style="display:none">
+                <div class="row " id="SectionForProjectBaseIssue" style="display:none">
 
-                    <div class="col-md-6 my-4 form-row SectionLocation" id="SectionLocation">
-                        <label class="form-label">Location</label>
-                        <select name="SelectLocation" id="SelectLocation" onchange="SectionLocationFun(this)" class="form-control">
+                    <div class="col-md-6 my-4 form-row">
+                        <label class="form-label">Company Name</label>
+                        <select name="company_name" id="company_name" onchange="SectionCompanyNameFun(this)" class="form-control">
                             <option>Select Location</option>
-                            <?php foreach($locationdata as $locationdata_value){
-                                echo '<option value="'.$locationdata_value->id.'">'.$locationdata_value->location_name.'</option>';
+                            <?php foreach($comapny as $comapny_value){
+                                echo '<option value="'.$comapny_value->id.'">'.$comapny_value->company_name.'</option>';
                             } ?>
                         </select>
                     </div>
 
-                    <div class="col-md-6 my-4 form-row SectionLocation" id="SectionLocation">
+                    <div class="col-md-6 my-4 form-row">
                         <label class="form-label">Location</label>
-                        <select name="SelectLocation" id="SelectLocation" onchange="SectionLocationFun(this)" class="form-control">
+                        <select name="location_name" id="location_name" onchange="SectionLocationFun(this)" class="form-control">
                             <option>Select Location</option>
-                            <?php foreach($locationdata as $locationdata_value){
-                                echo '<option value="'.$locationdata_value->id.'">'.$locationdata_value->location_name.'</option>';
-                            } ?>
                         </select>
                     </div>
 
-                    <div class="col-md-6 my-4 form-row SectionProject1" id="SectionProject1">
+                    <div class="col-md-6 my-4 form-row SectionForProjectBaseIssue1" id="SectionForProjectBaseIssue1">
                         <label class="form-label">Project</label>
-                        <select name="issueofproject" id="selectProject" onchange="SelectProject(this)" class="form-control">
+                        <select name="project_name" id="project_name" onchange="SelectProjectFun(this)" class="form-control">
                             <option>Select Project</option>
                             
                         </select>
@@ -89,24 +86,21 @@
 
                     <div class="col-md-6 my-4 form-row SectionManager" >
                         <label class="form-label">Reporting Person (Manager)</label>
-                        <select name="selectManager" id="selectManager" class="form-control">
+                        <select name="manage_name" id="manage_name" class="form-control">
                             <option>Select Manager</option>
-                            <?php /* foreach ($all_Manager as $Managerkey => $Managervalue) {
-                                    echo '<option value="' . $Managervalue->id . '">' . $Managervalue->firstName . ' ' . $Managervalue->lastName . '</option>';
-                            } */ ?>
                         </select>
                     </div>
 
                 </div>
 
 
-                <div class="row " id="SectionGropAdmin" style="display:none">
-                    <div class="col-md-12 my-4 form-row SectionGropAdmin"  >
+                <div class="row " id="SectionForGeneralIssue" style="display:none">
+                    <div class="col-md-12 my-4 form-row SectionForGeneralIssue"  >
                         <label class="form-label">Reporting Person (Group Admin)</label>
                         <select name="selectGropAdmin" id="selectGropAdmin" class="form-control">
                             <option>Select Group Admin</option>
-                            <?php foreach ($all_GroupAdmin as $GroupAdminkey => $GroupAdminvalue) {
-                                    echo '<option value="' . $GroupAdminvalue->id . '">' . $GroupAdminvalue->firstName . ' ' . $GroupAdminvalue->lastName . '</option>';
+                            <?php foreach ($group_admin as $group_admin_key => $group_admin_value) {
+                                    echo '<option value="' . $group_admin_value->id . '">' . $group_admin_value->firstName . ' ' . $group_admin_value->lastName . '</option>';
                             }?>
                         </select>
                     </div>
@@ -184,6 +178,26 @@ $("#userEmail").change(function(){
 
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script>
+
+    function SectionCompanyNameFun(event){
+	var company_id = $(event).val();
+	var fd = new FormData();
+	fd.append('company_id',[company_id]);
+	jQuery.ajax({
+	  url: "<?php echo base_url();?>index.php/plancycle/getlocationdatanew",
+	  type: 'POST',
+	  cache: false,
+	  contentType: false,
+	  processData: false,
+	  data: fd,
+	  success: function(data) {
+		$('#location_name').find('option').remove().end().append(data);
+	  }
+	});
+}
+
+
+
     function SectionLocationFun(event){
         var location_id = $(event).val();
         var fd = new FormData();
@@ -196,15 +210,15 @@ $("#userEmail").change(function(){
         processData: false,
         data: fd,
         success: function(data) {
-           $('#selectProject').find('option').remove().end().append(data);
+           $('#project_name').find('option').remove().end().append(data);
         }
         });
     }
 
 
-    function SelectProject(event){
+    function SelectProjectFun(event){
         var project_id = $(event).val();
-        var location_id = $("#SelectLocation").val();
+        var location_id = $("#company_location").val();
         var fd = new FormData();
         fd.append('project_id',[project_id]);
         fd.append('location_id',[location_id]);
@@ -216,21 +230,19 @@ $("#userEmail").change(function(){
         processData: false,
         data: fd,
         success: function(data) {
-            $('#selectManager').find('option').remove().end().append(data);
+            $('#manage_name').find('option').remove().end().append(data);
         }
         });
     }
     function SelectTypeofIssue(event){
         var TypeofIssue_value = $(event).val();
         if (TypeofIssue_value == 'general') {
-            // $("#SectionManager").css('display','none')
-            $("#SectionGropAdmin").css('display','block')
-            $("#SectionProject").css('display','none')
+            $("#SectionForGeneralIssue").css('display','block')
+            $("#SectionForProjectBaseIssue").css('display','none')
         }
         else if (TypeofIssue_value == 'projectbase') {
-            $("#SectionGropAdmin").css('display','none')
-            // $("#SectionManager").css('display','block')
-            $("#SectionProject").css('display','block')
+            $("#SectionForGeneralIssue").css('display','none')
+            $("#SectionForProjectBaseIssue").css('display','block')
         }
     }
 </script>

@@ -344,8 +344,6 @@ class Admin_controller extends CI_Controller {
         $register_user_id = $this->admin_registered_user_id;
         $entity_code = $this->admin_registered_entity_code;
         $data['user_role'] = $this->Admin_model->get_all_user_role($register_user_id,$entity_code);
-        
-       
         $this->load->view('manage-user_role',$data);
      }
 
@@ -1100,6 +1098,18 @@ $role=implode(',',$this->input->post('user_role'));
         $data['all_Manager'] = $all_Manager;
         $data['company_project'] = $company_project_result;
         $entity_code=$this->admin_registered_entity_code;
+
+        $data['comapny'] = $this->Admin_model->get_all_company($register_user_id,$entity_code);
+
+
+        $user_role = 5; //Group Admin
+		$register_user_id = $this->admin_registered_user_id;
+        $entity_code = $this->admin_registered_entity_code;
+
+		$group_admin = $this->db->query('SELECT user_role.*,users.* from user_role INNER JOIN users ON users.id=user_role.user_id where FIND_IN_SET('.$user_role.',user_role) AND user_role.entity_code="'.$entity_code.'"')->result();
+
+        $data['group_admin'] = $group_admin;
+      
         $this->load->view('issue-form',$data);
     }
 
