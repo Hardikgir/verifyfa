@@ -370,6 +370,75 @@ class Tasks_model extends CI_Model {
         // echo $this->db->last_query();
         return $data;
     }
+
+
+
+
+    function getExceptionTwoReport($tablename,$verificationstatus,$reportHeaders)
+    {
+
+
+        $company_projects = $this->db->query("SELECT *  FROM company_projects WHERE project_table_name='".$tablename."'")->row();
+        $project_id = $company_projects->id;
+        $company_id = $company_projects->company_id;
+        $original_table_name = $company_projects->original_table_name;
+        $project_table_name = $company_projects->project_table_name;
+
+
+        $project_headers = $this->db->query("SELECT *  FROM project_headers WHERE project_id='".$project_id."' AND is_editable = 1")->result();
+        $project_header_column = array('id','item_sub_category');
+        foreach($project_headers as $project_headers_value){
+            $project_header_column[] = $project_headers_value->keyname;
+        }
+        $project_header_column_value = implode(',', $project_header_column);
+     
+
+
+        $project_table_result = $this->db->query("SELECT ".$project_header_column_value." FROM ".$project_table_name)->result();
+        $existing_id_array = array();
+        foreach($project_table_result as $project_table_value){
+            $existing_id_array[] = $project_table_value->id;
+        }
+        $existing_id_value = implode(',', $existing_id_array);
+      
+
+        $original_table_result = $this->db->query("SELECT ".$project_header_column_value." FROM ".$original_table_name." WHERE id in (".$existing_id_value.") ")->result();
+        // echo '<pre>original_table_result ';
+        // print_r($original_table_result);
+        // echo '</pre>';
+        // exit(); 
+
+        $different_array = array();
+        foreach($project_table_result as $project_table_key=>$project_table_value){
+
+            foreach($project_header_column as $project_header_column_new_value)
+            {
+                if($original_table_result[$project_table_key]->$project_header_column_new_value != $project_table_result[$project_table_key]->$project_header_column_new_value){
+                    // $different_array[] = $original_table_result[$project_table_key]->$project_header_column_new_value;
+                    // $different_array[$project_header_column_new_value][] = 1;
+                    // $different_array[$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value][] = 1;
+                    $different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value][] = 1;
+                }
+            }
+        }
+        $different_array['project_header_column_value'] = $project_header_column_value; 
+
+        // echo '<pre>different_array ';
+        // print_r($different_array);
+        // echo '</pre>';
+        // exit(); 
+        // echo '<pre>different_array ';
+        // print_r($different_array);
+        // echo '</pre>';
+        // exit(); 
+        return $different_array;
+    }
+
+
+
+
+
+
     public function getExceptionOneUnallocated($tablename,$verificationstatus,$reportHeaders)
     {
         $cols="";

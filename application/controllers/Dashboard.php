@@ -574,6 +574,8 @@ class Dashboard extends CI_Controller {
 			// echo $this->db->last_query();
 			// echo "gaurav";die;
 
+
+
 			if(count($getProject) > 0)
 			{
 				$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
@@ -593,6 +595,8 @@ class Dashboard extends CI_Controller {
 				// echo '</pre>';
 				// exit();
 				// exit();
+
+				
 				
 				if($exceptioncategory==1)
 				{
@@ -602,7 +606,8 @@ class Dashboard extends CI_Controller {
 				else if($exceptioncategory==2)
 				{
 					$getreport=$this->tasks->getExceptionTwoReport($project_name,$verificationstatus,$reportHeaders);
-					$reportView="updationReport";
+					// $reportView="updationReport";
+					$reportView="ChangesUpdationsItemsReport";
 				}
 				else if($exceptioncategory==3)
 				{
@@ -1827,12 +1832,7 @@ class Dashboard extends CI_Controller {
 		$verification_status=$reportData['reportData']['verification_status'];
 		$table_name=$reportData['reportData']['table_name'];
 		$reportHeaders=$reportData['reportData']['report_headers'];
-
-		// echo '<pre>table_name ';
-		// print_r($table_name);
-		// echo '</pre>';
-		// exit(); 
-
+		
 		$headerCondition=array('table_name'=>$table_name);
 		
 		$project_headers=$this->tasks->get_data('project_headers',$headerCondition);
