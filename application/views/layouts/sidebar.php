@@ -443,13 +443,7 @@ document.getElementById("notificationcnt").innerHTML='(<?php echo $unread_count;
 				</div>
 			</nav>
 			<div class="card-body px-lg-5 py-lg-5 mt-4">
-			<div class="alert alert-success" style="<?php echo $this->session->flashdata('success')!=''?'':'display:none;'; ?>" role="alert">
-				<?php echo $this->session->flashdata('success'); ?>
-				<?php unset($this->session['success']); ?>
-				<?php 
-				if(isset($_SESSION['success'])){
-					unset($_SESSION['success']);
-				}
-				?>
-			</div>
+							<div class="alert alert-success" style="<?php echo $this->session->flashdata('success')!=''?'':'display:none;'; ?>" role="alert">
+								<?php echo $this->session->flashdata('success'); ?>
+							</div>
 			<!-- End Navbar -->
