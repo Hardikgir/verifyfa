@@ -53,7 +53,7 @@ $this->load->view('layouts/sidebar');
                                     {
                                 ?>
                                     <tr>
-                                    <td class="firstcolumn"><?php echo $i;?>   *<?php echo str_replace("_"," ",$mc);?></td>
+                                    <td class="firstcolumn 11"><?php echo $i;?>   *<?php echo str_replace("_"," ",$mc);?></td>
                                     <input type="hidden" name="keyname_<?php echo $i;?>" value="<?php echo $mc;?>">
                                     <input type="hidden" name="keylabel_<?php echo $i;?>" value="<?php echo str_replace("_"," ",$mc);?>">
                                     <td class="text-center">
@@ -75,7 +75,7 @@ $this->load->view('layouts/sidebar');
                                     {
                                 ?>
                                     <tr>
-                                    <td class="firstcolumn"><?php echo $i;?>   <?php echo str_replace("_"," ",$nmc);?>
+                                    <td class="firstcolumn 22"><?php echo $i;?>   <?php echo str_replace("_"," ",$nmc);?>
                                     <input type="hidden" name="keyname_<?php echo $i;?>" id="<?php echo $nmc.'-key';?>" value="<?php echo $nmc;?>" disabled>
                                     <input type="hidden" name="keylabel_<?php echo $i;?>" id="<?php echo $nmc.'-label';?>" value="<?php echo str_replace("_"," ",$nmc);?>" disabled>
                                     </td>
