@@ -445,6 +445,12 @@ class Plancycle extends CI_Controller {
 		{
 			array_push($getMandatoryColumns,$gc->COLUMN_NAME);
 		}
+
+		// echo '<pre>getMandatoryColumns ';
+		// print_r($getMandatoryColumns);
+		// echo '</pre>';
+		// exit();
+
 		$data['mandatory_cols']=$getMandatoryColumns;
 		
 		$getOtherColumns=$this->plancycle->getcompleteschema($data['table_name']);

@@ -255,15 +255,15 @@ class Login_model extends CI_Model {
 		$result= $query->row();
 		$num = $query->num_rows();
 		if(empty($num)){
-			// $this->load->dbforge();
-			// $this->dbforge->drop_table($original_table_name);
+			$this->load->dbforge();
+			$this->dbforge->drop_table($original_table_name);
 		}		
 		// Code Added on 8 May End
 		
 
 
 		$deletepro = $this->db->where('id',$projectid)->delete('company_projects');
-		// $this->dbforge->drop_table($result->project_table_name);	
+		$this->dbforge->drop_table($result->project_table_name);	
 		// $this->db->select('original_table_name');
 		// $this->db->from('company_projects');
 		// $this->db->where('original_table_name',$original_table_name);

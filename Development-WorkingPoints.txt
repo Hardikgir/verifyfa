@@ -1,3 +1,15 @@
+09/05/2025 :- 
+Today Work :- 
+
+1. Issue Management
+2. Reports
+    -> Changes/ Updations of Items (Logic you export excel file & then if you are changes that log should be showing in this)
+    -> Calculate Risk Exposure
+    -> Duplicate Item Codes verified
+    -> Duplicate Item Codes Identified
+
+
+
 Register users :- 
     1. Tooltips (http://localhost/codeigniter/verifyfa/index.php/registered-user-subscription)
     2. Unsubscript Button  (http://localhost/codeigniter/verifyfa/index.php/registered-user-subscription) [Need to Conform]
