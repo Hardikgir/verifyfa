@@ -218,7 +218,7 @@ $("#userEmail").change(function(){
 
     function SelectProjectFun(event){
         var project_id = $(event).val();
-        var location_id = $("#company_location").val();
+        var location_id = $("#location_name").val();
         var fd = new FormData();
         fd.append('project_id',[project_id]);
         fd.append('location_id',[location_id]);
