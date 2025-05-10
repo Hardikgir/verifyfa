@@ -191,9 +191,9 @@ table th,table td{
 											<th>Amount(in Lacs)</th><!-- For Not_in_Use -->
 											<th>Number of Qty</th><!-- For Not_in_Use -->
                                             <th>Amount(in Lacs)</th><!-- For Short_Found -->
-											<th>Number of Line Items</th><!-- For Short_Found -->
+											<th>Number of Qty</th><!-- For Short_Found -->
                                             <th>Amount(in Lacs)</th><!-- For Excess_Found -->
-                                            <th>Number of Line Items</th><!-- For Excess_Found -->
+                                            <th>Number of Qty</th><!-- For Excess_Found -->
 										</tr>
                                         
 										<?php
