@@ -5,6 +5,10 @@ Today Work :-
 2. Reports
     -> Changes/ Updations of Items (Logic you export excel file & then if you are changes that log should be showing in this)
     -> Calculate Risk Exposure
+        -> Project Status [Finish Verification | Complete]
+        -> Merge (Condition of Item) & (Qty Validation Status)
+            -> Condition of Item [Column Should :- Damaged,Scrapped,Missing,Shifted,Not in use]
+            -> Qty Validation Status [Short Found, Excess Found]            
     -> Duplicate Item Codes verified
     -> Duplicate Item Codes Identified
 

@@ -598,52 +598,55 @@ class Dashboard extends CI_Controller {
 
 				
 				
-				if($exceptioncategory==1)
+				if($exceptioncategory==1)	//Condition of Item
 				{
 					$getreport=$this->tasks->getExceptionOneReport($project_name,$verificationstatus,$reportHeaders);
 					$reportView="conditionReport";
 				}
-				else if($exceptioncategory==2)
+				else if($exceptioncategory==2)	//Changes/ Updations of Items
 				{
 					$getreport=$this->tasks->getExceptionTwoReport($project_name,$verificationstatus,$reportHeaders);
 					// $reportView="updationReport";
 					$reportView="ChangesUpdationsItemsReport";
 				}
-				else if($exceptioncategory==3)
+				else if($exceptioncategory==3)	//Qty Validation Status
 				{
 					error_reporting(0);
 					$getreport=$this->tasks->getExceptionThreeReport($project_name,$verificationstatus,$reportHeaders);
 					$reportView="quantityValidationReport";
 				}
-				else if($exceptioncategory==4)
+				else if($exceptioncategory==4)	//Updated with Verification Remarks
 				{
 					$getreport=$this->tasks->getExceptionFourReport($project_name,$verificationstatus,$reportHeaders);
 					$reportView="verificationRemarksReport";
 				}
-				else if($exceptioncategory==5)
+				else if($exceptioncategory==5)	//Updated with Item Notes
 				{
 					$getreport=$this->tasks->getExceptionFiveReport($project_name,$verificationstatus,$reportHeaders);
 					$reportView="itemNotesReport";
 				}
-				else if($exceptioncategory==6)
+				else if($exceptioncategory==6)	//Calculate Risk Exposure
 				{
 					$getreport=$this->tasks->getExceptionSixReport($project_name,$verificationstatus,$reportHeaders);
-					$reportView="markedForReviewReport";
+					$reportView="CalculateRiskExposureReport";
 				}
 				else if($exceptioncategory==7)
 				{
 					$getreport=$this->tasks->getExceptionSevenReport($project_name,$verificationstatus,$reportHeaders);
 					$reportView="riskExposerReport";
 				}
-				else if($exceptioncategory==8)
+				else if($exceptioncategory==8)	//Mode of Verification
 				{
 					$getreport=$this->tasks->getExceptionEightReport($project_name,$verificationstatus,$reportHeaders);
-					// echo '<pre>last_query ';
-					// print_r($this->db->last_query());
-					// echo '</pre>';
-					// exit();
 					$reportView="modeReport";
 				}
+
+				else if($exceptioncategory==9 || $exceptioncategory==10)	//Duplicate Item Codes verified || Identified
+				{
+					$getreport=$this->tasks->getExceptionNineReport($project_name,$verificationstatus,$reportHeaders);
+					$reportView="DuplicateItemCodesReport";
+				}
+
 				$getreport['project']=$getProject;
 				$getreport['type']=$type;
 				$getreport['reportHeaders']=$reportHeaders;
@@ -714,10 +717,10 @@ class Dashboard extends CI_Controller {
 						$getreport[$i]=$this->tasks->getExceptionFiveReport($project_name,$verificationstatus,$reportHeaders);
 						$reportView="itemNotesConsolidatedReport";
 					}
-					else if($exceptioncategory==6)
+					else if($exceptioncategory==6)	//Calculate Risk Exposure
 					{
 						$getreport[$i]=$this->tasks->getExceptionSixReport($project_name,$verificationstatus,$reportHeaders);
-						$reportView="markedForReviewConsolidatedReport";
+						$reportView="markedForReviewReport";
 					}
 					else if($exceptioncategory==7)
 					{
