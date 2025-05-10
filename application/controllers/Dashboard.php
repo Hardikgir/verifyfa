@@ -641,7 +641,7 @@ class Dashboard extends CI_Controller {
 					$reportView="modeReport";
 				}
 
-				else if($exceptioncategory==9 || $exceptioncategory==10)	//Duplicate Item Codes verified || Identified
+				else if($exceptioncategory==10)	//Duplicate Item Codes verified || Identified
 				{
 					$getreport=$this->tasks->getExceptionNineReport($project_name,$verificationstatus,$reportHeaders);
 					$reportView="DuplicateItemCodesReport";

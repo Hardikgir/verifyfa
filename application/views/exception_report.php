@@ -131,7 +131,7 @@ select option:disabled {
 														<option value="5">Updated with Item Notes</option>
 														<option value="6">Calculate Risk Exposure</option>
 														<option value="8">Mode of Verification</option>
-														<option value="9">Duplicate Item Codes verified</option>
+														<!-- <option value="9">Duplicate Item Codes verified</option> -->
 														<option value="10">Duplicate Item Codes Identified</option>
 														
 													</select>
