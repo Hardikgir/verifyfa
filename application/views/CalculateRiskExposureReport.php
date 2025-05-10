@@ -160,7 +160,7 @@ table th,table td{
 
                                                         
                                         <tr>
-											<!-- <th rowspan="1">Allocated Item Category</th> -->
+											<th rowspan="1"></th>
 											<th colspan="10" style="background-color:#FFF2CC;">Item Condition</th>
                                             <th colspan="4" >Qty Validation</th>
 										</tr>
@@ -168,7 +168,7 @@ table th,table td{
 
 
 										<tr>
-											<th colspan="2" rowspan="2">Allocated Item Category</th>
+											<th rowspan="2">Allocated Item Category</th>
 											<th colspan="2">Damaged</th>
 											<th colspan="2">Scrapped</th>
 											<th colspan="2">Missing</th>
