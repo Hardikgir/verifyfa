@@ -1741,13 +1741,13 @@ function get_product_search($sort_by,$order_by,$table_name)
     {
 
         // $data['good']=
-        $result_list = $this->db->query("SELECT COUNT(`item_unique_code`) AS uniqu_record_cout, item_unique_code,item_sub_category FROM  `project_1746816387` GROUP BY `item_unique_code` ORDER BY uniqu_record_cout DESC")->result();
+        $result_list = $this->db->query("SELECT COUNT(`item_unique_code`) AS uniqu_record_cout, item_unique_code,item_category FROM  `project_1746816387` GROUP BY `item_unique_code` ORDER BY uniqu_record_cout DESC")->result();
 
         $category_wise_count_array = array();
         foreach($result_list as $result_key=>$result_value){
             if($result_value->uniqu_record_cout > 1){
-                // $category_wise_count_array[$result_value->item_sub_category][] = $result_value->uniqu_record_cout; 
-                 $category_wise_count_array[$result_value->item_sub_category] = $result_value->uniqu_record_cout; 
+                // $category_wise_count_array[$result_value->item_category][] = $result_value->uniqu_record_cout; 
+                 $category_wise_count_array[$result_value->item_category] = $result_value->uniqu_record_cout; 
             }
            
         }
