@@ -94,13 +94,13 @@ table th,table td{
                                             <div class="col-md-6">
 												<div class="form-group">
                                                     <label>Start Date:</label>
-                                                    <input type="text" class="form-control" value="<?php echo date('d/m/y',strtotime($data['project'][0]->start_date));?>">
+                                                    <input type="text" class="form-control" value="<?php echo date('d/m/Y',strtotime($data['project'][0]->start_date));?>">
 												</div>
 											</div>
 											<div class="col-md-6">
 												<div class="form-group">
                                                     <label>Due Date:</label>
-                                                    <input type="text" class="form-control" value="<?php echo date('d/m/y',strtotime($data['project'][0]->due_date));?>">
+                                                    <input type="text" class="form-control" value="<?php echo date('d/m/Y',strtotime($data['project'][0]->due_date));?>">
 												</div>
 											</div>
 											
