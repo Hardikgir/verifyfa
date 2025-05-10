@@ -173,7 +173,8 @@ table th,table td{
                                         echo '<th>Allocated Item Category</th>';
                                         foreach($project_header_column_value as $project_header_column_value_value){
                                             echo '<th>';
-                                            echo $project_header_column_value_value;
+                                            // echo $project_header_column_value_value;
+											echo ucfirst(str_replace('_',' ',$project_header_column_value_value));
                                             echo '</th>';
                                         }
                                         echo '</tr>';
