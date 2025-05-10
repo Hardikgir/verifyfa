@@ -1739,19 +1739,59 @@ function get_product_search($sort_by,$order_by,$table_name)
 
     function getExceptionNineReport($tablename,$verificationstatus,$reportHeaders)
     {
+        $tablename = 'dljm_d_55_fa_verification_tagging';
+       
+        $result_list = $this->db->query("SELECT COUNT(`item_unique_code`) AS uniqu_record_cout, item_unique_code,item_category FROM  $tablename GROUP BY item_unique_code,item_category ORDER BY uniqu_record_cout DESC")->result();
 
-        // $data['good']=
-        $result_list = $this->db->query("SELECT COUNT(`item_unique_code`) AS uniqu_record_cout, item_unique_code,item_category FROM  `project_1746816387` GROUP BY `item_unique_code` ORDER BY uniqu_record_cout DESC")->result();
+        $scan_wise_result_list = $this->db->query("SELECT COUNT(`item_unique_code`) AS uniqu_record_cout, item_unique_code,item_category FROM  $tablename WHERE verification_status = 'Verified' AND mode_of_verification = 'Scan'  GROUP BY item_unique_code,item_category ORDER BY uniqu_record_cout DESC")->result();
+
+        $search_wise_result_list = $this->db->query("SELECT COUNT(`item_unique_code`) AS uniqu_record_cout, item_unique_code,item_category FROM  $tablename WHERE verification_status = 'Verified' AND mode_of_verification = 'Search'  GROUP BY item_unique_code,item_category ORDER BY uniqu_record_cout DESC")->result();
+
+        // $search_wise_result_list = $this->db->query("SELECT COUNT(`item_unique_code`) AS uniqu_record_cout, item_unique_code,item_category FROM  $tablename WHERE verification_status = 'Not-Verified' GROUP BY item_unique_code,item_category ORDER BY uniqu_record_cout DESC")->result();
+
+
+        $common_array = array();
 
         $category_wise_count_array = array();
         foreach($result_list as $result_key=>$result_value){
             if($result_value->uniqu_record_cout > 1){
-                // $category_wise_count_array[$result_value->item_category][] = $result_value->uniqu_record_cout; 
-                 $category_wise_count_array[$result_value->item_category] = $result_value->uniqu_record_cout; 
+                 $category_wise_count_array[$result_value->item_category] = $result_value->uniqu_record_cout;
+                 $common_array[$result_value->item_category]['category_wise'] = $result_value->uniqu_record_cout;
             }
            
         }
-        $data['Categorywise_count'] = $category_wise_count_array;
+
+        $scan_wise_count_array = array();
+        foreach($scan_wise_result_list as $result_key=>$result_value){
+            if($result_value->uniqu_record_cout > 1){
+                 $scan_wise_count_array[$result_value->item_category] = $result_value->uniqu_record_cout; 
+                  $common_array[$result_value->item_category]['scan_wise'] = $result_value->uniqu_record_cout;
+            }
+           
+        }
+
+        $search_wise_count_array = array();
+        foreach($search_wise_result_list as $result_key=>$result_value){
+            if($result_value->uniqu_record_cout > 1){
+                 $search_wise_count_array[$result_value->item_category] = $result_value->uniqu_record_cout; 
+                 $common_array[$result_value->item_category]['search_wise'] = $result_value->uniqu_record_cout;
+            }
+           
+        }
+
+
+        // echo '<pre>common_array ';
+        // print_r($common_array);
+        // echo '</pre>';
+        // exit();
+        $data['common_array'] = $common_array;
+        // $data['Categorywise_count'] = $category_wise_count_array;
+        // $data['scan_wise_count_array'] = $scan_wise_count_array;
+        // $data['search_wise_count_array'] = $search_wise_count_array;
+        // echo '<pre>data :: ';
+        // print_r($data);
+        // echo '</pre>';
+        // exit();
         return $data;
       
     }
