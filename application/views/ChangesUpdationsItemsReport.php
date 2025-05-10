@@ -65,7 +65,7 @@ table th,table td{
 											<div class="col-md-6">
 												<div class="form-group">
                                                     <label>Exception Category:</label>
-                                                    <input type="text" class="form-control" value="Condition of Items">
+                                                    <input type="text" class="form-control" value="Changes/ Updations of Items">
 												</div>
                                             </div>
                                             <div class="col-md-6">
