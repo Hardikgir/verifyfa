@@ -160,7 +160,7 @@ table th,table td{
 
                                                         
                                         <tr>
-											<th rowspan="2">Allocated Item Category</th>
+											<th rowspan="1">Allocated Item Category</th>
 											<th colspan="10" style="background-color:#FFF2CC;">Item Condition</th>
                                             <th colspan="4" >Qty Validation</th>
 										</tr>
