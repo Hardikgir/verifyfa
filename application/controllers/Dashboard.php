@@ -644,10 +644,10 @@ class Dashboard extends CI_Controller {
 				else if($exceptioncategory==9 || $exceptioncategory==10)	//Duplicate Item Codes verified || Identified
 				{
 					$getreport=$this->tasks->getExceptionNineReport($project_name,$verificationstatus,$reportHeaders);
-					// echo '<pre>last_query ';
-					// print_r($this->db->last_query());
-					// echo '</pre>';
-					// exit();
+					echo '<pre>last_query ';
+					print_r($this->db->last_query());
+					echo '</pre>';
+					exit();
 					$reportView="DuplicateItemCodesReport";
 				}
 
