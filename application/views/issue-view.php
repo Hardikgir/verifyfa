@@ -30,6 +30,11 @@
 .usertypeselection {
     margin: 15px 0px;
 }
+
+.view_attachment_cls{
+    font-weight: bold;
+    color: blue;
+}
 </style>
 <!-- Section: Testimonials v.2 -->
 	<div class="content">
@@ -56,17 +61,96 @@
                                     <th>Subject</th>
                                     <td><?php echo $issue_result->issue_title ?></td>
                                 </tr>
-                                 <tr>
+                                <tr>
                                     <th>Description</th>
                                     <td><?php echo $issue_result->issue_description ?></td>
                                 </tr>
+
+                                <tr>
+                                    <th>Tracking ID</th>
+                                    <td><?php echo $issue_result->tracking_id ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Issue Type</th>
+                                    <td><?php echo $issue_result->issue_type ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Company Name</th>
+                                    <td><?php echo $issue_result->company_name ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Location</th>
+                                    <td><?php echo $issue_result->location_name ?></td>
+                                </tr>
+                                <tr>
+                                    <th>Project</th>
+                                    <td><?php echo $issue_result->project_id ?></td>
+                                </tr>
+
+                                <tr>
+                                    <th>Resolve Name</th>
+                                    <td><?php echo $issue_result->firstName." - ".$issue_result->lastName; ?></td>
+                                </tr>
+                                <?php 
+                                if(!empty($issue_result->issue_attachment)){ ?>
+                                <tr>
+                                    <th>Attachment</th>
+                                    <td><a href="<?php echo base_url().'issueattachment/'.$issue_result->issue_attachment; ?>" target="_blank" class="view_attachment_cls">View Attachment</a></td>
+                                </tr>
+                                <?php } ?>
+                                
+                                <tr>
+                                    <th>Status</th>
+                                    <td><?php 
+                                    if($issue_result->status =='1'){echo "New";}
+                                    if($issue_result->status =='2'){echo "Escalted";}                                    
+                                    ?></td>
+                                </tr>
+                                 <tr>
+                                    <th>Status Type</th>
+                                    <td><?php 
+                                    if($issue_result->status_type =='1'){echo "Open";}
+                                    if($issue_result->status_type =='0'){echo "Closed";}
+                                    ?></td>
+                                </tr>
+
                             </table>
-                                <?php
-                                // echo '<pre>';
-                                // print_r($issue_result);
-                                // echo '</pre>';
-                                // exit(); 
-                                ?>
+                              <hr>
+
+
+                                    <form action="<?php echo base_url(); ?>index.php/save-issue" method="post" enctype='multipart/form-data'>
+                                        <div class="row my-4">
+
+                                            <div class="col-md-12 my-2 form-row" >
+                                                <label class="form-label">Status</label>
+                                                <select name="status" id="status" onchange="changeStatus(this)" class="form-control">
+                                                    <option value="1">Open</option>
+                                                    <option value="0">Closed</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="col-md-12 my-2 form-row">
+                                                <label class="form-label">Remark</label>
+                                                <textarea  name="Remark" id="Remark" class="form-control" placeholder="Enter Remark"></textarea>
+                                            </div>
+
+                                            <div class="col-md-12 my-2 form-row">
+                                                <label class="form-label">Attachment</label>
+                                                <input type="file" name="issue_attachment" id="issue_attachment" class="form-control" required="">
+                                            </div>
+
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-12 my-4 form-row">
+                                                <a href="javascript:void" class="btn btn-primary" onclick="EscalteFun(this)">Escalte Issue</a>
+                                                <input type="hidden" name="hdn_status_type" id="hdn_status_type" value="<?php echo $issue_result->status_type; ?>">
+                                                <button type="reset" class="btn btn-danger">Cancel</button>
+                                                <button type="submit" class="btn btn-success">Save</button>
+                                            </div>
+                                        </div>
+                                    </form>
+
                             </div>
                         </div>
               

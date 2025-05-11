@@ -1030,9 +1030,15 @@ $role=implode(',',$this->input->post('user_role'));
     }
 
     public function manage_my_issue(){
+
+       
         $data['page_title']="Manage Issue";
         $entity_code=$this->admin_registered_entity_code;
         $data["issue"]=$this->Admin_model->get_all_my_issue($_SESSION['logged_in']['id']);
+        // echo '<pre>last_query ';
+        // print_r($this->db->last_query());
+        // echo '</pre>';
+        // exit();
         $this->load->view('issue-list',$data);
     }
 
@@ -1122,18 +1128,31 @@ $role=implode(',',$this->input->post('user_role'));
 
     public function save_issue(){
         $created_by=$this->user_id;
-        $issue_attachment = '';
-        $tracking_id_value = '001';
+        $random_number = rand(10000,99999);
+        $tracking_id_value = date('ymd').$random_number;
+        
+
+        $config['upload_path'] = './issueattachment/';
+        $config['allowed_types'] = '*';
+		$config['encrypt_name']=true;
+
+        $this->load->library('upload', $config);
+		$issue_attachment='';
+        if (!$this->upload->do_upload('issue_attachment')) {
+            $error = array('error' => $this->upload->display_errors());
+			print_r($error);
+			exit;
+        } else {
+            $data = $this->upload->data();
+			$issue_attachment=$data['file_name'];
+		}
+
 
         $resolved_by = $this->input->post("groupadmin_name");
         if($this->input->post("issue_type") == 'projectbase'){
             $resolved_by = $this->input->post("manage_name");
         }
        
-        // echo '<pre>';
-        // print_r($_POST);
-        // echo '</pre>';
-        // exit();
 
         $data=array(
             "tracking_id"=>$tracking_id_value,
@@ -1165,8 +1184,15 @@ $role=implode(',',$this->input->post('user_role'));
         $user_id = $_SESSION['logged_in']['id'];
         $registered_user_id = $_SESSION['logged_in']['admin_registered_user_id'];
 
-        $this->db->select('issue_manage.*');
+        // $this->db->select('issue_manage.*');
+        // $this->db->from('issue_manage');
+
+        $this->db->select('issue_manage.*,company_projects.project_id,users.firstName,users.lastName,company.company_name,company_locations.location_name');
         $this->db->from('issue_manage');
+        $this->db->join('company','company.id=issue_manage.company_name');
+        $this->db->join('company_locations','company_locations.id=issue_manage.location_name');
+        $this->db->join('company_projects','company_projects.id=issue_manage.project_name');
+        $this->db->join('users','users.id=issue_manage.resolved_by');
         $this->db->where('issue_manage.id',$issue_id);
         $issue_row=$this->db->get();
         $issue_result = $issue_row->row();

@@ -47,7 +47,7 @@
 					<!-- Section heading -->
            <div class="wrapper-carousel-fix">
 						<!-- Carousel Wrapper -->
-              <form action="<?php echo base_url(); ?>index.php/save-issue" method="post">
+              <form action="<?php echo base_url(); ?>index.php/save-issue" method="post" enctype='multipart/form-data'>
 
                 <div class="row ">
                     <div class="col-md-12 form-row SectionUserType" id="SectionTypeofIssue">

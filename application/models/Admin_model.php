@@ -459,19 +459,39 @@ class Admin_model extends CI_Model {
 
 
     public function get_all_issue_for_me($user_id){
-        $this->db->select('*');
+        // $this->db->select('*');
+        // $this->db->from('issue_manage');
+        // $this->db->where('resolved_by',$user_id);
+        // $query=$this->db->get();
+        // return $query->result();
+
+        
+        $this->db->select('issue_manage.*,company_projects.project_id,users.firstName,users.lastName,company.company_name');
         $this->db->from('issue_manage');
-        $this->db->where('resolved_by',$user_id);
-        $query=$this->db->get();
-        return $query->result();
+        $this->db->join('company_projects','company_projects.id=issue_manage.project_name');
+         $this->db->join('users','users.id=issue_manage.manage_name');
+          $this->db->join('company','company.id=issue_manage.company_name');
+        $this->db->where('issue_manage.resolved_by',$user_id);
+        $getnotifications=$this->db->get();
+        return $getnotifications->result();
     }
 
      public function get_all_my_issue($user_id){
-        $this->db->select('*');
+
+        $this->db->select('issue_manage.*,company_projects.project_id,users.firstName,users.lastName,company.company_name');
         $this->db->from('issue_manage');
-        $this->db->where('created_by',$user_id);
-        $query=$this->db->get();
-        return $query->result();
+        $this->db->join('company_projects','company_projects.id=issue_manage.project_name');
+         $this->db->join('users','users.id=issue_manage.manage_name');
+          $this->db->join('company','company.id=issue_manage.company_name');
+        $this->db->where('issue_manage.created_by',$user_id);
+        $getnotifications=$this->db->get();
+        return $getnotifications->result();
+
+        // $this->db->select('*');
+        // $this->db->from('issue_manage');
+        // $this->db->where('created_by',$user_id);
+        // $query=$this->db->get();
+        // return $query->result();
     }
     
     

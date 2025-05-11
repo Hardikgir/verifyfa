@@ -24,6 +24,8 @@ $this->load->view('layouts/sidebar');
 					<!-- Section heading -->
  <div class="wrapper-carousel-fix">
 						<!-- Carousel Wrapper -->
+
+
  <table id="example" class="display" style="width:100%">
         <thead>
             <tr>
@@ -32,7 +34,7 @@ $this->load->view('layouts/sidebar');
             <th>Type of issue</th>
             <th>Project Id</th>
             <th>Status</th>
-            <th>Resolved By</th>
+            <th>Status Type</th>
             <th>Action </th>
             </tr>
         </thead>
@@ -44,17 +46,17 @@ $this->load->view('layouts/sidebar');
                 <td ><?php echo $row->tracking_id;?></td>
                 <td ><?php echo $row->issue_title;?></td>
                 <td ><?php echo $row->issue_type;?></td>
-                <td ><?php echo $row->project_name;?></td>
+                <td ><?php echo $row->project_id;?></td>
                 <td ><?php 
-                if($row->status =='1'){echo "New";}
-                if($row->status =='2'){echo "Escalted";}
+                if($row->status_type =='1'){echo "Open";}
+                if($row->status_type =='0'){echo "Closed";}
                 ?></td>
                 <td >
-                <select name="change_staus" id="change_status" class="form-control" style="border: 1px solid #cfcaca;padding: 4px;background: aliceblue;font-weight: bold;border-radius: 5px;">
-                 <option value="0" <?php if($row->status =='0'){echo "selected";} ?>>Progress</option>
-                 <option value="1" <?php if($row->status =='1'){echo "selected";} ?>>Resolve & Closed</option>
-                </select>    
-               
+              <?php 
+                if($row->status =='1'){echo "New";}
+                if($row->status =='2'){echo "Escalted";}
+                ?>  
+               </td>
                 <td>
                     <a href="<?php echo base_url();?>index.php/view-issue/<?php echo $row->id;?>">
                      <i class="fa fa-eye"></i>view
