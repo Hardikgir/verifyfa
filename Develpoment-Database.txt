@@ -4,6 +4,56 @@ Database Updates :-
 -> Add New Table (request_for_delete_project)
 -> 
 
+SELECT * FROM `company_projects`
+SELECT id,project_id,project_name,original_table_name,project_table_name FROM `company_projects`
+
+
+DataStructure Update :- 
+
+dljm_d55_fasset_tagging | project_1696310819
+
+
+ALTER TABLE `dljm_d55_fasset_tagging` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
+
+ALTER TABLE `project_1696310819` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
+
+ALTER TABLE `project_1693229295` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
+
+ALTER TABLE `project_1696320172` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
+
+ALTER TABLE `dljm_d55_fa_verification_tagging` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
+
+ALTER TABLE `dljm_d_55_fa_verification_tagging` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
+
+ALTER TABLE `project_1711599904` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
+
+
+ALTER TABLE `hmcmm_old` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
+ALTER TABLE `hmcmm_new` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
+
+ALTER TABLE `project_1711604526` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
+
+ALTER TABLE `project_1711690286` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
+
+
+
+ALTER TABLE `project_1711949358` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
+
+
+ALTER TABLE `project_1711953321` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
+
+ALTER TABLE `project_1712144417` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
+
+project_1712150495
+project_1712202495
+project_1712203455
+kml_jaipur_g_all_stock
+project_1712206397
+project_1712209745
+project_1712211555
+project_1712231862
+project_1712831886
+
 
 New Issue Table Creating :- 
 
