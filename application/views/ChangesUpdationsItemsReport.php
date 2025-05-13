@@ -202,7 +202,7 @@ table th,table td{
                                         <?php } ?>
                                     </table>
 
-
+									<a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionChangesUpdationsofItems">Download as Annexure</a>
                                     <?php 
 
                                     // echo '<pre>data  ';

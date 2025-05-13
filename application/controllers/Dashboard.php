@@ -5040,5 +5040,341 @@ class Dashboard extends CI_Controller {
 
 	
 
+
+
+
+
+	public function downloadExceptionChangesUpdationsofItems()
+	{
+		$reportOneType = 'qty_ok';
+		$ReportTitle = 'ChangesUpdationsofItems';
+		require 'vendor/autoload.php';
+		$reportData=$this->session->get_userdata('reportData');
+		$type=$reportData['reportData']['type'];
+		$projectid=$reportData['reportData']['id'];
+		$project_status=$reportData['reportData']['project_status'];
+		$verification_status=$reportData['reportData']['verification_status'];
+		$table_name=$reportData['reportData']['table_name'];
+		$reportHeaders=$reportData['reportData']['report_headers'];
+		
+		$headerCondition=array('table_name'=>$table_name);
+		
+		$project_headers=$this->tasks->get_data('project_headers',$headerCondition);
+
+		$rowHeads=array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ','BA','BB','BC','BD','BE','BF','BG','BH','BI','BJ','BK','BL','BM','BN','BO','BP','BQ','BR','BS','BT','BU','BV','BW','BX','BY','BZ','CA','CB','CC','CD','CE','CF','CG','CH','CI','CJ','CK','CL','CM','CN','CO','CP','CQ','CR','CS','CT','CU','CV','CW','CX','CY','CZ');
+		$spreadsheet= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+		$sheet = $spreadsheet->getActiveSheet();
+
+
+
+		 // $condition1=array('company_projects.project_verifier IN ('.$userid.') || company_projects.manager IN ('.$userid.') || company_projects.process_owner IN ('.$userid.') || company_projects.item_owner IN ('.$userid.')');
+
+		
+
+		$this->db->select('company_projects.*,company_locations.location_name,user_role.id as role_id,company.company_name');
+		$this->db->from('company_projects');
+		$this->db->join('user_role','find_in_set(user_role.user_id,company_projects.project_verifier) AND company_projects.company_id=user_role.company_id');
+		$this->db->join('company','company.id=user_role.company_id');
+		$this->db->join('company_locations','company_locations.id=company_projects.project_location');
+		$this->db->where(array('company_projects.id'=>$projectid));
+		$gettasks=$this->db->get();
+		$company_project_details =  $gettasks->result();
+		
+
+		
+		$cnt=0;
+		$rowCount=1;
+		$columns="";
+		$colsArray=array();
+		
+		$details_content = "Name Of Company : ".$company_project_details[0]->company_name;
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=2;
+		$details_content = "Name Of Location : ".$company_project_details[0]->location_name;
+		// $sheet->mergeCells("A1:F1");
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=3;
+		$details_content = "Period of Verification : ".$company_project_details[0]->period_of_verification;
+		// $sheet->mergeCells("A1:F1");
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+
+		$rowCount=4;
+		$details_content = "Name of the Report : Condition of Items";
+		// $sheet->mergeCells("A1:F1");
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		// array_push($colsArray,'My title');
+		
+		$cnt=0;
+		$rowCount=6;
+		
+		if($reportHeaders[0]=='all')
+		{
+			foreach($project_headers as $ph)
+			{
+				if($ph->keyname!='is_alotted')
+				{
+					$sheet->setCellValue($rowHeads[$cnt].$rowCount, ucwords($ph->keylabel));
+					$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+					$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+					$columns.=" ".$ph->keyname.",";
+					array_push($colsArray,$ph->keyname);
+					$cnt++;
+				}
+			}
+		}
+		else
+		{
+			for($i=0;$i<9;$i++)
+			{
+				if($project_headers[$i]->keyname!='is_alotted')
+				{
+					$sheet->setCellValue($rowHeads[$cnt].$rowCount, ucwords($project_headers[$i]->keylabel));
+					$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+					$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+					
+					$columns.=" ".$project_headers[$i]->keyname.",";
+					array_push($colsArray,$project_headers[$i]->keyname);
+					$cnt++;
+				}
+			}
+			for($i=0;$i<count($reportHeaders);$i++)
+			{
+				if($reportHeaders[$i]!='is_alotted')
+				{
+					$sheet->setCellValue($rowHeads[$cnt].$rowCount, ucwords(str_replace("_"," ",$reportHeaders[$i])));
+					$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE] );
+					$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+					$columns.=" ".$reportHeaders[$i].",";
+					array_push($colsArray,$reportHeaders[$i]);
+					$cnt++;
+				}
+			}
+		}
+		
+		$columns.="quantity_as_per_invoice,total_item_amount_capitalized, verification_status,new_location_verified,updatedat,verification_remarks,qty_ok,qty_damaged,qty_scrapped,qty_not_in_use,qty_missing,qty_shifted,mode_of_verification,quantity_verified,verified_by";
+		
+		// $columns.="quantity_as_per_invoice,total_item_amount_capitalized, verification_status,new_location_verified,updatedat,verification_remarks,qty_ok,qty_damaged,qty_scrapped,qty_not_in_use,qty_missing,qty_shifted,mode_of_verification,quantity_verified";
+
+		array_push($colsArray,'quantity_as_per_invoice');
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, "To be Verified");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		array_push($colsArray,'total_item_amount_capitalized');
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "To be Verified Amount");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+		array_push($colsArray,'verification_status');
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Verification Status");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+		
+		array_push($colsArray,'new_location_verified');
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "New Location Verified");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		array_push($colsArray,'updatedat');
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Last Updated on");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		array_push($colsArray,'verification_remarks');
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Verification Remarks");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		array_push($colsArray,'qty_ok');
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Condition of Item Verified: Good Condition");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		array_push($colsArray,'qty_damaged');
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Condition of Item Verified: Damaged");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		array_push($colsArray,'qty_scrapped');
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Condition of Item Verified: Scrapped");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		array_push($colsArray,'qty_not_in_use');
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Condition of Item Verified: Not in Use");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		array_push($colsArray,'qty_missing');
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Condition of Item Verified: Missing");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		array_push($colsArray,'qty_shifted');
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Condition of Item Verified: Shifted");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		array_push($colsArray,'mode_of_verification');
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Mode of Verification");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		array_push($colsArray,'quantity_verified');
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Verified Qty");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Verified Amount");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Verify By");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Allocation Status");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Project ID");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Project Name");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Start Date");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+    	$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Period of Verification");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Allocated Resources");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+		
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Project Status");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Remaining To be verified: Qty");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Remaining To be verified: Amount");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+		
+		$projCondition=array('id'=>$projectid);
+		$getProject=$this->tasks->get_data('company_projects',$projCondition);
+		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+		$new_pattern = array("_", "_", "");
+		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
+
+		// echo '<pre>columns ';
+		// print_r($columns);
+		// echo '</pre>';
+		// exit();
+
+		$rowCount=7;
+		$getreport=$this->tasks->getDetailedExceptionOneReport($project_name,$verification_status,$columns,$reportOneType);
+
+		// echo '<pre>getreport ';
+		// print_r($getreport);
+		// echo '</pre>';
+		// exit();
+
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
+		
+		foreach($getreport as $gr)
+		{
+			$cnt=0;
+			for($rh=0;$rh<count($colsArray);$rh++)
+			{
+				$sheet->setCellValue($rowHeads[$cnt].$rowCount,$gr[$colsArray[$rh]] );
+				$cnt++;
+			}
+			$verifier=explode(',',$getProject[0]->project_verifier);
+			$verifier_name="";
+			for($ii=0;$ii<count($verifier);$ii++)
+			{
+				if($ii==count($verifier)-1)
+				{
+					$verifier_name.=get_UserName($verifier[$ii]);
+				}
+				else
+				{
+					$verifier_name.=get_UserName($verifier[$ii]).", ";
+				}
+			}
+			$startdate=date_create($getProject[0]->start_date);
+			$duedate=date_create($getProject[0]->due_date);
+			$projectStatus='';
+			if($getProject[0]->status==0)
+			{
+				$projectStatus='In Process';
+			}
+			else if($getProject[0]->status==1)
+			{
+				$projectStatus='Completed';
+			}
+			else if($getProject[0]->status==2)
+			{
+				$projectStatus='Cancelled';
+			}
+			else if($getProject[0]->status==3)
+			{
+				$projectStatus='Finished Verification';
+			}
+
+	
+			$verifier_by_name = get_UserName($gr['verified_by']);
+			$remainingAmount=$gr['total_item_amount_capitalized']/$gr['quantity_as_per_invoice'];
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $remainingAmount*$gr['quantity_verified']);
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $verifier_by_name);
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, "Allocated");
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $getProject[0]->project_id);
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $getProject[0]->project_name);
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, date_format($startdate,"d-m-Y"));
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, date_format($duedate,"d-m-Y"));
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $getProject[0]->period_of_verification);
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $verifier_name);
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $projectStatus);
+			
+			$rowCount++;
+		}
+		
+		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
+		$writer->setPreCalculateFormulas(false);
+		$filename = $ReportTitle;
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+        header('Cache-Control: max-age=0');
+        
+        $writer->save('php://output');
+	}
+
 	
 }

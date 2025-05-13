@@ -8,6 +8,8 @@ SELECT * FROM `company_projects`
 SELECT id,project_id,project_name,original_table_name,project_table_name FROM `company_projects`
 
 
+ALTER TABLE `hmc_mm_pv_fy25` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
+
 DataStructure Update :- 
 
 dljm_d55_fasset_tagging | project_1696310819
@@ -55,6 +57,10 @@ ALTER TABLE `project_1712231862` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTE
 ALTER TABLE `project_1712831886` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
 ALTER TABLE `project_1713936295` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
 
+
+
+Database Other 2 column Query :- 
+ALTER TABLE `hmc_mm_pv_fy25` ADD `item_sub_code` VARCHAR(255) NULL DEFAULT NULL AFTER `item_unique_code`, ADD `dept_internal_item_code` VARCHAR(255) NULL DEFAULT NULL AFTER `item_sub_code`;
 
 
 New Issue Table Creating :- 
