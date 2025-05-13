@@ -5046,6 +5046,8 @@ class Dashboard extends CI_Controller {
 
 	public function downloadExceptionChangesUpdationsofItems()
 	{
+
+		$projectid = 26;
 		$reportOneType = 'qty_ok';
 		$ReportTitle = 'ChangesUpdationsofItems';
 		require 'vendor/autoload.php';
@@ -5058,6 +5060,138 @@ class Dashboard extends CI_Controller {
 		$reportHeaders=$reportData['reportData']['report_headers'];
 		
 		$headerCondition=array('table_name'=>$table_name);
+
+		$company_projects = $this->db->query("SELECT *  FROM company_projects WHERE id='".$projectid."'")->row();
+        $project_id = $company_projects->id;
+        $company_id = $company_projects->company_id;
+        $original_table_name = $company_projects->original_table_name;
+        $project_table_name = $company_projects->project_table_name;
+
+
+        $project_headers = $this->db->query("SELECT *  FROM project_headers WHERE project_id='".$projectid."' AND is_editable = 1")->result();
+        // $project_header_column = array('id','item_sub_category','location_of_the_item_last_verified');
+			$project_header_column = array('id','item_sub_category');
+        foreach($project_headers as $project_headers_value){
+            $project_header_column[] = $project_headers_value->keyname;
+        }
+        $project_header_column_value = implode(',', $project_header_column);
+     
+
+
+        $project_table_result = $this->db->query("SELECT ".$project_header_column_value." FROM ".$project_table_name)->result();
+        $existing_id_array = array();
+        foreach($project_table_result as $project_table_value){
+            $existing_id_array[] = $project_table_value->id;
+        }
+        $existing_id_value = implode(',', $existing_id_array);
+      
+
+        // $project_header_column_base = array('id','item_sub_category','new_location_verified');
+		$project_header_column_base = array('id','item_sub_category');
+        foreach($project_headers as $project_headers_value){
+            $project_header_column_base[] = $project_headers_value->keyname;
+        }
+        $project_header_column_base_value = implode(',', $project_header_column_base);
+        $original_table_result = $this->db->query("SELECT ".$project_header_column_base_value." FROM ".$original_table_name." WHERE id in (".$existing_id_value.") ")->result();
+
+        $different_array = array();
+
+		$Updated_value_array = array();
+
+		// echo '<pre>original_table_result ';
+		// print_r($original_table_result);
+		// echo '</pre>';
+
+		// echo '<pre>project_table_result ';
+		// print_r($project_table_result);
+		// echo '</pre>';
+		// // // exit();
+		// // // exit();
+
+		// echo '<pre>project_header_column ';
+		// print_r($project_header_column);
+		// echo '</pre>';
+		// exit();
+
+        foreach($project_table_result as $project_table_key=>$project_table_value){
+
+            foreach($project_header_column as $project_header_column_new_value)
+            {
+
+				/*
+                if($project_header_column_new_value == 'location_of_the_item_last_verified'){
+                    if($original_table_result[$project_table_key]->new_location_verified != $project_table_result[$project_table_key]->$project_header_column_new_value){
+                        $different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value][] = 1;
+
+						
+						// exit();
+						// $Updated_value_array[$project_table_result[$project_table_key]]['old_value'][] = $original_table_result[$project_table_key]->new_location_verified;
+						// $Updated_value_array[$project_table_result[$project_table_key]]['new_value'][] = $project_table_result[$project_table_key]->$project_header_column_new_value;
+                    }
+
+					
+
+                }else{
+                    if($original_table_result[$project_table_key]->$project_header_column_new_value != $project_table_result[$project_table_key]->$project_header_column_new_value){
+                    	$different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value][] = 1;
+
+						// $Updated_value_array[$project_table_result[$project_table_key]]['old_value'][] = $original_table_result[$project_table_key]->$project_header_column_new_value;
+						// $Updated_value_array[$project_table_result[$project_table_key]]['new_value'][] = $project_table_result[$project_table_key]->$project_header_column_new_value;
+
+                	}
+
+					
+                }
+
+				*/
+
+				// if(isset($original_table_result[$project_table_key]->$project_header_column_new_value)){
+				// 	echo '<pre>original_table_result ';
+				// 	print_r($original_table_result[$project_table_key]->$project_header_column_new_value);
+				// 	echo '</pre>';
+				// }
+				
+				// if(isset($project_table_result[$project_table_key]->$project_header_column_new_value)){
+				// 	echo '<pre>project_table_result ';
+				// 	print_r($project_table_result[$project_table_key]->$project_header_column_new_value);
+				// 	echo '</pre>';
+				// }
+
+				
+				// exit();
+				// exit();
+
+
+
+				if($original_table_result[$project_table_key]->$project_header_column_new_value != $project_table_result[$project_table_key]->$project_header_column_new_value){
+					$different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value][] = 1;
+
+					$Updated_value_array[$project_table_result[$project_table_key]]['old_value'][] = $original_table_result[$project_table_key]->$project_header_column_new_value;
+					$Updated_value_array[$project_table_result[$project_table_key]]['new_value'][] = $project_table_result[$project_table_key]->$project_header_column_new_value;
+
+				}
+            }
+        }
+
+
+		echo '<pre>different_array ';
+		print_r($different_array);
+		echo '</pre>';
+		exit();
+        $different_array['project_header_column_value'] = $project_header_column_value; 
+
+
+
+
+
+
+
+
+
+
+
+
+		
 		
 		$project_headers=$this->tasks->get_data('project_headers',$headerCondition);
 
