@@ -44,15 +44,17 @@ ALTER TABLE `project_1711953321` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTE
 
 ALTER TABLE `project_1712144417` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
 
-project_1712150495
-project_1712202495
-project_1712203455
-kml_jaipur_g_all_stock
-project_1712206397
-project_1712209745
-project_1712211555
-project_1712231862
-project_1712831886
+ALTER TABLE `project_1712150495` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
+ALTER TABLE `project_1712202495` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
+ALTER TABLE `project_1712203455` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
+ALTER TABLE `kml_jaipur_g_all_stock` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
+ALTER TABLE `project_1712206397` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
+ALTER TABLE `project_1712209745` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
+ALTER TABLE `project_1712211555` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
+ALTER TABLE `project_1712231862` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
+ALTER TABLE `project_1712831886` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
+ALTER TABLE `project_1713936295` ADD `is_edit` INT(11) NOT NULL DEFAULT '0' AFTER `is_alotted`, ADD `instance_count` INT(11) NOT NULL DEFAULT '0' AFTER `is_edit`;
+
 
 
 New Issue Table Creating :- 
