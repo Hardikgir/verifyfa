@@ -5040,11 +5040,8 @@ class Dashboard extends CI_Controller {
 
 	
 
-
-
-
-
-	public function downloadExceptionChangesUpdationsofItems()
+	/*  
+public function downloadExceptionChangesUpdationsofItems()
 	{
 
 		$projectid = 26;
@@ -5095,90 +5092,19 @@ class Dashboard extends CI_Controller {
         $original_table_result = $this->db->query("SELECT ".$project_header_column_base_value." FROM ".$original_table_name." WHERE id in (".$existing_id_value.") ")->result();
 
         $different_array = array();
-
 		$Updated_value_array = array();
-
-		// echo '<pre>original_table_result ';
-		// print_r($original_table_result);
-		// echo '</pre>';
-
-		// echo '<pre>project_table_result ';
-		// print_r($project_table_result);
-		// echo '</pre>';
-		// // // exit();
-		// // // exit();
-
-		// echo '<pre>project_header_column ';
-		// print_r($project_header_column);
-		// echo '</pre>';
-		// exit();
-
         foreach($project_table_result as $project_table_key=>$project_table_value){
 
             foreach($project_header_column as $project_header_column_new_value)
             {
-
-				/*
-                if($project_header_column_new_value == 'location_of_the_item_last_verified'){
-                    if($original_table_result[$project_table_key]->new_location_verified != $project_table_result[$project_table_key]->$project_header_column_new_value){
-                        $different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value][] = 1;
-
-						
-						// exit();
-						// $Updated_value_array[$project_table_result[$project_table_key]]['old_value'][] = $original_table_result[$project_table_key]->new_location_verified;
-						// $Updated_value_array[$project_table_result[$project_table_key]]['new_value'][] = $project_table_result[$project_table_key]->$project_header_column_new_value;
-                    }
-
-					
-
-                }else{
-                    if($original_table_result[$project_table_key]->$project_header_column_new_value != $project_table_result[$project_table_key]->$project_header_column_new_value){
-                    	$different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value][] = 1;
-
-						// $Updated_value_array[$project_table_result[$project_table_key]]['old_value'][] = $original_table_result[$project_table_key]->$project_header_column_new_value;
-						// $Updated_value_array[$project_table_result[$project_table_key]]['new_value'][] = $project_table_result[$project_table_key]->$project_header_column_new_value;
-
-                	}
-
-					
-                }
-
-				*/
-
-				// if(isset($original_table_result[$project_table_key]->$project_header_column_new_value)){
-				// 	echo '<pre>original_table_result ';
-				// 	print_r($original_table_result[$project_table_key]->$project_header_column_new_value);
-				// 	echo '</pre>';
-				// }
-				
-				// if(isset($project_table_result[$project_table_key]->$project_header_column_new_value)){
-				// 	echo '<pre>project_table_result ';
-				// 	print_r($project_table_result[$project_table_key]->$project_header_column_new_value);
-				// 	echo '</pre>';
-				// }
-
-				
-				// exit();
-				// exit();
-
-
-
 				if($original_table_result[$project_table_key]->$project_header_column_new_value != $project_table_result[$project_table_key]->$project_header_column_new_value){
-					$different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value][] = 1;
-
-					$Updated_value_array[$project_table_result[$project_table_key]]['old_value'][] = $original_table_result[$project_table_key]->$project_header_column_new_value;
-					$Updated_value_array[$project_table_result[$project_table_key]]['new_value'][] = $project_table_result[$project_table_key]->$project_header_column_new_value;
-
+					// $Updated_value_array[$project_header_column_new_value]['New'][] = $original_table_result[$project_table_key]->$project_header_column_new_value;
+					// $Updated_value_array[$project_header_column_new_value]['Old'][] = $project_table_result[$project_table_key]->$project_header_column_new_value;
+					$Updated_value_array[$project_header_column_new_value]['MixValue'][] = $original_table_result[$project_table_key]->$project_header_column_new_value." | ".$project_table_result[$project_table_key]->$project_header_column_new_value;
 				}
             }
         }
 
-
-		echo '<pre>different_array ';
-		print_r($different_array);
-		echo '</pre>';
-		exit();
-        $different_array['project_header_column_value'] = $project_header_column_value; 
 
 
 
@@ -5509,6 +5435,281 @@ class Dashboard extends CI_Controller {
 		}
 		
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
+		$writer->setPreCalculateFormulas(false);
+		$filename = $ReportTitle;
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+        header('Cache-Control: max-age=0');
+        
+        $writer->save('php://output');
+	}
+	*/
+
+
+
+
+
+	public function downloadExceptionChangesUpdationsofItems()
+	{
+
+		$projectid = 26;
+		$reportOneType = 'qty_ok';
+		$ReportTitle = 'ChangesUpdationsofItems';
+		require 'vendor/autoload.php';
+		$reportData=$this->session->get_userdata('reportData');
+		$type=$reportData['reportData']['type'];
+		$projectid=$reportData['reportData']['id'];
+		$project_status=$reportData['reportData']['project_status'];
+		$verification_status=$reportData['reportData']['verification_status'];
+		$table_name=$reportData['reportData']['table_name'];
+		$reportHeaders=$reportData['reportData']['report_headers'];
+		
+		$headerCondition=array('table_name'=>$table_name);
+
+		$company_projects = $this->db->query("SELECT *  FROM company_projects WHERE id='".$projectid."'")->row();
+        $project_id = $company_projects->id;
+        $company_id = $company_projects->company_id;
+        $original_table_name = $company_projects->original_table_name;
+        $project_table_name = $company_projects->project_table_name;
+
+
+        $project_headers = $this->db->query("SELECT *  FROM project_headers WHERE project_id='".$projectid."' AND is_editable = 1")->result();
+        // $project_header_column = array('id','item_sub_category','location_of_the_item_last_verified');
+			$project_header_column = array('id','item_sub_category');
+        foreach($project_headers as $project_headers_value){
+            $project_header_column[] = $project_headers_value->keyname;
+        }
+        $project_header_column_value = implode(',', $project_header_column);
+     
+
+
+        $project_table_result = $this->db->query("SELECT ".$project_header_column_value." FROM ".$project_table_name)->result();
+        $existing_id_array = array();
+        foreach($project_table_result as $project_table_value){
+            $existing_id_array[] = $project_table_value->id;
+        }
+        $existing_id_value = implode(',', $existing_id_array);
+      
+
+        // $project_header_column_base = array('id','item_sub_category','new_location_verified');
+		$project_header_column_base = array('id','item_sub_category');
+        foreach($project_headers as $project_headers_value){
+            $project_header_column_base[] = $project_headers_value->keyname;
+        }
+        $project_header_column_base_value = implode(',', $project_header_column_base);
+        $original_table_result = $this->db->query("SELECT ".$project_header_column_base_value." FROM ".$original_table_name." WHERE id in (".$existing_id_value.") ")->result();
+
+        $different_array = array();
+		$Updated_value_array = array();
+        foreach($project_table_result as $project_table_key=>$project_table_value){
+
+            foreach($project_header_column as $project_header_column_new_value)
+            {
+				if($original_table_result[$project_table_key]->$project_header_column_new_value != $project_table_result[$project_table_key]->$project_header_column_new_value){
+					// $Updated_value_array[$project_header_column_new_value]['New'][] = $original_table_result[$project_table_key]->$project_header_column_new_value;
+					// $Updated_value_array[$project_header_column_new_value]['Old'][] = $project_table_result[$project_table_key]->$project_header_column_new_value;
+					$Updated_value_array[$project_header_column_new_value][$original_table_result[$project_table_key]->item_sub_category][$original_table_result[$project_table_key]->id] = $original_table_result[$project_table_key]->$project_header_column_new_value." | ".$project_table_result[$project_table_key]->$project_header_column_new_value;
+				}
+            }
+        }
+
+
+
+
+		// echo '<pre>Updated_value_array ';
+		// print_r($Updated_value_array);
+		// echo '</pre>';
+		// exit(); 
+
+
+
+
+
+
+
+
+		
+		
+		$project_headers=$this->tasks->get_data('project_headers',$headerCondition);
+
+		$rowHeads=array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ','BA','BB','BC','BD','BE','BF','BG','BH','BI','BJ','BK','BL','BM','BN','BO','BP','BQ','BR','BS','BT','BU','BV','BW','BX','BY','BZ','CA','CB','CC','CD','CE','CF','CG','CH','CI','CJ','CK','CL','CM','CN','CO','CP','CQ','CR','CS','CT','CU','CV','CW','CX','CY','CZ');
+		$spreadsheet= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+		$sheet = $spreadsheet->getActiveSheet();
+
+
+
+		 // $condition1=array('company_projects.project_verifier IN ('.$userid.') || company_projects.manager IN ('.$userid.') || company_projects.process_owner IN ('.$userid.') || company_projects.item_owner IN ('.$userid.')');
+
+		
+
+		$this->db->select('company_projects.*,company_locations.location_name,user_role.id as role_id,company.company_name');
+		$this->db->from('company_projects');
+		$this->db->join('user_role','find_in_set(user_role.user_id,company_projects.project_verifier) AND company_projects.company_id=user_role.company_id');
+		$this->db->join('company','company.id=user_role.company_id');
+		$this->db->join('company_locations','company_locations.id=company_projects.project_location');
+		$this->db->where(array('company_projects.id'=>$projectid));
+		$gettasks=$this->db->get();
+		$company_project_details =  $gettasks->result();
+		
+
+		
+		$cnt=0;
+		$rowCount=1;
+		$columns="";
+		$colsArray=array();
+		
+		$details_content = "Name Of Company : ".$company_project_details[0]->company_name;
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=2;
+		$details_content = "Name Of Location : ".$company_project_details[0]->location_name;
+		// $sheet->mergeCells("A1:F1");
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=3;
+		$details_content = "Period of Verification : ".$company_project_details[0]->period_of_verification;
+		// $sheet->mergeCells("A1:F1");
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+
+		$rowCount=4;
+		$details_content = "Name of the Report : Condition of Items";
+		// $sheet->mergeCells("A1:F1");
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		// array_push($colsArray,'My title');
+		
+		$cnt=0;
+		$rowCount=6;
+		
+
+
+		
+		if($reportHeaders[0]=='all')
+		{
+			foreach($project_headers as $ph)
+			{
+				if($ph->keyname!='is_alotted')
+				{
+					$sheet->setCellValue($rowHeads[$cnt].$rowCount, ucwords($ph->keylabel));
+					$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+					$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+					$columns.=" ".$ph->keyname.",";
+					array_push($colsArray,$ph->keyname);
+					$cnt++;
+				}
+			}
+		}
+		else
+		{
+			for($i=0;$i<9;$i++)
+			{
+				if($project_headers[$i]->keyname!='is_alotted')
+				{
+					$sheet->setCellValue($rowHeads[$cnt].$rowCount, ucwords($project_headers[$i]->keylabel));
+					$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+					$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+					
+					$columns.=" ".$project_headers[$i]->keyname.",";
+					array_push($colsArray,$project_headers[$i]->keyname);
+					$cnt++;
+				}
+			}
+			for($i=0;$i<count($reportHeaders);$i++)
+			{
+				if($reportHeaders[$i]!='is_alotted')
+				{
+					$sheet->setCellValue($rowHeads[$cnt].$rowCount, ucwords(str_replace("_"," ",$reportHeaders[$i])));
+					$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE] );
+					$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+					$columns.=" ".$reportHeaders[$i].",";
+					array_push($colsArray,$reportHeaders[$i]);
+					$cnt++;
+				}
+			}
+		}
+		$columns.="quantity_as_per_invoice";
+		
+		// echo '<pre>colsArray ';
+		// print_r($colsArray);
+		// echo '</pre>';
+		// exit(); 
+
+		// echo '<pre>Updated_value_array 111';
+		// print_r($Updated_value_array);
+		// echo '</pre>';
+		// exit(); 
+
+		// $Updated_value_array[$project_header_column_new_value]['MixValue'][] = $original_table_result[$project_table_key]->$project_header_column_new_value." | ".$project_table_result[$project_table_key]->$project_header_column_new_value;
+		
+
+		$projCondition=array('id'=>$projectid);
+		$getProject=$this->tasks->get_data('company_projects',$projCondition);
+		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+		$new_pattern = array("_", "_", "");
+		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
+		$rowCount=7;
+
+		$getreport=$this->tasks->getDetailedExceptionOneReport($project_name,$verification_status,$columns,$reportOneType);
+	
+		// echo '<pre>project_header_column_base ';
+		// print_r($project_header_column_base);
+		// echo '</pre>';
+
+
+		// echo '<pre>Updated_value_array ';
+		// print_r($Updated_value_array);
+		// echo '</pre>';
+		// exit(); 
+
+
+
+	
+		
+		
+		foreach($getreport as $gr)
+		{
+			$cnt=0;
+			for($rh=0;$rh<count($colsArray);$rh++)
+			{
+				// echo '<pre>rowCount ';
+				// print_r($rowHeads[$cnt].$rowCount);
+				// echo '</pre>';
+				// echo '<pre>colsArray ';
+				// print_r($gr[$colsArray[$rh]]);
+				// echo '</pre>';
+				// exit(); 
+				// exit(); 
+				// $sheet->setCellValue($rowHeads[$cnt].$rowCount,$gr[$colsArray[$rh]] );
+				$cnt++;
+			}
+			// echo '<pre>rowCount ';
+			// print_r($rowHeads[$cnt++].$rowCount);
+			// echo '</pre>';
+			// exit(); 
+			// $sheet->setCellValue($rowHeads[$cnt++].$rowCount, "Hardik Development Test");
+
+			$rowCount++;
+		}
+
+		
+		
+
+
+		// exit();
+
+		$spreadsheet1= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+		$sheet1 = $spreadsheet1->getActiveSheet();
+		$sheet1->setCellValue("A1", "Hardik Development Test");
+		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet1, "Xlsx");
 		$writer->setPreCalculateFormulas(false);
 		$filename = $ReportTitle;
         header('Content-Type: application/vnd.ms-excel');
