@@ -5283,6 +5283,11 @@ class Dashboard extends CI_Controller {
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Remaining To be verified: Amount");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Hardik Development Test");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+		
 		
 		$projCondition=array('id'=>$projectid);
 		$getProject=$this->tasks->get_data('company_projects',$projCondition);
@@ -5363,7 +5368,9 @@ class Dashboard extends CI_Controller {
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $verifier_name);
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $projectStatus);
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, "test");
-			
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, "50");
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, "Hardik Development Test");
+
 			$rowCount++;
 		}
 		
