@@ -1199,7 +1199,7 @@ $role=implode(',',$this->input->post('user_role'));
         $this->db->select('issue_manage.*,users.firstName,users.lastName');
         $this->db->from('issue_manage');
         $this->db->join('users','users.id=issue_manage.resolved_by');
-        $this->db->where('id',$issue_id);
+        $this->db->where('issue_manage.id',$issue_id);
         $issue_row=$this->db->get();
         $issue_result = $issue_row->row();
 
