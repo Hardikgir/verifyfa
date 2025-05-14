@@ -25,6 +25,7 @@ $this->load->view('layouts/sidebar');
  <div class="wrapper-carousel-fix">
 						<!-- Carousel Wrapper -->
 
+                        
 
  <table id="example" class="display" style="width:100%">
         <thead>
@@ -48,13 +49,13 @@ $this->load->view('layouts/sidebar');
                 <td ><?php echo $row->issue_type;?></td>
                 <td ><?php echo $row->project_id;?></td>
                 <td ><?php 
-                if($row->status_type =='1'){echo "Open";}
-                if($row->status_type =='0'){echo "Closed";}
+                if($row->status =='1'){echo "Open";}
+                if($row->status =='0'){echo "Closed";}
                 ?></td>
                 <td >
               <?php 
-                if($row->status =='1'){echo "New";}
-                if($row->status =='2'){echo "Escalted";}
+                if($row->status_type =='1'){echo "New";}
+                if($row->status_type =='2'){echo "Escalted";}
                 ?>  
                </td>
                 <td>

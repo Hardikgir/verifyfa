@@ -102,36 +102,46 @@
                                 <tr>
                                     <th>Status</th>
                                     <td><?php 
-                                    if($issue_result->status =='1'){echo "New";}
-                                    if($issue_result->status =='2'){echo "Escalted";}                                    
+                                    if($issue_result->status =='1'){echo "Open";}
+                                    if($issue_result->status =='0'){echo "Closed";}
                                     ?></td>
                                 </tr>
                                  <tr>
                                     <th>Status Type</th>
-                                    <td><?php 
-                                    if($issue_result->status_type =='1'){echo "Open";}
-                                    if($issue_result->status_type =='0'){echo "Closed";}
+                                   <td><?php 
+                                    if($issue_result->status_type =='1'){echo "New";}
+                                    if($issue_result->status_type =='2'){echo "Escalted";}                                    
                                     ?></td>
                                 </tr>
 
                             </table>
-                              <hr>
+                             
 
-
-                                    <form action="<?php echo base_url(); ?>index.php/save-issue" method="post" enctype='multipart/form-data'>
+                                    <?php
+                                    $user_id = $_SESSION['logged_in']['id'];
+                                    if(($user_id == $issue_result->resolved_by) && ($issue_result->status==1)){
+                                    ?>
+                                     <hr>
+                                    <form action="<?php echo base_url(); ?>index.php/update-issue" method="post" enctype='multipart/form-data'>
                                         <div class="row my-4">
 
                                             <div class="col-md-12 my-2 form-row" >
                                                 <label class="form-label">Status</label>
                                                 <select name="status" id="status" onchange="changeStatus(this)" class="form-control">
-                                                    <option value="1">Open</option>
-                                                    <option value="0">Closed</option>
+                                                    <option value="1" <?php if($issue_result->status =='1'){ echo 'selected'; } ?>>Open</option>
+                                                    <option value="0" <?php if($issue_result->status =='0'){ echo 'selected'; } ?>>Closed</option>
                                                 </select>
                                             </div>
 
-                                            <div class="col-md-12 my-2 form-row">
+                                            <div class="col-md-12 my-2 form-row" id="status_remark_section">
                                                 <label class="form-label">Remark</label>
-                                                <textarea  name="Remark" id="Remark" class="form-control" placeholder="Enter Remark"></textarea>
+                                                <textarea  name="status_remark" id="status_remark" class="form-control" placeholder="Enter Remark"></textarea>
+                                            </div>
+
+
+                                            <div class="col-md-12 my-2 form-row" id="status_type_remark_section" style="display:none">
+                                                <label class="form-label">Status Type Remark</label>
+                                                <textarea  name="status_type_remark" id="status_type_remark" class="form-control" placeholder="Enter Remark"></textarea>
                                             </div>
 
                                             <div class="col-md-12 my-2 form-row">
@@ -143,14 +153,15 @@
 
                                         <div class="row">
                                             <div class="col-md-12 my-4 form-row">
-                                                <a href="javascript:void" class="btn btn-primary" onclick="EscalteFun(this)">Escalte Issue</a>
+                                                <!-- <a href="javascript:void" class="btn btn-primary" onclick="EscalteFun(this)">Escalte Issue</a> -->
                                                 <input type="hidden" name="hdn_status_type" id="hdn_status_type" value="<?php echo $issue_result->status_type; ?>">
+                                                <input type="hidden" name="hdn_issue_id" id="hdn_issue_id" value="<?php echo $issue_result->id; ?>">
                                                 <button type="reset" class="btn btn-danger">Cancel</button>
                                                 <button type="submit" class="btn btn-success">Save</button>
                                             </div>
                                         </div>
                                     </form>
-
+                                    <?php } ?>
                             </div>
                         </div>
               

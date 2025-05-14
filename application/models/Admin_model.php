@@ -451,11 +451,21 @@ class Admin_model extends CI_Model {
 
 
       
-    public function save_issue($data){
+    public function save_issue_details($data){
         $this->db->insert('issue_manage',$data);
         return 1;
     }
-    
+    public function update_issue_details($data,$row_id){
+        $this->db->where('id',$row_id);
+        $this->db->update('issue_manage',$data);
+        return 1;
+    }
+
+    public function save_issue_log_details($data){
+        $this->db->insert('issue_log_manage',$data);
+        return 1;
+    }
+  
 
 
     public function get_all_issue_for_me($user_id){
@@ -466,7 +476,7 @@ class Admin_model extends CI_Model {
         // return $query->result();
 
         
-        $this->db->select('issue_manage.*,company_projects.project_id,users.firstName,users.lastName,company.company_name');
+        $this->db->select('issue_manage.*,company_projects.project_id,users.firstName,users.lastName,company.company_name,issue_manage.status as status');
         $this->db->from('issue_manage');
         $this->db->join('company_projects','company_projects.id=issue_manage.project_name');
          $this->db->join('users','users.id=issue_manage.manage_name');
@@ -478,7 +488,7 @@ class Admin_model extends CI_Model {
 
      public function get_all_my_issue($user_id){
 
-        $this->db->select('issue_manage.*,company_projects.project_id,users.firstName,users.lastName,company.company_name');
+        $this->db->select('issue_manage.*,company_projects.project_id,users.firstName,users.lastName,company.company_name,issue_manage.status as status');
         $this->db->from('issue_manage');
         $this->db->join('company_projects','company_projects.id=issue_manage.project_name');
          $this->db->join('users','users.id=issue_manage.manage_name');
@@ -493,6 +503,9 @@ class Admin_model extends CI_Model {
         // $query=$this->db->get();
         // return $query->result();
     }
+
+
+    
     
     
 }

@@ -1172,7 +1172,7 @@ $role=implode(',',$this->input->post('user_role'));
             "created_at"=>date("Y-m-d H:i:s")
         );
        
-        $data["notification"]=$this->Admin_model->save_issue($data);
+        $data["notification"]=$this->Admin_model->save_issue_details($data);
         $insert_id = $this->db->insert_id();
         $this->session->set_flashdata("success","Issue Created Successfully");
         redirect("index.php/manage-my-issue");
@@ -1199,6 +1199,67 @@ $role=implode(',',$this->input->post('user_role'));
 
         $data['issue_result'] = $issue_result;
         $this->load->view('issue-view',$data);
+    }
+
+
+      public function update_issue(){
+
+        $hdn_issue_id = $this->input->post("hdn_issue_id");
+
+        $created_by=$this->user_id;
+        $random_number = rand(10000,99999);
+        $tracking_id_value = date('ymd').$random_number;
+        
+
+        $config['upload_path'] = './issueattachment/';
+        $config['allowed_types'] = '*';
+		$config['encrypt_name']=true;
+
+        $this->load->library('upload', $config);
+		$issue_attachment='';
+        if (!$this->upload->do_upload('issue_attachment')) {
+            $error = array('error' => $this->upload->display_errors());
+			print_r($error);
+			exit;
+        } else {
+            $data = $this->upload->data();
+			$issue_attachment="response_".$data['file_name'];
+		}
+
+
+        $status_value = $this->input->post("status");
+        $status_remark_value = $this->input->post("Remstatus_remarkark");
+        $hdn_status_type_value = $this->input->post("hdn_status_type");
+        $status_type_remark_value = $this->input->post("status_type_remark");
+       
+
+        $data=array(
+            "status"=>$status_value,
+            "status_type"=>$hdn_status_type_value,
+            "remark_content"=>$status_remark_value,
+            "remark_content" => $this->input->post("Remark"),
+            "updated_at"=>date("Y-m-d H:i:s")
+        );
+       
+        $data["notification"]=$this->Admin_model->update_issue_details($data,$hdn_issue_id);
+
+
+        $data=array(
+            "issue_id"=>$hdn_issue_id,
+            "user_id"=>$created_by,
+            "status"=>$status_value,
+            "status_remark"=>$status_remark_value,
+            "status_type"=>$hdn_status_type_value,
+            "status_type_remark"=>$status_type_remark_value,
+            "created_at" => date("Y-m-d H:i:s"),
+            "updated_at"=>date("Y-m-d H:i:s")
+        );
+       
+        $this->Admin_model->save_issue_log_details($data);
+        $insert_id = $this->db->insert_id();
+        
+        $this->session->set_flashdata("success","Issue Created Successfully");
+        redirect("index.php/manage-my-issue");
     }
     
 }

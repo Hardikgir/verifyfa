@@ -179,6 +179,8 @@ $route['manage-my-issue'] = 'Admin_controller/manage_my_issue';
 $route['add-issue'] = 'Admin_controller/add_issue';
 $route['view-issue/(:num)'] = 'Admin_controller/view_issue/$1';
 $route['save-issue'] = 'Admin_controller/save_issue';
+$route['update-issue'] = 'Admin_controller/update_issue';
+
 
 
 
