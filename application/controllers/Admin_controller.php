@@ -1026,6 +1026,10 @@ $role=implode(',',$this->input->post('user_role'));
         $data['page_title']="Manage Issue";
         $entity_code=$this->admin_registered_entity_code;
         $data["issue"]=$this->Admin_model->get_all_issue_for_me($_SESSION['logged_in']['id']);
+        echo '<pre>last_query ';
+        print_r($this->db->last_query());
+        echo '</pre>';
+        exit();
         $this->load->view('issue-list',$data);
     }
 
