@@ -480,7 +480,7 @@ class Admin_model extends CI_Model {
         $this->db->from('issue_manage');
         $this->db->join('company_projects','company_projects.id=issue_manage.project_name');
          $this->db->join('users','users.id=issue_manage.manage_name');
-          $this->db->join('company','company.id=issue_manage.company_name');
+        $this->db->join('company','company.id=issue_manage.company_name');
         $this->db->where('issue_manage.resolved_by',$user_id);
         $getnotifications=$this->db->get();
         return $getnotifications->result();
