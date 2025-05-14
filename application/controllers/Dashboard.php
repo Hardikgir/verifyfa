@@ -596,6 +596,10 @@ class Dashboard extends CI_Controller {
 				// exit();
 				// exit();
 
+				// echo '<pre>exceptioncategory ::';
+				// print_r($exceptioncategory);
+				// echo '</pre>';
+				// exit();
 				
 				
 				if($exceptioncategory==1)	//Condition of Item

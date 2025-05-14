@@ -65,7 +65,7 @@ table th,table td{
 											<div class="col-md-6">
 												<div class="form-group">
                                                     <label>Exception Category:</label>
-                                                    <input type="text" class="form-control" value="Condition of Items">
+                                                    <input type="text" class="form-control" value="Calculate Risk Exposure">
 												</div>
                                             </div>
                                             <div class="col-md-6">
@@ -94,13 +94,13 @@ table th,table td{
                                             <div class="col-md-6">
 												<div class="form-group">
                                                     <label>Start Date:</label>
-                                                    <input type="text" class="form-control" value="<?php echo date('d/m/yy',strtotime($data['project'][0]->start_date));?>">
+                                                    <input type="text" class="form-control" value="<?php echo date('d/m/Y',strtotime($data['project'][0]->start_date));?>">
 												</div>
 											</div>
 											<div class="col-md-6">
 												<div class="form-group">
                                                     <label>Due Date:</label>
-                                                    <input type="text" class="form-control" value="<?php echo date('d/m/yy',strtotime($data['project'][0]->due_date));?>">
+                                                    <input type="text" class="form-control" value="<?php echo date('d/m/Y',strtotime($data['project'][0]->due_date));?>">
 												</div>
 											</div>
 											
@@ -163,6 +163,7 @@ table th,table td{
 											<th rowspan="1"></th>
 											<th colspan="10" style="background-color:#FFF2CC;">Item Condition</th>
                                             <th colspan="4" >Qty Validation</th>
+											<th colspan="2" rowspan="2">Total Risk Exposure</th>
 										</tr>
 
 
@@ -194,6 +195,8 @@ table th,table td{
 											<th>Number of Qty</th><!-- For Short_Found -->
                                             <th>Amount(in Lacs)</th><!-- For Excess_Found -->
                                             <th>Number of Qty</th><!-- For Excess_Found -->
+											<th>Amount(in Lacs)</th><!-- For Total Risk Exposure -->
+                                            <th>Number of Qty</th><!-- For Total Risk Exposure -->
 										</tr>
                                         
 										<?php
@@ -235,6 +238,8 @@ table th,table td{
 
                                             $shortAmount=0;
 											$shortItems=0;
+											$excessitem=0;
+											$excessamount=0;
 
                                             foreach($data['verified'] as $verified)
 											{
@@ -350,21 +355,20 @@ table th,table td{
 											$remainitemstotal +=$remainitem;
 
 
-                                            $excessitem='0';
-											$excessamount='0';
+                                            $excessitem=0;
+											$excessamount=0;
 											foreach($data['excess'] as $excess)
 											{
 												if($excess->item_category == $allcat->item_category)
 												{
 													$excessitem = $excess->items;
-													 $excessAmount =$excess->total_amount;		
-													 $excessamounttotalnew=$excessamounttotalnew+$excessAmount;
+													$excessAmount =$excess->total_amount;		
+													$excessamounttotalnew=$excessamounttotalnew+$excessAmount;
  
 												}
 											}
+												
 											$excessitemtotal +=$excessitem;
-
-
 											$remainingAmount=$allcat->total_amount-($goodAmount+$damagedAmount+$scrappedAmount+$missingAmount+$shiftedAmount+$notinuseAmount);
 											$remainingItems=$allcat->total_qty-($goodItems+$damagedItems+$scrappedItems+$missingItems+$shiftedItems+$notinuseItems);
 											$remainingTotalAmount=$remainingTotalAmount+$remainingAmount;
@@ -392,8 +396,19 @@ table th,table td{
                                             <td><?php echo $shortAmount!=0?getmoney_format(round(($shortAmount/100000),2)):$shortAmount; ?></td><!-- For Short_Found -->
 											<td><?php echo $shortItems; ?></td><!-- For Short_Found -->
 
-                                            <td><?php echo $excessAmount!=0?getmoney_format(round(($excessAmount/100000),2)):$excessAmount; ?></td><!-- For Excess_Found -->
+                                            <td>
+												<?php 
+													if($excessAmount == NULL){
+														echo "0";
+													}else{
+														echo $excessAmount!=0?getmoney_format(round(($excessAmount/100000),2)):$excessAmount; 
+													}
+												?>
+											</td><!-- For Excess_Found -->
 											<td><?php echo $excessitem; ?></td><!-- For Excess_Found -->
+
+											<td>0</td><!-- For Total Risk Exposure -->
+											<td>0</td><!-- For Total Risk Exposure -->
 
 										</tr>
 										<?php
@@ -415,6 +430,8 @@ table th,table td{
 											<td></td><!-- For Short_Found -->
 											<td></td><!-- For Excess_Found -->
 											<td></td><!-- For Excess_Found -->
+											<td></td><!-- For Total Risk Exposure -->
+											<td></td><!-- For Total Risk Exposure -->
 										</tr>
 										<tr>
 											<td></td>
@@ -432,6 +449,8 @@ table th,table td{
 											<td></td><!-- For Short_Found -->
 											<td></td><!-- For Excess_Found -->
 											<td></td><!-- For Excess_Found -->
+											<td></td><!-- For Total Risk Exposure -->
+											<td></td><!-- For Total Risk Exposure -->
 										</tr>
 										<tr>
 											<th><?php echo "Grand Total"; ?></th>
@@ -449,6 +468,8 @@ table th,table td{
 											<th><?php echo $shortTotalItems; ?></th><!-- For Short_Found -->
                                             <th><?php echo $excessamounttotalnew!=0?getmoney_format(round(($excessamounttotalnew/100000),2)):$excessamounttotalnew; ?></th><!-- For Excess_Found -->
 											<th><?php echo $excessitemtotal; ?></th><!-- For Excess_Found -->
+											<th>0</th><!-- For Total Risk Exposure -->
+											<th>0</th><!-- For Total Risk Exposure -->
 										</tr>
 										<tr>
 											<th><?php echo "% to Grand Total"; ?></th>
@@ -466,6 +487,8 @@ table th,table td{
 											<th><?php echo round(($excessamounttotalnew/$totalAmount)*100,2); ?>%</th><!-- For Short_Found -->
                                             <th><?php echo round(($excessamounttotalnew/$totalAmount)*100,2); ?>%</th><!-- For Excess_Found -->
 											<th><?php echo round(($excessitemtotal/$totalItems)*100,2); ?>%</th><!-- For Excess_Found -->
+											<th>0</th><!-- For Total Risk Exposure -->
+											<th>0</th><!-- For Total Risk Exposure -->
 										</tr>
 										<tr>
 											<td></td>
@@ -483,7 +506,10 @@ table th,table td{
                                             <td></td><!-- For Short_Found -->
 											<td></td><!-- For Excess_Found -->
 											<td></td><!-- For Excess_Found -->
+											<td></td><!-- For Total Risk Exposure -->
+											<td></td><!-- For Total Risk Exposure -->
 										</tr>
+										<?php /*
 										<tr>
 											<th>Click for detailed report</th>
 											<th colspan="2"><?php if($damagedTotalAmount!=0){?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionOneDamagedReport">Download as Annexure</a><?php }?></th><!-- For Damaged -->
@@ -492,9 +518,9 @@ table th,table td{
 											<th colspan="2"><?php if($shiftedTotalAmount!=0){?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionOneShiftedReport">Download as Annexure</a> <?php }?></th><!-- For Shifted -->
 											<th colspan="2"><?php if($notinuseTotalAmount!=0){?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionOneNotinuseReport">Download as Annexure</a> <?php }?></th><!-- For Not_in_Use -->
 										    <th colspan="2"><?php if($shortTotalAmount!=0){?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionThreeShortReport">Download as Annexure</a><?php }?></th><!-- For Short_Found -->
-                                            <th th colspan="2"><?php if($excessamounttotalnew!=0){ ?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionThreeExcessReport">Download as Annexure</a><?php } ?></th><!-- For Excess_Found -->
-										</tr>
-										
+                                            <th colspan="2"><?php if($excessamounttotalnew!=0){ ?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionThreeExcessReport">Download as Annexure</a><?php } ?></th><!-- For Excess_Found -->
+											<th colspan="2">Download as Annexure</th>
+										</tr> */ ?>										
 									</table>
 								</div>
 								<?php
