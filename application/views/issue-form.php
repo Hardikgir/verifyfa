@@ -52,8 +52,8 @@
                 <div class="row ">
                     <div class="col-md-12 form-row SectionUserType" id="SectionTypeofIssue">
                         <label class="form-label">Type of Issue</label>
-                        <input type="radio" name="issue_type" class="mx-1" onchange="SelectTypeofIssue(this)" value="general"><lable class="mr-3">General Issue</lable>
-                        <input type="radio" name="issue_type" class="mx-1" onchange="SelectTypeofIssue(this)" value="projectbase"><lable class="mr-3">Project Based Issue</lable>
+                        <input type="radio" name="issue_type" class="mx-1" onchange="SelectTypeofIssue(this)" value="General"><lable class="mr-3">General Issue</lable>
+                        <input type="radio" name="issue_type" class="mx-1" onchange="SelectTypeofIssue(this)" value="Project based"><lable class="mr-3">Project Based Issue</lable>
                     </div>
                 </div>
 
@@ -127,8 +127,8 @@
 
                 <div class="row my-4">
                     <div class="col-md-12 form-row">
-                        <label class="form-label">Attachment</label>
-                        <input type="file" name="issue_attachment" id="issue_attachment" class="form-control" required="">
+                        <label class="form-label">Attachment <small>(Only PDF and Image file type allowed)</small></label>
+                        <input type="file" name="issue_attachment" id="issue_attachment" class="form-control" >
                     </div>
                 </div>
 
@@ -236,11 +236,11 @@ $("#userEmail").change(function(){
     }
     function SelectTypeofIssue(event){
         var TypeofIssue_value = $(event).val();
-        if (TypeofIssue_value == 'general') {
+        if (TypeofIssue_value == 'General') {
             $("#SectionForGeneralIssue").css('display','block')
             $("#SectionForProjectBaseIssue").css('display','none')
         }
-        else if (TypeofIssue_value == 'projectbase') {
+        else if (TypeofIssue_value == 'Project based') {
             $("#SectionForGeneralIssue").css('display','none')
             $("#SectionForProjectBaseIssue").css('display','block')
         }

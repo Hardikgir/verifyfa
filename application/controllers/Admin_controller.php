@@ -1184,9 +1184,7 @@ $role=implode(',',$this->input->post('user_role'));
         $user_id = $_SESSION['logged_in']['id'];
         $registered_user_id = $_SESSION['logged_in']['admin_registered_user_id'];
 
-        // $this->db->select('issue_manage.*');
-        // $this->db->from('issue_manage');
-
+        /*       
         $this->db->select('issue_manage.*,company_projects.project_id,users.firstName,users.lastName,company.company_name,company_locations.location_name');
         $this->db->from('issue_manage');
         $this->db->join('company','company.id=issue_manage.company_name');
@@ -1196,9 +1194,18 @@ $role=implode(',',$this->input->post('user_role'));
         $this->db->where('issue_manage.id',$issue_id);
         $issue_row=$this->db->get();
         $issue_result = $issue_row->row();
+            */ 
+
+        $this->db->select('issue_manage.*,users.firstName,users.lastName');
+        $this->db->from('issue_manage');
+        $this->db->join('users','users.id=issue_manage.resolved_by');
+        $this->db->where('id',$issue_id);
+        $issue_row=$this->db->get();
+        $issue_result = $issue_row->row();
 
         $data['issue_result'] = $issue_result;
-        $this->load->view('issue-view',$data);
+        // $this->load->view('issue-view',$data);
+        $this->load->view('general-issue-view',$data);
     }
 
 
@@ -1258,7 +1265,7 @@ $role=implode(',',$this->input->post('user_role'));
         $this->Admin_model->save_issue_log_details($data);
         $insert_id = $this->db->insert_id();
         
-        $this->session->set_flashdata("success","Issue Created Successfully");
+        $this->session->set_flashdata("success","Issue Updated Successfully");
         redirect("index.php/manage-my-issue");
     }
     

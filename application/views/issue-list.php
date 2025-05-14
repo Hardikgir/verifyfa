@@ -32,7 +32,7 @@ $this->load->view('layouts/sidebar');
             <tr>
             <th>Tracking id</th>
             <th>Subject Title</th>
-            <th>Type of issue</th>
+            <th>Type of Issue</th>
             <th>Project Id</th>
             <th>Status</th>
             <th>Status Type</th>
@@ -46,7 +46,7 @@ $this->load->view('layouts/sidebar');
             <tr>
                 <td ><?php echo $row->tracking_id;?></td>
                 <td ><?php echo $row->issue_title;?></td>
-                <td ><?php echo $row->issue_type;?></td>
+                <td ><?php echo 'Project based'; //$row->issue_type;?></td>
                 <td ><?php echo $row->project_id;?></td>
                 <td ><?php 
                 if($row->status =='1'){echo "Open";}

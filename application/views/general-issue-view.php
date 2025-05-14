@@ -76,16 +76,11 @@
                                     <th>Issue Type</th>
                                     <td>
                                         <?php echo $issue_result->issue_type;
-                                        if(!empty($issue_result->project_id)){
-                                            echo " | ".$issue_result->project_id;
-                                        }
+                                        
                                         ?>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <th>Company Name | Location</th>
-                                    <td><?php echo $issue_result->company_name." | ".$issue_result->location_name ?></td>
-                                </tr>
+                                
                                 <tr>
                                     <th>Subject</th>
                                     <td><?php echo $issue_result->issue_title ?></td>
