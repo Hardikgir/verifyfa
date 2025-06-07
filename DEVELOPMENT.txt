@@ -1,3 +1,14 @@
+Pending Work :- 08/06/2025
+
+1. Mobile api Report Section (Attachment by Email)
+	-> First you have to setup generated excel in to specific directory
+		-> Reference :- https://stackoverflow.com/questions/22603237/phpexcel-save-a-xls-file-to-a-specific-folder
+	-> Once you move direcoty then attchement related code you have in abhiyoga
+2. Report should be download as other report is downloading (Website points)
+3. Graph should be make it Dynamic
+	-> You have to find it out proper video requirement of this point.
+
+
 
 Hardik Development Server
 
