@@ -97,43 +97,67 @@ class EmailController extends CI_Controller {
             </table>
             </body>`;
         
-        $eol = "\r\n";
-        $separator = md5(time());
-        $content = file_get_contents($file);
-        $content = chunk_split(base64_encode($content));
+        // $eol = "\r\n";
+        // $separator = md5(time());
+        // $content = file_get_contents($file);
+        // $content = chunk_split(base64_encode($content));
 
-        $email_updated_content = $email_actual_content;
-        $email_updated_content .= "--" . $separator . $eol;
-        $email_updated_content .= "Content-Type: text/plain; charset=\"iso-8859-1\"" . $eol;
-        $email_updated_content .= "Content-Transfer-Encoding: 8bit" . $eol;
-        $email_updated_content .= $email_updated_content . $eol;
+        // $email_updated_content = $email_actual_content;
+        // $email_updated_content .= "--" . $separator . $eol;
+        // $email_updated_content .= "Content-Type: text/plain; charset=\"iso-8859-1\"" . $eol;
+        // $email_updated_content .= "Content-Transfer-Encoding: 8bit" . $eol;
+        // $email_updated_content .= $email_updated_content . $eol;
 
-        // attachment
-        $email_updated_content .= "--" . $separator . $eol;
-        $email_updated_content .= "Content-Type: application/octet-stream; name=\"" . $filename . "\"" . $eol;
-        $email_updated_content .= "Content-Transfer-Encoding: base64" . $eol;
-        $email_updated_content .= "Content-Disposition: attachment" . $eol;
-        $email_updated_content .= $content . $eol;
-        $email_updated_content .= "--" . $separator . "--";
+        // // attachment
+        // $email_updated_content .= "--" . $separator . $eol;
+        // $email_updated_content .= "Content-Type: application/octet-stream; name=\"" . $filename . "\"" . $eol;
+        // $email_updated_content .= "Content-Transfer-Encoding: base64" . $eol;
+        // $email_updated_content .= "Content-Disposition: attachment" . $eol;
+        // $email_updated_content .= $content . $eol;
+        // $email_updated_content .= "--" . $separator . "--";
 
-        $email_updated_content = str_replace($ActuallVariable, $ReplaceWithActuallVariable, $email_actual_content);
+        // $email_updated_content = $email_actual_content;
+
+        // $this->email->set_newline("\r\n");
+        // $this->email->from('abc@gmail.com');
+        // $this->email->to($email);
+        // $this->email->subject($subject);
+        // $this->email->message($message);
+        // $this->email->attach('C:\Users\xyz\Desktop\images\abc.png');
+        // if($this->email->send())
+        // {
+        // echo 'Email send.';
+        // }
+        // else
+        // {
+        //  show_error($this->email->print_debugger());
+        // }
         
         $to = 'hardik.meghnathi12@gmail.com';
         $subject = " Email Attachment";
         
         $CI = setEmailProtocol();
-        $from_email = 'grievance_alert@ptcfinancial.com';
+        $from_email = 'solutions@ethicalminds';
         $CI->email->set_newline("\r\n");
-        $CI->email->set_mailtype("html");
-        $CI->email->set_header('Content-Type', 'text/html');
+        // $CI->email->set_mailtype("html");
+        // $CI->email->set_header('Content-Type', 'text/html');
         $CI->email->from($from_email);
         $CI->email->to($to);
         $CI->email->subject($subject);
-        $CI->email->message($email_updated_content);
+        $CI->email->message($email_actual_content);
+        $CI->email->attach($file);
 
-         if($CI->email->send()){
+        $mailsend = 0;
+        if($CI->email->send()){
             $mailsend = 1;
+        }else{
+            show_error($this->email->print_debugger());
         }
+
+        echo '<pre>mailsend : ';
+        print_r($mailsend);
+        echo '</pre>';
+        exit();
 
 
 
