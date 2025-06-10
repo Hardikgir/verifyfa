@@ -21,7 +21,7 @@ class EmailController extends CI_Controller {
         
         $name = 'sample.pdf';
         $filename = 'sample.pdf';
-        $file = FCPATH."/attachment/pdf/".$name;
+        $file = FCPATH."attachment/pdf/".$name;
         
         $email_actual_content = `<body style="font-family: Helvetica, Arial, sans-serif; margin: 0px; padding: 0px; background-color: #ffffff;">
             <table role="presentation"
