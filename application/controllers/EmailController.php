@@ -13,10 +13,10 @@ class EmailController extends CI_Controller {
     public function emailattachment(){
         // URL :- http://localhost:8080/codeigniter/verifyfa/index.php/EmailController/emailattachment
         
-        echo '<pre>';
-        print_r("Hello, this is a test email with attachment.");
-        echo '</pre>';
-        exit();
+        // echo '<pre>';
+        // print_r("Hello, this is a test email with attachment.");
+        // echo '</pre>';
+        // exit();
         
         
         $name = 'sample.pdf';
