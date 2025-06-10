@@ -102,7 +102,7 @@ class EmailController extends CI_Controller {
         $content = file_get_contents($file);
         $content = chunk_split(base64_encode($content));
 
-        $email_updated_content = str_replace($ActuallVariable, $ReplaceWithActuallVariable, $email_actual_content);
+        $email_updated_content = $email_actual_content;
         $email_updated_content .= "--" . $separator . $eol;
         $email_updated_content .= "Content-Type: text/plain; charset=\"iso-8859-1\"" . $eol;
         $email_updated_content .= "Content-Transfer-Encoding: 8bit" . $eol;
