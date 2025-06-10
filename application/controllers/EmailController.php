@@ -139,12 +139,12 @@ class EmailController extends CI_Controller {
         $CI = setEmailProtocol();
         $from_email = 'solutions@ethicalminds';
         $CI->email->set_newline("\r\n");
-        // $CI->email->set_mailtype("html");
+        $CI->email->set_mailtype("html");
         // $CI->email->set_header('Content-Type', 'text/html');
         $CI->email->from($from_email);
         $CI->email->to($to);
         $CI->email->subject($subject);
-        $CI->email->message($email_actual_content);
+        $CI->email->message('<h1>This is a test email</h1><p>With an attachment</p>');
         $CI->email->attach($file);
 
         $mailsend = 0;
