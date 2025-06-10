@@ -13,17 +13,11 @@ class EmailController extends CI_Controller {
     public function emailattachment(){
         // URL :- http://localhost:8080/codeigniter/verifyfa/index.php/EmailController/emailattachment
         
-        // echo '<pre>';
-        // print_r("Hello, this is a test email with attachment.");
-        // echo '</pre>';
-        // exit();
-        
-        
         $name = 'sample.pdf';
         $filename = 'sample.pdf';
         $file = FCPATH."attachment/".$name;
         
-        $email_actual_content = `<body style="font-family: Helvetica, Arial, sans-serif; margin: 0px; padding: 0px; background-color: #ffffff;">
+        $email_actual_content = '
             <table role="presentation"
                 style="width: 100%;border-collapse: collapse;border: 0px;border-spacing: 0px;font-family: Arial, Helvetica, sans-serif;background-color: rgb(250, 250, 250);">
                 <tbody>
@@ -35,7 +29,7 @@ class EmailController extends CI_Controller {
                             <td style="padding: 40px 0px 0px;">
                             <div style="text-align: left;">
                                 <div style="padding-bottom: 20px;text-align: center;">
-                                    <img src="https://abhiyoga.developmentdemo.co.in/assets/CompanyDetails/images/APPLICATIONLOGO" alt="APPLICATIONLOGOCompany" style="width: 56px;">
+                                    <img src="https://verifyfa.developmentdemo.co.in/assets/img/logo.png" alt="APPLICATIONLOGOCompany" style="width: 56px;">
                                 </div>
                             </div>
                             <div style="padding: 20px;background-color: rgb(255, 255, 255);border: 1px solid grey;">
@@ -67,7 +61,7 @@ class EmailController extends CI_Controller {
                                 <b>COMPANYNAME</b></p>
                                  <div style="text-align: left;">
                                      <div style="padding-bottom: 20px">
-                                        <img src="https://abhiyoga.developmentdemo.co.in/assets/CompanyDetails/images/COMPANYLOGO" alt="Company" style="width: 56px;">
+                                        <img src="https://verifyfa.developmentdemo.co.in/assets/img/logo.png" alt="Company" style="width: 56px;">
                                     </div>
                                 </div>
 
@@ -94,44 +88,9 @@ class EmailController extends CI_Controller {
                     </td>
                 </tr>
                 </tbody>
-            </table>
-            </body>`;
+            </table>';
         
-        // $eol = "\r\n";
-        // $separator = md5(time());
-        // $content = file_get_contents($file);
-        // $content = chunk_split(base64_encode($content));
-
-        // $email_updated_content = $email_actual_content;
-        // $email_updated_content .= "--" . $separator . $eol;
-        // $email_updated_content .= "Content-Type: text/plain; charset=\"iso-8859-1\"" . $eol;
-        // $email_updated_content .= "Content-Transfer-Encoding: 8bit" . $eol;
-        // $email_updated_content .= $email_updated_content . $eol;
-
-        // // attachment
-        // $email_updated_content .= "--" . $separator . $eol;
-        // $email_updated_content .= "Content-Type: application/octet-stream; name=\"" . $filename . "\"" . $eol;
-        // $email_updated_content .= "Content-Transfer-Encoding: base64" . $eol;
-        // $email_updated_content .= "Content-Disposition: attachment" . $eol;
-        // $email_updated_content .= $content . $eol;
-        // $email_updated_content .= "--" . $separator . "--";
-
-        // $email_updated_content = $email_actual_content;
-
-        // $this->email->set_newline("\r\n");
-        // $this->email->from('abc@gmail.com');
-        // $this->email->to($email);
-        // $this->email->subject($subject);
-        // $this->email->message($message);
-        // $this->email->attach('C:\Users\xyz\Desktop\images\abc.png');
-        // if($this->email->send())
-        // {
-        // echo 'Email send.';
-        // }
-        // else
-        // {
-        //  show_error($this->email->print_debugger());
-        // }
+        
         
         $to = 'hardik.meghnathi12@gmail.com';
         $subject = " Email Attachment";
@@ -140,11 +99,10 @@ class EmailController extends CI_Controller {
         $from_email = 'solutions@ethicalminds';
         $CI->email->set_newline("\r\n");
         $CI->email->set_mailtype("html");
-        // $CI->email->set_header('Content-Type', 'text/html');
         $CI->email->from($from_email);
         $CI->email->to($to);
         $CI->email->subject($subject);
-        $CI->email->message('<h1>This is a test email</h1><p>With an attachment</p>');
+        $CI->email->message($email_actual_content);
         $CI->email->attach($file);
 
         $mailsend = 0;
