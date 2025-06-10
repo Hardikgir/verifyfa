@@ -5,10 +5,26 @@ Pending Work :- 08/06/2025
 		-> Reference :- https://stackoverflow.com/questions/22603237/phpexcel-save-a-xls-file-to-a-specific-folder
 	-> Once you move direcoty then attchement related code you have in abhiyoga
 2. Report should be download as other report is downloading (Website points)
+	-> Changes/ Updations of Items (Child Parent Table's Column value is check)
+	-> Calculate Risk Exposure (Merge 2 Tables)
+	-> Duplicate Item Codes verified (Repeated Reocrd Count)
 3. Graph should be make it Dynamic
 	-> You have to find it out proper video requirement of this point.
+4. Other Previous point in 09 May 2025 you can check in whats app Screenshots
+5. 
 
 
+Understanding :- 
+About Report :- D:\Projects\VerifyFa\Discussion-Meeting\01May\bandicam 2025-05-01 11-58-00-512.mp4  (08:00)
+Other Explaing :- D:\Projects\VerifyFa\Discussion-Meeting\7-9May\
+10 May 2025 :- D:\Projects\VerifyFa\Discussion-Meeting\10May
+Also Their is 14 May discussion (Missing)
+21 May Thier is discuccion about mobile api issue
+	-> List is not showing proper
+	-> Edit Verification all details showign proper as per Design Given
+	-> 
+
+========================================================================================================================================================
 
 Hardik Development Server
 

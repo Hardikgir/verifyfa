@@ -125,14 +125,14 @@ select option:disabled {
 														<option value="" selected>Exception Category <span class="mandatory_star">*</span>
 														</option>
 														<option value="1">Condition of Item</option>
-														<option value="2">Changes/ Updations of Items</option>
+														<option value="2">Changes/ Updations of Items (New)</option>
 														<option value="3">Qty Validation Status</option>
 														<option value="4">Updated with Verification Remarks</option>
 														<option value="5">Updated with Item Notes</option>
-														<option value="6">Calculate Risk Exposure</option>
+														<option value="6">Calculate Risk Exposure (New)</option>
 														<option value="8">Mode of Verification</option>
 														<!-- <option value="9">Duplicate Item Codes verified</option> -->
-														<option value="10">Duplicate Item Codes Identified</option>
+														<option value="10">Duplicate Item Codes Identified (New)</option>
 														
 													</select>
 												</div>

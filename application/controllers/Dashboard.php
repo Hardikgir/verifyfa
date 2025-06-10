@@ -404,7 +404,7 @@ class Dashboard extends CI_Controller {
 			else
 			{
 				$this->session->set_flashdata('error_message', array("message"=>"Select other verification method OR Check the Status of Verification"));	
-				// redirect('index.php/dashboard/reports','refresh');
+				redirect('index.php/dashboard/reports','refresh');
 			}
 		}
 		else

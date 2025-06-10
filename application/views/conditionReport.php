@@ -19,13 +19,15 @@ table th,table td{
 					<div class="row">
 						<div class="col-md-1"></div>
 						<div class="col-md-10">
-							<?php if(isset($_SESSION['error_message']))
+							<?php 
+							if(isset($_SESSION['error_message']))
 							{
 							?>
 							<div class="alert alert-danger">
 								<?php echo $_SESSION['error_message']['message']; ?>
 							</div>
 							<?php 
+							unset($_SESSION['error_message']);
 							}
 							?>
 							<div class="card">
