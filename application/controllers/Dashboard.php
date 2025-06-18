@@ -5453,7 +5453,7 @@ public function downloadExceptionChangesUpdationsofItems()
 
 
 
-	public function downloadExceptionChangesUpdationsofItems()
+	public function downloadExceptionChangesUpdationsofItems11()
 	{
 
 		$projectid = 26;
@@ -5478,8 +5478,7 @@ public function downloadExceptionChangesUpdationsofItems()
 
 
         $project_headers = $this->db->query("SELECT *  FROM project_headers WHERE project_id='".$projectid."' AND is_editable = 1")->result();
-        // $project_header_column = array('id','item_sub_category','location_of_the_item_last_verified');
-			$project_header_column = array('id','item_sub_category');
+        	$project_header_column = array('id','item_sub_category');
         foreach($project_headers as $project_headers_value){
             $project_header_column[] = $project_headers_value->keyname;
         }
@@ -5692,7 +5691,7 @@ public function downloadExceptionChangesUpdationsofItems()
 				// echo '</pre>';
 				// exit(); 
 				// exit(); 
-				// $sheet->setCellValue($rowHeads[$cnt].$rowCount,$gr[$colsArray[$rh]] );
+				$sheet->setCellValue($rowHeads[$cnt].$rowCount,$gr[$colsArray[$rh]] );
 				$cnt++;
 			}
 			// echo '<pre>rowCount ';
@@ -5704,15 +5703,161 @@ public function downloadExceptionChangesUpdationsofItems()
 			$rowCount++;
 		}
 
-		
+
+		$tablename = 'tenmaytwentyone';
+
+
+		$company_projects = $this->db->query("SELECT *  FROM company_projects WHERE project_table_name='".$tablename."'")->row();
+        // echo '<pre>last_query 1';
+        // print_r($this->db->last_query());
+        // echo '</pre>';
+        // exit();
+        $project_id = $company_projects->id;
+        $company_id = $company_projects->company_id;
+        $original_table_name = $company_projects->original_table_name;
+        $project_table_name = $company_projects->project_table_name;
+
+
+        $project_headers = $this->db->query("SELECT *  FROM project_headers WHERE project_id='".$project_id."' AND is_editable = 1")->result();
+        $project_header_column = array('id','item_sub_category','location_of_the_item_last_verified');
+        foreach($project_headers as $project_headers_value){
+            $project_header_column[] = $project_headers_value->keyname;
+        }
+        $project_header_column_value = implode(',', $project_header_column);
+     
+
+
+        $project_table_result = $this->db->query("SELECT ".$project_header_column_value." FROM ".$project_table_name)->result();
+       
+        $existing_id_array = array();
+        foreach($project_table_result as $project_table_value){
+            $existing_id_array[] = $project_table_value->id;
+        }
+        $existing_id_value = implode(',', $existing_id_array);
+      
+
+        $project_header_column_base = array('id','item_sub_category','new_location_verified');
+        foreach($project_headers as $project_headers_value){
+            $project_header_column_base[] = $project_headers_value->keyname;
+        }
+        $project_header_column_base_value = implode(',', $project_header_column_base);
+        $original_table_result = $this->db->query("SELECT ".$project_header_column_base_value." FROM ".$original_table_name." WHERE id in (".$existing_id_value.") ")->result();
+       
+        $different_array = array();
+        foreach($project_table_result as $project_table_key=>$project_table_value){
+
+            foreach($project_header_column as $project_header_column_new_value)
+            {
+
+                if($project_header_column_new_value == 'location_of_the_item_last_verified'){
+
+                    if($original_table_result[$project_table_key]->new_location_verified != $project_table_result[$project_table_key]->$project_header_column_new_value){
+                        $different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value][] = 1;
+                    }
+
+                }else{
+                    if($original_table_result[$project_table_key]->$project_header_column_new_value != $project_table_result[$project_table_key]->$project_header_column_new_value){
+                    $different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value][] = 1;
+                }
+                }
+
+               
+            }
+        }
+        $different_array['project_header_column_value'] = $project_header_column_value; 
+		$project_header_column_value = explode(",",$project_header_column_value);
+		unset($project_header_column_value[0]);
+		unset($project_header_column_value[1]);
+
+		// echo '<pre>project_header_column_value ';
+		// print_r($project_header_column_value);
+		// echo '</pre>';
+		// exit(); 
+
+ 		$spreadsheet1= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+		$sheet1 = $spreadsheet1->getActiveSheet();
+		// $sheet1->setCellValue("A1", "Hardik Development Test");
+		$rowCount = 1;
+		$cnt = 0;
+		// foreach($data['different'] as $key=>$value){ 
+			foreach($project_header_column_value as $project_header_column_value_value){
+
+				// echo '<pre> ';
+				// print_r($project_header_column_value_value);
+				// echo '</pre>';
+				// // exit(); 
+
+				// echo '<pre>cnt ';
+				// print_r($cnt);
+				// echo '</pre>';
+
+				// echo '<pre>rowHeads ';
+				// print_r($rowHeads);
+				// echo '</pre>';
+
+				// echo '<pre>rowCount ';
+				// print_r($rowCount);
+				// echo '</pre>';
+
+				// echo '<pre>rowCount ';
+				// print_r($rowHeads[$cnt].$rowCount);
+				// echo '</pre>';
+				// exit(); 
+
+				// exit(); 
+				// exit(); 
+				// exit(); 
+
+				$sheet1->setCellValue($rowHeads[$cnt].$rowCount,ucfirst(str_replace('_',' ',$project_header_column_value_value)) );
+				
+				$cnt++;
+
+			}
+
+
+			// exit();
+		// }
+
+
+			/*
+		$project_header_column_value = explode(",",$data['project_header_column_value']);
+		unset($project_header_column_value[0]);
+		unset($project_header_column_value[1]);
+		echo '<tr>';
+		echo '<th>Allocated Item Category</th>';
+		foreach($project_header_column_value as $project_header_column_value_value){
+			echo '<th>';
+			echo ucfirst(str_replace('_',' ',$project_header_column_value_value));
+			echo '</th>';
+		}
+		echo '</tr>';
+
+
+		foreach($data['different'] as $key=>$value){ 
+			foreach($project_header_column_value as $project_header_column_value_value){
+				echo '<td>';
+				if(isset($data['different'][$key][$project_header_column_value_value])){
+					echo count($data['different'][$key][$project_header_column_value_value]);
+				}else{
+					echo "0";
+				}
+				echo '</td>';
+			}
+		}
+
 		
 
+		echo '<pre>different_array ';
+		print_r($different_array);
+		echo '</pre>';
+		exit(); 
+		*/
 
 		// exit();
 
-		$spreadsheet1= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-		$sheet1 = $spreadsheet1->getActiveSheet();
-		$sheet1->setCellValue("A1", "Hardik Development Test");
+		// $spreadsheet1= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+		// $sheet1 = $spreadsheet1->getActiveSheet();
+		// $sheet1->setCellValue("A1", "Hardik Development Test");
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet1, "Xlsx");
 		$writer->setPreCalculateFormulas(false);
 		$filename = $ReportTitle;
@@ -5723,5 +5868,147 @@ public function downloadExceptionChangesUpdationsofItems()
         $writer->save('php://output');
 	}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		public function downloadExceptionChangesUpdationsofItems()
+	{
+		require 'vendor/autoload.php';
+		$spreadsheet1= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+		$sheet1 = $spreadsheet1->getActiveSheet();
+		$ReportTitle = 'ChangesUpdationsofItems';
+		$spreadsheet= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+		$sheet = $spreadsheet->getActiveSheet();
+
+
+		$rowHeads=array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ','BA','BB','BC','BD','BE','BF','BG','BH','BI','BJ','BK','BL','BM','BN','BO','BP','BQ','BR','BS','BT','BU','BV','BW','BX','BY','BZ','CA','CB','CC','CD','CE','CF','CG','CH','CI','CJ','CK','CL','CM','CN','CO','CP','CQ','CR','CS','CT','CU','CV','CW','CX','CY','CZ');
+
+		$tablename = 'tenmaytwentyone';
+		$company_projects = $this->db->query("SELECT *  FROM company_projects WHERE project_table_name='".$tablename."'")->row();
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
+        $project_id = $company_projects->id;
+        $company_id = $company_projects->company_id;
+        $original_table_name = $company_projects->original_table_name;
+        $project_table_name = $company_projects->project_table_name;
+
+
+        $project_headers = $this->db->query("SELECT *  FROM project_headers WHERE project_id='".$project_id."' AND is_editable = 1")->result();
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
+
+
+        $project_header_column = array('id','item_sub_category','location_of_the_item_last_verified');
+        foreach($project_headers as $project_headers_value){
+            $project_header_column[] = $project_headers_value->keyname;
+        }
+        $project_header_column_value = implode(',', $project_header_column);
+     
+
+
+        $project_table_result = $this->db->query("SELECT ".$project_header_column_value." FROM ".$project_table_name)->result();
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
+       
+        $existing_id_array = array();
+        foreach($project_table_result as $project_table_value){
+            $existing_id_array[] = $project_table_value->id;
+        }
+        $existing_id_value = implode(',', $existing_id_array);
+      
+
+        $project_header_column_base = array('id','item_sub_category','new_location_verified');
+        foreach($project_headers as $project_headers_value){
+            $project_header_column_base[] = $project_headers_value->keyname;
+        }
+        $project_header_column_base_value = implode(',', $project_header_column_base);
+        $original_table_result = $this->db->query("SELECT ".$project_header_column_base_value." FROM ".$original_table_name." WHERE id in (".$existing_id_value.") ")->result();
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
+       
+        $different_array = array();
+        foreach($project_table_result as $project_table_key=>$project_table_value){
+            foreach($project_header_column as $project_header_column_new_value)
+            {
+                if($project_header_column_new_value == 'location_of_the_item_last_verified'){
+                    if($original_table_result[$project_table_key]->new_location_verified != $project_table_result[$project_table_key]->$project_header_column_new_value){
+                        $different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value]['old_value'][] = $original_table_result[$project_table_key]->new_location_verified;
+						$different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value]['new_value'][] = $project_table_result[$project_table_key]->$project_header_column_new_value;
+                    }
+                }else{
+                    if($original_table_result[$project_table_key]->$project_header_column_new_value != $project_table_result[$project_table_key]->$project_header_column_new_value){
+                    	$different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value]['old_value'][] = $original_table_result[$project_table_key]->$project_header_column_new_value;
+						$different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value]['new_value'][] = $project_table_result[$project_table_key]->$project_header_column_new_value;
+                	}
+                }
+            }
+        }
+
+		
+        $different_array['project_header_column_value'] = $project_header_column_value; 
+
+		$project_header_column_value = explode(",",$project_header_column_value);
+		unset($project_header_column_value[0]);
+		unset($project_header_column_value[1]);
+
+ 		
+		$rowCount = 1;
+		$cnt = 0;
+
+		
+
+		foreach($project_header_column_value as $project_header_column_value_value){
+			$sheet1->setCellValue($rowHeads[$cnt].$rowCount,ucfirst(str_replace('_',' ',$project_header_column_value_value)));
+			$sheet1->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+			$sheet1->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+			$cnt++;
+		}
+
+		$rowCount = 2;
+		$cnt = 0;
+		$all_value = array();
+		foreach($different_array['different'] as $differentkey=>$differentvalue){
+			$old_value = '';
+			$new_value = '';
+			foreach($differentvalue['location_of_the_item_last_verified']['old_value'] as $location_of_the_item_last_verified_key=>$location_of_the_item_last_verified_value_old){
+					$all_value[] = "Old :- ".$location_of_the_item_last_verified_value_old." & New :- ".$differentvalue['location_of_the_item_last_verified']['new_value'][$location_of_the_item_last_verified_key];
+			}
+		}
+		$rowCount = 2;
+		$cnt1 = 0;
+		foreach($all_value as $all_value_value){
+			$sheet1->setCellValue($rowHeads[$cnt1].$rowCount,$all_value_value);
+			$rowCount++;
+		}
+
+		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet1,"Xlsx");
+		$writer->setPreCalculateFormulas(false);
+		$filename = $ReportTitle ;
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+	}
+
 	
 }
+ 

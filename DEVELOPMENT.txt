@@ -6,6 +6,8 @@ Pending Work :- 08/06/2025
 	-> Once you move direcoty then attchement related code you have in abhiyoga
 2. Report should be download as other report is downloading (Website points)
 	-> Changes/ Updations of Items (Child Parent Table's Column value is check)
+			-> https://localhost/CODEIGNITER_PHP/verifyfa/index.php/dashboard/generateExceptionReport  (Result Showing)
+			-> https://localhost/CODEIGNITER_PHP/verifyfa/index.php/dashboard/downloadExceptionChangesUpdationsofItems (Download Report)
 	-> Calculate Risk Exposure (Merge 2 Tables)
 	-> Duplicate Item Codes verified (Repeated Reocrd Count)
 3. Graph should be make it Dynamic

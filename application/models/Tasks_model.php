@@ -440,6 +440,20 @@ class Tasks_model extends CI_Model {
     function getExceptionTwoReport($tablename,$verificationstatus,$reportHeaders)
     {
 
+        // echo '<pre>tablename ::';
+        // print_r($tablename);
+        // echo '</pre>';
+
+        // echo '<pre>verificationstatus ::';
+        // print_r($verificationstatus);
+        // echo '</pre>';
+
+        // echo '<pre>reportHeaders ::';
+        // print_r($reportHeaders);
+        // echo '</pre>';
+        // exit(); 
+        // exit(); 
+        // exit(); 
 
         $company_projects = $this->db->query("SELECT *  FROM company_projects WHERE project_table_name='".$tablename."'")->row();
         // echo '<pre>last_query 1';
