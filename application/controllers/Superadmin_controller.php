@@ -27,120 +27,182 @@ class Superadmin_controller extends CI_Controller {
 		$registered_user_plan = $query->result();
 		
 		$now = time(); // or your date as well
-		$register_users = array();
+		$Original_user_result = array();
 		$count = 0;
-		$day_count = array();
+		$Original_day_count = array();
+		$Renewals_day_count = array();
+		$Resubscriptions_day_count = array();
+		
 
 		foreach($registered_user_plan as $registered_user_plan_key=>$registered_user_plan_value){
-			$your_date = strtotime($registered_user_plan_value->created_at);
-			$datediff = $now - $your_date;
-			$day_different = round($datediff / (60 * 60 * 24));
-			$registered_user_plan[$registered_user_plan_key]->day_difference = $day_different;
-			$day_count[] = $day_different;
+
+			
+			if($registered_user_plan_value->category_subscription == 'Original'){
+				$your_date = strtotime($registered_user_plan_value->created_at);
+				$datediff = $now - $your_date;
+				$day_different = round($datediff / (60 * 60 * 24));
+				$registered_user_plan[$registered_user_plan_key]->day_difference = $day_different;
+				$Original_day_count[] = $day_different;
+			}
+
+			if($registered_user_plan_value->category_subscription == 'Renewals'){
+				$your_date = strtotime($registered_user_plan_value->created_at);
+				$datediff = $now - $your_date;
+				$day_different = round($datediff / (60 * 60 * 24));
+				$registered_user_plan[$registered_user_plan_key]->day_difference = $day_different;
+				$Renewals_day_count[] = $day_different;
+			}
+
+			if($registered_user_plan_value->category_subscription == 'Resubscriptions'){
+				$your_date = strtotime($registered_user_plan_value->created_at);
+				$datediff = $now - $your_date;
+				$day_different = round($datediff / (60 * 60 * 24));
+				$registered_user_plan[$registered_user_plan_key]->day_difference = $day_different;
+				$Resubscriptions_day_count[] = $day_different;
+			}
+
+
 			$count++;
 		}
+
+		// echo '<pre>Original_day_count ';
+		// print_r($Original_day_count);
+		// echo '</pre>';
+
+		// echo '<pre>Renewals_day_count ';
+		// print_r($Renewals_day_count);
+		// echo '</pre>';
+
+
+		// echo '<pre>Resubscriptions_day_count ';
+		// print_r($Resubscriptions_day_count);
+		// echo '</pre>';
+		// exit(); 
+		// // exit(); 
+
+		// // exit(); 
+
 		$k=0;
-		for($i=1;$i<11;$i++){
-			$register_users[$k]['label'] = "Day ".$i;
-			$register_users[$k]['y'] = count(array_keys($day_count,$i));;
+
+		for($i=1;$i<15;$i++){
+			$Original_user_result[$k]['label'] = "Day ".$i;
+			$Original_user_result[$k]['y'] = count(array_keys($Original_day_count,$i));
+
+			$Renewals_user_result[$k]['label'] = "Day ".$i;
+			$Renewals_user_result[$k]['y'] = count(array_keys($Renewals_day_count,$i));
+
+			$Resubscriptions_user_result[$k]['label'] = "Day ".$i;
+			$Resubscriptions_user_result[$k]['y'] = count(array_keys($Resubscriptions_day_count,$i));
 			$k++;
 		}
 
-		
-		$data['register_users']=$register_users;
+		// echo '<pre>Renewals_user_result ';
+		// print_r($Renewals_user_result);
+		// echo '</pre>';
+		// // exit(); 
 
-
-		// $sql_query = "SELECT subscription_plan.id,subscription_plan.title,COUNT(registered_user_plan.plan_id) AS total_orders FROM subscription_plan LEFT JOIN registered_user_plan ON subscription_plan.id = registered_user_plan.plan_id GROUP BY registered_user_plan.plan_id";
-
-		$sql_query = "SELECT subscription_plan.id,subscription_plan.title,registered_user_plan.category_subscription,COUNT(registered_user_plan.plan_id) AS total_orders,COUNT(registered_user_plan.category_subscription) AS category_subscription_count FROM subscription_plan LEFT JOIN registered_user_plan ON subscription_plan.id = registered_user_plan.plan_id GROUP BY registered_user_plan.plan_id";
-
-		$sql_query_result = $this->db->query($sql_query)->result();
-		$this->db->select('*');
-		$this->db->from('subscription_plan');
-		$planDetails = $this->db->get()->result();
-
-		// echo '<pre>planDetails ';
-		// print_r($planDetails);
+		// echo '<pre>Resubscriptions_user_result ';
+		// print_r($Resubscriptions_user_result);
 		// echo '</pre>';
 		// exit(); 
 
-		$my_array = array();
-		foreach($planDetails as $planDetails_key=>$planDetails_value){
+		$data['Original_user_result']=$Original_user_result;
+		$data['Renewals_user_result']=$Renewals_user_result;
+		$data['Resubscriptions_user_result']=$Resubscriptions_user_result;
 
-			$my_array['title'][] = $planDetails_value->title;
+
+		
+
+
+
+
+
+		$this->db->select("*");
+		$this->db->from('registered_user_plan');
+		$query=$this->db->get();
+		$registered_user_plan = $query->result();
+
+
+		$this->db->select("id,title");
+		$this->db->from('subscription_plan');
+		$query=$this->db->get();
+		$subscription_plan = $query->result();
+
+		$subscription_plan_array = array();
+
+		$TypeSubscriptionActiveChart_type = array('Original','Renewals','Resubscriptions');
+
+
+		
+		
+		foreach($TypeSubscriptionActiveChart_type as $TypeSubscriptionActiveChart_type_key=>$TypeSubscriptionActiveChart_type_value){
+			foreach($subscription_plan as $subscription_plan_key=>$subscription_plan_value){
+				$subscription_plan_array[$TypeSubscriptionActiveChart_type_value][] = array("label"=> $subscription_plan_value->title, "id"=> $subscription_plan_value->id);
+			}
 		}
 
-		// echo '<pre>my_array ';
-		// print_r($my_array);
-		// echo '</pre>';
-		// exit(); 
-			
-		// exit();
-
-		$TypeSubscriptionActiveChart_array = array();
-		$count = 0;
+		$OriginalPoints = array();
+		foreach($subscription_plan_array['Original'] as $subscription_plan_array_key=>$subscription_plan_array_value){
+			$query = $this->db->query('SELECT * FROM subscription_plan LEFT JOIN registered_user_plan ON subscription_plan.id = registered_user_plan.plan_id where registered_user_plan.category_subscription = "Original" AND registered_user_plan.plan_id = '.$subscription_plan_array_value['id']);
+			$total_count = $query->num_rows();
+			$subscription_plan_array_value['y'] = $total_count;
+			$OriginalPoints[] = $subscription_plan_array_value;
+		}
 
 		
-		
-		/*
-		foreach($planDetails as $planDetails_key=>$planDetails_value){
-			$plan_title = $planDetails_value->title;
-			$plan_plan_id = $planDetails_value->id;
-			// $plan_category_subscription = $planDetails_value->category_subscription;
 
-			$TypeSubscriptionActiveChart_array[$count]['type'] = 'stackedColumn100';
-			$TypeSubscriptionActiveChart_array[$count]['name'] = $plan_title;
-			$TypeSubscriptionActiveChart_array[$count]['showInLegend'] = true;
-			$TypeSubscriptionActiveChart_array[$count]['xValueFormatString'] = $plan_title;
-			$TypeSubscriptionActiveChart_array[$count]['yValueFormatString'] = "#,##0\"%\"";
+		$RenewalsPoints = array();
+		foreach($subscription_plan_array['Renewals'] as $subscription_plan_array_key=>$subscription_plan_array_value){
 
-			$data_for_load = array(
-				array('x'=>1,'y'=>40),
-				array('x'=>2,'y'=>50),
-				array('x'=>3,'y'=>60),
-			);
-			
-			$TypeSubscriptionActiveChart_array[$count]['dataPoints'] = $data_for_load;
-			$count++;
-		}*/
+			$query = $this->db->query('SELECT * FROM subscription_plan LEFT JOIN registered_user_plan ON subscription_plan.id = registered_user_plan.plan_id where registered_user_plan.category_subscription = "Renewals" AND registered_user_plan.plan_id = '.$subscription_plan_array_value['id']);
+			$total_count = $query->num_rows();
+			$subscription_plan_array_value['y'] = $total_count;
+			$RenewalsPoints[] = $subscription_plan_array_value;
+		}
+
+		$ResubscriptionsPoints = array();
+		foreach($subscription_plan_array['Resubscriptions'] as $subscription_plan_array_key=>$subscription_plan_array_value){
+			$query = $this->db->query('SELECT * FROM subscription_plan LEFT JOIN registered_user_plan ON subscription_plan.id = registered_user_plan.plan_id where registered_user_plan.category_subscription = "Resubscriptions" AND registered_user_plan.plan_id = '.$subscription_plan_array_value['id']);
+			$total_count = $query->num_rows();
+			$subscription_plan_array_value['y'] = $total_count;
+			$ResubscriptionsPoints[] = $subscription_plan_array_value;
+		}
+
+		$data['OriginalPoints'] = $OriginalPoints;
+		$data['RenewalsPoints'] = $RenewalsPoints;
+		$data['ResubscriptionsPoints'] = $ResubscriptionsPoints;
+
+
+		$query = $this->db->query('
+		SELECT
+		COUNT(CASE WHEN balance_refundable BETWEEN 0 AND 10000 THEN 1 END) AS "1000-10000",
+		COUNT(CASE WHEN balance_refundable BETWEEN 10001 AND 20000 THEN 1 END) AS "10001-20000",
+		COUNT(CASE WHEN balance_refundable BETWEEN 20001  AND 30000 THEN 1 END) AS "20001-30000",
+		COUNT(CASE WHEN balance_refundable BETWEEN 30001 AND 40000 THEN 1 END) AS "30001-40000",
+		COUNT(CASE WHEN balance_refundable > 40001 THEN 1 END) AS "40001-50000"
+			FROM v74_ci_verifyfa_db.registred_users_payment
+		');
+		$registered_user_plan = $query->row();
 
 	
-		$TypeSubscriptionActiveChart_array = array();
-		$count = 0;
-		foreach($sql_query_result as $sql_query_result_key=>$sql_query_result_value){
-			$TypeSubscriptionActiveChart_array[$count]['type'] = 'stackedColumn100';
-			$TypeSubscriptionActiveChart_array[$count]['name'] = $sql_query_result_value->title;
-			$TypeSubscriptionActiveChart_array[$count]['showInLegend'] = true;
-			$TypeSubscriptionActiveChart_array[$count]['xValueFormatString'] = $sql_query_result_value->title;
-			$TypeSubscriptionActiveChart_array[$count]['yValueFormatString'] = "#,##0\"%\"";
-			
-				$Original_array = array();
-				if($sql_query_result_value->category_subscription == 'Original'){
-					$Original_array = array('title'=>'asdasdasd','x'=>1,'y'=>$sql_query_result_value->category_subscription_count);
-				}
+		$my_array = array();
+		$count_value = 1;
+		foreach($registered_user_plan as $registered_user_plan_key=>$registered_user_plan_value){
 
-				$Renewals_array = array();
-				if($sql_query_result_value->category_subscription == 'Renewals'){
-					$Renewals_array = array('title'=>'asdasdsad4656','x'=>1,'y'=>$sql_query_result_value->category_subscription_count);
-				}
-
-				$Resubscriptions_array = array();
-				if($sql_query_result_value->category_subscription == 'Resubscriptions'){
-					$Resubscriptions_array = array('title'=>'asd','x'=>1,'y'=>$sql_query_result_value->category_subscription_count);
-				}
-				
-				$data_for_load = array(
-					$Original_array,
-					$Renewals_array,
-					$Resubscriptions_array
-				);
-			$TypeSubscriptionActiveChart_array[$count]['dataPoints'] = $data_for_load;
-			$count++;
+			$my_array[] = array(
+				'x' => $count_value,
+				'y' => $registered_user_plan_value,
+				'label' => $registered_user_plan_key,
+				'color'=> "#4f81bc"
+			);
+			$count_value++;
 		}
-		$data['TypeSubscriptionActiveChart_array']=$TypeSubscriptionActiveChart_array;
+		$data['my_array'] = $my_array;
+
 		
         $data['page_title']="Dashboard";
         $this->load->view("super-admin/dashboard_second",$data);
+		
     }
 
 

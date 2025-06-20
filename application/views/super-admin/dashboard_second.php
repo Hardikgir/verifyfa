@@ -221,7 +221,7 @@ Link ‘Expired’</h2>
 
     </div>
 </div>
-
+<script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
 
 <?php 
 
@@ -255,40 +255,21 @@ var chart = new CanvasJS.Chart("SubscriptionTrendChart", {
 		showInLegend: true,
 		yValueFormatString: "##.00",
 		name: "Original",
-		dataPoints: <?php echo json_encode($register_users, JSON_NUMERIC_CHECK); ?>
+		dataPoints: <?php echo json_encode($Original_user_result, JSON_NUMERIC_CHECK); ?>
 	},
 	{
 		type: "spline",
 		showInLegend: true,
 		yValueFormatString: "##.00",
 		name: "Renewals",
-		dataPoints: [
-			{ label: "Day 1", y: 7.94 },
-			{ label: "Day 2", y: 7.29 },
-			{ label: "Day 3", y: 7.28 },
-			{ label: "Day 4", y: 7.82 },
-			{ label: "Day 5", y: 7.89 },
-			{ label: "Day 6", y: 6.71 },
-			{ label: "Day 7", y: 7.80 },
-			{ label: "Day 8", y: 7.60 },
-			{ label: "Day 9", y: 7.66 },
-			{ label: "Day 10", y: 8.89 }
-		]
+		dataPoints: <?php echo json_encode($Renewals_user_result, JSON_NUMERIC_CHECK); ?>
 	},
 	{
 		type: "spline",
 		showInLegend: true,
 		yValueFormatString: "##.00",
 		name: "Resubscriptions",
-		dataPoints: [
-			{ label: "Day 1", y: 10.11 },
-			{ label: "Day 2", y: 9.27 },
-			{ label: "Day 3", y: 9.25 },
-			{ label: "Day 4", y: 10.17 },
-			{ label: "Day 5", y: 10.72 },
-			{ label: "Day 6", y: 10.24 },
-			{ label: "Day 7", y: 12.07 }
-		]
+		dataPoints: <?php echo json_encode($Resubscriptions_user_result, JSON_NUMERIC_CHECK); ?>
 	}]
 });
 chart.render();
@@ -309,94 +290,63 @@ function toggleDataSeries(e) {
 
 
 
-
-
-// window.onload = function () {
-
 var chart = new CanvasJS.Chart("TypeSubscriptionActiveChart", {
-	animationEnabled: true,
-	title:{
+	title: {
 		text: "Type of Subscription Plans / Active Subscriptions"
 	},
-	axisX: {
-		interval: 1,
-		valueFormatString: "Sub Type"
+	theme: "light2",
+	animationEnabled: true,
+	toolTip:{
+		shared: true,
+		reversed: true
 	},
-	/*
-	axisX: [
-		{
-			interval: 1,
-			valueFormatString: "Sub Type 12s",
-		},
-		{
-			interval: 2,
-			valueFormatString: "Sub Type 12s asdasd",
-		},
-		{
-			interval: 3,
-			valueFormatString: "Sub Type 12s asd",
-		}
-	], */
 	axisY: {
-		suffix: ""
-	},
-	toolTip: {
-		shared: true
+		title: "Cumulative Capacity",
+        suffix: ""
 	},
 	legend: {
-		reversed: true,
-		verticalAlign: "center",
-		horizontalAlign: "right"
+		cursor: "pointer",
+		itemclick: toggleDataSeries
 	},
-	/*
-	data: [{
-		type: "stackedColumn100",
-		name: "Resubscriptions",
-		showInLegend: true,
-		xValueFormatString: "Sub Type 1",
-		yValueFormatString: "#,##0\"%\"",
-		dataPoints: [
-			{ x: 1, y: 40 },
-			{ x: 2, y: 50 },
-			{ x: 3, y: 60 },
-			
-
-		]
-	},
-	{
-		type: "stackedColumn100",
-		name: "Renewals",
-		showInLegend: true,
-		xValueFormatString: "Sub Type 2",
-		yValueFormatString: "#,##0\"%\"",
-		dataPoints: [
-			{ x: 1, y: 10 },
-			{ x: 2, y: 18 },
-			{ x: 3, y: 12 },
-			
-
-		]
-	},
-	{
-		type: "stackedColumn100",
-		name: "Original",
-		showInLegend: true,
-		xValueFormatString: "Sub Type 3",
-		yValueFormatString: "#,##0\"%\"",
-		dataPoints: [
-			{ x: 1, y: 15 },
-			{ x: 2, y: 12 },
-			{ x: 3, y: 10 },
-			
-
-		]
-	}] */
-
-
-	data: <?php echo json_encode($TypeSubscriptionActiveChart_array, JSON_NUMERIC_CHECK); ?> 
-
+	data: [
+		{
+			type: "stackedColumn",
+			name: "Original",
+			showInLegend: true,
+			yValueFormatString: "#,##0",
+			dataPoints: <?php echo json_encode($OriginalPoints, JSON_NUMERIC_CHECK); ?>
+		},{
+			type: "stackedColumn",
+			name: "Renewals",
+			showInLegend: true,
+			yValueFormatString: "#,##0",
+			dataPoints: <?php echo json_encode($RenewalsPoints, JSON_NUMERIC_CHECK); ?>
+		},{
+			type: "stackedColumn",
+			name: "Resubscriptions",
+			showInLegend: true,
+			yValueFormatString: "#,##0",
+			dataPoints: <?php echo json_encode($ResubscriptionsPoints, JSON_NUMERIC_CHECK); ?>
+		}
+	]
 });
+
 chart.render();
+
+function toggleDataSeries(e) {
+	if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+		e.dataSeries.visible = false;
+	} else {
+		e.dataSeries.visible = true;
+	}
+	e.chart.render();
+}
+
+
+
+
+
+
 
 
 
@@ -420,6 +370,8 @@ var chart = new CanvasJS.Chart("SubscriptionAmountDueChart", {
 		indexLabelFontColor: "#000",
       	indexLabelFontSize: 16,
 		indexLabelPlacement: "outside",
+		dataPoints: <?php echo json_encode($my_array, JSON_NUMERIC_CHECK); ?>
+		/*
 		dataPoints: [
 			{ x: 1, y: 71,label: "10000 (min) - 10000",color: "#4f81bc" },
 			{ x: 2, y: 10,label: "10001 - 20000",color: "#4f81bc" },
@@ -427,7 +379,7 @@ var chart = new CanvasJS.Chart("SubscriptionAmountDueChart", {
 			{ x: 4, y: 25,label: "30001 - 40000",color: "#4f81bc" },
 			{ x: 5, y: 92,label: "40001 - 50000",color: "#4f81bc"},
 			{ x: 6, y: 35,label: "50001 - 60000 (max)",color: "#4f81bc" },
-		]
+		] */ 
 	}]
 });
 chart.render();
