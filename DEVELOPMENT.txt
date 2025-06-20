@@ -12,6 +12,14 @@ Pending Work :- 08/06/2025
 	-> Duplicate Item Codes verified (Repeated Reocrd Count)
 3. Graph should be make it Dynamic
 	-> You have to find it out proper video requirement of this point.
+		Superadmin 
+		-> Subscription Trend
+		-> Type of Subscription Plan / Active Subscriptions
+		-> Subscriptions Amount Due
+		-> Subscriptions Amount Due - Ageing Analysis
+
+
+
 4. Other Previous point in 09 May 2025 you can check in whats app Screenshots
 5. 
 

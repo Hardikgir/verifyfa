@@ -5907,26 +5907,15 @@ public function downloadExceptionChangesUpdationsofItems()
 
 
         $project_headers = $this->db->query("SELECT *  FROM project_headers WHERE project_id='".$project_id."' AND is_editable = 1")->result();
-		// echo '<pre>last_query ';
-		// print_r($this->db->last_query());
-		// echo '</pre>';
-		// exit();
-
+		
 
         $project_header_column = array('id','item_sub_category','location_of_the_item_last_verified');
         foreach($project_headers as $project_headers_value){
             $project_header_column[] = $project_headers_value->keyname;
         }
         $project_header_column_value = implode(',', $project_header_column);
-     
-
-
         $project_table_result = $this->db->query("SELECT ".$project_header_column_value." FROM ".$project_table_name)->result();
-		// echo '<pre>last_query ';
-		// print_r($this->db->last_query());
-		// echo '</pre>';
-		// exit();
-       
+	   
         $existing_id_array = array();
         foreach($project_table_result as $project_table_value){
             $existing_id_array[] = $project_table_value->id;
@@ -5940,11 +5929,7 @@ public function downloadExceptionChangesUpdationsofItems()
         }
         $project_header_column_base_value = implode(',', $project_header_column_base);
         $original_table_result = $this->db->query("SELECT ".$project_header_column_base_value." FROM ".$original_table_name." WHERE id in (".$existing_id_value.") ")->result();
-		// echo '<pre>last_query ';
-		// print_r($this->db->last_query());
-		// echo '</pre>';
-		// exit();
-       
+	
         $different_array = array();
         foreach($project_table_result as $project_table_key=>$project_table_value){
             foreach($project_header_column as $project_header_column_new_value)
@@ -5990,7 +5975,7 @@ public function downloadExceptionChangesUpdationsofItems()
 			$old_value = '';
 			$new_value = '';
 			foreach($differentvalue['location_of_the_item_last_verified']['old_value'] as $location_of_the_item_last_verified_key=>$location_of_the_item_last_verified_value_old){
-					$all_value[] = "Old :- ".$location_of_the_item_last_verified_value_old." & New :- ".$differentvalue['location_of_the_item_last_verified']['new_value'][$location_of_the_item_last_verified_key];
+					$all_value[] = "Old :- ".$location_of_the_item_last_verified_value_old." || New :- ".$differentvalue['location_of_the_item_last_verified']['new_value'][$location_of_the_item_last_verified_key];
 			}
 		}
 		$rowCount = 2;
