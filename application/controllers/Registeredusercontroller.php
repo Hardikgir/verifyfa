@@ -12,6 +12,24 @@ class Registeredusercontroller extends CI_Controller {
 	}
 
     public function registered_user_dashboard(){
+
+
+        $id = $this->session->userdata('registered_user_id');
+        $data['page_title']="My Subscription";
+        $data['user_data']=$this->Registered_user_model->get_registerd_user($id);
+        $data['payment_data']=$this->Registered_user_model->get_registred_users_payment_all($id);
+        $data['plan_data']=$this->Registered_user_model->get_registered_user_plan($id);
+
+      
+        $this->db->select('register_user_plan_log.*, subscription_plan.*');
+		$this->db->from(' subscription_plan');
+		$this->db->join('register_user_plan_log','register_user_plan_log.plan_id= subscription_plan.id');
+		$this->db->where('register_user_plan_log.register_user_id',$id);
+		$getnotifications=$this->db->get();
+		$Subscription_plan_result = $getnotifications->row();
+        $data['Subscription_plan']= $Subscription_plan_result;
+
+
         $data['page_title']="Dashboard";
         $this->load->view("registered-user/dashboard",$data);
 
