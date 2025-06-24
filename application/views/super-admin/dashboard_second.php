@@ -66,7 +66,7 @@
 Subscription Plans</h2>
 </div>
   <div class="card-body card-body-n">
-    <h5 class="card-title card-txt">10</h5>
+    <h5 class="card-title card-txt"><?php echo $Total_Active_Subscription_Plans; ?></h5>
 
   </div>
 </div>
@@ -81,7 +81,7 @@ Subscription Plans</h2>
 	<h2>Total No. of Registrations</h2>
 </div>
   <div class="card-body card-body-n">
-    <h5 class="card-title card-txt">99999</h5>
+    <h5 class="card-title card-txt"><?php echo $Total_Registrations; ?></h5>
 
   </div>
 </div>
@@ -98,9 +98,9 @@ Subscription Plans</h2>
 </h2>
 </div>
   <div class="card-body card-body-n">
-  <h5 class="card-title card-txt">99999</h5>
-<p class="txt-cardp">+654*</p>
-<p class="txt-cardp text-left pt-3">* added since April 2023</p>
+  <h5 class="card-title card-txt"><?php echo $Total_Registered_Active_Subscriptions; ?></h5>
+<!-- <p class="txt-cardp">+654*</p>
+<p class="txt-cardp text-left pt-3">* added since April 2023</p> -->
   </div>
 </div>
 
@@ -123,12 +123,11 @@ expiring in
 			<th>61d – 90d</th>
 			<th>91d – 120d</th>
 		</thead>
-
 		<tbody>
-			<td>< 30d</td>
-			<td>31d – 60d</td>
-			<td>61d – 90d</td>
-			<td>91d – 120d</td>
+			<td><?php echo $Total_Subscriptions_expiring_in['in_30_Day']; ?></td>
+			<td><?php echo $Total_Subscriptions_expiring_in['in_31_to_60_Day']; ?></td>
+			<td><?php echo $Total_Subscriptions_expiring_in['in_61_to_90_Day']; ?></td>
+			<td><?php echo $Total_Subscriptions_expiring_in['in_91_to_120_Day']; ?></td>
 		</tbody>
 
 	</table>
@@ -148,9 +147,9 @@ expiring in
 	<h2>Total No. of Registrations Unsubscribed</h2>
 </div>
   <div class="card-body card-body-n">
-  <h5 class="card-title card-txt">99999</h5>
-<p class="txt-cardp">-65*</p>
-<p class="txt-cardp text-left pt-3">* unsubscribed since April 2023</p>
+  <h5 class="card-title card-txt"><?php echo $Total_Registrations_Unsubscribed; ?></h5>
+<!-- <p class="txt-cardp">-65*</p> -->
+<!-- <p class="txt-cardp text-left pt-3">* unsubscribed since April 2023</p> -->
   </div>
 </div>
 
@@ -165,7 +164,7 @@ Users where Subscription
 Link ‘Expired’</h2>
 </div>
   <div class="card-body card-body-n">
-    <h5 class="card-title card-txt">99999</h5>
+    <h5 class="card-title card-txt"><?php echo $Total_Registered_Users_where_Subscription_Link_Expired; ?></h5>
   </div>
 </div>
 
@@ -222,10 +221,10 @@ Link ‘Expired’</h2>
 				<form action>
 					<div class="form-group row">
 						<div class="col-sm-5">
-							<input type="date" name="TypeSubscriptionActiveStartDate" class="form-control">
+							<input type="date" name="TypeSubscriptionActiveStartDate" id="TypeSubscriptionActiveStartDate" class="form-control">
 						</div>
 						<div class="col-sm-5">
-							<input type="date" name="TypeSubscriptionActiveEndDate" class="form-control">
+							<input type="date" name="TypeSubscriptionActiveEndDate" id="TypeSubscriptionActiveEndDate" class="form-control">
 						</div>
 						<div class="col-sm-2">
 							<a href="javascript:void(0)" class="btn btn-primary" onclick="TypeSubscriptionActiveForm(this)" data-formtype="TypeSubscriptionActive">Submit</a>
@@ -242,10 +241,10 @@ Link ‘Expired’</h2>
 				<form action>
 					<div class="form-group row">
 						<div class="col-sm-5">
-							<input type="date" name="SubscriptionAmountStartDate" class="form-control">
+							<input type="date" name="SubscriptionAmountStartDate" id="SubscriptionAmountStartDate" class="form-control">
 						</div>
 						<div class="col-sm-5">
-							<input type="date" name="SubscriptionAmountStartDate" class="form-control">
+							<input type="date" name="SubscriptionAmountEndDate" id="SubscriptionAmountEndDate" class="form-control">
 						</div>
 						<div class="col-sm-2">
 							<a href="javascript:void(0)" class="btn btn-primary" onclick="SubscriptionAmountForm(this)" data-formtype="SubscriptionAmount">Submit</a>
@@ -402,7 +401,7 @@ function toggleDataSeries(e) {
 
 
 
-
+console.log(<?php echo json_encode($my_array, JSON_NUMERIC_CHECK); ?>)
 
 
 var chart = new CanvasJS.Chart("SubscriptionAmountDueChart", {
@@ -443,7 +442,7 @@ chart.render();
 
 
 
-
+/*
 var chart = new CanvasJS.Chart("SubscriptionAmountDueAgeingAnalysisChart", {
 	animationEnabled: true,
 	theme: "light2",
@@ -496,7 +495,7 @@ var chart = new CanvasJS.Chart("SubscriptionAmountDueAgeingAnalysisChart", {
 		]
 	}]
 });
-chart.render();
+chart.render(); */
 
 function addSymbols(e) {
 	var suffixes = ["", "K", "M", "B"];
@@ -553,7 +552,7 @@ function SubscriptionTrendForm(event){
 
 
 	 $.ajax({
-        url: "<?php echo base_url('index.php/Superadmin_controller/super_admin_dashboard_second2_result'); ?>", //backend url
+        url: "<?php echo base_url('index.php/Superadmin_controller/super_admin_dashboard_SubscriptionTrend_result'); ?>", //backend url
         type: 'post',
         dataType: 'json',
         data: {
@@ -615,15 +614,145 @@ function SubscriptionTrendForm(event){
 
 
 }
+
 function TypeSubscriptionActiveForm(event){
 	var FormType = $(event).attr("data-formtype");
 	console.log("FormType")
 	console.log(FormType)
+
+	
+	var TypeSubscriptionActiveStartDate = $("#TypeSubscriptionActiveStartDate").val();
+	var TypeSubscriptionActiveEndDate = $("#TypeSubscriptionActiveEndDate").val();
+	
+	$.ajax({
+        url: "<?php echo base_url('index.php/Superadmin_controller/super_admin_dashboard_TypeSubscriptionActive_result'); ?>", //backend url
+        type: 'post',
+        dataType: 'json',
+        data: {
+			"TypeSubscriptionActiveStartDate" : TypeSubscriptionActiveStartDate,
+          	"TypeSubscriptionActiveEndDate" : TypeSubscriptionActiveEndDate,
+        },
+        error: function (request, error) {
+            console.log(arguments);
+            alert(" Can't do because: " + error);
+        },
+        success: function(response) {
+
+			console.log("response")
+			console.log(response)
+
+			var chart = new CanvasJS.Chart("TypeSubscriptionActiveChart", {
+				title: {
+					text: ""
+				},
+				theme: "light2",
+				animationEnabled: true,
+				toolTip:{
+					shared: true,
+					reversed: true
+				},
+				axisY: {
+					title: "Cumulative Capacity",
+					suffix: ""
+				},
+				legend: {
+					cursor: "pointer",
+					itemclick: toggleDataSeries
+				},
+				data: [
+					{
+						type: "stackedColumn",
+						name: "Original",
+						showInLegend: true,
+						yValueFormatString: "#,##0",
+						dataPoints: response.OriginalPoints
+					},{
+						type: "stackedColumn",
+						name: "Renewals",
+						showInLegend: true,
+						yValueFormatString: "#,##0",
+						dataPoints: response.RenewalsPoints
+					},{
+						type: "stackedColumn",
+						name: "Resubscriptions",
+						showInLegend: true,
+						yValueFormatString: "#,##0",
+						dataPoints: response.ResubscriptionsPoints	
+					}
+				]
+			});
+
+			chart.render();
+
+		}
+
+	});
+
 }
+
 function SubscriptionAmountForm(event){
 	var FormType = $(event).attr("data-formtype");
 	console.log("FormType")
 	console.log(FormType)
+
+
+
+
+	var SubscriptionAmountStartDate = $("#SubscriptionAmountStartDate").val();
+	var SubscriptionAmountEndDate = $("#SubscriptionAmountEndDate").val();
+	
+	$.ajax({
+        url: "<?php echo base_url('index.php/Superadmin_controller/super_admin_dashboard_SubscriptionAmount_result'); ?>", //backend url
+        type: 'post',
+        dataType: 'json',
+        data: {
+			"SubscriptionAmountStartDate" : SubscriptionAmountStartDate,
+          	"SubscriptionAmountEndDate" : SubscriptionAmountEndDate,
+        },
+        error: function (request, error) {
+            console.log(arguments);
+            alert(" Can't do because: " + error);
+        },
+        success: function(response) {
+
+			console.log("response.my_array")
+			console.log(response.my_array)
+
+			var chart = new CanvasJS.Chart("SubscriptionAmountDueChart", {
+			animationEnabled: true,
+			exportEnabled: true,
+			theme: "light1", // "light1", "light2", "dark1", "dark2"
+			title:{
+				text: ""
+			},
+			axisY: {
+			includeZero: true
+			},
+			axisX: {
+				interval: 1,
+				valueFormatString: "#"
+			},
+			data: [{
+				type: "column", //change type to bar, line, area, pie, etc
+				indexLabelFontColor: "#000",
+				indexLabelFontSize: 16,
+				indexLabelPlacement: "outside",
+				dataPoints: response.my_array
+			}]
+		});
+		chart.render();
+			
+
+		}
+
+	});
+
+
+
+
+
+
+
 }
 
 

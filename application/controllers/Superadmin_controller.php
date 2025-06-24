@@ -75,32 +75,12 @@ class Superadmin_controller extends CI_Controller {
 			$count++;
 		}
 
-		// echo '<pre>Original_day_count ';
-		// print_r($Original_day_count);
-		// echo '</pre>';
-
-		// echo '<pre>Renewals_day_count ';
-		// print_r($Renewals_day_count);
-		// echo '</pre>';
-
-
-		// echo '<pre>Resubscriptions_day_count ';
-		// print_r($Resubscriptions_day_count);
-		// echo '</pre>';
-		// exit(); 
-		// // exit(); 
-
-		// // exit(); 
-
 		$current_date = date("Y-m-d");
 		$last_ten_days_date = date("Y-m-d", strtotime("-10 days")); //for minus
 		
 
 		$startTime = strtotime($last_ten_days_date);
 		$endTime = strtotime($current_date);
-
-		// $begin = new DateTime("2015-07-03");
-		// $end   = new DateTime("2015-07-09");
 		
 		$count = 0;
 		$daycount = 1;
@@ -118,48 +98,10 @@ class Superadmin_controller extends CI_Controller {
 			$count++;
 			$daycount++;
 		}
-	
 		
-		
-		/*
-		$k=0;
-		for($i=1;$i<=10;$i++){
-			$Original_user_result[$k]['label'] = "Day ".$i;
-			$Original_user_result[$k]['y'] = count(array_keys($Original_day_count,$i));
-
-			$Renewals_user_result[$k]['label'] = "Day ".$i;
-			$Renewals_user_result[$k]['y'] = count(array_keys($Renewals_day_count,$i));
-
-			$Resubscriptions_user_result[$k]['label'] = "Day ".$i;
-			$Resubscriptions_user_result[$k]['y'] = count(array_keys($Resubscriptions_day_count,$i));
-			$k++;
-		}
-			*/
-		
-		// echo '<pre>Renewals_user_result ';
-		// print_r($Renewals_user_result);
-		// echo '</pre>';
-		// // exit(); 
-
-		// echo '<pre>Resubscriptions_user_result ';
-		// print_r($Resubscriptions_user_result);
-		// echo '</pre>';
-		// exit(); 
-
 		$data['Original_user_result']=$Original_user_result;
 		$data['Renewals_user_result']=$Renewals_user_result;
 		$data['Resubscriptions_user_result']=$Resubscriptions_user_result;
-
-
-		// echo '<pre>data ';
-		// print_r($data);
-		// echo '</pre>';
-		// exit(); 
-
-
-		
-
-
 
 
 
@@ -250,6 +192,83 @@ class Superadmin_controller extends CI_Controller {
 		}
 		$data['my_array'] = $my_array;
 
+
+		$now = time(); 
+		$this->db->select("*");
+		$this->db->from('registered_user_plan');
+		$query=$this->db->get();
+		$registered_user_plan = $query->result();
+
+		$in_30_Day = array();
+		$in_31_to_60_Day = array();
+		$in_61_to_90_Day = array();
+		$in_91_to_120_Day = array();
+
+		foreach($registered_user_plan as $registered_user_plan_key=>$registered_user_plan_value){
+			$plan_end_date = $registered_user_plan_value->plan_end_date;
+			$your_date = strtotime($registered_user_plan_value->plan_end_date);
+			$datediff = $now - $your_date;
+			$day_different = round($datediff / (60 * 60 * 24));
+
+
+		
+
+			if($day_different <= 30){
+				$in_30_Day[] = 1;
+			}
+			if ($day_different >= 31 && $day_different <= 60) {
+				$in_31_to_60_Day[] = 1;
+			}
+			if ($day_different >= 61 && $day_different <= 90) {
+				$in_61_to_90_Day[] = 1;
+			}
+			if ($day_different >= 91 && $day_different > 120) {
+				$in_91_to_120_Day[] = 1;
+			}
+		}
+
+		$Total_Subscriptions_expiring_in = array(
+			'in_30_Day' => count($in_30_Day),
+			'in_31_to_60_Day' => count($in_31_to_60_Day),
+			'in_61_to_90_Day' => count($in_61_to_90_Day),
+			'in_91_to_120_Day' => count($in_91_to_120_Day),
+		);
+
+
+	
+
+
+
+		$Total_Active_Subscription_Plans_query = $this->db->query('SELECT * FROM subscription_plan where status = "1"');
+		$Total_Active_Subscription_Plans = $Total_Active_Subscription_Plans_query->num_rows();
+
+		$Total_Registrations_query = $this->db->query('SELECT * FROM registered_user_plan');
+		$Total_Registrations = $Total_Registrations_query->num_rows();
+
+		$Total_Registered_Active_Subscriptions_query = $this->db->query('SELECT * FROM registered_user_plan WHERE CURDATE() BETWEEN plan_start_date AND plan_end_date');
+		$Total_Registered_Active_Subscriptions = $Total_Registered_Active_Subscriptions_query->num_rows();
+
+
+		$Total_Registrations_Unsubscribed_query = $this->db->query('SELECT * FROM registered_user_plan WHERE CURDATE() NOT BETWEEN plan_start_date AND plan_end_date');
+		$Total_Registrations_Unsubscribed = $Total_Registrations_Unsubscribed_query->num_rows();
+
+		// echo '<pre>total_count ';
+		// print_r($total_count);
+		// echo '</pre>';
+		// exit(); 
+
+
+
+
+		$data['Total_Active_Subscription_Plans'] = $Total_Active_Subscription_Plans;
+		$data['Total_Registrations'] = $Total_Registrations;
+		$data['Total_Registered_Active_Subscriptions'] = $Total_Registered_Active_Subscriptions;
+		$data['Total_Subscriptions_expiring_in'] = $Total_Subscriptions_expiring_in;
+		$data['Total_Registrations_Unsubscribed'] = $Total_Registrations_Unsubscribed;
+		$data['Total_Registered_Users_where_Subscription_Link_Expired'] = 0;
+
+
+
 		
         $data['page_title']="Dashboard";
         $this->load->view("super-admin/dashboard_second",$data);
@@ -257,7 +276,7 @@ class Superadmin_controller extends CI_Controller {
     }
 
 
-	public function super_admin_dashboard_second2_result(){
+	public function super_admin_dashboard_SubscriptionTrend_result(){
 
 		$SubscriptionTrendStartDate = $_POST['SubscriptionTrendStartDate'];
 		$SubscriptionTrendEndDate = $_POST['SubscriptionTrendEndDate'];
@@ -333,6 +352,112 @@ class Superadmin_controller extends CI_Controller {
 	      );
 
         echo json_encode($dataarr);
+	}
+
+
+	public function super_admin_dashboard_TypeSubscriptionActive_result(){
+		$TypeSubscriptionActiveStartDate = $_POST['TypeSubscriptionActiveStartDate'];
+		$TypeSubscriptionActiveEndDate = $_POST['TypeSubscriptionActiveEndDate'];
+
+
+	
+
+		$this->db->select("id,title");
+		$this->db->from('subscription_plan');
+		$this->db->where('created_at BETWEEN "'. date('Y-m-d', strtotime($TypeSubscriptionActiveStartDate)). '" and "'. date('Y-m-d', strtotime($TypeSubscriptionActiveEndDate)).'"');
+		$query=$this->db->get();
+		$subscription_plan = $query->result();
+
+		$subscription_plan_array = array();
+
+		$TypeSubscriptionActiveChart_type = array('Original','Renewals','Resubscriptions');
+
+
+		
+		
+		foreach($TypeSubscriptionActiveChart_type as $TypeSubscriptionActiveChart_type_key=>$TypeSubscriptionActiveChart_type_value){
+			foreach($subscription_plan as $subscription_plan_key=>$subscription_plan_value){
+				$subscription_plan_array[$TypeSubscriptionActiveChart_type_value][] = array("label"=> $subscription_plan_value->title, "id"=> $subscription_plan_value->id);
+			}
+		}
+
+		$OriginalPoints = array();
+		if(!empty($subscription_plan_array['Original'])){
+			foreach($subscription_plan_array['Original'] as $subscription_plan_array_key=>$subscription_plan_array_value){
+				$query = $this->db->query('SELECT * FROM subscription_plan LEFT JOIN registered_user_plan ON subscription_plan.id = registered_user_plan.plan_id where registered_user_plan.category_subscription = "Original" AND registered_user_plan.plan_id = '.$subscription_plan_array_value['id']);
+				$total_count = $query->num_rows();
+				$subscription_plan_array_value['y'] = $total_count;
+				$OriginalPoints[] = $subscription_plan_array_value;
+			}
+		}
+		
+
+		
+
+		$RenewalsPoints = array();
+		if(!empty($subscription_plan_array['Original'])){
+			foreach($subscription_plan_array['Renewals'] as $subscription_plan_array_key=>$subscription_plan_array_value){
+
+				$query = $this->db->query('SELECT * FROM subscription_plan LEFT JOIN registered_user_plan ON subscription_plan.id = registered_user_plan.plan_id where registered_user_plan.category_subscription = "Renewals" AND registered_user_plan.plan_id = '.$subscription_plan_array_value['id']);
+				$total_count = $query->num_rows();
+				$subscription_plan_array_value['y'] = $total_count;
+				$RenewalsPoints[] = $subscription_plan_array_value;
+			}
+		}
+
+		$ResubscriptionsPoints = array();
+		if(!empty($subscription_plan_array['Resubscriptions'])){
+			foreach($subscription_plan_array['Resubscriptions'] as $subscription_plan_array_key=>$subscription_plan_array_value){
+				$query = $this->db->query('SELECT * FROM subscription_plan LEFT JOIN registered_user_plan ON subscription_plan.id = registered_user_plan.plan_id where registered_user_plan.category_subscription = "Resubscriptions" AND registered_user_plan.plan_id = '.$subscription_plan_array_value['id']);
+				$total_count = $query->num_rows();
+				$subscription_plan_array_value['y'] = $total_count;
+				$ResubscriptionsPoints[] = $subscription_plan_array_value;
+			}
+		}
+
+		// echo '<pre>';
+		// print_r($ResubscriptionsPoints);
+		// echo '</pre>';
+		// exit(); 
+
+		$data['OriginalPoints'] = $OriginalPoints;
+		$data['RenewalsPoints'] = $RenewalsPoints;
+		$data['ResubscriptionsPoints'] = $ResubscriptionsPoints;
+
+ 		echo json_encode($data);
+
+	}
+
+
+	public function super_admin_dashboard_SubscriptionAmount_result(){
+
+		$query = $this->db->query('
+		SELECT
+		COUNT(CASE WHEN balance_refundable BETWEEN 1000 AND 10000 THEN 1 END) AS "1000-10000",
+		COUNT(CASE WHEN balance_refundable BETWEEN 10001 AND 20000 THEN 1 END) AS "10001-20000",
+		COUNT(CASE WHEN balance_refundable BETWEEN 20001  AND 30000 THEN 1 END) AS "20001-30000",
+		COUNT(CASE WHEN balance_refundable BETWEEN 30001 AND 40000 THEN 1 END) AS "30001-40000",
+		COUNT(CASE WHEN balance_refundable > 40001 THEN 1 END) AS "Above 40000"
+			FROM v74_ci_verifyfa_db.registred_users_payment
+		');
+		$registered_user_plan = $query->row();
+
+	
+		$my_array = array();
+		$count_value = 1;
+		foreach($registered_user_plan as $registered_user_plan_key=>$registered_user_plan_value){
+
+			$my_array[] = array(
+				'x' => $count_value,
+				'y' => $registered_user_plan_value,
+				'label' => $registered_user_plan_key,
+				'color'=> "#4f81bc"
+			);
+			$count_value++;
+		}
+		$data['my_array'] = $my_array;
+		echo json_encode($data);
+
 	}
 
 
