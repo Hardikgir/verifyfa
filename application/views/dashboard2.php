@@ -21,6 +21,43 @@ $user_role_admin_cnt=get_user_role_cnt_admin($user_id,$entity_code);
     font-weight: bold;
     }
     </style>
+
+
+<style>
+	.card-header{
+	    font-size: 20px;
+    font-weight: bold;
+    min-height: 67px;
+	background: #5ca1e2 !important;
+    color: #fff;
+	min-height: 100px;
+	}
+	.card-header h2 {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+	.card-txt{
+		font-size: 50px;
+	}
+	.table-bordered th, .table-bordered td {
+    border: 1px solid rgb(0 0 0);
+	color: #000;
+    padding: 10px;
+}
+ .txt-cardp{
+	font-size: 20px;
+    color: #000;
+    font-weight: bold;
+ }
+.card-body-n{
+	min-height: 200px !important;
+}
+
+	</style>
+
+
+
 <div class="content">
 
 <?php 
@@ -41,6 +78,129 @@ $this->load->view('layouts/footer');
 	No Role Assigned.
     </div> -->
 <?php }?>
+
+
+<div class="container-fluid">
+<div class="row">
+
+
+		<div class="col-md-4">
+
+<div class="card">
+<div class="card-header">
+	<h2>Subscription Plan Details</h2>
+</div>
+  <div class="card-body card-body-n" style="padding: 2px 1px;">
+	<?php $plan_row=get_plan_row(2);?>
+	<p class="txt-cardp" style="text-align: center;"><?php // echo $plan_row->title;?></p>
+	
+	<ul>
+        <li>Plan Name :- <b><?php echo $subscription_plan_details->title;?></b></li>
+		<li>Activation Date: <b><?php echo date("d-M-Y",strtotime($registered_user_plan_details->plan_start_date));?></b></li>
+	</ul>
+
+	<p class="txt-cardp" style="text-align: center;">Plan Brief:</p>
+	<ul>
+		<li>No. of Entities – <b><?php echo $total_company_count;?></b></li>
+		<li>No. of Locations under each Entity – <b><?php echo $total_company_locations_count;?></b></li>
+		<li>Total No. of Users – <b><?php echo $total_users_count;?></b></li>
+	</ul>
+	
+
+  </div>
+</div>
+
+</div>
+
+
+<div class="col-md-4">
+
+<div class="card">
+<div class="card-header">
+	<h2>Current Subscription Valid till</h2>
+</div>
+  <div class="card-body card-body-n">
+    <p class="txt-cardp" style="text-align: center;"><?php echo date("d-M-Y",strtotime($registered_user_plan_details->plan_end_date));?></p>
+    
+  </div>
+</div>
+
+</div>
+
+
+<div class="col-md-4">
+
+<div class="card">
+<div class="card-header ">
+	<h2>Current Subscription Expiring in next</h2>
+</div>
+  <div class="card-body card-body-n">
+  
+	<p class="txt-cardp" style="text-align: center;">
+		<?php	
+            $now = time(); 
+
+            $plan_end_date = $registered_user_plan_details->plan_end_date;
+			$your_date = strtotime($registered_user_plan_details->plan_end_date);
+			$datediff = $now - $your_date;
+			$day_different = round($datediff / (60 * 60 * 24));
+            echo $day_different;
+            ?>
+	</p>
+	<!-- <p class="txt-cardp text-left pt-3">* added since April 2023</p> -->
+  </div>
+</div>
+
+</div>
+
+
+<div class="col-md-4">
+
+<div class="card">
+<div class="card-header">
+	<h2>No. of Companies added</h2>
+</div>
+  <div class="card-body card-body-n">
+   <p class="txt-cardp" style="text-align: center;">
+    <?php echo $total_company_count; ?>
+   </p>
+  </div>
+</div>
+</div>
+
+<div class="col-md-4">
+
+<div class="card">
+<div class="card-header">
+	<h2>No. of Locations added</h2>
+</div>
+  <div class="card-body card-body-n">
+   <p class="txt-cardp" style="text-align: center;">
+    <?php echo $total_company_locations_count; ?>
+   </p>
+  </div>
+</div>
+</div>
+
+<div class="col-md-4">
+
+<div class="card">
+<div class="card-header">
+	<h2>No. of Users added</h2>
+</div>
+  <div class="card-body card-body-n">
+   <p class="txt-cardp" style="text-align: center;">
+    <?php echo $total_users_count; ?>
+   </p>
+  </div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
 
 
     <div class="container-fluid">

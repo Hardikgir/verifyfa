@@ -164,6 +164,78 @@ class Dashboard extends CI_Controller {
 		$data['projects']=$projects;
 		$data['page_title']="Dashboard";
 		$data['company_data_list']=$this->company_data_list();
+
+
+	
+		$admin_registered_user_id = $_SESSION['logged_in']['admin_registered_user_id'];
+		
+		$this->db->select("*");
+		$this->db->from('registred_users');
+		$this->db->where('id',$admin_registered_user_id);
+		$query=$this->db->get();
+		$registred_users_details = $query->row();
+
+		$this->db->select("*");
+		$this->db->from('subscription_plan');
+		$this->db->where('id',$registred_users_details->plan_id);
+		$query=$this->db->get();
+		$subscription_plan_details = $query->row();
+
+		$this->db->select("*");
+		$this->db->from('registered_user_plan');
+		$this->db->where('regiistered_user_id',$admin_registered_user_id);
+		$this->db->where('plan_id',$registred_users_details->plan_id);
+		$query=$this->db->get();
+		$registered_user_plan_details = $query->row();
+		
+		$data['subscription_plan_details'] = $subscription_plan_details;
+		$data['registred_users_details'] = $registred_users_details;
+		$data['registered_user_plan_details'] = $registered_user_plan_details;
+
+		
+		$total_company_query = $this->db->query('SELECT * FROM company where registered_user_id = '.$admin_registered_user_id);
+		$total_company_count = $total_company_query->num_rows();
+
+		$total_company_locations_query = $this->db->query('SELECT * FROM company_locations where registered_user_id = '.$admin_registered_user_id);
+		$total_company_locations_count = $total_company_locations_query->num_rows();
+
+
+		$total_users_query = $this->db->query('SELECT * FROM users where registered_user_id = '.$admin_registered_user_id);
+		$total_users_count = $total_users_query->num_rows();
+
+
+		$data['total_company_count'] = $total_company_count;
+		$data['total_company_locations_count'] = $total_company_locations_count;
+		$data['total_users_count'] = $total_users_count;
+
+		// echo '<pre>';
+		// print_r($data);
+		// echo '</pre>';
+		// exit(); 
+
+		// echo '<pre>total_company_locations_count ';
+		// print_r($total_company_locations_count);
+		// echo '</pre>';
+		// exit(); 
+
+		
+
+		// echo '<pre>subscription_plan ';
+		// print_r($subscription_plan);
+		// echo '</pre>';
+		// // exit(); 
+
+		// echo '<pre>registred_users ';
+		// print_r($registred_users);
+		// echo '</pre>';
+		// exit(); 
+
+		//registred_users
+		//subscription_plan
+
+
+
+
 		$this->load->view('dashboard2',$data);		
 	}
 
