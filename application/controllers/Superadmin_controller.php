@@ -211,6 +211,84 @@ class Superadmin_controller extends CI_Controller {
     }
 
 
+	public function super_admin_dashboard_second2_result(){
+
+		$SubscriptionTrendStartDate = $_POST['SubscriptionTrendStartDate'];
+		$SubscriptionTrendEndDate = $_POST['SubscriptionTrendEndDate'];
+
+		$this->db->select("*");
+		$this->db->from('registered_user_plan');
+		$this->db->where('created_at BETWEEN "'. date('Y-m-d', strtotime($SubscriptionTrendStartDate)). '" and "'. date('Y-m-d', strtotime($SubscriptionTrendEndDate)).'"');
+		$query=$this->db->get();
+		$registered_user_plan = $query->result();
+		
+		
+		$now = time(); // or your date as well
+		$Original_user_result = array();
+		$count = 0;
+		$Original_day_count = array();
+		$Renewals_day_count = array();
+		$Resubscriptions_day_count = array();
+		
+
+		foreach($registered_user_plan as $registered_user_plan_key=>$registered_user_plan_value){
+
+			
+			if($registered_user_plan_value->category_subscription == 'Original'){
+				$your_date = strtotime($registered_user_plan_value->created_at);
+				$datediff = $now - $your_date;
+				$day_different = round($datediff / (60 * 60 * 24));
+				$registered_user_plan[$registered_user_plan_key]->day_difference = $day_different;
+				$Original_day_count[] = $day_different;
+			}
+
+			if($registered_user_plan_value->category_subscription == 'Renewals'){
+				$your_date = strtotime($registered_user_plan_value->created_at);
+				$datediff = $now - $your_date;
+				$day_different = round($datediff / (60 * 60 * 24));
+				$registered_user_plan[$registered_user_plan_key]->day_difference = $day_different;
+				$Renewals_day_count[] = $day_different;
+			}
+
+			if($registered_user_plan_value->category_subscription == 'Resubscriptions'){
+				$your_date = strtotime($registered_user_plan_value->created_at);
+				$datediff = $now - $your_date;
+				$day_different = round($datediff / (60 * 60 * 24));
+				$registered_user_plan[$registered_user_plan_key]->day_difference = $day_different;
+				$Resubscriptions_day_count[] = $day_different;
+			}
+
+
+			$count++;
+		}
+
+		$k=0;
+		for($i=1;$i<=10;$i++){
+			$Original_user_result[$k]['label'] = "Day ".$i;
+			$Original_user_result[$k]['y'] = count(array_keys($Original_day_count,$i));
+
+			$Renewals_user_result[$k]['label'] = "Day ".$i;
+			$Renewals_user_result[$k]['y'] = count(array_keys($Renewals_day_count,$i));
+
+			$Resubscriptions_user_result[$k]['label'] = "Day ".$i;
+			$Resubscriptions_user_result[$k]['y'] = count(array_keys($Resubscriptions_day_count,$i));
+			$k++;
+		}
+
+
+
+
+		$dataarr = array(
+			"Original_user_result" => $Original_user_result,
+			"Renewals_user_result" => $Renewals_user_result,
+			"Resubscriptions_user_result" => $Resubscriptions_user_result,
+			"status"=>'1',
+			"message"=>"Success",
+	      );
+
+        echo json_encode($dataarr);
+	}
+
 
 
 

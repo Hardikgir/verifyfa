@@ -194,18 +194,72 @@ Link ‘Expired’</h2>
         </div>
 
         <div class="col-md-12">
+			<div  style="background: #fff;height: 150px;padding: 15px;">
+				<h2 class="text-center">Subscription Trend</h2>
+				<form action>
+					<div class="form-group row">
+						<div class="col-sm-5">
+							<label>Start Date</label>
+							<input type="date" name="SubscriptionTrendStartDate" id="SubscriptionTrendStartDate"  class="form-control">
+						</div>
+						<div class="col-sm-5">
+							<label>To Date</label>
+							<input type="date" name="SubscriptionTrendEndDate" id="SubscriptionTrendEndDate"  class="form-control">
+						</div>
+						<div class="col-sm-2">
+							<a href="javascript:void(0)" class="btn btn-primary" onclick="SubscriptionTrendForm(this)" data-formtype="SubscriptionTrend">Submit</a>
+						</div>
+					</div>
+
+				</form>
+			</div>
             <div id="SubscriptionTrendChart" style="height: 370px; width: 100%; margin: 0px auto;"></div>
         </div>
 
         <div class="col-md-12 mt-5">
+			<div  style="background: #fff;height: 150px;padding: 15px;">
+				<h2 class="text-center">Type of Subscription Plans / Active Subscriptions</h2>
+				<form action>
+					<div class="form-group row">
+						<div class="col-sm-5">
+							<input type="date" name="TypeSubscriptionActiveStartDate" class="form-control">
+						</div>
+						<div class="col-sm-5">
+							<input type="date" name="TypeSubscriptionActiveEndDate" class="form-control">
+						</div>
+						<div class="col-sm-2">
+							<a href="javascript:void(0)" class="btn btn-primary" onclick="TypeSubscriptionActiveForm(this)" data-formtype="TypeSubscriptionActive">Submit</a>
+						</div>
+					</div>
+				</form>
+			</div>
 			<div id="TypeSubscriptionActiveChart" style="height: 370px; width: 100%;"></div>
         </div>
 
 		<div class="col-md-12 mt-5">
+			<div  style="background: #fff;height: 150px;padding: 15px;">
+				<h2 class="text-center">Subscription Amount Due</h2>
+				<form action>
+					<div class="form-group row">
+						<div class="col-sm-5">
+							<input type="date" name="SubscriptionAmountStartDate" class="form-control">
+						</div>
+						<div class="col-sm-5">
+							<input type="date" name="SubscriptionAmountStartDate" class="form-control">
+						</div>
+						<div class="col-sm-2">
+							<a href="javascript:void(0)" class="btn btn-primary" onclick="SubscriptionAmountForm(this)" data-formtype="SubscriptionAmount">Submit</a>
+						</div>
+					</div>
+				</form>
+			</div>
             <div id="SubscriptionAmountDueChart" style="height: 370px; width: 100%;"></div>
         </div>
 
         <div class="col-md-12 mt-5">
+			<div class="text-center" style="background: #fff;height: 70px;padding: 15px;">
+				<h2>Subscription Amount Due – Ageing Analysis</h2>
+			</div>
             <div id="SubscriptionAmountDueAgeingAnalysisChart" style="height: 370px; width: 100%;"></div>
         </div>
 
@@ -236,7 +290,7 @@ var chart = new CanvasJS.Chart("SubscriptionTrendChart", {
 	theme:"light2",
 	animationEnabled: true,
 	title:{
-		text: "Subscription Trend"
+		text: ""
 	},
 	axisY :{
 		title: "",
@@ -292,7 +346,7 @@ function toggleDataSeries(e) {
 
 var chart = new CanvasJS.Chart("TypeSubscriptionActiveChart", {
 	title: {
-		text: "Type of Subscription Plans / Active Subscriptions"
+		text: ""
 	},
 	theme: "light2",
 	animationEnabled: true,
@@ -355,7 +409,7 @@ var chart = new CanvasJS.Chart("SubscriptionAmountDueChart", {
 	exportEnabled: true,
 	theme: "light1", // "light1", "light2", "dark1", "dark2"
 	title:{
-		text: "Subscription Amount Due"
+		text: ""
 	},
   	axisY: {
       includeZero: true
@@ -393,7 +447,7 @@ var chart = new CanvasJS.Chart("SubscriptionAmountDueAgeingAnalysisChart", {
 	animationEnabled: true,
 	theme: "light2",
 	title: {
-		text: "Subscription Amount Due – Ageing Analysis"
+		text: ""
 	},
 	axisX: {
 		valueFormatString: "MMM"
@@ -468,6 +522,110 @@ function toggleDataSeries(e) {
 
 
 }
+
+
+
+
+
+
+
+
+function toggleDataSeries(e) {
+	if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible ){
+		e.dataSeries.visible = false;
+	} else {
+		e.dataSeries.visible = true;
+	}
+	chart.render();
+}
+
+
+
+function SubscriptionTrendForm(event){
+	var FormType = $(event).attr("data-formtype");
+	console.log("FormType")
+	console.log(FormType)
+
+	var location = 1;
+	var SubscriptionTrendStartDate = $("#SubscriptionTrendStartDate").val();
+	var SubscriptionTrendEndDate = $("#SubscriptionTrendEndDate").val();
+
+
+	 $.ajax({
+        url: "<?php echo base_url('index.php/Superadmin_controller/super_admin_dashboard_second2_result'); ?>", //backend url
+        type: 'post',
+        dataType: 'json',
+        data: {
+			"SubscriptionTrendStartDate" : SubscriptionTrendStartDate,
+          	"SubscriptionTrendEndDate" : SubscriptionTrendEndDate,
+        },
+        error: function (request, error) {
+            console.log(arguments);
+            alert(" Can't do because: " + error);
+        },
+        success: function(response) {
+			console.log("response")
+			console.log(response)
+		var chart = new CanvasJS.Chart("SubscriptionTrendChart", {
+			theme:"light2",
+			animationEnabled: true,
+			title:{
+				text: ""
+			},
+			axisY :{
+				title: "",
+				suffix: ""
+			},
+			toolTip: {
+				shared: "true"
+			},
+			legend:{
+				cursor:"pointer",
+				itemclick : toggleDataSeries
+			},
+			data: [
+			{
+				type: "spline",
+				showInLegend: true,
+				yValueFormatString: "##.00",
+				name: "Original",
+				dataPoints: response.Original_user_result
+			},
+			{
+				type: "spline",
+				showInLegend: true,
+				yValueFormatString: "##.00",
+				name: "Renewals",
+				dataPoints: response.Renewals_user_result
+			},
+			{
+				type: "spline",
+				showInLegend: true,
+				yValueFormatString: "##.00",
+				name: "Resubscriptions",
+				dataPoints: response.Resubscriptions_user_result
+			}]
+		});
+		chart.render();
+        }
+    });
+
+
+
+
+}
+function TypeSubscriptionActiveForm(event){
+	var FormType = $(event).attr("data-formtype");
+	console.log("FormType")
+	console.log(FormType)
+}
+function SubscriptionAmountForm(event){
+	var FormType = $(event).attr("data-formtype");
+	console.log("FormType")
+	console.log(FormType)
+}
+
+
 </script>
 
 
