@@ -13,18 +13,28 @@ class Superadmin_controller extends CI_Controller {
 		
 	}
 
-    public function super_admin_dashboard(){
+    public function super_admin_dashboard_previous(){
         $data['page_title']="Dashboard";
         $this->load->view("super-admin/dashboard",$data);
 
     }
 
-	public function super_admin_dashboard_second(){
+	public function super_admin_dashboard(){
+
+
+		$current_date = date("Y-m-d");
+		$last_ten_days_date = date("Y-m-d", strtotime("-10 days")); //for minus
 
 		$this->db->select("*");
 		$this->db->from('registered_user_plan');
+		$this->db->where('created_at BETWEEN "'. date('Y-m-d', strtotime($last_ten_days_date)). '" and "'. date('Y-m-d', strtotime($current_date)).'"');
 		$query=$this->db->get();
 		$registered_user_plan = $query->result();
+
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
 		
 		$now = time(); // or your date as well
 		$Original_user_result = array();
@@ -82,8 +92,37 @@ class Superadmin_controller extends CI_Controller {
 
 		// // exit(); 
 
-		$k=0;
+		$current_date = date("Y-m-d");
+		$last_ten_days_date = date("Y-m-d", strtotime("-10 days")); //for minus
+		
 
+		$startTime = strtotime($last_ten_days_date);
+		$endTime = strtotime($current_date);
+
+		// $begin = new DateTime("2015-07-03");
+		// $end   = new DateTime("2015-07-09");
+		
+		$count = 0;
+		$daycount = 1;
+		for($i=$startTime;$i<=$endTime;$i = $i + 86400){
+			$thisDate = date('Y-m-d',$i);	
+
+			$Original_user_result[$count]['label'] = "Day ".$daycount.' ('.$thisDate.')';
+			$Original_user_result[$count]['y'] = count(array_keys($Original_day_count,$daycount));
+
+			$Renewals_user_result[$count]['label'] = "Day ".$daycount.' ('.$thisDate.')';
+			$Renewals_user_result[$count]['y'] = count(array_keys($Renewals_day_count,$daycount));
+
+			$Resubscriptions_user_result[$count]['label'] = "Day ".$daycount.' ('.$thisDate.')';
+			$Resubscriptions_user_result[$count]['y'] = count(array_keys($Resubscriptions_day_count,$i));
+			$count++;
+			$daycount++;
+		}
+	
+		
+		
+		/*
+		$k=0;
 		for($i=1;$i<=10;$i++){
 			$Original_user_result[$k]['label'] = "Day ".$i;
 			$Original_user_result[$k]['y'] = count(array_keys($Original_day_count,$i));
@@ -95,7 +134,8 @@ class Superadmin_controller extends CI_Controller {
 			$Resubscriptions_user_result[$k]['y'] = count(array_keys($Resubscriptions_day_count,$i));
 			$k++;
 		}
-
+			*/
+		
 		// echo '<pre>Renewals_user_result ';
 		// print_r($Renewals_user_result);
 		// echo '</pre>';
@@ -109,6 +149,12 @@ class Superadmin_controller extends CI_Controller {
 		$data['Original_user_result']=$Original_user_result;
 		$data['Renewals_user_result']=$Renewals_user_result;
 		$data['Resubscriptions_user_result']=$Resubscriptions_user_result;
+
+
+		// echo '<pre>data ';
+		// print_r($data);
+		// echo '</pre>';
+		// exit(); 
 
 
 		
