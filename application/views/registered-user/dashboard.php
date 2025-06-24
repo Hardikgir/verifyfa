@@ -16,10 +16,11 @@ $cancelled_projects=2;
     color: #fff;
 	min-height: 100px;
 	}
-	.card-header h2{
-	font-size: 20px;
+	.card-header h2 {
+    font-size: 20px;
     font-weight: bold;
-	}
+    text-align: center;
+}
 	.card-txt{
 		font-size: 50px;
 	}
@@ -53,16 +54,24 @@ $cancelled_projects=2;
 	<h2>Subscription Plan Details</h2>
 </div>
   <div class="card-body card-body-n" style="padding: 2px 1px;">
+	<?php $plan_row=get_plan_row($plan_data->plan_id);?>
+	<p class="txt-cardp" style="text-align: center;"><?php echo $plan_row->title;?></p>
 	<ul>
-		<?php $plan_row=get_plan_row($plan_data->plan_id);?>
-		<li><b>Plan Name: <?php echo $plan_row->title;?></b></li>
-		<li><b>Activation Date: <?php echo date("d-M-Y",strtotime($plan_data->plan_start_date));?></b></li>
-		<li><b>Plan Brief: <?php echo $plan_row->title;?></b></li>
-		<li><b>C – </b></li>
-		<li><b>L – <?php echo $Subscription_plan->location_each_entity;?></b></li>
-		<li><b>U – <?php echo $Subscription_plan->user_number_register;?></b></li>
-		<li><b>Li – <?php echo $Subscription_plan->line_item_avaliable;?></b></li>
+		
+		
+		<li>Activation Date: <b><?php echo date("d-M-Y",strtotime($plan_data->plan_start_date));?></b></li>
+		
+		
 	</ul>
+
+	<p class="txt-cardp" style="text-align: center;">Plan Brief:</p>
+	<ul>
+		<li>No. of Entities – <b><?php echo $Subscription_plan->allowed_entities_no;?></b></li>
+		<li>No. of Locations under each Entity – <b><?php echo $Subscription_plan->location_each_entity;?></b></li>
+		<li>Total No. of Users – <b><?php echo $Subscription_plan->user_number_register;?></b></li>
+		<li>No. of Rows for upload – <b><?php echo $Subscription_plan->line_item_avaliable;?></b></li>
+	</ul>
+
   </div>
 </div>
 
@@ -76,7 +85,7 @@ $cancelled_projects=2;
 	<h2>Current Subscription Valid till</h2>
 </div>
   <div class="card-body card-body-n">
-    <p class="txt-cardp"><?php echo date("d-M-Y",strtotime($plan_data->plan_end_date));?></p>
+    <p class="txt-cardp" style="text-align: center;"><?php echo date("d-M-Y",strtotime($plan_data->plan_end_date));?></p>
     
   </div>
 </div>
@@ -92,7 +101,7 @@ $cancelled_projects=2;
 </div>
   <div class="card-body card-body-n">
   
-	<p class="txt-cardp">
+	<p class="txt-cardp" style="text-align: center;">
 		<?php
                     if($plan_data->plan_end_date < date("Y-m-d")){
     
@@ -116,7 +125,7 @@ $cancelled_projects=2;
 	<h2>Subscription Amount Due(Rs.)</h2>
 </div>
   <div class="card-body card-body-n">
-   <p class="txt-cardp"><?php echo $user_data->balance_due;?>/-</p>
+   <p class="txt-cardp" style="text-align: center;"><?php echo $user_data->balance_due;?>/-</p>
   </div>
 </div>
 </div>
@@ -173,11 +182,7 @@ $cancelled_projects=2;
 							</div>
 						</div>
 						<!--Controls-->
-						<ol class="carousel-indicators p-1" id="change">
-							<li data-target="#carousel-example-1" data-slide-to="0" class="active mr-1"></li>
-							<li data-target="#carousel-example-1" data-slide-to="1" class=""></li>
-							
-						</ol>	
+						
 					</div>			
 				</section>
 				</div>

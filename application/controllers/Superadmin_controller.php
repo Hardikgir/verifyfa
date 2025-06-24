@@ -84,7 +84,7 @@ class Superadmin_controller extends CI_Controller {
 
 		$k=0;
 
-		for($i=1;$i<15;$i++){
+		for($i=1;$i<=10;$i++){
 			$Original_user_result[$k]['label'] = "Day ".$i;
 			$Original_user_result[$k]['y'] = count(array_keys($Original_day_count,$i));
 
@@ -168,6 +168,11 @@ class Superadmin_controller extends CI_Controller {
 			$ResubscriptionsPoints[] = $subscription_plan_array_value;
 		}
 
+		// echo '<pre>';
+		// print_r($ResubscriptionsPoints);
+		// echo '</pre>';
+		// exit(); 
+
 		$data['OriginalPoints'] = $OriginalPoints;
 		$data['RenewalsPoints'] = $RenewalsPoints;
 		$data['ResubscriptionsPoints'] = $ResubscriptionsPoints;
@@ -175,11 +180,11 @@ class Superadmin_controller extends CI_Controller {
 
 		$query = $this->db->query('
 		SELECT
-		COUNT(CASE WHEN balance_refundable BETWEEN 0 AND 10000 THEN 1 END) AS "1000-10000",
+		COUNT(CASE WHEN balance_refundable BETWEEN 1000 AND 10000 THEN 1 END) AS "1000-10000",
 		COUNT(CASE WHEN balance_refundable BETWEEN 10001 AND 20000 THEN 1 END) AS "10001-20000",
 		COUNT(CASE WHEN balance_refundable BETWEEN 20001  AND 30000 THEN 1 END) AS "20001-30000",
 		COUNT(CASE WHEN balance_refundable BETWEEN 30001 AND 40000 THEN 1 END) AS "30001-40000",
-		COUNT(CASE WHEN balance_refundable > 40001 THEN 1 END) AS "40001-50000"
+		COUNT(CASE WHEN balance_refundable > 40001 THEN 1 END) AS "Above 40000"
 			FROM v74_ci_verifyfa_db.registred_users_payment
 		');
 		$registered_user_plan = $query->row();
