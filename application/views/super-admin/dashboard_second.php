@@ -255,13 +255,13 @@ Link ‘Expired’</h2>
             <div id="SubscriptionAmountDueChart" style="height: 370px; width: 100%;"></div>
         </div>
 
-		<?php /*
+		
         <div class="col-md-12 mt-5">
 			<div class="text-center" style="background: #fff;height: 70px;padding: 15px;">
 				<h2>Subscription Amount Due – Ageing Analysis</h2>
 			</div>
             <div id="SubscriptionAmountDueAgeingAnalysisChart" style="height: 370px; width: 100%;"></div>
-        </div> */ ?>
+        </div>
 
         
 
@@ -442,7 +442,7 @@ chart.render();
 
 
 
-/*
+
 var chart = new CanvasJS.Chart("SubscriptionAmountDueAgeingAnalysisChart", {
 	animationEnabled: true,
 	theme: "light2",
@@ -495,7 +495,7 @@ var chart = new CanvasJS.Chart("SubscriptionAmountDueAgeingAnalysisChart", {
 		]
 	}]
 });
-chart.render(); */
+chart.render(); 
 
 function addSymbols(e) {
 	var suffixes = ["", "K", "M", "B"];

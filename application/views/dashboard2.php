@@ -104,6 +104,7 @@ $this->load->view('layouts/footer');
 		<li>No. of Entities – <b><?php echo $total_company_count;?></b></li>
 		<li>No. of Locations under each Entity – <b><?php echo $total_company_locations_count;?></b></li>
 		<li>Total No. of Users – <b><?php echo $total_users_count;?></b></li>
+        <li>Line Item Available – <b><?php echo $subscription_plan_details->line_item_avaliable;?></b></li>
 	</ul>
 	
 
@@ -120,7 +121,9 @@ $this->load->view('layouts/footer');
 	<h2>Current Subscription Valid till</h2>
 </div>
   <div class="card-body card-body-n">
-    <p class="txt-cardp" style="text-align: center;"><?php echo date("d-M-Y",strtotime($registered_user_plan_details->plan_end_date));?></p>
+    <h2 style="text-align: center;font-weight: bold;">
+        <?php echo date("d-M-Y",strtotime($registered_user_plan_details->plan_end_date));?>
+    </h2>
     
   </div>
 </div>
@@ -136,7 +139,7 @@ $this->load->view('layouts/footer');
 </div>
   <div class="card-body card-body-n">
   
-	<p class="txt-cardp" style="text-align: center;">
+	<h2 style="text-align: center;font-weight: bold;">
 		<?php	
             $now = time(); 
 
@@ -144,9 +147,14 @@ $this->load->view('layouts/footer');
 			$your_date = strtotime($registered_user_plan_details->plan_end_date);
 			$datediff = $now - $your_date;
 			$day_different = round($datediff / (60 * 60 * 24));
-            echo $day_different;
+            
+            if($day_different < 0){
+                echo "0";
+            }else{
+                echo $day_different;
+            }
             ?>
-	</p>
+	</h2>
 	<!-- <p class="txt-cardp text-left pt-3">* added since April 2023</p> -->
   </div>
 </div>
@@ -161,9 +169,10 @@ $this->load->view('layouts/footer');
 	<h2>No. of Companies added</h2>
 </div>
   <div class="card-body card-body-n">
-   <p class="txt-cardp" style="text-align: center;">
+   <h2 style="text-align: center;font-weight: bold;">
     <?php echo $total_company_count; ?>
-   </p>
+   </h2>
+   <p class="txt-cardp" style="text-align: center;"><?php echo " (",$subscription_plan_details->allowed_entities_no." remaining)"; ?></p>
   </div>
 </div>
 </div>
@@ -175,9 +184,10 @@ $this->load->view('layouts/footer');
 	<h2>No. of Locations added</h2>
 </div>
   <div class="card-body card-body-n">
-   <p class="txt-cardp" style="text-align: center;">
+   <h2 style="text-align: center;font-weight: bold;">
     <?php echo $total_company_locations_count; ?>
-   </p>
+   </h2>
+   <p class="txt-cardp" style="text-align: center;"><?php echo " (",$subscription_plan_details->location_each_entity." remaining)"; ?></p>
   </div>
 </div>
 </div>
@@ -189,9 +199,10 @@ $this->load->view('layouts/footer');
 	<h2>No. of Users added</h2>
 </div>
   <div class="card-body card-body-n">
-   <p class="txt-cardp" style="text-align: center;">
+  <h2 style="text-align: center;font-weight: bold;">
     <?php echo $total_users_count; ?>
-   </p>
+   </h2>
+   <p class="txt-cardp" style="text-align: center;"><?php echo " (",$subscription_plan_details->user_number_register." remaining)"; ?></p>
   </div>
 </div>
 </div>
