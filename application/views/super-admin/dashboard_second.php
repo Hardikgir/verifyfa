@@ -187,7 +187,8 @@ Link ‘Expired’</h2>
         <div class="col-md-12">
             <?php 
 
-                
+			$current_date = date("Y-m-d");
+			$last_ten_days_date = date("Y-m-d", strtotime("-10 days")); //for minus  
 
             ?>
         </div>
@@ -199,11 +200,11 @@ Link ‘Expired’</h2>
 					<div class="form-group row">
 						<div class="col-sm-5">
 							<label>Start Date</label>
-							<input type="date" name="SubscriptionTrendStartDate" id="SubscriptionTrendStartDate"  class="form-control">
+							<input type="date" name="SubscriptionTrendStartDate" id="SubscriptionTrendStartDate" value="<?php echo $last_ten_days_date; ?>" class="form-control">
 						</div>
 						<div class="col-sm-5">
 							<label>To Date</label>
-							<input type="date" name="SubscriptionTrendEndDate" id="SubscriptionTrendEndDate"  class="form-control">
+							<input type="date" name="SubscriptionTrendEndDate" id="SubscriptionTrendEndDate" value="<?php echo $current_date; ?>"  class="form-control">
 						</div>
 						<div class="col-sm-2">
 							<a href="javascript:void(0)" class="btn btn-primary" onclick="SubscriptionTrendForm(this)" data-formtype="SubscriptionTrend">Submit</a>
@@ -256,12 +257,14 @@ Link ‘Expired’</h2>
         </div>
 
 		
-        <div class="col-md-12 mt-5">
+        <div class="col-md-12 mt-5" style="display:none">
 			<div class="text-center" style="background: #fff;height: 70px;padding: 15px;">
 				<h2>Subscription Amount Due – Ageing Analysis</h2>
 			</div>
             <div id="SubscriptionAmountDueAgeingAnalysisChart" style="height: 370px; width: 100%;"></div>
         </div>
+
+		<!-- Reference :- https://canvasjs.com/docs/charts/basics-of-creating-html5-chart/axis-element/ -->
 
         
 
@@ -293,8 +296,9 @@ var chart = new CanvasJS.Chart("SubscriptionTrendChart", {
 		text: ""
 	},
 	axisY :{
-		title: "",
-		suffix: ""
+		title: "No. of Subscriptions",
+		suffix: "",
+		interval: 1,
 	},
 	toolTip: {
 		shared: "true"
@@ -355,8 +359,9 @@ var chart = new CanvasJS.Chart("TypeSubscriptionActiveChart", {
 		reversed: true
 	},
 	axisY: {
-		title: "Cumulative Capacity",
-        suffix: ""
+		title: "No. of Subscriptions",
+        suffix: "",
+		interval: 1,
 	},
 	legend: {
 		cursor: "pointer",
@@ -412,7 +417,9 @@ var chart = new CanvasJS.Chart("SubscriptionAmountDueChart", {
 		text: ""
 	},
   	axisY: {
-      includeZero: true
+		title:"No. of Subscriptions",
+      	suffix: "",
+		interval: 1,
     },
 	axisX: {
 		interval: 1,

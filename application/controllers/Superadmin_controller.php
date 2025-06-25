@@ -211,20 +211,22 @@ class Superadmin_controller extends CI_Controller {
 			$day_different = round($datediff / (60 * 60 * 24));
 
 
-		
+			if($day_different > 0){
 
-			if($day_different <= 30){
-				$in_30_Day[] = 1;
+				if($day_different <= 30){
+					$in_30_Day[] = 1;
+				}
+				if ($day_different >= 31 && $day_different <= 60) {
+					$in_31_to_60_Day[] = 1;
+				}
+				if ($day_different >= 61 && $day_different <= 90) {
+					$in_61_to_90_Day[] = 1;
+				}
+				if ($day_different >= 91 && $day_different > 120) {
+					$in_91_to_120_Day[] = 1;
+				}
 			}
-			if ($day_different >= 31 && $day_different <= 60) {
-				$in_31_to_60_Day[] = 1;
-			}
-			if ($day_different >= 61 && $day_different <= 90) {
-				$in_61_to_90_Day[] = 1;
-			}
-			if ($day_different >= 91 && $day_different > 120) {
-				$in_91_to_120_Day[] = 1;
-			}
+
 		}
 
 		$Total_Subscriptions_expiring_in = array(
