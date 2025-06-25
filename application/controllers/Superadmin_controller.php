@@ -207,11 +207,21 @@ class Superadmin_controller extends CI_Controller {
 		foreach($registered_user_plan as $registered_user_plan_key=>$registered_user_plan_value){
 			$plan_end_date = $registered_user_plan_value->plan_end_date;
 			$your_date = strtotime($registered_user_plan_value->plan_end_date);
+			
 			$datediff = $now - $your_date;
 			$day_different = round($datediff / (60 * 60 * 24));
 
+			
 
-			if($day_different > 0){
+			echo '<pre>day_different ';
+			print_r($day_different." :- ".$registered_user_plan_value->plan_end_date);
+			echo '</pre>';
+			// exit(); 
+
+
+			if($day_different < 0){
+
+				$day_different = abs($day_different);
 
 				if($day_different <= 30){
 					$in_30_Day[] = 1;
@@ -222,12 +232,14 @@ class Superadmin_controller extends CI_Controller {
 				if ($day_different >= 61 && $day_different <= 90) {
 					$in_61_to_90_Day[] = 1;
 				}
-				if ($day_different >= 91 && $day_different > 120) {
+				if ($day_different >= 91 && $day_different <= 120) {
 					$in_91_to_120_Day[] = 1;
 				}
 			}
 
 		}
+
+		// exit();
 
 		$Total_Subscriptions_expiring_in = array(
 			'in_30_Day' => count($in_30_Day),
@@ -249,7 +261,6 @@ class Superadmin_controller extends CI_Controller {
 
 		$Total_Registered_Active_Subscriptions_query = $this->db->query('SELECT * FROM registered_user_plan WHERE CURDATE() BETWEEN plan_start_date AND plan_end_date');
 		$Total_Registered_Active_Subscriptions = $Total_Registered_Active_Subscriptions_query->num_rows();
-
 
 		$Total_Registrations_Unsubscribed_query = $this->db->query('SELECT * FROM registered_user_plan WHERE CURDATE() NOT BETWEEN plan_start_date AND plan_end_date');
 		$Total_Registrations_Unsubscribed = $Total_Registrations_Unsubscribed_query->num_rows();

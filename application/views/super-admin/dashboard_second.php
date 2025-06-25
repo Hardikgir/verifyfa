@@ -58,7 +58,7 @@
     <div class="container-fluid">
 
     <div class="row">
-<div class="col-md-3">
+<div class="col-md-3 text-center">
 
 <div class="card">
 <div class="card-header">
@@ -74,7 +74,7 @@ Subscription Plans</h2>
 </div>
 
 
-<div class="col-md-3">
+<div class="col-md-3 text-center">
 
 <div class="card">
 <div class="card-header">
@@ -89,7 +89,7 @@ Subscription Plans</h2>
 </div>
 
 
-<div class="col-md-3">
+<div class="col-md-3 text-center">
 
 <div class="card">
 <div class="card-header ">
@@ -107,7 +107,7 @@ Subscription Plans</h2>
 </div>
 
 
-<div class="col-md-3">
+<div class="col-md-3 text-center">
 
 <div class="card">
 <div class="card-header">
@@ -124,10 +124,10 @@ expiring in
 			<th>91d – 120d</th>
 		</thead>
 		<tbody>
-			<td><?php echo $Total_Subscriptions_expiring_in['in_30_Day']; ?></td>
-			<td><?php echo $Total_Subscriptions_expiring_in['in_31_to_60_Day']; ?></td>
-			<td><?php echo $Total_Subscriptions_expiring_in['in_61_to_90_Day']; ?></td>
-			<td><?php echo $Total_Subscriptions_expiring_in['in_91_to_120_Day']; ?></td>
+			<td class="text-center"><?php echo $Total_Subscriptions_expiring_in['in_30_Day']; ?></td>
+			<td class="text-center"><?php echo $Total_Subscriptions_expiring_in['in_31_to_60_Day']; ?></td>
+			<td class="text-center"><?php echo $Total_Subscriptions_expiring_in['in_61_to_90_Day']; ?></td>
+			<td class="text-center"><?php echo $Total_Subscriptions_expiring_in['in_91_to_120_Day']; ?></td>
 		</tbody>
 
 	</table>
@@ -137,14 +137,14 @@ expiring in
 </div>
 
 <div class="row">
-<div class="col-md-3"></div>
+<div class="col-md-3 text-center"></div>
 
 
-<div class="col-md-3">
+<div class="col-md-3 text-center">
 
 <div class="card">
 <div class="card-header ">
-	<h2>Total No. of Registrations Unsubscribed</h2>
+	<h2>Total No. of Registrations Expired</h2>
 </div>
   <div class="card-body card-body-n">
   <h5 class="card-title card-txt"><?php echo $Total_Registrations_Unsubscribed; ?></h5>
@@ -156,7 +156,7 @@ expiring in
 </div>
 
 
-<div class="col-md-3">
+<div class="col-md-3 text-center">
 <div class="card">
 <div class="card-header">
 	<h2>Total No. of Registered
@@ -174,7 +174,7 @@ Link ‘Expired’</h2>
 
 
 
-<div class="col-md-3">
+<div class="col-md-3 text-center">
 
 
 </div>
@@ -240,17 +240,7 @@ Link ‘Expired’</h2>
 			<div  style="background: #fff;height: 150px;padding: 15px;">
 				<h2 class="text-center">Subscription Amount Due</h2>
 				<form action>
-					<div class="form-group row">
-						<div class="col-sm-5">
-							<input type="date" name="SubscriptionAmountStartDate" id="SubscriptionAmountStartDate" class="form-control">
-						</div>
-						<div class="col-sm-5">
-							<input type="date" name="SubscriptionAmountEndDate" id="SubscriptionAmountEndDate" class="form-control">
-						</div>
-						<div class="col-sm-2">
-							<a href="javascript:void(0)" class="btn btn-primary" onclick="SubscriptionAmountForm(this)" data-formtype="SubscriptionAmount">Submit</a>
-						</div>
-					</div>
+					
 				</form>
 			</div>
             <div id="SubscriptionAmountDueChart" style="height: 370px; width: 100%;"></div>
@@ -580,8 +570,9 @@ function SubscriptionTrendForm(event){
 				text: ""
 			},
 			axisY :{
-				title: "",
-				suffix: ""
+				title: "No. of Subscriptions",
+				suffix: "",
+				interval: 1,
 			},
 			toolTip: {
 				shared: "true"
@@ -659,8 +650,9 @@ function TypeSubscriptionActiveForm(event){
 					reversed: true
 				},
 				axisY: {
-					title: "Cumulative Capacity",
-					suffix: ""
+					title: "No. of Subscriptions",
+					suffix: "",
+					interval: 1,
 				},
 				legend: {
 					cursor: "pointer",

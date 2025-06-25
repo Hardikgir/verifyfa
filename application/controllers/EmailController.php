@@ -13,8 +13,11 @@ class EmailController extends CI_Controller {
     public function emailattachment(){
         // URL :- http://localhost:8080/codeigniter/verifyfa/index.php/EmailController/emailattachment
         
-        $name = 'sample.pdf';
-        $filename = 'sample.pdf';
+        // $name = 'sample.pdf';
+        // $filename = 'sample.pdf';
+        $filename = 'test.xls';
+        $name = 'test.xls';
+        
         $file = FCPATH."attachment/".$name;
         
         $email_actual_content = '
