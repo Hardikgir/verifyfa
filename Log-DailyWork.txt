@@ -9,3 +9,13 @@ Today Work (24/6/2025)
     -> Issue Details (View)
 -> Some API issue as Discussed on 21-june-2026 :- Pending
 
+
+
+Today Work (26/6/2025)
+-> Yesterday's Meeting Points
+    -> Dashboard of Register user & Other User should be same dashboard
+    -> Superadmin Graph Related some Changes & Issue Fixed
+    -> 
+-> Entity Owner Owner/ Process Owner Block Cards
+-> Entity Owner Owner/ Process Owner Dashboard Graph
+-> Date of 24/6/2025 list point some of point is pending.

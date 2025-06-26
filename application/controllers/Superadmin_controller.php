@@ -211,14 +211,6 @@ class Superadmin_controller extends CI_Controller {
 			$datediff = $now - $your_date;
 			$day_different = round($datediff / (60 * 60 * 24));
 
-			
-
-			echo '<pre>day_different ';
-			print_r($day_different." :- ".$registered_user_plan_value->plan_end_date);
-			echo '</pre>';
-			// exit(); 
-
-
 			if($day_different < 0){
 
 				$day_different = abs($day_different);
@@ -340,6 +332,37 @@ class Superadmin_controller extends CI_Controller {
 			$count++;
 		}
 
+		$current_date = date("Y-m-d");
+		$last_ten_days_date = date("Y-m-d", strtotime("-10 days")); //for minus
+
+		$startTime = strtotime($SubscriptionTrendStartDate);
+		$endTime = strtotime($SubscriptionTrendEndDate);
+		
+
+			
+		$count = 0;
+		$daycount = 1;
+		for($i=$startTime;$i<=$endTime;$i = $i + 86400){
+			$thisDate = date('Y-m-d',$i);	
+
+			$Original_user_result[$count]['label'] = "Day ".$daycount.' ('.$thisDate.')';
+			$Original_user_result[$count]['y'] = count(array_keys($Original_day_count,$daycount));
+
+			$Renewals_user_result[$count]['label'] = "Day ".$daycount.' ('.$thisDate.')';
+			$Renewals_user_result[$count]['y'] = count(array_keys($Renewals_day_count,$daycount));
+
+			$Resubscriptions_user_result[$count]['label'] = "Day ".$daycount.' ('.$thisDate.')';
+			$Resubscriptions_user_result[$count]['y'] = count(array_keys($Resubscriptions_day_count,$i));
+			$count++;
+			$daycount++;
+		}
+		
+		// $data['Original_user_result']=$Original_user_result;
+		// $data['Renewals_user_result']=$Renewals_user_result;
+		// $data['Resubscriptions_user_result']=$Resubscriptions_user_result;
+
+
+		/*
 		$k=0;
 		for($i=1;$i<=10;$i++){
 			$Original_user_result[$k]['label'] = "Day ".$i;
@@ -352,7 +375,7 @@ class Superadmin_controller extends CI_Controller {
 			$Resubscriptions_user_result[$k]['y'] = count(array_keys($Resubscriptions_day_count,$i));
 			$k++;
 		}
-
+		*/
 
 
 

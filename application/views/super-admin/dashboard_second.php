@@ -301,21 +301,21 @@ var chart = new CanvasJS.Chart("SubscriptionTrendChart", {
 	{
 		type: "spline",
 		showInLegend: true,
-		yValueFormatString: "##.00",
+		yValueFormatString: "##.",
 		name: "Original",
 		dataPoints: <?php echo json_encode($Original_user_result, JSON_NUMERIC_CHECK); ?>
 	},
 	{
 		type: "spline",
 		showInLegend: true,
-		yValueFormatString: "##.00",
+		yValueFormatString: "##.",
 		name: "Renewals",
 		dataPoints: <?php echo json_encode($Renewals_user_result, JSON_NUMERIC_CHECK); ?>
 	},
 	{
 		type: "spline",
 		showInLegend: true,
-		yValueFormatString: "##.00",
+		yValueFormatString: "##.",
 		name: "Resubscriptions",
 		dataPoints: <?php echo json_encode($Resubscriptions_user_result, JSON_NUMERIC_CHECK); ?>
 	}]
@@ -585,21 +585,21 @@ function SubscriptionTrendForm(event){
 			{
 				type: "spline",
 				showInLegend: true,
-				yValueFormatString: "##.00",
+				yValueFormatString: "##.",
 				name: "Original",
 				dataPoints: response.Original_user_result
 			},
 			{
 				type: "spline",
 				showInLegend: true,
-				yValueFormatString: "##.00",
+				yValueFormatString: "##.",
 				name: "Renewals",
 				dataPoints: response.Renewals_user_result
 			},
 			{
 				type: "spline",
 				showInLegend: true,
-				yValueFormatString: "##.00",
+				yValueFormatString: "##.",
 				name: "Resubscriptions",
 				dataPoints: response.Resubscriptions_user_result
 			}]
