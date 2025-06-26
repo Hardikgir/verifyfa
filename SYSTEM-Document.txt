@@ -1,2 +1,8 @@
+UserRoles :-
 
-UserRoles :- 
+Group Admin :- 5
+Sub Admin :- 4
+Manager :- 0
+Process Owner :- 2
+Entity Owner :- 3
+Verifier :- 1
