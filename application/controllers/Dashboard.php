@@ -107,8 +107,9 @@ class Dashboard extends CI_Controller {
 
 	public function index()
 	{   
+
+		$admin_registered_user_id = $_SESSION['logged_in']['admin_registered_user_id'];
 		$user_id=$this->user_id;
-		
 		$entity_code=$this->admin_registered_entity_code;
 		
 		$company_id_imp='';
@@ -165,10 +166,6 @@ class Dashboard extends CI_Controller {
 		$data['page_title']="Dashboard";
 		$data['company_data_list']=$this->company_data_list();
 
-
-	
-		$admin_registered_user_id = $_SESSION['logged_in']['admin_registered_user_id'];
-		
 		$this->db->select("*");
 		$this->db->from('registred_users');
 		$this->db->where('id',$admin_registered_user_id);
@@ -191,7 +188,6 @@ class Dashboard extends CI_Controller {
 		$data['subscription_plan_details'] = $subscription_plan_details;
 		$data['registred_users_details'] = $registred_users_details;
 		$data['registered_user_plan_details'] = $registered_user_plan_details;
-
 		
 		$total_company_query = $this->db->query('SELECT * FROM company where registered_user_id = '.$admin_registered_user_id);
 		$total_company_count = $total_company_query->num_rows();
@@ -199,47 +195,307 @@ class Dashboard extends CI_Controller {
 		$total_company_locations_query = $this->db->query('SELECT * FROM company_locations where registered_user_id = '.$admin_registered_user_id);
 		$total_company_locations_count = $total_company_locations_query->num_rows();
 
-
 		$total_users_query = $this->db->query('SELECT * FROM users where registered_user_id = '.$admin_registered_user_id);
 		$total_users_count = $total_users_query->num_rows();
-
 
 		$data['total_company_count'] = $total_company_count;
 		$data['total_company_locations_count'] = $total_company_locations_count;
 		$data['total_users_count'] = $total_users_count;
+		// $this->load->view('dashboard2',$data);		
 
-		// echo '<pre>';
-		// print_r($data);
+
+
+
+
+
+
+
+		$open_projects=0;
+		$closed_projects=0;
+		$cancelled_projects=0;
+		$open_projectdetails="";
+		$close_projectdetails="";
+		$cancel_projectdetails="";
+		foreach($projects as $project)
+		{
+			$verifiercount = check_verifier_count($project->id,$this->user_id);
+			$check_itemowner_count = check_itemowner_count($project->id,$this->user_id);
+			$check_process_owner_count = check_process_owner_count($project->id,$this->user_id);
+			$check_manager_count = check_manager_count($project->id,$this->user_id);
+
+			if(($verifiercount == '1') || ($check_itemowner_count =='1') || ($check_process_owner_count == '1') ||  ($check_manager_count == '1')){
+
+				if($project->status==0)
+				{
+					$open_projects++;
+					if($project->VerifiedQuantity !=0){
+					$open_projectdetails.=", ".$project->project_name.'('.round(($project->VerifiedQuantity/$project->TotalQuantity)*100,2).' %)';
+				}else{
+					$open_projectdetails.='0%';
+				}
+				}
+				if($project->status==1)
+				{
+					$closed_projects++;
+					$close_projectdetails.=", ".$project->project_name.'('.round(($project->VerifiedQuantity/$project->TotalQuantity)*100,2).' %)';
+				}
+				if($project->status==2)
+				{
+					$cancelled_projects++;
+					$cancel_projectdetails.=", ".$project->project_name.'('.round(($project->VerifiedQuantity/$project->TotalQuantity)*100,2).' %)';
+				}
+			}
+		}
+
+
+		$company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id')->result();
+
+
+		$project_base_count = array();
+		$withing_time = array();
+		$due_date = array();
+		foreach($company_projects as $company_projects_key=>$company_projects_value){
+
+			$project_due_date = $company_projects_value->due_date;
+			$project_name = $company_projects_value->project_name;
+			$due_date = $project_due_date; // Format: Y-m-d
+			$today = date('Y-m-d');
+
+			if ($due_date <= $today) {
+				$project_base_count[$company_projects_value->company_name]['overdue'][] = 1;
+			} else {
+				$project_base_count[$company_projects_value->company_name]['withindate'][] = 1;
+			}
+		}
+
+
+
+		$graph_data = array();
+		$count = 1;
+
+		$overdue_array = array();
+		$withindate_array = array();
+		$count_zero = 1;
+		$count = 0;
+		foreach($project_base_count as $project_base_count_key=>$project_base_count_value){
+			
+
+			$overdue_array[$count]['label'] = $project_base_count_key;
+			$withindate_array[$count]['label'] = $project_base_count_key;
+			$overdue_count_data = 0;
+			$withindate_count_data = 0;
+			if(isset($project_base_count[$project_base_count_key]['overdue'])){
+				$overdue_count_data = count($project_base_count[$project_base_count_key]['overdue']);
+				$project_base_count[$project_base_count_key]['overdue_count'] = count($project_base_count[$project_base_count_key]['overdue']);
+				$graph_data[$project_base_count_key]['overdue_count'] = count($project_base_count[$project_base_count_key]['overdue'] );
+			}else{
+				$overdue_count_data = 0;
+				$project_base_count[$project_base_count_key]['overdue_count'] = 0;
+				$graph_data[$project_base_count_key]['overdue_count'] = 0;
+			}
+
+			$overdue_array[$count]['y'] = $overdue_count_data;
+			$overdue_array[$count]['id'] = $count_zero;
+
+			if(isset($project_base_count[$project_base_count_key]['withindate'])){
+				$withindate_count_data = count($project_base_count[$project_base_count_key]['withindate']);
+				$project_base_count[$project_base_count_key]['withindate_count'] = count($project_base_count[$project_base_count_key]['withindate']);
+				$graph_data[$project_base_count_key]['withindate_count'] = count($project_base_count[$project_base_count_key]['withindate']);
+			}else{
+				$withindate_count_data = 0;
+				$project_base_count[$project_base_count_key]['withindate_count'] = 0;
+				$graph_data[$project_base_count_key]['withindate_count'] = 0;
+			}
+
+			$withindate_array[$count]['y'] = $withindate_count_data;
+			$withindate_array[$count]['id'] = $count_zero;
+			$count++;
+			$count_zero++;
+		}
+
+		/*
+		echo '<pre>overdue_array ';
+		print_r($overdue_array);
+		echo '</pre>';
+
+		echo '<pre>withindate_array ';
+		print_r($withindate_array);
+		echo '</pre>';
+		exit(); 
+
+		exit(); 
+
+		// echo '<pre>graph_data ';
+		// print_r($graph_data);
 		// echo '</pre>';
 		// exit(); 
 
-		// echo '<pre>total_company_locations_count ';
-		// print_r($total_company_locations_count);
+		$my_arau = array();
+		foreach($graph_data as $graph_data_key=>$graph_data_value){
+
+		}
+
+
+		$my_arau = array();
+		/*
+		foreach($graph_data as $graph_data_key=>$graph_data_value){
+			if($graph_data_value['overdue_count'] == 'overdue_count'){
+				$my_arau[$graph_data_key]['label'] = 'overdue';
+				$my_arau[$graph_data_key]['id'] = $graph_data_value['overdue_count'];
+			}else{
+				$my_arau[$graph_data_key]['label'] = 'withindate';
+				$my_arau[$graph_data_key]['id'] = $graph_data_value['withindate_count'];
+			}
+		} */
+
+		// echo '<pre>my_arau ';
+		// print_r($my_arau);
 		// echo '</pre>';
 		// exit(); 
+
+
+		// echo '<pre>my_arau ';
+		// print_r($my_arau);
+		// echo '</pre>';
+		// exit(); 
+		// echo '<pre>my_arau ';
+		// print_r($my_arau);
+		// echo '</pre>';
+		// exit(); 
+
+		// echo '<pre>graph_data ';
+		// print_r($graph_data);
+		// echo '</pre>';
+		// exit(); 
+		/*
+		echo '<pre>graph_data ';
+		print_r($graph_data);
+		echo '</pre>';
+		exit(); 
+
+		echo '<pre>project_base_count ';
+		print_r($project_base_count);
+		echo '</pre>';
+		exit(); 
+
+		exit();
+
+		// $query=$this->db->get();
+		// $company_projects = $query->result();
+		echo '<pre>company_projects ';
+		print_r($company_projects);
+		echo '</pre>';
+		exit(); */
+
+		$this->db->select("*");
+		$this->db->from('company_projects');
+		$query=$this->db->get();
+		$registered_user_plan = $query->result();
+
+
+
+
+		$this->db->select("*");
+		$this->db->from('registered_user_plan');
+		$query=$this->db->get();
+		$registered_user_plan = $query->result();
+
+
+		$this->db->select("id,title");
+		$this->db->from('subscription_plan');
+		$query=$this->db->get();
+		$subscription_plan = $query->result();
+
+		$subscription_plan_array = array();
+
+		$TypeSubscriptionActiveChart_type = array('Original','Renewals','Resubscriptions');
+
+
+		
+		
+		foreach($TypeSubscriptionActiveChart_type as $TypeSubscriptionActiveChart_type_key=>$TypeSubscriptionActiveChart_type_value){
+			foreach($subscription_plan as $subscription_plan_key=>$subscription_plan_value){
+				$subscription_plan_array[$TypeSubscriptionActiveChart_type_value][] = array("label"=> $subscription_plan_value->title, "id"=> $subscription_plan_value->id);
+			}
+		}
+
+		$OriginalPoints = array();
+		foreach($subscription_plan_array['Original'] as $subscription_plan_array_key=>$subscription_plan_array_value){
+			$query = $this->db->query('SELECT * FROM subscription_plan LEFT JOIN registered_user_plan ON subscription_plan.id = registered_user_plan.plan_id where registered_user_plan.category_subscription = "Original" AND registered_user_plan.plan_id = '.$subscription_plan_array_value['id']);
+			$total_count = $query->num_rows();
+			$subscription_plan_array_value['y'] = $total_count;
+			$OriginalPoints[] = $subscription_plan_array_value;
+		}
 
 		
 
-		// echo '<pre>subscription_plan ';
-		// print_r($subscription_plan);
+		$RenewalsPoints = array();
+		foreach($subscription_plan_array['Renewals'] as $subscription_plan_array_key=>$subscription_plan_array_value){
+
+			$query = $this->db->query('SELECT * FROM subscription_plan LEFT JOIN registered_user_plan ON subscription_plan.id = registered_user_plan.plan_id where registered_user_plan.category_subscription = "Renewals" AND registered_user_plan.plan_id = '.$subscription_plan_array_value['id']);
+			$total_count = $query->num_rows();
+			$subscription_plan_array_value['y'] = $total_count;
+			$RenewalsPoints[] = $subscription_plan_array_value;
+		}
+
+		$ResubscriptionsPoints = array();
+		foreach($subscription_plan_array['Resubscriptions'] as $subscription_plan_array_key=>$subscription_plan_array_value){
+			$query = $this->db->query('SELECT * FROM subscription_plan LEFT JOIN registered_user_plan ON subscription_plan.id = registered_user_plan.plan_id where registered_user_plan.category_subscription = "Resubscriptions" AND registered_user_plan.plan_id = '.$subscription_plan_array_value['id']);
+			$total_count = $query->num_rows();
+			$subscription_plan_array_value['y'] = $total_count;
+			$ResubscriptionsPoints[] = $subscription_plan_array_value;
+		}
+
+		// echo '<pre>';
+		// print_r($ResubscriptionsPoints);
 		// echo '</pre>';
 		// // exit(); 
 
-		// echo '<pre>registred_users ';
-		// print_r($registred_users);
+		// echo '<pre>OriginalPoints :';
+		// print_r($OriginalPoints);
+		// echo '</pre>';
+
+		// echo '<pre>RenewalsPoints :';
+		// print_r($RenewalsPoints);
+		// echo '</pre>';
+
+		// echo '<pre>ResubscriptionsPoints ::';
+		// print_r($ResubscriptionsPoints);
 		// echo '</pre>';
 		// exit(); 
 
-		//registred_users
-		//subscription_plan
+		// exit(); 
+		// exit(); 
 
-		// echo '<pre>';
+
+		$data['OriginalPoints'] = $OriginalPoints;
+		$data['RenewalsPoints'] = $RenewalsPoints;
+		$data['ResubscriptionsPoints'] = $ResubscriptionsPoints;
+
+
+// echo '<pre>overdue_array ';
+// 		print_r($overdue_array);
+// 		echo '</pre>';
+
+// 		echo '<pre>withindate_array ';
+// 		print_r($withindate_array);
+// 		echo '</pre>';
+
+		$data['overdue_array'] = $overdue_array;
+		$data['withindate_array'] = $withindate_array;
+
+		// echo '<pre>data ';
 		// print_r($data);
 		// echo '</pre>';
 		// exit(); 
 
 
-		$this->load->view('dashboard2',$data);		
+
+		$this->load->view('dashboardnongroupadmin',$data);		
+
+
+
+
 	}
 
 	public function Two(){
