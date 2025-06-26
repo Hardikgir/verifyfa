@@ -233,7 +233,10 @@ class Dashboard extends CI_Controller {
 		//registred_users
 		//subscription_plan
 
-
+		// echo '<pre>';
+		// print_r($data);
+		// echo '</pre>';
+		// exit(); 
 
 
 		$this->load->view('dashboard2',$data);		

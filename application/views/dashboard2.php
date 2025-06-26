@@ -92,18 +92,17 @@ $this->load->view('layouts/footer');
 </div>
   <div class="card-body card-body-n" style="padding: 2px 1px;">
 	<?php $plan_row=get_plan_row(2);?>
-	<p class="txt-cardp" style="text-align: center;"><?php // echo $plan_row->title;?></p>
+	<p class="txt-cardp" style="text-align: center;"><?php echo $subscription_plan_details->title;?></p>
 	
 	<ul>
-        <li>Plan Name :- <b><?php echo $subscription_plan_details->title;?></b></li>
-		<li>Activation Date: <b><?php echo date("d-M-Y",strtotime($registered_user_plan_details->plan_start_date));?></b></li>
+        <li>Activation Date: <b><?php echo date("d-M-Y",strtotime($registered_user_plan_details->plan_start_date));?></b></li>
 	</ul>
 
 	<p class="txt-cardp" style="text-align: center;">Plan Brief:</p>
 	<ul>
-		<li>No. of Entities – <b><?php echo $total_company_count;?></b></li>
-		<li>No. of Locations under each Entity – <b><?php echo $total_company_locations_count;?></b></li>
-		<li>Total No. of Users – <b><?php echo $total_users_count;?></b></li>
+		<li>No. of Entities – <b><?php echo $subscription_plan_details->allowed_entities_no;?></b></li>
+		<li>No. of Locations under each Entity – <b><?php echo $subscription_plan_details->location_each_entity;?></b></li>
+		<li>Total No. of Users – <b><?php echo $subscription_plan_details->user_number_register;?></b></li>
         <li>Line Item Available – <b><?php echo $subscription_plan_details->line_item_avaliable;?></b></li>
 	</ul>
 	
@@ -140,20 +139,16 @@ $this->load->view('layouts/footer');
   <div class="card-body card-body-n">
   
 	<h2 style="text-align: center;font-weight: bold;">
-		<?php	
-            $now = time(); 
+        <?php
 
-            $plan_end_date = $registered_user_plan_details->plan_end_date;
-			$your_date = strtotime($registered_user_plan_details->plan_end_date);
-			$datediff = $now - $your_date;
-			$day_different = round($datediff / (60 * 60 * 24));
-            
-            if($day_different < 0){
-                echo "0";
-            }else{
-                echo $day_different;
-            }
-            ?>
+
+		if($registered_user_plan_details->plan_end_date < date("Y-m-d")){
+
+		}else{
+		$time_remain=get_diff_twodate($registered_user_plan_details->plan_end_date);
+		?>
+		<?php echo $time_remain;?> Left
+		<?php } ?>
 	</h2>
 	<!-- <p class="txt-cardp text-left pt-3">* added since April 2023</p> -->
   </div>
@@ -172,7 +167,10 @@ $this->load->view('layouts/footer');
    <h2 style="text-align: center;font-weight: bold;">
     <?php echo $total_company_count; ?>
    </h2>
-   <p class="txt-cardp" style="text-align: center;"><?php echo " (",$subscription_plan_details->allowed_entities_no." remaining)"; ?></p>
+    <?php 
+    $Companies_count = (int)$subscription_plan_details->allowed_entities_no-(int)$total_company_count;
+    ?>
+   <p class="txt-cardp" style="text-align: center;"><?php echo " (",$Companies_count." remaining)"; ?></p>
   </div>
 </div>
 </div>
@@ -187,7 +185,10 @@ $this->load->view('layouts/footer');
    <h2 style="text-align: center;font-weight: bold;">
     <?php echo $total_company_locations_count; ?>
    </h2>
-   <p class="txt-cardp" style="text-align: center;"><?php echo " (",$subscription_plan_details->location_each_entity." remaining)"; ?></p>
+   <?php 
+   $Location_count = (int)$subscription_plan_details->location_each_entity-(int)$total_company_locations_count;
+   ?>
+   <p class="txt-cardp" style="text-align: center;"><?php echo " (".$Location_count." remaining)"; ?></p>
   </div>
 </div>
 </div>
@@ -202,7 +203,10 @@ $this->load->view('layouts/footer');
   <h2 style="text-align: center;font-weight: bold;">
     <?php echo $total_users_count; ?>
    </h2>
-   <p class="txt-cardp" style="text-align: center;"><?php echo " (",$subscription_plan_details->user_number_register." remaining)"; ?></p>
+   <?php 
+    $user_count = (int)$subscription_plan_details->user_number_register-(int)$total_users_count;
+    ?>
+   <p class="txt-cardp" style="text-align: center;"><?php echo " (",$user_count." remaining)"; ?></p>
   </div>
 </div>
 </div>
