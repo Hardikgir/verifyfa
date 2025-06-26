@@ -103,13 +103,13 @@ $cancelled_projects=2;
   
 	<p class="txt-cardp" style="text-align: center;">
 		<?php
-                    if($plan_data->plan_end_date < date("Y-m-d")){
-    
-                    }else{
-                    $time_remain=get_diff_twodate($plan_data->plan_end_date);
-                    ?>
-                    <?php echo $time_remain;?> Left
-                    <?php } ?>
+		if($plan_data->plan_end_date < date("Y-m-d")){
+
+		}else{
+		$time_remain=get_diff_twodate($plan_data->plan_end_date);
+		?>
+		<?php echo $time_remain;?> Left
+		<?php } ?>
 	</p>
 	<!-- <p class="txt-cardp text-left pt-3">* added since April 2023</p> -->
   </div>
