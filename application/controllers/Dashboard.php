@@ -434,6 +434,187 @@ class Dashboard extends CI_Controller {
 		$user_id=$this->user_id;
 		$entity_code=$this->admin_registered_entity_code;
 		
+		// echo '<pre>user_id ::';
+		// print_r($user_id);
+		// echo '</pre>';
+		// exit();
+		
+		$company_id_imp='';
+		$location_id='';
+		$role_result_com = $this->get_all_company_user_role($entity_code);
+
+		if(!empty($role_result_com)){
+			foreach($role_result_com as $row_role){
+				$roledata[]=$row_role->company_id;
+				$roledata1[]=$row_role->location_id;
+			}
+			$company_id_imp = implode(',',$roledata);
+			$location_id = implode(',',$roledata1);
+		}
+		$register_user_id=$this->admin_registered_user_id;
+           
+		
+		// $condition=array('company_id'=>$this->company_id);
+       $condition=array('company_id IN ('.$company_id_imp.') AND project_location IN ('.$location_id.')',"entity_code"=>$this->admin_registered_entity_code);
+
+        if($this->input->post('company_id') && $this->input->post('company_id') !=''){
+			$condition=array('company_id'=>$this->input->post('company_id'));
+        }
+
+      	if($this->input->post('location_id') && $this->input->post('location_id') !=''){
+			$condition=array('company_id'=>$this->input->post('company_id'), 'project_location'=>$this->input->post('location_id'),);
+        }
+
+		// $condition = array();
+		
+	
+		$projects=$this->tasks->get_data('company_projects',$condition);	
+		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+		$new_pattern = array("_", "_", "");
+        foreach($projects as $project)
+        {
+            $project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($project->project_name)));
+            $getprojectdetails=$this->tasks->projectdetail($project_name);
+			 
+            if(!empty($getprojectdetails))
+            {
+                $project->TotalQuantity= ((int)$getprojectdetails[0]->TotalQuantity);
+                if($getprojectdetails[0]->VerifiedQuantity !='')
+                $project->VerifiedQuantity=$getprojectdetails[0]->VerifiedQuantity;
+                else
+                $project->VerifiedQuantity=0;
+            }
+            else
+            {   
+                $project->TotalQuantity=0;
+                $project->VerifiedQuantity=0;
+            }
+            
+		}
+
+		$data['projects']=$projects;
+		$data['page_title']="User Dashboard";
+
+		$company_data_query=$this->db->query("select * from user_role where user_id = '".$user_id."'");
+		$company_data_list = $company_data_query->result();
+
+		// echo '<pre>company_data_list ';
+		// print_r($company_data_list);
+		// echo '</pre>';
+		// exit();
+
+		$data['company_data_list']=$company_data_list;
+
+	
+
+
+		$company_array = array();
+		$location_array = array();
+		foreach($data['company_data_list'] as $company_details){
+			$company_array[] = $company_details->company_id;
+			$location_array[] = $company_details->location_id;
+		}
+
+		
+	
+
+		$company_datas = implode(",", $company_array);
+		$location_datas = implode(",", $location_array);
+
+		$company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location IN ('.$location_datas.') AND company_projects.status = 0 AND item_owner = "'.$user_id.'"')->result();
+		
+		$project_base_count = array();
+		$withing_time = array();
+		$due_date = array();
+		foreach($company_projects as $company_projects_key=>$company_projects_value){
+
+			$project_due_date = $company_projects_value->due_date;
+			$project_name = $company_projects_value->project_name;
+			$due_date = $project_due_date; // Format: Y-m-d
+			$today = date('Y-m-d');
+
+			if ($due_date <= $today) {
+				$project_base_count[$company_projects_value->company_name]['overdue'][] = 1;
+			} else {
+				$project_base_count[$company_projects_value->company_name]['withindate'][] = 1;
+			}
+		}
+
+
+
+		$graph_data = array();
+		$count = 1;
+
+		$overdue_array = array();
+		$withindate_array = array();
+		$count_zero = 1;
+		$count = 0;
+		foreach($project_base_count as $project_base_count_key=>$project_base_count_value){
+			
+
+			$overdue_array[$count]['label'] = $project_base_count_key;
+			$withindate_array[$count]['label'] = $project_base_count_key;
+			$overdue_count_data = 0;
+			$withindate_count_data = 0;
+			if(isset($project_base_count[$project_base_count_key]['overdue'])){
+				$overdue_count_data = count($project_base_count[$project_base_count_key]['overdue']);
+				$project_base_count[$project_base_count_key]['overdue_count'] = count($project_base_count[$project_base_count_key]['overdue']);
+				$graph_data[$project_base_count_key]['overdue_count'] = count($project_base_count[$project_base_count_key]['overdue'] );
+			}else{
+				$overdue_count_data = 0;
+				$project_base_count[$project_base_count_key]['overdue_count'] = 0;
+				$graph_data[$project_base_count_key]['overdue_count'] = 0;
+			}
+
+			$overdue_array[$count]['y'] = $overdue_count_data;
+			$overdue_array[$count]['id'] = $count_zero;
+
+			if(isset($project_base_count[$project_base_count_key]['withindate'])){
+				$withindate_count_data = count($project_base_count[$project_base_count_key]['withindate']);
+				$project_base_count[$project_base_count_key]['withindate_count'] = count($project_base_count[$project_base_count_key]['withindate']);
+				$graph_data[$project_base_count_key]['withindate_count'] = count($project_base_count[$project_base_count_key]['withindate']);
+			}else{
+				$withindate_count_data = 0;
+				$project_base_count[$project_base_count_key]['withindate_count'] = 0;
+				$graph_data[$project_base_count_key]['withindate_count'] = 0;
+			}
+
+			$withindate_array[$count]['y'] = $withindate_count_data;
+			$withindate_array[$count]['id'] = $count_zero;
+			$count++;
+			$count_zero++;
+		}
+
+
+		$company_mapped_query = $this->db->query('SELECT count(company_id) as company_mapped FROM user_role where user_role.user_id = '.$user_id);
+		$company_mapped_query_result = $company_mapped_query->row();
+		$data['Companies_Mapped'] = $company_mapped_query_result->company_mapped;
+
+		$location_mapped_query = $this->db->query('SELECT count(location_id) as location_mapped FROM user_role where user_role.user_id = '.$user_id);
+		$location_mapped_query_result = $location_mapped_query->row();
+		$data['Locations_mapped'] = $location_mapped_query_result->location_mapped;
+
+		$Closed_Projects_query = $this->db->query('SELECT * FROM company_projects where status in (2,3) AND company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location IN ('.$location_datas.') AND company_projects.status = 0 AND item_owner = "'.$user_id.'"');
+		$Closed_Projects_count = $Closed_Projects_query->num_rows();
+		$data['Closed_Projects'] = $Closed_Projects_count;
+
+		$Cancelled_Projects_query = $this->db->query('SELECT * FROM company_projects where status = "0" AND cancelled_date IS NOT NULL AND company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location IN ('.$location_datas.') AND company_projects.status = 0 AND item_owner = "'.$user_id.'"');
+		$Cancelled_Projects_count = $Cancelled_Projects_query->num_rows();
+		$data['Cancelled_Projects'] = $Cancelled_Projects_count;
+		
+		$data['overdue_array'] = $overdue_array;
+		$data['withindate_array'] = $withindate_array;
+		$this->load->view('Userdashboard',$data);	
+	}
+
+
+	public function User_Backup_PREVIOUS_Work_02July()
+	{   
+
+		$admin_registered_user_id = $_SESSION['logged_in']['admin_registered_user_id'];
+		$user_id=$this->user_id;
+		$entity_code=$this->admin_registered_entity_code;
+		
 		$company_id_imp='';
 		$location_id='';
 		$role_result_com = $this->get_all_company_user_role($entity_code);
@@ -728,12 +909,10 @@ class Dashboard extends CI_Controller {
 		$data['overdue_array'] = $overdue_array;
 		$data['withindate_array'] = $withindate_array;
 
-		$this->load->view('Userdashboard',$data);		
-
-
-
-
+		$this->load->view('Userdashboard',$data);	
 	}
+
+
 
 
 
