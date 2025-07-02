@@ -19,3 +19,59 @@ Today Work (26/6/2025)
 -> Entity Owner Owner/ Process Owner Block Cards
 -> Entity Owner Owner/ Process Owner Dashboard Graph
 -> Date of 24/6/2025 list point some of point is pending.
+
+
+Today Work (02/07/2025)  (Last Meeting Was 27/06/2025)
+-> Last Meeting Point
+    -> Block Card (Admin Panel)
+    -> Graph should be Different (Admin Panel)
+    -> Entity Owner Their is Some Count
+    -> Entity block Card that is showing as Admin Dashboard that should be user Dashboard.
+    -> Entity Owner Graph X-Axis should be chanegs after select locations 
+    -> Entity Owner While select Company then location should be all location.
+    -> User Dashboard instead on admin dashboard in role of Entiry owner | Process Owner | Manager
+ 
+PREVIOUS COUNTS 
+
+No. of Companies mapped :- 1
+No. of Locations mapped :- 1
+No. of Open Projects :- 1 [Overdue :- 1 | Within Date :- 0]
+No. of Closed Projects :- 7
+No. of Cancelled Projects :- 0
+
+
+id :- 32
+userEmail :- rajiv@test
+entity_code :-  PROBUDS
+registered_user_id :- 8
+Pass :- 123456
+
+As Last Time
+
+Rajiv Add New Role 
+1. HMC (Trial) & Manaser & Entity Owner
+2. HMCMM Auto LTD & New Delhi & Entity Owner
+
+Add New project in HMCMM Aut & New Delhi & Entity Owner (Rajiv)
+Edit Project HMC Trial & Manaser & Entity Owner (Rajiv)
+
+After All Chanegs & Update Count is 
+No. of Companies mapped :- 3
+No. of Locations mapped :- 3
+No. of Open Projects :- 7 [Overdue :- 5 | Within Date :- 2]  (That should be 3 [One is previous | One is Added new | One is Asssign])
+No. of Closed Projects :- 7
+No. of Cancelled Projects :- 0
+
+Also in Graph Company Selection also showing Twise
+
+New Task :-
+-> One other Graph should be create that is in pie but we have to convert it into graph. (10:43 AM Explained) (Should be Entity Owner per Show karvana h) 
+-> Project Specific Graph Should be Load (You get Data in Group Admin Dashboard). 
+-> Other Graoh that data you get from (in Project Details > Slider 4 > Go to Table [Resource wise Utilization])
+    -> Filter Should be Company | Location | Project id (All are Dependency) & Verifier is not depending
+    -> is possible if verify select as shubh and theri showing theri company location (in Graph) (Means only verify as subh details should be showing)
+
+-> Page Difference karlo 
+    Admin Graph (Group admin me koi graph hi nai h)
+    User Graph (Block card or Graph)
+->  (in Project Details > Slider 4 > Go to Table [Resource wise Utilization]) ek bar ye page ko check karna h may be some readymate concept we get it
