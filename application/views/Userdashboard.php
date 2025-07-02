@@ -224,6 +224,14 @@ $this->load->view('layouts/footer');
 			</div>
 			<div id="TypeSubscriptionActiveChart" style="height: 370px; width: 100%;"></div>
         </div>
+
+        <div class="col-md-12 mt-5" >
+            <div style="background: #fff;padding: 15px;">
+            <h2 class="text-center">Applicable to Open Projects only</h2>
+            <div id="stackedBarchartContainer" style="height: 370px; width: 100%;"></div>
+            </div>
+        </div> 
+
         </div>  
 </div>
 
@@ -282,6 +290,95 @@ window.onload = function () {
         }
         e.chart.render();
     }
+
+
+
+
+
+
+
+
+
+    var chart = new CanvasJS.Chart("stackedBarchartContainer", {
+	animationEnabled: true,
+	title:{
+		text: ""
+	},
+	axisX: {
+		valueFormatString: "DDD"
+	},
+	axisY: {
+		prefix: ""
+	},
+	toolTip: {
+		shared: true
+	},
+	legend:{
+		cursor: "pointer",
+		itemclick: toggleDataSeries
+	},
+	data: [{
+		type: "stackedBar",
+		name: "Meals",
+		showInLegend: "true",
+		xValueFormatString: "DD, MMM",
+		yValueFormatString: "#,##0",
+		dataPoints: [
+			{ x: new Date(2017, 0, 30), y: 5,color: "transparent",label: "Project-7"},
+			{ x: new Date(2017, 0, 31), y: 45,color: "transparent",label: "Project-6"},
+			{ x: new Date(2017, 1, 1), y: 71,color: "transparent",label: "Project-5"},
+			{ x: new Date(2017, 1, 2), y: 12,color: "transparent",label: "Project-4"},
+			{ x: new Date(2017, 1, 3), y: 60,color: "transparent",label: "Project-3"},
+			{ x: new Date(2017, 1, 4), y: 23,color: "transparent",label: "Project-2"},
+			{ x: new Date(2017, 1, 5), y: 98,color: "transparent",label: "Project-1"}
+		]
+	},
+	{
+		type: "stackedBar",
+		name: "Snacks",
+		showInLegend: "true",
+		xValueFormatString: "DD, MMM",
+		yValueFormatString: "#,##0",
+		dataPoints: [
+			{ x: new Date(2017, 0, 30), y: 20,color: "#4f81bc",label: "Project-7"},
+			{ x: new Date(2017, 0, 31), y: 95,color: "#4f81bc",label: "Project-6"},
+			{ x: new Date(2017, 1, 1), y: 71,color: "#4f81bc",label: "Project-5"},
+			{ x: new Date(2017, 1, 2), y: 58,color: "#4f81bc",label: "Project-4"},
+			{ x: new Date(2017, 1, 3), y: 60,color: "#4f81bc",label: "Project-3"},
+			{ x: new Date(2017, 1, 4), y: 65,color: "#4f81bc",label: "Project-2"},
+			{ x: new Date(2017, 1, 5), y: 89,color: "#4f81bc",label: "Project-1"}
+		]
+	},
+	{
+		type: "stackedBar",
+		name: "Snacks",
+		showInLegend: "true",
+		xValueFormatString: "DD, MMM",
+		yValueFormatString: "#,##0",
+		dataPoints: [
+			{ x: new Date(2017, 0, 30), y: 20,color: "#f29e65",label: "Project-7"},
+			{ x: new Date(2017, 0, 31), y: 95,color: "#f29e65",label: "Project-6"},
+			{ x: new Date(2017, 1, 1), y: 71,color: "#f29e65",label: "Project-5"},
+			{ x: new Date(2017, 1, 2), y: 58,color: "#f29e65",label: "Project-4"},
+			{ x: new Date(2017, 1, 3), y: 60,color: "#f29e65",label: "Project-3"},
+			{ x: new Date(2017, 1, 4), y: 65,color: "#f29e65",label: "Project-2"},
+			{ x: new Date(2017, 1, 5), y: 89,color: "#f29e65",label: "Project-1"}
+		]
+	}
+	]
+});
+chart.render();
+
+function toggleDataSeries(e) {
+	if(typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+		e.dataSeries.visible = false;
+	}
+	else {
+		e.dataSeries.visible = true;
+	}
+	chart.render();
+}
+
 }
 
 
