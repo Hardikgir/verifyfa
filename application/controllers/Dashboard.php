@@ -427,7 +427,7 @@ class Dashboard extends CI_Controller {
 	}
 
 
-	public function second()
+	public function User()
 	{   
 
 		$admin_registered_user_id = $_SESSION['logged_in']['admin_registered_user_id'];
@@ -485,18 +485,12 @@ class Dashboard extends CI_Controller {
 		}
 
 		$data['projects']=$projects;
-		$data['page_title']="Dashboard";
+		$data['page_title']="User Dashboard";
 
 		$company_data_query=$this->db->query("select * from user_role where user_id = '".$user_id."'");
 		$company_data_list = $company_data_query->result();
 
 		$data['company_data_list']=$company_data_list;
-
-		/*
-		$company_mapped_query = $this->db->query('SELECT count(company_id) as company_mapped FROM user_role where user_role.user_id = '.$user_id);
-		$company_mapped_query_result = $company_mapped_query->row();
-		$data['Companies_Mapped'] = $company_mapped_query_result->company_mapped;
-		*/
 
 		$this->db->select("*");
 		$this->db->from('registred_users');
@@ -734,7 +728,7 @@ class Dashboard extends CI_Controller {
 		$data['overdue_array'] = $overdue_array;
 		$data['withindate_array'] = $withindate_array;
 
-		$this->load->view('dashboardnongroupadmin',$data);		
+		$this->load->view('Userdashboard',$data);		
 
 
 

@@ -179,17 +179,24 @@ $user_role_subadmin_cnt=user_role_subadmin_cnt($user_id,$entity_code);
 				?>	
 <?php 
 $usercntrole=Count_user_role();
+$role_base_title = 'Admin';
+$dashboard_url = base_url().'index.php/dashboard';
+if($usercntrole == '3'){
+	$role_base_title = 'User';
+	$dashboard_url = base_url().'index.php/dashboard/User';
+}
+
 if($usercntrole > 0){ 
 	?>	
-					<li class="nav-item <?php if(($page_title=='Dashboard') || ($page_title=='Manage Notification')  || ($page_title =='Manage Entity') ||  ($page_title =='Manage Location')|| ($page_title =='Manage Department')  || ($page_title =='Manage User')  || ($page_title =='User Maping')){echo 'active';}?>">
+					<li class="nav-item <?php if(($page_title=='Dashboard') || ($page_title=='User Dashboard') || ($page_title=='Manage Notification')  || ($page_title =='Manage Entity') ||  ($page_title =='Manage Location')|| ($page_title =='Manage Department')  || ($page_title =='Manage User')  || ($page_title =='User Maping')){echo 'active';}?>">
 						<a class="nav-link"> 
-							<p>Admin Function</p>
+							<p><?php echo $role_base_title; ?> Function</p>
 						</a>
 					</li>
 					<hr class="hr" />
-					<li class="nav-item <?php echo $page_title=='Dashboard'?'active':'';?> ">
+					<li class="nav-item <?php if(($page_title=='Dashboard') || ($page_title=='User Dashboard')){ echo 'active'; } ?>">
 						<a class="nav-link" href="#"> <i class="material-icons">dashboard</i>
-							<p>Admin Dashboard</p>
+							<p><?php echo $role_base_title; ?> Dashboard</p>
 						</a>
 					</li>
 
@@ -273,11 +280,27 @@ if($usercntrole > 0){
 						</a>
 					</li>
 					<hr class="hr" />
+
+					<?php /*
 					<li class="nav-item <?php echo $page_title=='Activity Dashboard'?'active':'';?> ">
 						<a class="nav-link" href="<?php echo base_url();?>index.php/dashboard"> <i class="material-icons">dashboard</i>
 							<p>Dashboard</p>
 						</a>
 					</li>
+					
+					<li class="nav-item <?php echo $page_title=='User Dashboard'?'active':'';?> ">
+						<a class="nav-link" href="<?php echo base_url();?>index.php/dashboard/User"> <i class="material-icons">dashboard</i>
+							<p>Dashboard</p>
+						</a>
+					</li> */ ?>
+
+					<li class="nav-item <?php echo $page_title=='User Dashboard'?'active':'';?> ">
+						<a class="nav-link" href="<?php echo $dashboard_url;?>"> <i class="material-icons">dashboard</i>
+							<p>Dashboard</p>
+						</a>
+					</li>
+
+					
           <?php 
           //manager role Menu//
 			if($user_role_manager_cnt > 0){ 
