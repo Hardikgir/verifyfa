@@ -249,7 +249,7 @@ window.onload = function () {
             reversed: true
         },
         axisY: {
-            title: "No. of Subscriptions",
+            title: "No. of Active Projects",
             suffix: "",
             interval: 1,
         },
