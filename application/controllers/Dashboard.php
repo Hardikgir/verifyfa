@@ -615,6 +615,72 @@ class Dashboard extends CI_Controller {
 		
 		$data['overdue_array'] = $overdue_array;
 		$data['withindate_array'] = $withindate_array;
+
+
+
+		// $condition=array('id'=>$id);
+		// $projects=$this->tasks->get_data('company_projects',$condition);
+		$projects=$this->db->query('SELECT * from company_projects')->result();
+		// echo '<pre>projects ';
+		// print_r($projects);
+		// echo '</pre>';
+		// exit();
+
+		$Date = "2010-09-17";
+		$Date1 = "2010-09-07";
+		$Date2 = "2010-09-15";
+		$stackedBarchartContainer_array = array();
+		$stackedBarchartContainer_array1 = array();
+		$stackedBarchartContainer_array2 = array();
+		$count_Value = 1;
+		for($i=0;$i<7;$i++)
+		{
+			$test1='2010-04-19 18:31:27';
+			$stackedBarchartContainer_array[$i]['x'] = $i;
+			$stackedBarchartContainer_array[$i]['y'] = date("Y-m-d",strtotime($Date. ' + '.$count_Value.' day'));
+			$stackedBarchartContainer_array[$i]['color'] = "transparent";
+			$stackedBarchartContainer_array[$i]['label'] = "Project-".$count_Value;
+			$count_Value++;
+
+			//  echo json_encode($stackedBarchartContainer_array, JSON_NUMERIC_CHECK);
+
+
+			$stackedBarchartContainer_array1[$i]['x'] = $i;
+			$stackedBarchartContainer_array1[$i]['y'] = date("Y-m-d",strtotime($Date1. ' + '.$count_Value.' day'));
+			$stackedBarchartContainer_array1[$i]['color'] = "transparent";
+			$stackedBarchartContainer_array1[$i]['label'] = "Project-".$count_Value;
+			$count_Value++;
+
+			$stackedBarchartContainer_array2[$i]['x'] = $i; 
+			$stackedBarchartContainer_array2[$i]['y'] = date("Y-m-d",strtotime($Date2. ' + '.$count_Value.' day'));
+			$stackedBarchartContainer_array2[$i]['color'] = "transparent";
+			$stackedBarchartContainer_array2[$i]['label'] = "Project-".$count_Value;
+			$count_Value++;
+			
+		}	
+
+		// echo '<pre>stackedBarchartContainer_array ';
+		// print_r($stackedBarchartContainer_array);
+		// echo '</pre>';
+		// exit();
+		$data['stackedBarchartContainer_array'] = $stackedBarchartContainer_array;
+		$data['stackedBarchartContainer_array1'] = $stackedBarchartContainer_array1;
+		$data['stackedBarchartContainer_array2'] = $stackedBarchartContainer_array2;
+		
+
+
+		/*
+		$count = 0;
+		$test1='2010-04-19 18:31:27';
+		$stackedBarchartContainer_array[$count]['x'] = date("Y-m-d",strtotime($test1));
+		$stackedBarchartContainer_array[$count]['y'] = 10;
+		$stackedBarchartContainer_array[$count]['color'] = "transparent";
+		$stackedBarchartContainer_array[$count]['label'] = "Project-7";
+
+		$data['stackedBarchartContainer_array'] = $stackedBarchartContainer_array;
+		*/
+
+
 		$this->load->view('Userdashboard',$data);	
 	}
 
@@ -1105,9 +1171,17 @@ class Dashboard extends CI_Controller {
             $project->project_location=$companylocation[0]->location_name;
 		}
 
+
+
+		$listing=getTagUntag($projects[0]->project_name);
+		$cat=getTagUntagCategories($projects[0]->project_name);
+		$allcategories=getCategories($projects[0]->project_name);
+		
+
 		// print_r($projects);
 		$data['projects']=$projects;
 		$data['page_title']="Dashboard";
+
 		$this->load->view('project_detail',$data);
 		
 	}

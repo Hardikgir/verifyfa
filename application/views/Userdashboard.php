@@ -291,8 +291,35 @@ window.onload = function () {
         e.chart.render();
     }
 
+console.log("asdasd");
+    console.log((new Date(2024, 9, 4, 9, 0)).getTime());
 
 
+    console.log("Overdue stackedBarchartContainer_array: ", <?php echo json_encode($stackedBarchartContainer_array, JSON_NUMERIC_CHECK); ?>);
+
+    console.log("stackedBarchartContainer_array :- ",[
+			{ x: new Date(2017, 0, 30), y: 5,color: "transparent",label: "Project-7"},
+			{ x: new Date(2017, 0, 31), y: 45,color: "transparent",label: "Project-6"},
+			{ x: new Date(2017, 1, 1), y: 71,color: "transparent",label: "Project-5"},
+			{ x: new Date(2017, 1, 2), y: 12,color: "transparent",label: "Project-4"},
+			{ x: new Date(2017, 1, 3), y: 60,color: "transparent",label: "Project-3"},
+			{ x: new Date(2017, 1, 4), y: 23,color: "transparent",label: "Project-2"},
+			{ x: new Date(2017, 1, 5), y: 50,color: "transparent",label: "Project-1"}
+		])
+
+
+
+    console.log("Overdue stackedBarchartContainer_array1: ", <?php echo json_encode($stackedBarchartContainer_array1, JSON_NUMERIC_CHECK); ?>);
+
+    console.log("Overdue stackedBarchartContainer_array1: ",[
+			{ x: new Date(2017, 0, 30), y: 20,color: "#4f81bc",label: "Project-7"},
+			{ x: new Date(2017, 0, 31), y: 95,color: "#4f81bc",label: "Project-6"},
+			{ x: new Date(2017, 1, 1), y: 71,color: "#4f81bc",label: "Project-5"},
+			{ x: new Date(2017, 1, 2), y: 58,color: "#4f81bc",label: "Project-4"},
+			{ x: new Date(2017, 1, 3), y: 60,color: "#4f81bc",label: "Project-3"},
+			{ x: new Date(2017, 1, 4), y: 65,color: "#4f81bc",label: "Project-2"},
+			{ x: new Date(2017, 1, 5), y: 89,color: "#4f81bc",label: "Project-1"}
+		]);
 
 
 
@@ -330,7 +357,7 @@ window.onload = function () {
 			{ x: new Date(2017, 1, 2), y: 12,color: "transparent",label: "Project-4"},
 			{ x: new Date(2017, 1, 3), y: 60,color: "transparent",label: "Project-3"},
 			{ x: new Date(2017, 1, 4), y: 23,color: "transparent",label: "Project-2"},
-			{ x: new Date(2017, 1, 5), y: 98,color: "transparent",label: "Project-1"}
+			{ x: new Date(2017, 1, 5), y: 50,color: "transparent",label: "Project-1"}
 		]
 	},
 	{

@@ -187,6 +187,8 @@ if($usercntrole == '3'){
 }
 
 if($usercntrole > 0){ 
+	
+if($usercntrole != '3'){
 	?>	
 					<li class="nav-item <?php if(($page_title=='Dashboard') || ($page_title=='User Dashboard') || ($page_title=='Manage Notification')  || ($page_title =='Manage Entity') ||  ($page_title =='Manage Location')|| ($page_title =='Manage Department')  || ($page_title =='Manage User')  || ($page_title =='User Maping')){echo 'active';}?>">
 						<a class="nav-link"> 
@@ -194,11 +196,12 @@ if($usercntrole > 0){
 						</a>
 					</li>
 					<hr class="hr" />
-					<li class="nav-item <?php if(($page_title=='Dashboard') || ($page_title=='User Dashboard')){ echo 'active'; } ?>">
+					<li class="nav-item <?php if(($page_title=='Dashboard')){ echo 'active'; } ?>">
 						<a class="nav-link" href="#"> <i class="material-icons">dashboard</i>
 							<p><?php echo $role_base_title; ?> Dashboard</p>
 						</a>
 					</li>
+					<?php } ?>
 
       <?php 
 		if(($user_role_addmin_cnt > 0)){ 
@@ -273,6 +276,8 @@ if($usercntrole > 0){
 						</a>
 					</li>
                     <?php } ?>
+					
+					<?php if($usercntrole != '3'){ ?>
 
 					<li class="nav-item  <?php if(($page_title=='Plan Cycle') || ($page_title =='Reports') ||  ($page_title =='Excpetions')){echo 'active';}?>">
 						<a class="nav-link"> 
@@ -280,6 +285,8 @@ if($usercntrole > 0){
 						</a>
 					</li>
 					<hr class="hr" />
+
+					<?php } ?>
 
 					<?php /*
 					<li class="nav-item <?php echo $page_title=='Activity Dashboard'?'active':'';?> ">

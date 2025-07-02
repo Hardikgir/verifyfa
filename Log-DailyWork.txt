@@ -75,3 +75,6 @@ New Task :-
     Admin Graph (Group admin me koi graph hi nai h)
     User Graph (Block card or Graph)
 ->  (in Project Details > Slider 4 > Go to Table [Resource wise Utilization]) ek bar ye page ko check karna h may be some readymate concept we get it
+
+Datatable Chanegs :- 
+ALTER TABLE `verifiedproducts` CHANGE `quantity_verified` `quantity_verified` VARCHAR(255) NULL DEFAULT NULL;
