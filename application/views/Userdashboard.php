@@ -192,7 +192,7 @@ $this->load->view('layouts/footer');
                     <select name="company_id" id="company_id" class="form-control" required>
                         <option value="">All</option>
                         <?php foreach($company_data_list as $row_com_list){ 
-                             $company_n=get_company_row($row_com_list->company_id);
+                             $company_n=get_company_row($row_com_list['company_id']);
                             ?>
                         <option value="<?php echo $company_n->id;?>"><?php echo $company_n->company_name.'('. $company_n->short_code.')';?></option>
 

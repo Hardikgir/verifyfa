@@ -495,25 +495,25 @@ class Dashboard extends CI_Controller {
 		$data['projects']=$projects;
 		$data['page_title']="User Dashboard";
 
+		// $company_data_query=$this->db->query("select * from user_role where user_id = '".$user_id."' Group by company_id");
 		$company_data_query=$this->db->query("select * from user_role where user_id = '".$user_id."'");
 		$company_data_list = $company_data_query->result();
 
-		// echo '<pre>company_data_list ';
-		// print_r($company_data_list);
-		// echo '</pre>';
-		// exit();
-
-		$data['company_data_list']=$company_data_list;
-
-	
-
-
+		
+		
+		$company_dropdown_array = array();
 		$company_array = array();
 		$location_array = array();
-		foreach($data['company_data_list'] as $company_details){
-			$company_array[] = $company_details->company_id;
-			$location_array[] = $company_details->location_id;
+		foreach($company_data_list as $company_data_list){
+			if(!in_array($company_data_list->company_id, $company_array)){
+				$company_dropdown_array[]['company_id'] = $company_data_list->company_id;
+			}
+			$company_array[] = $company_data_list->company_id;
+			$location_array[] = $company_data_list->location_id;
 		}
+	
+		$data['company_data_list']=$company_dropdown_array;
+
 
 		
 	
@@ -523,6 +523,13 @@ class Dashboard extends CI_Controller {
 
 		$company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location IN ('.$location_datas.') AND company_projects.status = 0 AND item_owner = "'.$user_id.'"')->result();
 		
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
+
+		
+
 		$project_base_count = array();
 		$withing_time = array();
 		$due_date = array();
@@ -586,7 +593,11 @@ class Dashboard extends CI_Controller {
 		}
 
 
-		$company_mapped_query = $this->db->query('SELECT count(company_id) as company_mapped FROM user_role where user_role.user_id = '.$user_id);
+		$company_mapped_query = $this->db->query('SELECT count(company_id) as company_mapped FROM user_role where user_role.user_id = '.$user_id.' Group by company_id');
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
 		$company_mapped_query_result = $company_mapped_query->row();
 		$data['Companies_Mapped'] = $company_mapped_query_result->company_mapped;
 
@@ -921,18 +932,40 @@ class Dashboard extends CI_Controller {
 		
 		$company_datas = $_POST['company_id'];
 		$location_datas = $_POST['location_id'];
-		$company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.company_id IN ('.$company_datas.')')->result();
+		$user_id=$this->user_id;
+		// $company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.company_id IN ('.$company_datas.')')->result();
 
+		$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.status = 0')->result();
 
-		if(!empty($location_datas)){
-			$company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location = '.$location_datas)->result();
-		}
+		$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND item_owner = '.$user_id.' AND company_projects.status = 0')->result();
+
 
 		// echo '<pre>last_query ';
 		// print_r($this->db->last_query());
 		// echo '</pre>';
 		// exit();
-		
+
+
+		if(!empty($location_datas)){
+			// $company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location = '.$location_datas)->result();
+
+			$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND item_owner = '.$user_id.' AND company_projects.project_location = '.$location_datas.' AND company_projects.status = 0')->result();
+
+			// echo '<pre>last_query ';
+			// print_r($this->db->last_query());
+			// echo '</pre>';
+			// exit();
+		}
+
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// // exit();
+
+		// echo '<pre>company_projects ';
+		// print_r($company_projects);
+		// echo '</pre>';
+		// // exit();
 		
 		$project_base_count = array();
 		$withing_time = array();
@@ -944,13 +977,23 @@ class Dashboard extends CI_Controller {
 			$due_date = $project_due_date; // Format: Y-m-d
 			$today = date('Y-m-d');
 
+			// if ($due_date <= $today) {
+			// 	$project_base_count[$company_projects_value->company_name]['overdue'][] = 1;
+			// } else {
+			// 	$project_base_count[$company_projects_value->company_name]['withindate'][] = 1;
+			// }
+
 			if ($due_date <= $today) {
-				$project_base_count[$company_projects_value->company_name]['overdue'][] = 1;
+				$project_base_count[$company_projects_value->location_name]['overdue'][] = 1;
 			} else {
-				$project_base_count[$company_projects_value->company_name]['withindate'][] = 1;
+				$project_base_count[$company_projects_value->location_name]['withindate'][] = 1;
 			}
 		}
 
+		// echo '<pre>';
+		// print_r($project_base_count);
+		// echo '</pre>';
+		// exit();
 
 
 		$graph_data = array();
