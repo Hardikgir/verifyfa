@@ -623,8 +623,7 @@ class Dashboard extends CI_Controller {
 		$projects=$this->db->query('SELECT * from company_projects')->result();
 
 		$stackedBarchartContainer_array = array();
-		$stackedBarchartContainer_array1 = array();
-		$stackedBarchartContainer_array2 = array();
+		
 		$count = 0;
 		foreach($projects as $projects_key=>$projects_value){
 			
@@ -701,8 +700,6 @@ class Dashboard extends CI_Controller {
 		// $stackedBarchartContainer_array[7]['label'] = "Project-1";
 		*/
 		$data['stackedBarchartContainer_array'] = $stackedBarchartContainer_array;
-		$data['stackedBarchartContainer_array1'] = $stackedBarchartContainer_array1;
-		$data['stackedBarchartContainer_array2'] = $stackedBarchartContainer_array2;
 		
 
 

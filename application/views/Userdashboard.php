@@ -241,8 +241,6 @@ echo '</pre>';
         <div class="col-md-12 mt-5" >
             <div style="background: #fff;padding: 15px;">
             <h2 class="text-center">Applicable to Open Projects only</h2>
-            <!-- <div id="stackedBarchartContainer" style="height: 370px; width: 100%;"></div> -->
-
             <div id="chartContainer" style="height: 400px; width: 100%;"></div>
             </div>
         </div> 
