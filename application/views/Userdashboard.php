@@ -83,9 +83,9 @@ $this->load->view('layouts/footer');
 
 $Date = "2024-04-09 01:00:00"; // Set the date to the current date
 
-echo '<pre>';
-print_r(date("Y-m-d",strtotime($Date. ' + 1 day')));
-echo '</pre>';
+// echo '<pre>';
+// print_r(date("Y-m-d",strtotime($Date. ' + 1 day')));
+// echo '</pre>';
 // exit();
 
 ?>
@@ -239,6 +239,60 @@ echo '</pre>';
         </div>
 
         <div class="col-md-12 mt-5" >
+
+          <form id="application_open_project_userForm" method="post" class="bg-white">
+                <br>
+                <div class="row p-3">
+                
+
+                <div class="col-md-3">
+                    <label class="form-label">Select Company</label>
+                    <select name="application_open_project_company_id" id="application_open_project_company_id" class="form-control" required>
+                        <option value="">All</option>
+                        <?php foreach($company_data_list as $row_com_list){ 
+                             $company_n=get_company_row($row_com_list['company_id']);
+                            ?>
+                        <option value="<?php echo $company_n->id;?>"><?php echo $company_n->company_name.'('. $company_n->short_code.')';?></option>
+
+                        <?php }?>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Select Location</label>
+                    <select name="application_open_project_company_location" id="application_open_project_company_location" class="form-control">
+                        <option value="">All</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Select Project ID</label>
+                    <select name="application_open_project_project_id" id="application_open_project_project_id" class="form-control">
+                        <option value="">All</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Select Verifier</label>
+                    <select name="application_open_project_verifier" id="application_open_project_verifier" class="form-control">
+                        <option value="">All</option>
+                         <?php foreach($vrifier_users as $vrifier_users_value){ ?>
+                            <option value="<?php echo $vrifier_users_value->user_id;?>"><?php echo $vrifier_users_value->user_firstName;?></option> 
+                         <?php } ?>
+                    </select>
+                </div>
+
+
+
+                <div class="col-md-2 form-row">
+                <button type="submit" class="btn btn-success">GO</button>
+              </div>
+                </div>
+               
+                
+                <br>
+        </form>
+
             <div style="background: #fff;padding: 15px;">
             <h2 class="text-center">Applicable to Open Projects only</h2>
             <div id="chartContainer" style="height: 400px; width: 100%;"></div>
@@ -379,6 +433,43 @@ document.getElementById('company_id').onchange = function() {
       }
     });
 }
+
+document.getElementById('application_open_project_company_id').onchange = function() {
+    var company_id = this.value;
+    var fd = new FormData();
+    fd.append('company_id',[company_id]);
+    $.ajax({
+      url: "<?php echo base_url();?>index.php/plancycle/getlocationdata",
+      type: 'POST',
+      cache: false,
+      contentType: false,
+      processData: false,
+      data: fd,
+      success: function(data) {
+        $('#application_open_project_company_location').find('option').remove().end().append(data);
+      }
+    });
+}
+
+
+document.getElementById('application_open_project_company_location').onchange = function() {
+    var company_id = $("#application_open_project_company_id").val();
+    var location_id = this.value;
+    var fd = new FormData();
+    fd.append('company_id',[company_id]);
+    fd.append('location_id',[location_id]);
+    $.ajax({
+      url: "<?php echo base_url();?>index.php/plancycle/getprojectidndata",
+      type: 'POST',
+      cache: false,
+      contentType: false,
+      processData: false,
+      data: fd,
+      success: function(data) {
+        $('#application_open_project_project_id').find('option').remove().end().append(data);
+      }
+    });
+}
 </script>
 
 
@@ -453,5 +544,64 @@ $(document).ready(function(){
             }
         });
     });
+
+
+     $('#application_open_project_userForm').on('submit', function(e){
+        e.preventDefault();
+
+        $.ajax({
+            url: "<?php echo base_url();?>index.php/Dashboard/ApplicableOpenProjectGraphProjectWise",
+            type: "POST",
+            data: $(this).serialize(),
+            dataType: "json",
+            success: function(res){
+
+
+                var chart = new CanvasJS.Chart("chartContainer", {
+                theme: "light2",
+                animationEnabled: true,
+                exportEnabled: true,
+                title: {
+                    text: "",
+                    fontSize: 24    
+                },
+                axisY: {
+                    labelFormatter: function(e){
+                    jsDate = new Date(e.value * 1000); // Convert seconds to milliseconds
+                    return jsDate.toISOString().split('T')[0];
+                    },
+                    gridThickness: 1
+                },
+                toolTip:{
+                    contentFormatter: function ( e ) {
+                    Start_Date = new Date(e.entries[0].dataPoint.y[0] * 1000); // Convert seconds to milliseconds
+                    End_Date = new Date(e.entries[0].dataPoint.y[1] * 1000); // Convert seconds to milliseconds
+                    return "<strong>" + e.entries[0].dataPoint.label + "</strong></br> Start: "+Start_Date.toISOString().split('T')[0]+"</br>End : "+End_Date.toISOString().split('T')[0];
+                    },
+                    backgroundColor: "#f7f7f7",
+                    fontColor: "#333",
+                    borderThickness: 1,
+                    borderColor: "#ddd"
+                },
+            data: [
+                {
+                type: "rangeBar",
+                dataPoints: res.stackedBarchartContainer_array
+                
+
+                }
+            ]
+            });
+
+            chart.render();
+
+            }
+
+        });
+
+    });
+
+
+
 });
 </script>

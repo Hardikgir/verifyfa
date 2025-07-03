@@ -430,14 +430,15 @@ class Dashboard extends CI_Controller {
 	public function User()
 	{   
 
+		// echo '<pre>_SESSION ';
+		// print_r($_SESSION);
+		// echo '</pre>';
+		// exit();
+
 		$admin_registered_user_id = $_SESSION['logged_in']['admin_registered_user_id'];
 		$user_id=$this->user_id;
 		$entity_code=$this->admin_registered_entity_code;
 		
-		// echo '<pre>user_id ::';
-		// print_r($user_id);
-		// echo '</pre>';
-		// exit();
 		
 		$company_id_imp='';
 		$location_id='';
@@ -616,7 +617,9 @@ class Dashboard extends CI_Controller {
 		$data['overdue_array'] = $overdue_array;
 		$data['withindate_array'] = $withindate_array;
 
-		$projects=$this->db->query('SELECT * from company_projects where status = 0')->result();
+		// $projects=$this->db->query('SELECT * from company_projects where status = 0')->result();
+
+		$projects=$this->db->query('SELECT * from company_projects where item_owner = '.$user_id)->result();
 		$stackedBarchartContainer_array = array();
 		
 		$count = 0;
@@ -624,11 +627,17 @@ class Dashboard extends CI_Controller {
 			$project_start_date = $projects_value->start_date;
 			$project_end_date = $projects_value->due_date;
 			$project_name_value = $projects_value->project_name;
-			$stackedBarchartContainer_array[$count]['y'] = [(strtotime($project_start_date. ' + 1 day')), (strtotime($project_end_date. ' + 11 day'))];
+			$stackedBarchartContainer_array[$count]['y'] = [(strtotime($project_start_date. ' + 1 day')), (strtotime($project_end_date. ' + 1 day'))];
 			$stackedBarchartContainer_array[$count]['label'] = mb_strimwidth($project_name_value, 0, 10, "...");;
 			$count++;
 		}
 		$data['stackedBarchartContainer_array'] = $stackedBarchartContainer_array;
+
+
+		// $entity_code = $_SESSION['logged_in']['admin_registered_entity_code'];
+		$vrifier_users = $this->db->query("SELECT users.id as user_id,users.firstName as user_firstName FROM users LEFT JOIN user_role ON users.id = user_role.user_id WHERE FIND_IN_SET('1', user_role.user_role) AND user_role.entity_code = '".$entity_code."' GROUP BY user_role.user_id")->result();
+		$data['vrifier_users'] = $vrifier_users;
+
 		$this->load->view('Userdashboard',$data);	
 	}
 
@@ -1058,6 +1067,40 @@ class Dashboard extends CI_Controller {
 		echo json_encode($data);
 	}
 
+
+	public function ApplicableOpenProjectGraphProjectWise(){
+			
+		$user_id=$this->user_id;
+		$application_open_project_company_id = $_POST['application_open_project_company_id'];
+		$application_open_project_company_location = $_POST['application_open_project_company_location'];
+
+		$application_open_project_project_id = $_POST['application_open_project_project_id'];
+		$application_open_project_verifier = $_POST['application_open_project_verifier'];
+		$user_id=$this->user_id;
+
+
+		// $projects=$this->db->query('SELECT * from company_projects where status = 0 AND company_id = "'.$application_open_project_company_id.'" AND project_location = "'.$application_open_project_company_location.'" AND FIND_IN_SET("'.$application_open_project_verifier.'", company_projects.project_verifier)')->result();
+		
+		$projects=$this->db->query('SELECT * from company_projects where company_id = "'.$application_open_project_company_id.'" AND project_location = "'.$application_open_project_company_location.'" AND FIND_IN_SET("'.$application_open_project_verifier.'", company_projects.project_verifier) AND item_owner = '.$user_id)->result();
+		
+		$stackedBarchartContainer_array = array();
+		
+		$count = 0;
+		foreach($projects as $projects_key=>$projects_value){
+			$project_start_date = $projects_value->start_date;
+			$project_end_date = $projects_value->due_date;
+			$project_name_value = $projects_value->project_name;
+			$stackedBarchartContainer_array[$count]['y'] = [(strtotime($project_start_date. ' + 1 day')), (strtotime($project_end_date. ' + 1 day'))];
+			$stackedBarchartContainer_array[$count]['label'] = mb_strimwidth($project_name_value, 0, 10, "...");;
+			$count++;
+		}
+		$data['stackedBarchartContainer_array'] = $stackedBarchartContainer_array;
+
+		echo json_encode($data);
+
+
+
+	}
 
 	public function Two(){
 		// $data['projects']=$projects;
