@@ -616,7 +616,7 @@ class Dashboard extends CI_Controller {
 		$data['overdue_array'] = $overdue_array;
 		$data['withindate_array'] = $withindate_array;
 
-		$projects=$this->db->query('SELECT * from company_projects')->result();
+		$projects=$this->db->query('SELECT * from company_projects where status = 0')->result();
 		$stackedBarchartContainer_array = array();
 		
 		$count = 0;
@@ -625,7 +625,7 @@ class Dashboard extends CI_Controller {
 			$project_end_date = $projects_value->due_date;
 			$project_name_value = $projects_value->project_name;
 			$stackedBarchartContainer_array[$count]['y'] = [(strtotime($project_start_date. ' + 1 day')), (strtotime($project_end_date. ' + 11 day'))];
-			$stackedBarchartContainer_array[$count]['label'] = $project_name_value;
+			$stackedBarchartContainer_array[$count]['label'] = mb_strimwidth($project_name_value, 0, 10, "...");;
 			$count++;
 		}
 		$data['stackedBarchartContainer_array'] = $stackedBarchartContainer_array;

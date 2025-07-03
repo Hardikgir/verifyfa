@@ -262,29 +262,26 @@ $this->load->view('layouts/footer');
 
 
 window.onload = function () {
-
-    console.log("Date 11:- ", <?php echo strtotime($Date); ?>);
-    console.log("Date 00:- ", (new Date(2024, 9, 4, 9, 0)).getTime());
-
-
     var chart = new CanvasJS.Chart("chartContainer", {
     theme: "light2",
     animationEnabled: true,
     exportEnabled: true,
     title: {
-        text: "Product Release Gantt Chart",
+        text: "",
         fontSize: 24    
     },
     axisY: {
         labelFormatter: function(e){
-        return new Date(e.value * 1000);;
-        // return moment(e.value).format('DD/MM hh:mm');
+        jsDate = new Date(e.value * 1000); // Convert seconds to milliseconds
+        return jsDate.toISOString().split('T')[0];
         },
         gridThickness: 1
     },
     toolTip:{
         contentFormatter: function ( e ) {
-        return "<strong>" + e.entries[0].dataPoint.label + "</strong></br> Start: " +  e.entries[0].dataPoint.y[0] + "</br>End : "+e.entries[0].dataPoint.y[1];
+        Start_Date = new Date(e.entries[0].dataPoint.y[0] * 1000); // Convert seconds to milliseconds
+        End_Date = new Date(e.entries[0].dataPoint.y[1] * 1000); // Convert seconds to milliseconds
+        return "<strong>" + e.entries[0].dataPoint.label + "</strong></br> Start: "+Start_Date.toISOString().split('T')[0]+"</br>End : "+End_Date.toISOString().split('T')[0];
         },
         backgroundColor: "#f7f7f7",
         fontColor: "#333",
