@@ -616,105 +616,19 @@ class Dashboard extends CI_Controller {
 		$data['overdue_array'] = $overdue_array;
 		$data['withindate_array'] = $withindate_array;
 
-
-
-		// $condition=array('id'=>$id);
-		// $projects=$this->tasks->get_data('company_projects',$condition);
 		$projects=$this->db->query('SELECT * from company_projects')->result();
-
 		$stackedBarchartContainer_array = array();
 		
 		$count = 0;
 		foreach($projects as $projects_key=>$projects_value){
-			
 			$project_start_date = $projects_value->start_date;
 			$project_end_date = $projects_value->due_date;
 			$project_name_value = $projects_value->project_name;
-			
 			$stackedBarchartContainer_array[$count]['y'] = [(strtotime($project_start_date. ' + 1 day')), (strtotime($project_end_date. ' + 11 day'))];
 			$stackedBarchartContainer_array[$count]['label'] = $project_name_value;
 			$count++;
 		}
-
-		// echo '<pre>projects ';
-		// print_r($projects);
-		// echo '</pre>';
-		// exit();
-		/*
-		$Date = "2010-09-17";
-		$Date1 = "2010-09-07";
-		$Date2 = "2010-09-15";
-		$stackedBarchartContainer_array = array();
-		$stackedBarchartContainer_array1 = array();
-		$stackedBarchartContainer_array2 = array();
-		$count_Value = 1;
-		for($i=0;$i<7;$i++)
-		{
-			// $test1='2010-04-19 18:31:27';
-			// $stackedBarchartContainer_array[$i]['x'] = $i;
-			// $stackedBarchartContainer_array[$i]['y'] = date("Y-m-d",strtotime($Date. ' + '.$count_Value.' day'));
-			// $stackedBarchartContainer_array[$i]['color'] = "transparent";
-			// $stackedBarchartContainer_array[$i]['label'] = "Project-".$count_Value;
-			// $count_Value++;
-
-			$stackedBarchartContainer_array1[$i]['x'] = $i;
-			$stackedBarchartContainer_array1[$i]['y'] = date("Y-m-d",strtotime($Date1. ' + '.$count_Value.' day'));
-			$stackedBarchartContainer_array1[$i]['color'] = "transparent";
-			$stackedBarchartContainer_array1[$i]['label'] = "Project-".$count_Value;
-			$count_Value++;
-
-			$stackedBarchartContainer_array2[$i]['x'] = $i; 
-			$stackedBarchartContainer_array2[$i]['y'] = date("Y-m-d",strtotime($Date2. ' + '.$count_Value.' day'));
-			$stackedBarchartContainer_array2[$i]['color'] = "transparent";
-			$stackedBarchartContainer_array2[$i]['label'] = "Project-".$count_Value;
-			$count_Value++;
-			
-		}	
-
-
-		$Date = "2024-04-09 01:00:00";
-		$stackedBarchartContainer_array[0]['y'] = [(strtotime($Date. ' + 1 day')), (strtotime($Date. ' + 11 day'))];
-		$stackedBarchartContainer_array[0]['label'] = "Project-7";
-		
-		$stackedBarchartContainer_array[1]['y'] = [(strtotime($Date. ' + 2 day')), (strtotime($Date. ' + 12 day'))];
-		$stackedBarchartContainer_array[1]['label'] = "Project-6";
-
-		$stackedBarchartContainer_array[2]['y'] = [(strtotime($Date. ' + 3 day')), (strtotime($Date. ' + 13 day'))];
-		$stackedBarchartContainer_array[2]['label'] = "Project-5";
-
-		$stackedBarchartContainer_array[3]['y'] = [(strtotime($Date. ' + 4 day')), (strtotime($Date. ' + 14 day'))];
-		$stackedBarchartContainer_array[3]['label'] = "Project-4";
-
-		$stackedBarchartContainer_array[4]['y'] = [(strtotime($Date. ' + 5 day')), (strtotime($Date. ' + 15 day'))];
-		$stackedBarchartContainer_array[4]['label'] = "Project-3";
-
-		$stackedBarchartContainer_array[5]['y'] = [(strtotime($Date. ' + 6 day')), (strtotime($Date. ' + 16 day'))];
-		$stackedBarchartContainer_array[5]['label'] = "Project-2";
-
-		$stackedBarchartContainer_array[6]['y'] = [(strtotime($Date. ' + 7 day')), (strtotime($Date. ' + 17 day'))];
-		$stackedBarchartContainer_array[6]['label'] = "Project-1";
-
-		// $stackedBarchartContainer_array[7]['x'] = date("Y-m-d",strtotime($Date. ' + 7 day'));;
-		// $stackedBarchartContainer_array[7]['y'] = 45;
-		// $stackedBarchartContainer_array[7]['color'] = "transparent";
-		// $stackedBarchartContainer_array[7]['label'] = "Project-1";
-		*/
 		$data['stackedBarchartContainer_array'] = $stackedBarchartContainer_array;
-		
-
-
-		/*
-		$count = 0;
-		$test1='2010-04-19 18:31:27';
-		$stackedBarchartContainer_array[$count]['x'] = date("Y-m-d",strtotime($test1));
-		$stackedBarchartContainer_array[$count]['y'] = 10;
-		$stackedBarchartContainer_array[$count]['color'] = "transparent";
-		$stackedBarchartContainer_array[$count]['label'] = "Project-7";
-
-		$data['stackedBarchartContainer_array'] = $stackedBarchartContainer_array;
-		*/
-
-
 		$this->load->view('Userdashboard',$data);	
 	}
 
