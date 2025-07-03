@@ -628,7 +628,8 @@ class Dashboard extends CI_Controller {
 			$project_end_date = $projects_value->due_date;
 			$project_name_value = $projects_value->project_name;
 			$stackedBarchartContainer_array[$count]['y'] = [(strtotime($project_start_date. ' + 1 day')), (strtotime($project_end_date. ' + 1 day'))];
-			$stackedBarchartContainer_array[$count]['label'] = mb_strimwidth($project_name_value, 0, 10, "...");;
+			// $stackedBarchartContainer_array[$count]['label'] = mb_strimwidth($project_name_value, 0, 10, "...");;
+			$stackedBarchartContainer_array[$count]['label'] = $project_name_value;
 			$count++;
 		}
 		$data['stackedBarchartContainer_array'] = $stackedBarchartContainer_array;
@@ -1091,7 +1092,8 @@ class Dashboard extends CI_Controller {
 			$project_end_date = $projects_value->due_date;
 			$project_name_value = $projects_value->project_name;
 			$stackedBarchartContainer_array[$count]['y'] = [(strtotime($project_start_date. ' + 1 day')), (strtotime($project_end_date. ' + 1 day'))];
-			$stackedBarchartContainer_array[$count]['label'] = mb_strimwidth($project_name_value, 0, 10, "...");;
+			// $stackedBarchartContainer_array[$count]['label'] = mb_strimwidth($project_name_value, 0, 10, "...");;
+			$stackedBarchartContainer_array[$count]['label'] = $project_name_value;
 			$count++;
 		}
 		$data['stackedBarchartContainer_array'] = $stackedBarchartContainer_array;
