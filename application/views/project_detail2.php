@@ -333,6 +333,14 @@ $allcategories=getCategories($projects[0]->project_name);
                                                     <div class="tab-content"  id="nav-tabContent">
                                                         <div class="tab-pane fade show active" id="nav-chart" role="tabpanel" aria-labelledby="nav-chart-tab">
                                                             <div class="row my-5">
+
+                                                                <div class="col-md-12">
+                                                                    <div  style="background: #fff;height: 150px;padding: 15px;">
+                                                                        <h2 class="text-center">Line Item (Li) Breakup</h2>
+                                                                    </div>
+                                                                    <div id="LineItemBreakupChart" style="height: 370px; width: 100%;"></div>
+                                                                </div>
+
                                                                 <?php 
                                                                 
                                                                 if(count($cat['tagged']) > 0 && $projects[0]->project_type=='TG' || $projects[0]->project_type=='CD'){
@@ -651,6 +659,14 @@ $allcategories=getCategories($projects[0]->project_name);
                                                     <div class="tab-content"  id="nav-tabContent2">
                                                         <div class="tab-pane fade show active" id="nav-chart2" role="tabpanel" aria-labelledby="nav-chart-tab2">
                                                             <div class="row my-5">
+
+                                                            <div class="col-md-12">
+                                                                    <div  style="background: #fff;height: 150px;padding: 15px;">
+                                                                        <h2 class="text-center">Amount wise Breakup</h2>
+                                                                    </div>
+                                                                    <div id="AmountwiseBreakupChart" style="height: 370px; width: 100%;"></div>
+                                                                </div>
+
                                                                
                                                                         <?php 
                                                                         if(count($cat['tagged']) > 0 && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD')){
@@ -1009,6 +1025,15 @@ $allcategories=getCategories($projects[0]->project_name);
                                                     </nav>
                                                     <div class="tab-content"  id="nav-tabContent3">
                                                         <div class="tab-pane fade show active" id="nav-chart3" role="tabpanel" aria-labelledby="nav-chart-tab3">
+
+                                                            <div class="col-md-12">
+                                                                <div  style="background: #fff;height: 150px;padding: 15px;">
+                                                                    <h2 class="text-center">Line Item (Li) Breakup</h2>
+                                                                </div>
+                                                                <div id="ResourcewiseUtilizationChart" style="height: 370px; width: 100%;"></div>
+                                                            </div>
+
+
                                                             <div class="row my-5">
                                                                 <?php 
                                                                 if($listing['ytotal']>0 && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD')){
@@ -2445,6 +2470,154 @@ $('.closethismodel').click(function(){
         ]
     });
     chart.render();
+
+
+
+
+
+
+      var chart = new CanvasJS.Chart("AmountwiseBreakupChart", {
+        title: {
+            text: ""
+        },
+        theme: "light2",
+        animationEnabled: true,
+        toolTip:{
+            shared: true,
+            reversed: true
+        },
+        axisY: {
+            title: "No. of Projects",
+            suffix: "",
+            interval: 1,
+        },
+        legend: {
+            cursor: "pointer",
+            itemclick: toggleDataSeries
+        },
+        data: [
+            {
+                type: "stackedColumn",
+                name: "Overdue",
+                showInLegend: true,
+                yValueFormatString: "#,##0",
+                dataPoints: [
+                    {"label":"HMCMM Auto Ltd","y":2,"id":1},
+                    {"label":"HMC (Trial)","y":2,"id":2}
+                ]
+            },
+            {
+                type: "stackedColumn",
+                name: "Withindate",
+                showInLegend: true,
+                yValueFormatString: "#,##0",
+                dataPoints: [
+                    {"label":"HMCMM Auto Ltd","y":0,"id":1},
+                    {"label":"HMC (Trial)","y":2,"id":2}
+                ]
+            }
+        ]
+    });
+    chart.render();
+
+
+
+
+    var chart = new CanvasJS.Chart("LineItemBreakupChart", {
+        title: {
+            text: ""
+        },
+        theme: "light2",
+        animationEnabled: true,
+        toolTip:{
+            shared: true,
+            reversed: true
+        },
+        axisY: {
+            title: "No. of Projects",
+            suffix: "",
+            interval: 1,
+        },
+        legend: {
+            cursor: "pointer",
+            itemclick: toggleDataSeries
+        },
+        data: [
+            {
+                type: "stackedColumn",
+                name: "Overdue",
+                showInLegend: true,
+                yValueFormatString: "#,##0",
+                dataPoints: [
+                    {"label":"HMCMM Auto Ltd","y":2,"id":1},
+                    {"label":"HMC (Trial)","y":2,"id":2}
+                ]
+            },
+            {
+                type: "stackedColumn",
+                name: "Withindate",
+                showInLegend: true,
+                yValueFormatString: "#,##0",
+                dataPoints: [
+                    {"label":"HMCMM Auto Ltd","y":0,"id":1},
+                    {"label":"HMC (Trial)","y":2,"id":2}
+                ]
+            }
+        ]
+    });
+    chart.render();
+
+
+
+
+
+    var chart = new CanvasJS.Chart("ResourcewiseUtilizationChart", {
+        title: {
+            text: ""
+        },
+        theme: "light2",
+        animationEnabled: true,
+        toolTip:{
+            shared: true,
+            reversed: true
+        },
+        axisY: {
+            title: "No. of Projects",
+            suffix: "",
+            interval: 1,
+        },
+        legend: {
+            cursor: "pointer",
+            itemclick: toggleDataSeries
+        },
+        data: [
+            {
+                type: "stackedColumn",
+                name: "Overdue",
+                showInLegend: true,
+                yValueFormatString: "#,##0",
+                dataPoints: [
+                    {"label":"HMCMM Auto Ltd","y":2,"id":1},
+                    {"label":"HMC (Trial)","y":2,"id":2}
+                ]
+            },
+            {
+                type: "stackedColumn",
+                name: "Withindate",
+                showInLegend: true,
+                yValueFormatString: "#,##0",
+                dataPoints: [
+                    {"label":"HMCMM Auto Ltd","y":0,"id":1},
+                    {"label":"HMC (Trial)","y":2,"id":2}
+                ]
+            }
+        ]
+    });
+    chart.render();
+
+
+
+
     function toggleDataSeries(e) {
         if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
             e.dataSeries.visible = false;
