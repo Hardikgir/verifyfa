@@ -530,14 +530,6 @@ $(document).ready(function(){
                 ]
             });
             chart.render();
-
-
-                // if(res.status == 'success'){
-                //     $('#response').html('<p style="color:green;">'+res.message+'</p>');
-                //     $('#userForm')[0].reset();
-                // } else {
-                //     $('#response').html('<p style="color:red;">'+res.message+'</p>');
-                // }
             },
             error: function(){
                 $('#response').html('<p style="color:red;">Something went wrong.</p>');
