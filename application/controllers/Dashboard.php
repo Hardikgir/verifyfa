@@ -522,6 +522,9 @@ class Dashboard extends CI_Controller {
 		$company_datas = implode(",", $company_array);
 		$location_datas = implode(",", $location_array);
 
+		// $company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location IN ('.$location_datas.') AND company_projects.status = 0 AND item_owner = "'.$user_id.'"')->result();
+
+
 		$company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location IN ('.$location_datas.') AND company_projects.status = 0 AND item_owner = "'.$user_id.'"')->result();
 		
 		// echo '<pre>last_query ';
@@ -1143,7 +1146,6 @@ class Dashboard extends CI_Controller {
             $project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($project->project_name)));
             $getprojectdetails=$this->tasks->projectdetail($project_name);
 			// echo $this->db->last_query();
-           
             if(!empty($getprojectdetails))
             {
                 $project->TotalQuantity= ((int)$getprojectdetails[0]->TotalQuantity);
@@ -6939,6 +6941,72 @@ public function downloadExceptionChangesUpdationsofItems()
         $writer->save('php://output');
 	}
 
+
+
+	public function projectdetail2($id)
+	{
+		$condition=array('id'=>$id);
+		$projects=$this->tasks->get_data('company_projects',$condition);	
+
+		
+		// $projects = $this->db->query("SELECT *  FROM company_projects WHERE id='".$id."'")->row();
+		// echo '<pre>projects :: ';
+		// print_r($projects);
+		// echo '</pre>';
+		// exit();
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
+
+		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+		$new_pattern = array("_", "_", "");
+        foreach($projects as $project)
+        {
+            $project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($project->project_name)));
+            $getprojectdetails=$this->tasks->projectdetail($project_name);
+			// echo $this->db->last_query();
+            if(!empty($getprojectdetails))
+            {
+                $project->TotalQuantity= ((int)$getprojectdetails[0]->TotalQuantity);
+                if($getprojectdetails[0]->VerifiedQuantity !='')
+                $project->VerifiedQuantity=$getprojectdetails[0]->VerifiedQuantity;
+                else
+                $project->VerifiedQuantity=0;
+            }
+            else
+            {   
+                $project->TotalQuantity=0;
+                $project->VerifiedQuantity=0;
+			}
+			$condition2=array('id'=>$project->company_id);
+			$company=$this->tasks->get_data('company',$condition2);
+			$companylocation=$this->tasks->get_data('company_locations',array('id'=>$project->project_location));
+			$project->company_name=$company[0]->company_name;
+            $project->project_location=$companylocation[0]->location_name;
+		}
+
+
+
+		$listing=getTagUntag($projects[0]->project_name);
+		$cat=getTagUntagCategories($projects[0]->project_name);
+		$allcategories=getCategories($projects[0]->project_name);
+		
+
+		// print_r($projects);
+
+		// echo '<pre>projects ::';
+		// print_r($projects);
+		// echo '</pre>';
+		// exit();
+
+	
+		$data['projects']=$projects;
+		$data['page_title']="Dashboard";
+
+		$this->load->view('project_detail2',$data);
+		
+	}
 	
 }
  
