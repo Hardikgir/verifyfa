@@ -86,3 +86,97 @@ Graph Is Pending (05/07/2025)
         -> SELECT * FROM v74_ci_verifyfa_db_02feb.company_projects where id = 27;
         -> SELECT * FROM v74_ci_verifyfa_db_02feb.project_1743248605;
         -> SELECT * FROM v74_ci_verifyfa_db_02feb.test_project_1_adm;
+
+
+
+-------------------------
+Overall Project Status
+-------------------------
+    -> chDonut3
+    -> doughnutChart
+        -> Data With Condition base 
+            if($projects[0]->project_type=='TG')
+	        {
+
+            }
+            if($projects[0]->project_type=='NT')
+            {
+
+            }
+            if($projects[0]->project_type=='UN')
+            {
+
+            }
+            if($projects[0]->project_type=='CD')
+            {
+                if($listing['ytotal']!=0 && $listing['ntotal']!=0 && $listing['natotal']!=0)
+                {
+                    
+                }
+                else if($listing['ytotal']!=0 && $listing['ntotal']!=0 && $listing['natotal']==0)
+                {
+
+                }
+                else if($listing['ytotal']!=0 && $listing['ntotal']==0 && $listing['natotal']==0)       ##Current Work##
+                {
+
+                }
+                else if($listing['ytotal']!=0 && $listing['ntotal']==0 && $listing['natotal']!=0)
+                {
+
+                }
+                else if($listing['ytotal']==0 && $listing['ntotal']==0 && $listing['natotal']!=0)
+                {
+
+                }
+                else if($listing['ytotal']==0 && $listing['ntotal']!=0 && $listing['natotal']!=0)
+                {
+
+                }
+                else if($listing['ytotal']==0 && $listing['ntotal']!=0 && $listing['natotal']==0)
+                {
+
+                }
+            }
+==========================================================================
+-------------------------
+Line Item (Li) Breakup
+-------------------------
+    if(count($cat['tagged']) > 0 && $projects[0]->project_type=='TG' || $projects[0]->project_type=='CD'){
+        -> taggedpieChart   [Tagged]
+    }
+    if(count($cat['untagged'])>0 && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD' )){
+        -> untaggedpieChart [Non-Tagged]
+    }
+    if(count($cat['unspecified'])>0 && ($projects[0]->project_type=='UN' || $projects[0]->project_type=='CD' )){
+        -> unspecifiedpieChart  [Unspecified]
+    }
+    -> libarchart   [Overall]
+==========================================================================
+-------------------------
+Amount wise Breakup
+-------------------------
+    if(count($cat['tagged']) > 0 && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD')){
+        -> amounttaggedpieChart  [Tagged]   //In condition 1
+    }
+    if(count($cat['untagged'])>0 && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD')){
+        -> amountuntaggedpieChart [Non-Tagged]  //In condition 2
+    }
+    if(count($cat['unspecified'])>0 && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD')){
+        -> amountunspecifiedpieChart [Unspecified]  //In condition 3
+    }
+    -> amountbarchart   [Overall]
+==========================================================================
+-------------------------
+Line Item (Li) Breakup
+-------------------------
+    if($listing['ytotal']>0 && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD')){
+        -> resourcetaggedpieChart [Tagged]
+    }
+    if($listing['ntotal']>0 && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD')){
+        -> resourceuntaggedpieChart [Non-Tagged]
+    }
+    if($listing['natotal']>0 && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD')){
+        -> resourceunspecifiedpieChart  [Unspecified]
+    }
+==========================================================================  
