@@ -78,3 +78,11 @@ New Task :-
 
 Datatable Chanegs :- 
 ALTER TABLE `verifiedproducts` CHANGE `quantity_verified` `quantity_verified` VARCHAR(255) NULL DEFAULT NULL;
+
+
+Graph Is Pending (05/07/2025)
+-> Work base on Existing Graph :
+    -> You get Idea base on This Below Query :- 
+        -> SELECT * FROM v74_ci_verifyfa_db_02feb.company_projects where id = 27;
+        -> SELECT * FROM v74_ci_verifyfa_db_02feb.project_1743248605;
+        -> SELECT * FROM v74_ci_verifyfa_db_02feb.test_project_1_adm;

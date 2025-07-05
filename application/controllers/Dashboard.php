@@ -6948,17 +6948,6 @@ public function downloadExceptionChangesUpdationsofItems()
 		$condition=array('id'=>$id);
 		$projects=$this->tasks->get_data('company_projects',$condition);	
 
-		
-		// $projects = $this->db->query("SELECT *  FROM company_projects WHERE id='".$id."'")->row();
-		// echo '<pre>projects :: ';
-		// print_r($projects);
-		// echo '</pre>';
-		// exit();
-		// echo '<pre>last_query ';
-		// print_r($this->db->last_query());
-		// echo '</pre>';
-		// exit();
-
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
         foreach($projects as $project)
@@ -6993,9 +6982,7 @@ public function downloadExceptionChangesUpdationsofItems()
 		$allcategories=getCategories($projects[0]->project_name);
 		
 
-		// print_r($projects);
-
-		// echo '<pre>projects ::';
+		// echo '<pre>projects :';
 		// print_r($projects);
 		// echo '</pre>';
 		// exit();
