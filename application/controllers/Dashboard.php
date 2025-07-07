@@ -205,77 +205,102 @@ class Dashboard extends CI_Controller {
 		$data['total_users_count'] = $total_users_count;
 
 
+		$notstarted_dataPoint_open_projects = 0;
+		$notstarted_dataPoint_closed_projects = 0;
+		$notstarted_dataPoint_cancelled_projects = 0;
+
+		$inprogress_dataPoint_open_projects = 0;
+		$inprogress_dataPoint_closed_projects = 0;
+		$inprogress_dataPoint_cancelled_projects = 0;
+
+		$within_time_dataPoint_open_projects = 0;
+		$within_time_dataPoint_closed_projects = 0;
+		$within_time_dataPoint_cancelled_projects = 0;
+
+		$overdue_datapoint_open_projects = 0;
+		$overdue_datapoint_closed_projects = 0;
+		$overdue_datapoint_cancelled_projects = 0;
+
+		$notstarted_dataPoint = array();
+		$projects=$this->db->query('SELECT * from company_projects')->result();
+		foreach($projects as $projects_key=>$projects_value){
+
+			$today = date("Y-m-d H:i:s");
+			$date = $projects_value->start_date;
+			$due_date = $projects_value->due_date;
+			$finish_date = date('Y-m-d',strtotime($projects_value->finish_datetime));
+			
+
+			if($projects_value->status == 0){
+				$within_time_dataPoint_open_projects = 0;
+				if($date>$today){
+					$notstarted_dataPoint_open_projects = $notstarted_dataPoint_open_projects+1; 
+				}
+				if($date<$today){
+					$inprogress_dataPoint_open_projects = $inprogress_dataPoint_open_projects+1; 
+				}
+				if($today>$due_date){
+					$overdue_datapoint_open_projects = $overdue_datapoint_open_projects+1;
+				}
+			}
+			if($projects_value->status == 1){
+				$inprogress_dataPoint_closed_projects = 0;
+				if($date>$today){
+					$notstarted_dataPoint_closed_projects = $notstarted_dataPoint_open_projects+1; 
+				}
+				if($today>$finish_date){
+					$within_time_dataPoint_closed_projects = $within_time_dataPoint_closed_projects + 1;
+				}
+				if($today<$finish_date){
+					$overdue_datapoint_closed_projects = $overdue_datapoint_closed_projects + 1;
+				}
+			}
+			if($projects_value->status == 2){
+
+				if($date>$today){
+					$notstarted_dataPoint_cancelled_projects = $notstarted_dataPoint_cancelled_projects+1; 
+				}
+				
+
+				if($date>$today){
+					$within_time_dataPoint_cancelled_projects = $within_time_dataPoint_cancelled_projects + 1;
+				}
+				
+				
+
+				if($today>$finish_date){
+					$inprogress_dataPoint_cancelled_projects = $inprogress_dataPoint_cancelled_projects + 1;
+				}
+				if($today<$finish_date){
+					$overdue_datapoint_cancelled_projects = $overdue_datapoint_cancelled_projects + 1;
+				}
+			}
+		}
 		
-		$overdue_array1 = array(
-			'label' => 'Open Projects',
-			'y' => 2,
-			'id' => 1
-		);
-		$overdue_array2 = array(
-			'label' => 'Closed Projects',
-			'y' => 7,
-			'id' => 2
-		);
-		$overdue_array3 = array(
-			'label' => 'Cancel Projects',
-			'y' => 4,
-			'id' => 3
-		);
-		
-		
-		
-		$overdue_array[] = $overdue_array1;
-		$overdue_array[] = $overdue_array2; 
-		$overdue_array[] = $overdue_array3; 
+		$notstarted_dataPoint[] = array("label"=> "Open Projects", "y"=> $notstarted_dataPoint_open_projects);
+		$notstarted_dataPoint[] = array("label"=> "Closed Projects", "y"=> $notstarted_dataPoint_closed_projects);
+		$notstarted_dataPoint[] = array("label"=> "Cancelled Projects", "y"=> $notstarted_dataPoint_cancelled_projects);	
+		$data['notstarted_dataPoint'] = $notstarted_dataPoint;
 
+		$inprogress_dataPoint[] = array("label"=> "Open Projects", "y"=> $inprogress_dataPoint_open_projects);
+		$inprogress_dataPoint[] = array("label"=> "Closed Projects", "y"=> $inprogress_dataPoint_closed_projects);
+		$inprogress_dataPoint[] = array("label"=> "Cancelled Projects", "y"=> $inprogress_dataPoint_cancelled_projects);	
+		$data['inprogress_dataPoint'] = $inprogress_dataPoint;
 
-		$withindate_array1 = array(
-			'label' => 'Open Projects',
-			'y' => 2,
-			'id' => 1
-		);
-		$withindate_array2 = array(
-			'label' => 'Closed Projects',
-			'y' => 5,
-			'id' => 2
-		);
-		$withindate_array3 = array(
-			'label' => 'Cancel Projects',
-			'y' => 3,
-			'id' => 3
-		);
+		$within_time_dataPoint[] = array("label"=> "Open Projects", "y"=> $within_time_dataPoint_open_projects);
+		$within_time_dataPoint[] = array("label"=> "Closed Projects", "y"=> $within_time_dataPoint_closed_projects);
+		$within_time_dataPoint[] = array("label"=> "Cancelled Projects", "y"=> $within_time_dataPoint_cancelled_projects);
+		$data['within_time_dataPoint'] = $within_time_dataPoint;
 
-		$withindate_array[] = $withindate_array1;
-		$withindate_array[] = $withindate_array2;
-		$withindate_array[] = $withindate_array3;
+		$overdue_datapoint[] = array("label"=> "Open Projects", "y"=> $overdue_datapoint_open_projects);
+		$overdue_datapoint[] = array("label"=> "Closed Projects", "y"=> $overdue_datapoint_closed_projects);
+		$overdue_datapoint[] = array("label"=> "Cancelled Projects", "y"=> $overdue_datapoint_cancelled_projects);
+		$data['overdue_datapoint'] = $overdue_datapoint;
 
-
-		
-		$withindate_array1_ = array(
-			'label' => 'Open Projects',
-			'y' => 3,
-			'id' => 1
-		);
-		$withindate_array2_ = array(
-			'label' => 'Closed Projects',
-			'y' => 2,
-			'id' => 2
-		);
-		$withindate_array3_ = array(
-			'label' => 'Cancel Projects',
-			'y' => 9,
-			'id' => 3
-		);
-
-		$withindate_array2[] = $withindate_array1_;
-		$withindate_array2[] = $withindate_array2_;
-		$withindate_array2[] = $withindate_array3_;
-
-
-		$data['overdue_array'] = $overdue_array;
-		$data['withindate_array'] = $withindate_array;
-		$data['withindate_array2'] = $withindate_array2;
-
+		// echo '<pre>data ';
+		// print_r($data);
+		// echo '</pre>';
+		// exit();
 
 		$this->load->view('dashboard2',$data);		
 

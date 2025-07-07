@@ -12,30 +12,30 @@ $user_role_manager_cnt=get_user_role_cnt_managers($user_id,$entity_code);
 $user_role_admin_cnt=get_user_role_cnt_admin($user_id,$entity_code);
 
 
-
-$dataPoints1 = array(
+/*
+$notstarted_dataPoint = array(
 	array("label"=> "Open", "y"=> 1),
 	array("label"=> "Closed Projects", "y"=> 0),
 	array("label"=> "Cancelled Projects", "y"=> 2),
 );
  
-$dataPoints2 = array(
+$inprogress_dataPoint = array(
 	array("label"=> "Open", "y"=> 0),
 	array("label"=> "Closed Projects", "y"=> 2),
 	array("label"=> "Cancelled Projects", "y"=> 0),
 );
  
-$dataPoints3 = array(
+$within_time_dataPoint = array(
 	array("label"=> "Open", "y"=> 3),
 	array("label"=> "Closed Projects", "y"=> 0),
 	array("label"=> "Cancelled Projects", "y"=> 0),
 );
  
-$dataPoints4 = array(
+$overdue_datapoint = array(
 	array("label"=> "Open", "y"=> 1),
 	array("label"=> "Closed Projects", "y"=> 1),
 	array("label"=> "Cancelled Projects", "y"=> 2),
-);
+); */
  
 ?>
 <style>
@@ -881,26 +881,26 @@ if (checkedNum == 0) {
 			type: "stackedColumn",
 			name: "Not Started",
 			showInLegend: true,
-			yValueFormatString: "#,##0 MW",
-			dataPoints: <?php echo json_encode($dataPoints1, JSON_NUMERIC_CHECK); ?>
+			yValueFormatString: "#,##0",
+			dataPoints: <?php echo json_encode($notstarted_dataPoint, JSON_NUMERIC_CHECK); ?>
 		},{
 			type: "stackedColumn",
 			name: "In Progress",
 			showInLegend: true,
-			yValueFormatString: "#,##0 MW",
-			dataPoints: <?php echo json_encode($dataPoints2, JSON_NUMERIC_CHECK); ?>
+			yValueFormatString: "#,##0",
+			dataPoints: <?php echo json_encode($inprogress_dataPoint, JSON_NUMERIC_CHECK); ?>
 		},{
 			type: "stackedColumn",
 			name: "Within Time",
 			showInLegend: true,
-			yValueFormatString: "#,##0 MW",
-			dataPoints: <?php echo json_encode($dataPoints3, JSON_NUMERIC_CHECK); ?>
+			yValueFormatString: "#,##0",
+			dataPoints: <?php echo json_encode($within_time_dataPoint, JSON_NUMERIC_CHECK); ?>
 		},{
 			type: "stackedColumn",
 			name: "Overdue",
 			showInLegend: true,
-			yValueFormatString: "#,##0 MW",
-			dataPoints: <?php echo json_encode($dataPoints4, JSON_NUMERIC_CHECK); ?>
+			yValueFormatString: "#,##0",
+			dataPoints: <?php echo json_encode($overdue_datapoint, JSON_NUMERIC_CHECK); ?>
 		}
 	]
     });
