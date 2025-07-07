@@ -11,6 +11,32 @@ $cancelled_projects=2;
 $user_role_manager_cnt=get_user_role_cnt_managers($user_id,$entity_code);
 $user_role_admin_cnt=get_user_role_cnt_admin($user_id,$entity_code);
 
+
+
+$dataPoints1 = array(
+	array("label"=> "Open", "y"=> 1),
+	array("label"=> "Closed Projects", "y"=> 0),
+	array("label"=> "Cancelled Projects", "y"=> 2),
+);
+ 
+$dataPoints2 = array(
+	array("label"=> "Open", "y"=> 0),
+	array("label"=> "Closed Projects", "y"=> 2),
+	array("label"=> "Cancelled Projects", "y"=> 0),
+);
+ 
+$dataPoints3 = array(
+	array("label"=> "Open", "y"=> 3),
+	array("label"=> "Closed Projects", "y"=> 0),
+	array("label"=> "Cancelled Projects", "y"=> 0),
+);
+ 
+$dataPoints4 = array(
+	array("label"=> "Open", "y"=> 1),
+	array("label"=> "Closed Projects", "y"=> 1),
+	array("label"=> "Cancelled Projects", "y"=> 2),
+);
+ 
 ?>
 <style>
     .divtextn{
@@ -832,39 +858,51 @@ if (checkedNum == 0) {
 
         
     var chart = new CanvasJS.Chart("TypeSubscriptionActiveChart", {
-        title: {
-            text: ""
-        },
-        theme: "light2",
-        animationEnabled: true,
-        toolTip:{
-            shared: true,
-            reversed: true
-        },
-        axisY: {
-            title: "No. of Active Projects",
-            suffix: "",
-            interval: 1,
-        },
-        legend: {
-            cursor: "pointer",
-            itemclick: toggleDataSeries
-        },
-        data: [
-            {
-                type: "stackedColumn",
-                name: "Overdue",
-                showInLegend: true,
-                yValueFormatString: "#,##0",
-                dataPoints: <?php echo json_encode($overdue_array, JSON_NUMERIC_CHECK); ?>
-            },{
-                type: "stackedColumn",
-                name: "Withindate",
-                showInLegend: true,
-                yValueFormatString: "#,##0",
-                dataPoints: <?php echo json_encode($withindate_array, JSON_NUMERIC_CHECK); ?>
-            }
-        ]
+       title: {
+		text: "Growth of Solar Photovoltaics"
+	},
+	theme: "light2",
+	animationEnabled: true,
+	toolTip:{
+		shared: true,
+		reversed: true
+	},
+	axisY: {
+		title: "",
+		suffix: " ",
+        interval: 1
+	},
+	legend: {
+		cursor: "pointer",
+		itemclick: toggleDataSeries
+	},
+	data: [
+		{
+			type: "stackedColumn",
+			name: "Not Started",
+			showInLegend: true,
+			yValueFormatString: "#,##0 MW",
+			dataPoints: <?php echo json_encode($dataPoints1, JSON_NUMERIC_CHECK); ?>
+		},{
+			type: "stackedColumn",
+			name: "In Progress",
+			showInLegend: true,
+			yValueFormatString: "#,##0 MW",
+			dataPoints: <?php echo json_encode($dataPoints2, JSON_NUMERIC_CHECK); ?>
+		},{
+			type: "stackedColumn",
+			name: "Within Time",
+			showInLegend: true,
+			yValueFormatString: "#,##0 MW",
+			dataPoints: <?php echo json_encode($dataPoints3, JSON_NUMERIC_CHECK); ?>
+		},{
+			type: "stackedColumn",
+			name: "Overdue",
+			showInLegend: true,
+			yValueFormatString: "#,##0 MW",
+			dataPoints: <?php echo json_encode($dataPoints4, JSON_NUMERIC_CHECK); ?>
+		}
+	]
     });
     chart.render();
     function toggleDataSeries(e) {

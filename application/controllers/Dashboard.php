@@ -214,11 +214,19 @@ class Dashboard extends CI_Controller {
 		$overdue_array2 = array(
 			'label' => 'Closed Projects',
 			'y' => 7,
-			'id' => 1
+			'id' => 2
 		);
+		$overdue_array3 = array(
+			'label' => 'Cancel Projects',
+			'y' => 4,
+			'id' => 3
+		);
+		
+		
 		
 		$overdue_array[] = $overdue_array1;
 		$overdue_array[] = $overdue_array2; 
+		$overdue_array[] = $overdue_array3; 
 
 
 		$withindate_array1 = array(
@@ -228,19 +236,45 @@ class Dashboard extends CI_Controller {
 		);
 		$withindate_array2 = array(
 			'label' => 'Closed Projects',
-			'y' => 0,
-			'id' => 1
+			'y' => 5,
+			'id' => 2
+		);
+		$withindate_array3 = array(
+			'label' => 'Cancel Projects',
+			'y' => 3,
+			'id' => 3
 		);
 
 		$withindate_array[] = $withindate_array1;
 		$withindate_array[] = $withindate_array2;
+		$withindate_array[] = $withindate_array3;
+
+
+		
+		$withindate_array1_ = array(
+			'label' => 'Open Projects',
+			'y' => 3,
+			'id' => 1
+		);
+		$withindate_array2_ = array(
+			'label' => 'Closed Projects',
+			'y' => 2,
+			'id' => 2
+		);
+		$withindate_array3_ = array(
+			'label' => 'Cancel Projects',
+			'y' => 9,
+			'id' => 3
+		);
+
+		$withindate_array2[] = $withindate_array1_;
+		$withindate_array2[] = $withindate_array2_;
+		$withindate_array2[] = $withindate_array3_;
+
 
 		$data['overdue_array'] = $overdue_array;
-		// echo '<pre>data ';
-		// print_r($data);
-		// echo '</pre>';
-		// exit();
 		$data['withindate_array'] = $withindate_array;
+		$data['withindate_array2'] = $withindate_array2;
 
 
 		$this->load->view('dashboard2',$data);		
