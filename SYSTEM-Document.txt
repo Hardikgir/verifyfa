@@ -1,8 +1,25 @@
+===========================
 UserRoles :-
-
+===========================
 Group Admin :- 5
 Sub Admin :- 4
 Manager :- 0
 Process Owner :- 2
 Entity Owner :- 3
 Verifier :- 1
+
+===========================
+Project Status :- 
+===========================
+Open Project :- 0
+    begin_datetime
+Close Project :- 1
+    finish_datetime
+Cancelled Project :- 2
+    cancelled_date
+
+
+-> Not Started
+-> In Progress
+-> Withing Time
+-> Overdue

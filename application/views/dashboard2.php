@@ -683,6 +683,17 @@ $this->load->view('layouts/footer');
                                     <div class="col-md-12"><h3 class="text-center" style="width:100%;">No projects Available</h3></div>
                                     <?php
                                     }?>
+
+
+<div class="col-md-12 mt-5">
+			<div  style="background: #fff;height: 150px;padding: 15px;">
+				<h2 class="text-center">Applicable to Open Project</h2>
+				
+			</div>
+			<div id="TypeSubscriptionActiveChart" style="height: 370px; width: 100%;"></div>
+        </div>
+
+
                                     
                                 </div>
                                                    
@@ -766,6 +777,7 @@ $this->load->view('layouts/scripts');
 $this->load->view('layouts/dashboard_script');
 $this->load->view('layouts/footer');
 ?>
+<script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
 <script>
 
 function requestfordelete(event,project_id){
@@ -813,5 +825,57 @@ if (checkedNum == 0) {
 //         }
         
     })
+
+
+
+    window.onload = function () {
+
+        
+    var chart = new CanvasJS.Chart("TypeSubscriptionActiveChart", {
+        title: {
+            text: ""
+        },
+        theme: "light2",
+        animationEnabled: true,
+        toolTip:{
+            shared: true,
+            reversed: true
+        },
+        axisY: {
+            title: "No. of Active Projects",
+            suffix: "",
+            interval: 1,
+        },
+        legend: {
+            cursor: "pointer",
+            itemclick: toggleDataSeries
+        },
+        data: [
+            {
+                type: "stackedColumn",
+                name: "Overdue",
+                showInLegend: true,
+                yValueFormatString: "#,##0",
+                dataPoints: <?php echo json_encode($overdue_array, JSON_NUMERIC_CHECK); ?>
+            },{
+                type: "stackedColumn",
+                name: "Withindate",
+                showInLegend: true,
+                yValueFormatString: "#,##0",
+                dataPoints: <?php echo json_encode($withindate_array, JSON_NUMERIC_CHECK); ?>
+            }
+        ]
+    });
+    chart.render();
+    function toggleDataSeries(e) {
+        if (typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+            e.dataSeries.visible = false;
+        } else {
+            e.dataSeries.visible = true;
+        }
+        e.chart.render();
+    }
+
+    }
 
 </script>
