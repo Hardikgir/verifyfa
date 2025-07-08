@@ -2441,7 +2441,7 @@ $('.closethismodel').click(function(){
             reversed: true
         },
         axisY: {
-            title: "No. of Projects",
+            title: "",
             suffix: "",
             interval: 1,
         },
@@ -2475,7 +2475,7 @@ $('.closethismodel').click(function(){
             reversed: true
         },
         axisY: {
-            title: "No. of Projects",
+            title: "",
             suffix: "",
             interval: 1,
         },
@@ -2510,7 +2510,7 @@ $('.closethismodel').click(function(){
             reversed: true
         },
         axisY: {
-            title: "No. of Projects",
+            title: "",
             suffix: "",
             interval: 1,
         },
@@ -2549,7 +2549,7 @@ $('.closethismodel').click(function(){
             reversed: true
         },
         axisY: {
-            title: "No. of Projects",
+            title: "",
             suffix: "",
             interval: 1,
         },

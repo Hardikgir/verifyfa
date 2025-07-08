@@ -222,7 +222,7 @@ class Dashboard extends CI_Controller {
 		$overdue_datapoint_cancelled_projects = 0;
 
 		$notstarted_dataPoint = array();
-		$projects=$this->db->query('SELECT * from company_projects')->result();
+		$projects=$this->db->query('SELECT * from company_projects where status in (0,1,2) ORDER BY id DESC Limit 10')->result();
 		foreach($projects as $projects_key=>$projects_value){
 
 			$today = date("Y-m-d H:i:s");
