@@ -7226,14 +7226,14 @@ foreach($amountmerger as $key=> $item )
 
 
 		$graph_array_data[0]['label'] = "Tagged";
-		// $graph_array_data[0]['y'] = $tagged_filled_percentage;
-		$graph_array_data[0]['y'] = $tagged_count_value;
+		$graph_array_data[0]['y'] = $tagged_filled_percentage;
+		// $graph_array_data[0]['y'] = $tagged_count_value;
 		$graph_array_data[0]['id'] = 1;
 
 		
 		$graph_array_data[1]['label'] = "Unverified";
-		// $graph_array_data[1]['y'] = $unverify_filled_percentage;
-		$graph_array_data[1]['y'] = $unverify_count_value;
+		$graph_array_data[1]['y'] = $unverify_filled_percentage;
+		// $graph_array_data[1]['y'] = $unverify_count_value;
 		$graph_array_data[1]['id'] = 2;
 
 		$data['graph_array_data'] = $graph_array_data;
