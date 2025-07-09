@@ -7588,32 +7588,9 @@ public function downloadExceptionChangesUpdationsofItems()
 		$data['AmountwiseBreakupChart_dataPoints2']=$AmountwiseBreakupChart_dataPoints2;
 		
 
-		$AmountwiseBreakup_DonutChart_dataPoints = array( 
-			array("label"=>"Verified", "symbol" => "VRF","y"=>91.60),
-			array("label"=>"Not Verified", "symbol" => "NTVRF","y"=>9.4),
-		);
-
-		// number_format((float)$filled, 2, '.', '');
 		$calculation = 100-floatval($filled);
-		// echo '<pre>calculation s';
-		// print_r($calculation);
-		// echo '</pre>';
-
-		// echo '<pre>filled ';
-		// print_r();
-		// echo '</pre>';
-		// exit();
-		// exit();
 		$y_value = number_format((float)$calculation, 2, '.', '');
-		// echo '<pre>y_value : ';
-		// print_r();
-		// echo '</pre>';
-		// exit();
-		// echo '<pre>';
-		// print_r(number_format((float)$calculation, 2, '.', ''));
-		// echo '</pre>';
-		// exit();
-
+		
 		$AmountwiseBreakup_DonutChart_dataPoints = array( 
 			array("label"=>"Verified", "symbol" => "VRF","y"=>round($filled)),
 			array("label"=>"Not Verified", "symbol" => "NTVRF","y"=>round($y_value)),

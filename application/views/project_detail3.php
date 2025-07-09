@@ -1772,13 +1772,13 @@ $('.closethismodel').click(function(){
                 type: "stackedColumn100",
                 name: "Verified",
                 showInLegend: true,
-                yValueFormatString: "$#,##0 K",
+                yValueFormatString: "#,##0",
                 dataPoints: <?php echo json_encode($AmountwiseBreakupChart_dataPoints1, JSON_NUMERIC_CHECK); ?>
             },{
                 type: "stackedColumn100",
                 name: "Not Verified",
                 showInLegend: true,
-                yValueFormatString: "$#,##0 K",
+                yValueFormatString: "#,##0",
                 dataPoints: <?php echo json_encode($AmountwiseBreakupChart_dataPoints2, JSON_NUMERIC_CHECK); ?>
             }
         ]
