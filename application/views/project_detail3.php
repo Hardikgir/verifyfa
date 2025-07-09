@@ -292,13 +292,9 @@ $allcategories=getCategories($projects[0]->project_name);
                                     <div class="col-md-1"></div>
                                     <div class="col-md-10">
                                         <h3 class="boder-bottom">Overall Project Status</h3>
-                                        <div class="row mt-5">
+                                        <div class="row my-5">
 
                                             <div class="col-md-12">
-                                                <div  style="background: #fff;height: 150px;padding: 15px;">
-                                                    <h2 class="text-center">Overall Project Status</h2>
-                                                </div>
-                                                <!-- <div id="OverallProjectStatusChart" style="height: 370px; width: 100%;"></div> -->
                                                 <div id="OverallProjectStatusChart" style="height: 370px; width: 100%;"></div>
                                             </div>
 
@@ -333,20 +329,16 @@ $allcategories=getCategories($projects[0]->project_name);
                                                     </nav>
                                                     <div class="tab-content"  id="nav-tabContent">
                                                         <div class="tab-pane fade show active" id="nav-chart" role="tabpanel" aria-labelledby="nav-chart-tab">
-                                                            <div class="row my-5">
+                                                            <div class="row m-5">
 
-                                                                <div class="col-md-6">
-                                                                    <div  style="background: #fff;height: 150px;padding: 15px;">
-                                                                        <h2 class="text-center">Line Item (Li) Breakup</h2>
-                                                                    </div>
-                                                                    <div id="LineItemBreakupChart" style="height: 370px; width: 100%;"></div>
+                                                                <div class="col-md-12">
+                                                                   
+                                                                    <div id="LineItemBreakupChart" style="height: 420px; width: 100%;"></div>
                                                                 </div>
 
-                                                                <div class="col-md-6">
-                                                                    <div  style="background: #fff;height: 150px;padding: 15px;">
-                                                                        <h2 class="text-center">Line Item (Li) Breakup</h2>
-                                                                    </div>
-                                                                    <div id="LineItemBreakup_DonutChart" style="height: 370px; width: 100%;"></div>
+                                                                <div class="col-md-12">
+                                                                   
+                                                                    <div id="LineItemBreakup_DonutChart" style="height: 420px; width: 100%;"></div>
                                                                 </div>
 
                                                                 
@@ -641,18 +633,12 @@ $allcategories=getCategories($projects[0]->project_name);
 
 
                                                             
-                                                                <div class="col-md-6">
-                                                                    <div  style="background: #fff;height: 150px;padding: 15px;">
-                                                                        <h2 class="text-center">Amount wise Breakup</h2>
-                                                                    </div>
-                                                                    <div id="AmountwiseBreakupChart" style="height: 370px; width: 100%;"></div>
+                                                                <div class="col-md-12">
+                                                                    <div id="AmountwiseBreakupChart" style="height: 420px; width: 100%;"></div>
                                                                 </div>
 
-                                                                <div class="col-md-6">
-                                                                    <div  style="background: #fff;height: 150px;padding: 15px;">
-                                                                        <h2 class="text-center">Amount wise Breakup</h2>
-                                                                    </div>
-                                                                    <div id="AmountwiseBreakup_DonutChart" style="height: 370px; width: 100%;"></div>
+                                                                <div class="col-md-12">
+                                                                    <div id="AmountwiseBreakup_DonutChart" style="height: 420px; width: 100%;"></div>
                                                                 </div>
 
                                                                 
@@ -992,51 +978,15 @@ $allcategories=getCategories($projects[0]->project_name);
                                                             <div class="row my-5">
 
 
-                                                               <div class="col-md-6">
-                                                                    <div  style="background: #fff;height: 150px;padding: 15px;">
-                                                                        <h2 class="text-center">Amount wise Breakup</h2>
-                                                                    </div>
-                                                                    <div id="ResourcewiseUtilizationChart" style="height: 370px; width: 100%;"></div>
+                                                               <div class="col-md-12">
+                                                                    <div id="ResourcewiseUtilizationChart" style="height: 420px; width: 100%;"></div>
                                                                 </div>
 
-                                                                <div class="col-md-6">
-                                                                    <div  style="background: #fff;height: 150px;padding: 15px;">
-                                                                        <h2 class="text-center">Amount wise Breakup</h2>
-                                                                    </div>
-                                                                    <div id="ResourcewiseUtilization_DonutChart" style="height: 370px; width: 100%;"></div>
+                                                                <div class="col-md-12">
+                                                                    <div id="ResourcewiseUtilization_DonutChart" style="height: 420px; width: 100%;"></div>
                                                                 </div>
 
-
-
-
-                                                          
-
-                                                                <?php 
-                                                                if($listing['ytotal']>0 && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD')){
-                                                                ?>
-                                                                    <div class="col-md-6">
-                                                                        <canvas id="resourcetaggedpieChart"></canvas>
-                                                                        <h5 class=" text-center">Tagged</h5>
-                                                                    </div>
-                                                                <?php
-                                                                }
-                                                                if($listing['ntotal']>0 && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD')){
-                                                                ?>
-                                                                    <div class="col-md-6">
-                                                                        <canvas id="resourceuntaggedpieChart"></canvas>
-                                                                        <h5 class=" text-center">Non-Tagged</h5>
-                                                                    </div>
-                                                                <?php
-                                                                }
-                                                                if($listing['natotal']>0 && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD')){
-                                                                ?>	
-                                                                    <div class="col-md-6">
-                                                                        <canvas id="resourceunspecifiedpieChart"></canvas>
-                                                                        <h5 class=" text-center">Unspecified</h5>
-                                                                    </div>	
-                                                                <?php 
-                                                                }
-                                                                ?>		
+		
                                                             </div>
                                                         </div>
                                                         <div class="tab-pane fade" id="nav-table3" role="tabpanel" aria-labelledby="nav-table-tab3">
@@ -1728,46 +1678,16 @@ $('.closethismodel').click(function(){
         data: [
             {
                 type: "stackedColumn100",
-                name: "Housing",
+                name: "Verified",
                 showInLegend: true,
                 yValueFormatString: "$#,##0 K",
                 dataPoints: <?php echo json_encode($OverallProjectStatusChart_dataPoints1, JSON_NUMERIC_CHECK); ?>
             },{
                 type: "stackedColumn100",
-                name: "Transportation",
+                name: "Not Verified",
                 showInLegend: true,
                 yValueFormatString: "$#,##0 K",
                 dataPoints: <?php echo json_encode($OverallProjectStatusChart_dataPoints2, JSON_NUMERIC_CHECK); ?>
-            },{
-                type: "stackedColumn100",
-                name: "Food",
-                showInLegend: true,
-                yValueFormatString: "$#,##0 K",
-                dataPoints: <?php echo json_encode($OverallProjectStatusChart_dataPoints3, JSON_NUMERIC_CHECK); ?>
-            },{
-                type: "stackedColumn100",
-                name: "Insurance and Pastion",
-                showInLegend: true,
-                yValueFormatString: "$#,##0 K",
-                dataPoints: <?php echo json_encode($OverallProjectStatusChart_dataPoints4, JSON_NUMERIC_CHECK); ?>
-            },{
-                type: "stackedColumn100",
-                name: "Healthcare",
-                showInLegend: true,
-                yValueFormatString: "$#,##0 K",
-                dataPoints: <?php echo json_encode($OverallProjectStatusChart_dataPoints5, JSON_NUMERIC_CHECK); ?>
-            },{
-                type: "stackedColumn100",
-                name: "Entertainment",
-                showInLegend: true,
-                yValueFormatString: "$#,##0 K",
-                dataPoints: <?php echo json_encode($OverallProjectStatusChart_dataPoints6, JSON_NUMERIC_CHECK); ?>
-            },{
-                type: "stackedColumn100",
-                name: "Other",
-                showInLegend: true,
-                yValueFormatString: "$#,##0 K",
-                dataPoints: <?php echo json_encode($OverallProjectStatusChart_dataPoints7, JSON_NUMERIC_CHECK); ?>
             }
         ]
     });
@@ -1795,46 +1715,16 @@ $('.closethismodel').click(function(){
         data: [
             {
                 type: "stackedColumn100",
-                name: "Housing",
+                name: "Verified",
                 showInLegend: true,
                 yValueFormatString: "$#,##0 K",
                 dataPoints: <?php echo json_encode($LineItemBreakupChart_dataPoints1, JSON_NUMERIC_CHECK); ?>
             },{
                 type: "stackedColumn100",
-                name: "Transportation",
+                name: "Not Verified",
                 showInLegend: true,
                 yValueFormatString: "$#,##0 K",
                 dataPoints: <?php echo json_encode($LineItemBreakupChart_dataPoints2, JSON_NUMERIC_CHECK); ?>
-            },{
-                type: "stackedColumn100",
-                name: "Food",
-                showInLegend: true,
-                yValueFormatString: "$#,##0 K",
-                dataPoints: <?php echo json_encode($LineItemBreakupChart_dataPoints3, JSON_NUMERIC_CHECK); ?>
-            },{
-                type: "stackedColumn100",
-                name: "Insurance and Pastion",
-                showInLegend: true,
-                yValueFormatString: "$#,##0 K",
-                dataPoints: <?php echo json_encode($LineItemBreakupChart_dataPoints4, JSON_NUMERIC_CHECK); ?>
-            },{
-                type: "stackedColumn100",
-                name: "Healthcare",
-                showInLegend: true,
-                yValueFormatString: "$#,##0 K",
-                dataPoints: <?php echo json_encode($LineItemBreakupChart_dataPoints5, JSON_NUMERIC_CHECK); ?>
-            },{
-                type: "stackedColumn100",
-                name: "Entertainment",
-                showInLegend: true,
-                yValueFormatString: "$#,##0 K",
-                dataPoints: <?php echo json_encode($LineItemBreakupChart_dataPoints6, JSON_NUMERIC_CHECK); ?>
-            },{
-                type: "stackedColumn100",
-                name: "Other",
-                showInLegend: true,
-                yValueFormatString: "$#,##0 K",
-                dataPoints: <?php echo json_encode($LineItemBreakupChart_dataPoints7, JSON_NUMERIC_CHECK); ?>
             }
         ]
     });
@@ -1885,46 +1775,16 @@ $('.closethismodel').click(function(){
         data: [
             {
                 type: "stackedColumn100",
-                name: "Housing",
+                name: "Verified",
                 showInLegend: true,
                 yValueFormatString: "$#,##0 K",
                 dataPoints: <?php echo json_encode($AmountwiseBreakupChart_dataPoints1, JSON_NUMERIC_CHECK); ?>
             },{
                 type: "stackedColumn100",
-                name: "Transportation",
+                name: "Not Verified",
                 showInLegend: true,
                 yValueFormatString: "$#,##0 K",
                 dataPoints: <?php echo json_encode($AmountwiseBreakupChart_dataPoints2, JSON_NUMERIC_CHECK); ?>
-            },{
-                type: "stackedColumn100",
-                name: "Food",
-                showInLegend: true,
-                yValueFormatString: "$#,##0 K",
-                dataPoints: <?php echo json_encode($AmountwiseBreakupChart_dataPoints3, JSON_NUMERIC_CHECK); ?>
-            },{
-                type: "stackedColumn100",
-                name: "Insurance and Pastion",
-                showInLegend: true,
-                yValueFormatString: "$#,##0 K",
-                dataPoints: <?php echo json_encode($AmountwiseBreakupChart_dataPoints4, JSON_NUMERIC_CHECK); ?>
-            },{
-                type: "stackedColumn100",
-                name: "Healthcare",
-                showInLegend: true,
-                yValueFormatString: "$#,##0 K",
-                dataPoints: <?php echo json_encode($AmountwiseBreakupChart_dataPoints5, JSON_NUMERIC_CHECK); ?>
-            },{
-                type: "stackedColumn100",
-                name: "Entertainment",
-                showInLegend: true,
-                yValueFormatString: "$#,##0 K",
-                dataPoints: <?php echo json_encode($AmountwiseBreakupChart_dataPoints6, JSON_NUMERIC_CHECK); ?>
-            },{
-                type: "stackedColumn100",
-                name: "Other",
-                showInLegend: true,
-                yValueFormatString: "$#,##0 K",
-                dataPoints: <?php echo json_encode($AmountwiseBreakupChart_dataPoints7, JSON_NUMERIC_CHECK); ?>
             }
         ]
     });
@@ -1974,46 +1834,16 @@ $('.closethismodel').click(function(){
         data: [
             {
                 type: "stackedColumn100",
-                name: "Housing",
+                name: "Verified",
                 showInLegend: true,
                 yValueFormatString: "$#,##0 K",
                 dataPoints: <?php echo json_encode($ResourcewiseUtilizationChart_dataPoints1, JSON_NUMERIC_CHECK); ?>
             },{
                 type: "stackedColumn100",
-                name: "Transportation",
+                name: "Not Verified",
                 showInLegend: true,
                 yValueFormatString: "$#,##0 K",
                 dataPoints: <?php echo json_encode($ResourcewiseUtilizationChart_dataPoints2, JSON_NUMERIC_CHECK); ?>
-            },{
-                type: "stackedColumn100",
-                name: "Food",
-                showInLegend: true,
-                yValueFormatString: "$#,##0 K",
-                dataPoints: <?php echo json_encode($ResourcewiseUtilizationChart_dataPoints3, JSON_NUMERIC_CHECK); ?>
-            },{
-                type: "stackedColumn100",
-                name: "Insurance and Pastion",
-                showInLegend: true,
-                yValueFormatString: "$#,##0 K",
-                dataPoints: <?php echo json_encode($ResourcewiseUtilizationChart_dataPoints4, JSON_NUMERIC_CHECK); ?>
-            },{
-                type: "stackedColumn100",
-                name: "Healthcare",
-                showInLegend: true,
-                yValueFormatString: "$#,##0 K",
-                dataPoints: <?php echo json_encode($ResourcewiseUtilizationChart_dataPoints5, JSON_NUMERIC_CHECK); ?>
-            },{
-                type: "stackedColumn100",
-                name: "Entertainment",
-                showInLegend: true,
-                yValueFormatString: "$#,##0 K",
-                dataPoints: <?php echo json_encode($ResourcewiseUtilizationChart_dataPoints6, JSON_NUMERIC_CHECK); ?>
-            },{
-                type: "stackedColumn100",
-                name: "Other",
-                showInLegend: true,
-                yValueFormatString: "$#,##0 K",
-                dataPoints: <?php echo json_encode($ResourcewiseUtilizationChart_dataPoints7, JSON_NUMERIC_CHECK); ?>
             }
         ]
     });
