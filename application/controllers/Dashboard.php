@@ -7323,6 +7323,11 @@ public function downloadExceptionChangesUpdationsofItems()
 			{
 				$overall=0;
 				$process=0;
+
+				// echo '<pre>tagged :';
+				// print_r($cat['tagged']);
+				// echo '</pre>';
+				// exit();
 				if(count($cat['tagged'])>0)
 				{
 					$tg=0;
@@ -7344,6 +7349,11 @@ public function downloadExceptionChangesUpdationsofItems()
 
 			if(!empty($cat['untagged']) && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD'))
 			{
+
+				// echo '<pre>untagged :';
+				// print_r($cat['untagged']);
+				// echo '</pre>';
+				// exit();
 				$overall=0;
 			 	$process=0;
 				if(count($cat['untagged'])>0)
@@ -7395,6 +7405,10 @@ public function downloadExceptionChangesUpdationsofItems()
 			// }
 		}
 
+		// echo '<pre>my_array ';
+		// print_r($my_array);
+		// echo '</pre>';
+		// exit();
 
 		$LineItemBreakupChart_dataPoints1 = array();
 		$LineItemBreakupChart_dataPoints2 = array();
@@ -7555,31 +7569,13 @@ public function downloadExceptionChangesUpdationsofItems()
 
 			}
 			
-			// echo "<br>";
-			// echo "<br>";
-			// echo "<br>";
+		
 
 		}
 
-		// echo getmoney_format(number_format((($ttv+$tntv+$tutv)/100000),2,'.', '')).' of '.getmoney_format(number_format((($ttt+$tntt+$tutt)/100000),2,'.', '')).' Lacs';
-		// echo "<br>";
-		// echo "<br>";
-		// echo ($ttt+$tntt+$tutt) > 0 ? round((($ttv+$tntv+$tutv)/($ttt+$tntt+$tutt))*100,2).' %': '0 %';
-		
-
+	
 
 		$filled = ($ttt+$tntt+$tutt) > 0 ? round((($ttv+$tntv+$tutv)/($ttt+$tntt+$tutt))*100,2).' 0 ': '0 ';
-
-		// echo '<pre>filled ';
-		// print_r($filled);
-		// echo '</pre>';
-		// exit();
-		// echo '<pre>my_array1 ';
-		// print_r($my_array1);
-		// echo '</pre>';
-		// exit();
-
-		// exit();
 
 		$AmountwiseBreakupChart_dataPoints1 = array();
 		$AmountwiseBreakupChart_dataPoints2 = array();
@@ -7588,15 +7584,6 @@ public function downloadExceptionChangesUpdationsofItems()
 			$AmountwiseBreakupChart_dataPoints2[] = array("label"=> $my_array1_key, "y"=> 100-(int)$my_array1_value['percentage']);
 		}
 	
-		
-		// $AmountwiseBreakupChart_dataPoints1 = array(
-		// 	array("label"=> "OE", "y"=> 13),
-		// 	array("label"=> "COMP", "y"=> 21),
-		// );
-		// $AmountwiseBreakupChart_dataPoints2 = array(
-		// 	array("label"=> "OE", "y"=> 6),
-		// 	array("label"=> "COMP", "y"=> 12),
-		// );
 		$data['AmountwiseBreakupChart_dataPoints1']=$AmountwiseBreakupChart_dataPoints1;
 		$data['AmountwiseBreakupChart_dataPoints2']=$AmountwiseBreakupChart_dataPoints2;
 		
