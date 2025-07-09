@@ -205,13 +205,6 @@ class Dashboard extends CI_Controller {
 		$data['total_users_count'] = $total_users_count;
 
 
-		$notstarted_dataPoint_open_projects = 0;
-		$notstarted_dataPoint_closed_projects = 0;
-		$notstarted_dataPoint_cancelled_projects = 0;
-
-		$inprogress_dataPoint_open_projects = 0;
-		$inprogress_dataPoint_closed_projects = 0;
-		$inprogress_dataPoint_cancelled_projects = 0;
 
 		$within_time_dataPoint_open_projects = 0;
 		$within_time_dataPoint_closed_projects = 0;
@@ -222,79 +215,55 @@ class Dashboard extends CI_Controller {
 		$overdue_datapoint_cancelled_projects = 0;
 
 		$notstarted_dataPoint = array();
-		$projects=$this->db->query('SELECT * from company_projects where status in (0,1,2) ORDER BY id DESC Limit 10')->result();
+		$projects=$this->db->query('SELECT * from company_projects where status in (0,1,2) ORDER BY id DESC')->result();
+		
 		foreach($projects as $projects_key=>$projects_value){
 
 			$today = date("Y-m-d H:i:s");
-			$date = $projects_value->start_date;
+			$start_date = $projects_value->start_date;
 			$due_date = $projects_value->due_date;
 			$finish_date = date('Y-m-d',strtotime($projects_value->finish_datetime));
 			
 
 			if($projects_value->status == 0){
-				$within_time_dataPoint_open_projects = 0;
-				if($date>$today){
-					$notstarted_dataPoint_open_projects = $notstarted_dataPoint_open_projects+1; 
-				}
-				if($date<$today){
-					$inprogress_dataPoint_open_projects = $inprogress_dataPoint_open_projects+1; 
+				if($today<$due_date){
+					$within_time_dataPoint_open_projects = $within_time_dataPoint_open_projects + 1;
 				}
 				if($today>$due_date){
 					$overdue_datapoint_open_projects = $overdue_datapoint_open_projects+1;
 				}
-			}
-			if($projects_value->status == 1){
-				$inprogress_dataPoint_closed_projects = 0;
-				if($date>$today){
-					$notstarted_dataPoint_closed_projects = $notstarted_dataPoint_open_projects+1; 
-				}
-				if($today>$finish_date){
+			}else if($projects_value->status == 1){
+
+				if($today<$due_date){
 					$within_time_dataPoint_closed_projects = $within_time_dataPoint_closed_projects + 1;
 				}
-				if($today<$finish_date){
+				if($today>$due_date){
 					$overdue_datapoint_closed_projects = $overdue_datapoint_closed_projects + 1;
 				}
-			}
-			if($projects_value->status == 2){
-
-				if($date>$today){
-					$notstarted_dataPoint_cancelled_projects = $notstarted_dataPoint_cancelled_projects+1; 
-				}
-				
-
-				if($date>$today){
+			}else if($projects_value->status == 2){
+				if($today<$due_date){
 					$within_time_dataPoint_cancelled_projects = $within_time_dataPoint_cancelled_projects + 1;
 				}
-				
-				
-
-				if($today>$finish_date){
-					$inprogress_dataPoint_cancelled_projects = $inprogress_dataPoint_cancelled_projects + 1;
-				}
-				if($today<$finish_date){
+				if($today>$due_date){
 					$overdue_datapoint_cancelled_projects = $overdue_datapoint_cancelled_projects + 1;
 				}
 			}
 		}
 		
-		$notstarted_dataPoint[] = array("label"=> "Open Projects", "y"=> $notstarted_dataPoint_open_projects);
-		$notstarted_dataPoint[] = array("label"=> "Closed Projects", "y"=> $notstarted_dataPoint_closed_projects);
-		$notstarted_dataPoint[] = array("label"=> "Cancelled Projects", "y"=> $notstarted_dataPoint_cancelled_projects);	
-		$data['notstarted_dataPoint'] = $notstarted_dataPoint;
-
-		$inprogress_dataPoint[] = array("label"=> "Open Projects", "y"=> $inprogress_dataPoint_open_projects);
-		$inprogress_dataPoint[] = array("label"=> "Closed Projects", "y"=> $inprogress_dataPoint_closed_projects);
-		$inprogress_dataPoint[] = array("label"=> "Cancelled Projects", "y"=> $inprogress_dataPoint_cancelled_projects);	
-		$data['inprogress_dataPoint'] = $inprogress_dataPoint;
+	
 
 		$within_time_dataPoint[] = array("label"=> "Open Projects", "y"=> $within_time_dataPoint_open_projects);
 		$within_time_dataPoint[] = array("label"=> "Closed Projects", "y"=> $within_time_dataPoint_closed_projects);
 		$within_time_dataPoint[] = array("label"=> "Cancelled Projects", "y"=> $within_time_dataPoint_cancelled_projects);
+
+	
+		
 		$data['within_time_dataPoint'] = $within_time_dataPoint;
 
 		$overdue_datapoint[] = array("label"=> "Open Projects", "y"=> $overdue_datapoint_open_projects);
 		$overdue_datapoint[] = array("label"=> "Closed Projects", "y"=> $overdue_datapoint_closed_projects);
 		$overdue_datapoint[] = array("label"=> "Cancelled Projects", "y"=> $overdue_datapoint_cancelled_projects);
+	
 		$data['overdue_datapoint'] = $overdue_datapoint;
 
 		// echo '<pre>data ';
@@ -7329,6 +7298,9 @@ public function downloadExceptionChangesUpdationsofItems()
 		$allcategories=getCategories($projects[0]->project_name);
 
 
+		
+
+	
 
 		$ttv=0;
 		$ttt=0;
@@ -7574,7 +7546,7 @@ public function downloadExceptionChangesUpdationsofItems()
 
 			if($projects[0]->project_type=='CD' )
 			{
-				echo getmoney_format(round((($overallverified/$overalltotal)*100),2)).'% <br>'.getmoney_format(round(($overallverified/100000),2)).' of '.getmoney_format(round(($overalltotal/100000),2)).' Lacs';
+				// echo getmoney_format(round((($overallverified/$overalltotal)*100),2)).'% <br>'.getmoney_format(round(($overallverified/100000),2)).' of '.getmoney_format(round(($overalltotal/100000),2)).' Lacs';
 
 				$my_array1[$alcat->item_category]['percentage'] = getmoney_format(round((($overallverified/$overalltotal)*100),2));
 				$my_array1[$alcat->item_category]['overallverified'] = getmoney_format(round(($overallverified/100000),2));
@@ -7670,38 +7642,91 @@ public function downloadExceptionChangesUpdationsofItems()
 
 
 
+		$project_details=$this->db->select('*')->get($project_name)->result();
+
+
+		 $this->db->select($project_name.'.*,users.firstName');
+		$this->db->from($project_name);
+		$this->db->join('users', $project_name.'.verified_by = users.id'); 
+		$query = $this->db->get();
+		$project_details = $query->result();
+	
+		// echo '<pre>project_details ';
+		// print_r($project_details);
+		// echo '</pre>';
+		// exit();
+
+		$project_details_array = array();
+		$project_details_array2 = array();
+
+		$verifier_users_array = array();
+		$category_array = array();
+		foreach($project_details as $project_details_key=>$project_details_value){
+			if(!empty($project_details_value->verified_by)){
+				$project_details_array[$project_details_value->item_category][$project_details_value->firstName][] = 1;
+				$project_details_array2[$project_details_value->firstName][$project_details_value->item_category][] = 1;
+			}
+
+			if(!in_array($project_details_value->firstName,$verifier_users_array)){
+				$verifier_users_array[] = $project_details_value->firstName;
+			}
+			
+			if(!in_array($project_details_value->item_category,$category_array)){
+				$category_array[] = $project_details_value->item_category;
+			}
+
+		}
 
 
 
+		$ResourcewiseUtilizationChart_datapoint = array();
+		$ResourcewiseUtilization_DonutChart_dataPoints_array = array();
+		$count_value = 0;
 
+		foreach($project_details_array as $project_details_array_key=>$project_details_array_value){
 
+			$ResourcewiseUtilizationChart_dataPoints1 = array();
+			foreach($verifier_users_array as $verifier_users_array_Key=>$verifier_users_array_value){
+				// $my_value = count($project_details_array[$project_details_array_key][$verifier_users_array_value]);
 
+				
+
+				if(isset($project_details_array[$project_details_array_key][$verifier_users_array_value])){
+					$ResourcewiseUtilizationChart_dataPoints1[] = array("label"=> $verifier_users_array_value, "y"=> count($project_details_array[$project_details_array_key][$verifier_users_array_value]));
+
+					$ResourcewiseUtilization_DonutChart_dataPoints_array[$verifier_users_array_value][] = count($project_details_array[$project_details_array_key][$verifier_users_array_value]);
+
+				}
+				
+				
+				// $ResourcewiseUtilization_DonutChart_dataPoints_array[$verifier_users_array_value][] = count($project_details_array[$project_details_array_key][$verifier_users_array_value]);
+			}
+
+			$ResourcewiseUtilizationChart_datapoint[] = array(
+				"type"=> "stackedColumn100",
+				"name"=> $project_details_array_key,
+				"showInLegend"=>true,
+				"yValueFormatString"=>"#,##0 ",
+				"dataPoints" => $ResourcewiseUtilizationChart_dataPoints1,
+			);
+			$count_value++;
+		}
 		
-		$ResourcewiseUtilizationChart_dataPoints1 = array(
-			array("label"=> "OE", "y"=> 13),
-			array("label"=> "COMP", "y"=> 21),
-			array("label"=> "VEH", "y"=> 24),
-		);
-		
-		$ResourcewiseUtilizationChart_dataPoints2 = array(
-			array("label"=> "OE", "y"=> 6),
-			array("label"=> "COMP", "y"=> 12),
-			array("label"=> "VEH", "y"=> 13),
-		);
-		
-		
 
-		$data['ResourcewiseUtilizationChart_dataPoints1']=$ResourcewiseUtilizationChart_dataPoints1;
-		$data['ResourcewiseUtilizationChart_dataPoints2']=$ResourcewiseUtilizationChart_dataPoints2;
-		
+	
 
-		$ResourcewiseUtilization_DonutChart_dataPoints = array( 
-			array("label"=>"Jasmeet", "symbol" => "JS","y"=>46.6),
-			array("label"=>"Hardik", "symbol" => "HR","y"=>27.7),
-			array("label"=>"Shubh", "symbol" => "SH","y"=>13.9),
-		);
-		$data['ResourcewiseUtilization_DonutChart_dataPoints']=$ResourcewiseUtilization_DonutChart_dataPoints;
- 
+
+		$data['ResourcewiseUtilizationChart_datapoint'] = $ResourcewiseUtilizationChart_datapoint;
+
+		$ResourcewiseUtilization_DonutChart_dataPoints_array1 = array();
+		foreach($ResourcewiseUtilization_DonutChart_dataPoints_array as $ResourcewiseUtilization_DonutChart_dataPoints_array_key=>$ResourcewiseUtilization_DonutChart_dataPoints_array_value){
+			
+			$ResourcewiseUtilization_DonutChart_dataPoints_array1[] = array("label"=>$ResourcewiseUtilization_DonutChart_dataPoints_array_key, "symbol" => $ResourcewiseUtilization_DonutChart_dataPoints_array_key,"y"=>array_sum($ResourcewiseUtilization_DonutChart_dataPoints_array_value));
+
+		}
+		
+		$data['ResourcewiseUtilization_DonutChart_dataPoints']=$ResourcewiseUtilization_DonutChart_dataPoints_array1;
+		
 
 	
 		$data['projects']=$projects;

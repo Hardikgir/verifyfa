@@ -1005,7 +1005,7 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                 <?php 
                                                                 if($listing['ytotal']>0 && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD')){
                                                                 ?>
-                                                                    <div class="col-md-6">
+                                                                    <div class="col-md-6 11 ">
                                                                         <canvas id="resourcetaggedpieChart"></canvas>
                                                                         <h5 class=" text-center">Tagged</h5>
                                                                     </div>
@@ -1013,7 +1013,7 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                 }
                                                                 if($listing['ntotal']>0 && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD')){
                                                                 ?>
-                                                                    <div class="col-md-6">
+                                                                    <div class="col-md-6 22 ">
                                                                         <canvas id="resourceuntaggedpieChart"></canvas>
                                                                         <h5 class=" text-center">Non-Tagged</h5>
                                                                     </div>
@@ -1021,7 +1021,7 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                 }
                                                                 if($listing['natotal']>0 && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD')){
                                                                 ?>	
-                                                                    <div class="col-md-6">
+                                                                    <div class="col-md-6 33">
                                                                         <canvas id="resourceunspecifiedpieChart"></canvas>
                                                                         <h5 class=" text-center">Unspecified</h5>
                                                                     </div>	

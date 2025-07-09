@@ -1809,8 +1809,6 @@ $('.closethismodel').click(function(){
 
 
 
-    
-
 
 
     var chart = new CanvasJS.Chart("ResourcewiseUtilizationChart", {
@@ -1826,21 +1824,7 @@ $('.closethismodel').click(function(){
         axisY: {
             suffix: "%"
         },
-        data: [
-            {
-                type: "stackedColumn100",
-                name: "Verified",
-                showInLegend: true,
-                yValueFormatString: "$#,##0 K",
-                dataPoints: <?php echo json_encode($ResourcewiseUtilizationChart_dataPoints1, JSON_NUMERIC_CHECK); ?>
-            },{
-                type: "stackedColumn100",
-                name: "Not Verified",
-                showInLegend: true,
-                yValueFormatString: "$#,##0 K",
-                dataPoints: <?php echo json_encode($ResourcewiseUtilizationChart_dataPoints2, JSON_NUMERIC_CHECK); ?>
-            }
-        ]
+        data: <?php echo json_encode($ResourcewiseUtilizationChart_datapoint, JSON_NUMERIC_CHECK); ?>
     });
  
     chart.render();
@@ -1856,7 +1840,7 @@ $('.closethismodel').click(function(){
         data: [{
             type: "doughnut",
             indexLabel: "{symbol} - {y}",
-            yValueFormatString: "#,##0.0\"%\"",
+            yValueFormatString: "#,##0.0\"\"",
             showInLegend: true,
             legendText: "{label} : {y}",
             dataPoints: <?php echo json_encode($ResourcewiseUtilization_DonutChart_dataPoints, JSON_NUMERIC_CHECK); ?>
