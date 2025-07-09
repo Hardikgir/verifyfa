@@ -1675,13 +1675,13 @@ $('.closethismodel').click(function(){
                 type: "stackedColumn100",
                 name: "Verified",
                 showInLegend: true,
-                yValueFormatString: "$#,##0 ",
+                yValueFormatString: "#,##0 ",
                 dataPoints: <?php echo json_encode($OverallProjectStatusChart_Verified_dataPoints, JSON_NUMERIC_CHECK); ?>
             },{
                 type: "stackedColumn100",
                 name: "Not Verified",
                 showInLegend: true,
-                yValueFormatString: "$#,##0 ",
+                yValueFormatString: "#,##0 ",
                 dataPoints: <?php echo json_encode($OverallProjectStatusChart_NotVerified_dataPoints, JSON_NUMERIC_CHECK); ?>
             }
         ]
@@ -1736,8 +1736,8 @@ $('.closethismodel').click(function(){
         },
         data: [{
             type: "doughnut",
-            indexLabel: "{symbol} - {y}",
-            yValueFormatString: "#,##0.0\"\"",
+            indexLabel: "{symbol} : {y}",
+            yValueFormatString: "#\"\"",
             showInLegend: true,
             legendText: "{label} : {y}",
             dataPoints: <?php echo json_encode($LineItemBreakup_DonutChart_dataPoints, JSON_NUMERIC_CHECK); ?>

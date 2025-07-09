@@ -7268,8 +7268,7 @@ public function downloadExceptionChangesUpdationsofItems()
         {
             $project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($project->project_name)));
             $getprojectdetails=$this->tasks->projectdetail($project_name);
-			// echo $this->db->last_query();
-            if(!empty($getprojectdetails))
+			if(!empty($getprojectdetails))
             {
                 $project->TotalQuantity= ((int)$getprojectdetails[0]->TotalQuantity);
                 if($getprojectdetails[0]->VerifiedQuantity !='')
@@ -7291,297 +7290,11 @@ public function downloadExceptionChangesUpdationsofItems()
 
 
 
-		$listing=getTagUntag($projects[0]->project_name);
-
-		
-		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($projects[0]->project_name)));    
-
-		$listing=getTagUntag($projects[0]->project_name);
-		$cat=getTagUntagCategories($projects[0]->project_name);
-		$allcategories=getCategories($projects[0]->project_name);
-
-		echo '<pre>';
-		print_r($allcategories);
-		echo '</pre>';
-		exit();
-
-
-	
-		foreach($cat as $cat_key=>$cat_value){
-			echo '<pre>cat_value ';
-			print_r($cat_value);
-			echo '</pre>';
-
-			
-			// exit();
-		}
-
-		echo '<pre>cat ';
-		print_r($cat);
-		echo '</pre>';
-		exit();
-		
-		exit();
-
-
-		$ttv=0;
-		$ttt=0;
-		$tntv=0;
-		$tntt=0;
-		$tutv=0;
-		$tutt=0;
-		$tamt=0;
-
-
-		// echo '<pre>';
-		// print_r($allcategories['categories']);
-		// echo '</pre>';
-		// exit();
-
-		$LineItemBreakupChart_dataPoints1 = array();
-		$LineItemBreakup_DonutChart_dataPoints_val = array();
-		// array("label"=> "OE", "y"=> 13),
-		foreach($allcategories['categories'] as $alcat)
-		{
-				
-			$overallverified=0;
-			$overalltotal=0;
-			
-				if(!empty($cat['tagged']) && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD'))
-				{
-					$overall=0;
-					
-					$process=0;
-					if(count($cat['tagged'])>0)
-					{
-						$tg=0;
-						foreach($cat['tagged'] as $ct)
-						{ 
-							if($ct['category']==$alcat->item_category)
-							{
-								$overall=$overall+$ct['percentage'];
-								$overallverified=$overallverified+$ct['verified'];
-								$overalltotal=$overalltotal+$ct['total'];
-								$ttv=$ttv+$ct['verified'];
-								$ttt=$ttt+$ct['total'];
-								$ct['percentage'] ==100? $process++ : $process;
-						
-						
-						
-						$tg++;
-							}
-						}
-						
-					}
-					
-				}
-
-				if(!empty($cat['untagged']) && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD'))
-				{
-					$overall=0;
-					// $overallverified=0;
-					// $overalltotal=0;
-					$process=0;
-					if(count($cat['untagged'])>0)
-					{
-					$ut=0;
-					foreach($cat['untagged'] as $ct)
-					{ 
-						if($ct['category']==$alcat->item_category)
-						{
-							$overall=$overall+$ct['percentage'];
-							$overallverified=$overallverified+$ct['verified'];
-							$overalltotal=$overalltotal+$ct['total'];
-							$tntv=$tntv+$ct['verified'];
-							$tntt=$tntt+$ct['total'];
-							$ct['percentage'] ==100? $process++ : $process;
-						$ut++;
-						}
-						
-					}
-					}
-					
-				}
-
-				if(!empty($cat['unspecified']) && ($projects[0]->project_type=='UN' || $projects[0]->project_type=='CD'))
-				{
-					$overall=0;
-					// $overallverified=0;
-					// $overalltotal=0;
-					$process=0;
-					if(count($cat['unspecified'])>0)
-					{
-						$us=0;
-						foreach($cat['unspecified'] as $ct)
-						{ 
-							if($ct['category']==$alcat->item_category)
-							{
-								$overall=$overall+$ct['percentage'];
-								$overallverified=$overallverified+$ct['verified'];
-								$overalltotal=$overalltotal+$ct['total'];
-								$tutv=$tutv+$ct['verified'];
-								$tutt=$tutt+$ct['total'];
-								$ct['percentage'] ==100? $process++ : $process;
-						
-							$us++;
-							}
-							
-						}
-						
-					}
-					
-				}
-				
-				if($projects[0]->project_type=='CD' )
-				{
-					?>
-					
-					<?php 
-
-					$LineItemBreakupChart_dataPoints1[] = array(
-						"label"=> $alcat->item_category,
-						"y"=> round(($overallverified/$overalltotal)*100,2),
-						"11" => $overallverified,
-						"22" => $overalltotal,
-
-					);
-				}
-				?>
-				
-			<?php
-		}
-
-
-		// echo '<pre>overallverified ';
-		// print_r($overallverified);
-		// echo '</pre>';
-
-		// echo '<pre>overalltotal ';
-		// print_r($overalltotal);
-		// echo '</pre>';
-		// exit();
-		// exit();
-		?>
-
-
-		<tr class=" text-center">
-			<td><strong>TOTAL</strong></td>
-			<td><strong><?php echo getmoney_format(round(($tamt/100000),2)); ?></strong></td>
-			<?php
-			if(!empty($cat['tagged']) && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD'))
-			{
-			?>
-			<td><strong><?php echo $ttv.' of '.$ttt.' Li';?></strong></td>
-			<?php
-			}
-			if(!empty($cat['untagged']) && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD'))
-			{
-			?>
-			<td><strong><?php echo $tntv.' of '.$tntt.' Li';?></strong></td>
-			<?php
-			}
-			if(!empty($cat['unspecified']) && ($projects[0]->project_type=='UN' || $projects[0]->project_type=='CD' ))
-			{
-			?>
-			<td><strong><?php echo $tutv.' of '.$tutt.' Li';?></strong></td>
-			<?php
-			}
-			if($projects[0]->project_type=='CD' )
-			{
-			?>
-			<td><strong><?php echo ($ttv+$tntv+$tutv).' of '.($ttt+$tntt+$tutt).' Li';?></strong></td>
-			<?php 
-			}
-			?>
-			<td></td>
-		</tr>
-		
-		<?php 
-
-		// echo '<pre>';
-		// print_r($LineItemBreakupChart_dataPoints1);
-		// echo '</pre>';
-		// exit();
-
-		
-		// $LineItemBreakupChart_dataPoints1 = array(
-		// 	array("label"=> "OE", "y"=> 13),
-		// 	array("label"=> "COMP", "y"=> 21),
-		// 	array("label"=> "VEH", "y"=> 24),
-		// );
-		
-		$LineItemBreakupChart_dataPoints2 = array(
-			array("label"=> "OE", "y"=> 6),
-			array("label"=> "COMP", "y"=> 12),
-			// array("label"=> "VEH", "y"=> 13),
-			
-		);
-
-
-
-		$LineItemBreakup_DonutChart_dataPoints = array( 
-			array("label"=>"Verified", "symbol" => "VRF","y"=>$ttv+$tntv+$tutv),
-			array("label"=>"Not Verified", "symbol" => "NTVRF","y"=>$ttt+$tntt+$tutt),
-		);
-
-		// exit();
-
-
-		/*
-		$overall=0;
-		foreach($allcategories['categories'] as $alcat)
-		{
-			$overallverified=0;
-			$overalltotal=0;
-
-			$tg=0;
-			foreach($cat['tagged'] as $ct)
-			{ 
-				if($ct['category']==$alcat->item_category){
-					$overall=$overall+$ct['percentage'];
-					$overallverified=$overallverified+$ct['verified'];
-					$overalltotal=$overalltotal+$ct['total'];
-					echo '<pre>overalltotal 00 ::';
-			print_r($overalltotal);
-			echo '</pre>';
-				}
-			}
-			foreach($cat['untagged'] as $ct)
-			{ 
-				if($ct['category']==$alcat->item_category){
-				$overall=$overall+$ct['percentage'];
-				$overallverified=$overallverified+$ct['verified'];
-				$overalltotal=$overalltotal+$ct['total'];
-				echo '<pre>overalltotal 11 ::';
-				print_r($overalltotal);
-				echo '</pre>';
-				}
-			}
-
-			
-			
-					// exit();
-		}
-
-		echo '<pre>overalltotal  ::';
-				print_r($overalltotal);
-				echo '</pre>';
-		echo '<pre>cat ';
-		print_r($cat);
-		echo '</pre>';
-		exit();
-		*/
-		
-
-		
-				
-
-
 		// OverallProjectStatusChart Start From Here
-		$tag_verified=$this->db->select('count(*) as tag_verified')->where(array('tag_status_y_n_na'=>'Y',"verifiable_status_y_n_na"=>'Y'))->get($project_name)->row()->tag_verified;
-		$tag_not_verified=$this->db->select('count(*) as tag_not_verified')->where(array('tag_status_y_n_na'=>'Y',"verifiable_status_y_n_na !="=>'Y'))->get($project_name)->row()->tag_not_verified;
-		$non_tag_verified=$this->db->select('count(*) as non_tag_verified')->where(array('tag_status_y_n_na'=>'N',"verifiable_status_y_n_na"=>'Y'))->get($project_name)->row()->non_tag_verified;
-		$non_tag_not_verified=$this->db->select('count(*) as non_tag_not_verified')->where(array('tag_status_y_n_na'=>'N',"verifiable_status_y_n_na !="=>'Y'))->get($project_name)->row()->non_tag_not_verified;
+		$tag_verified=$this->db->select('count(*) as tag_verified')->where(array('tag_status_y_n_na'=>'Y',"verification_status"=>'Verified'))->get($project_name)->row()->tag_verified;
+		$tag_not_verified=$this->db->select('count(*) as tag_not_verified')->where(array('tag_status_y_n_na'=>'Y',"verification_status !="=>'Verified'))->get($project_name)->row()->tag_not_verified;
+		$non_tag_verified=$this->db->select('count(*) as non_tag_verified')->where(array('tag_status_y_n_na'=>'N',"verification_status"=>'Verified'))->get($project_name)->row()->non_tag_verified;
+		$non_tag_not_verified=$this->db->select('count(*) as non_tag_not_verified')->where(array('tag_status_y_n_na'=>'N',"verification_status !="=>'Verified'))->get($project_name)->row()->non_tag_not_verified;
 		
 		$OverallProjectStatusChart_Verified_dataPoints = array(
 			array("label"=> "Tag", "y"=> $tag_verified),
@@ -7596,79 +7309,358 @@ public function downloadExceptionChangesUpdationsofItems()
 		// OverallProjectStatusChart End From Here
 
 
-		$this->db->select('item_category');
-		$this->db->from($project_name);
-		$this->db->group_by('item_category');
-		$query = $this->db->get(); 
-        $project_categories = $query->result();
-		// echo '<pre>project_categories ';
-		// print_r($project_categories);
-		// echo '</pre>';
-		// exit();
 
 
-		$allcategories=getCategories($projects[0]->project_name);
-		foreach($allcategories['categories'] as $alcat){
 
-		}
 
+
+		$listing=getTagUntag($projects[0]->project_name);
+		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($projects[0]->project_name)));    
+
+		$listing=getTagUntag($projects[0]->project_name);
+		$cat=getTagUntagCategories($projects[0]->project_name);
 		
 		
+
+
+
 	
 
+		$allcategories=getCategories($projects[0]->project_name);
+
+
+
+		$ttv=0;
+		$ttt=0;
+		$tntv=0;
+		$tntt=0;
+		$tutv=0;
+		$tutt=0;
+		$tamt=0;
+
+
+		$my_array = array();
+		foreach($allcategories['categories'] as $alcat){
+
+			$overallverified=0;
+			$overalltotal=0;
+		
+
+
+			if(!empty($cat['tagged']) && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD'))
+			{
+				$overall=0;
+				$process=0;
+				if(count($cat['tagged'])>0)
+				{
+					$tg=0;
+					foreach($cat['tagged'] as $ct)
+					{ 
+						if($ct['category']==$alcat->item_category)
+						{
+							$overall=$overall+$ct['percentage'];
+							$overallverified=$overallverified+$ct['verified'];
+							$overalltotal=$overalltotal+$ct['total'];
+							$ttv=$ttv+$ct['verified'];
+							$ttt=$ttt+$ct['total'];
+							$ct['percentage'] ==100? $process++ : $process;
+
+						}
+					}
+				}
+			}
+
+			if(!empty($cat['untagged']) && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD'))
+			{
+				$overall=0;
+			 	$process=0;
+				if(count($cat['untagged'])>0)
+				{
+					$ut=0;
+					foreach($cat['untagged'] as $ct)
+					{ 
+						if($ct['category']==$alcat->item_category)
+						{
+							$overall=$overall+$ct['percentage'];
+							$overallverified=$overallverified+$ct['verified'];
+							$overalltotal=$overalltotal+$ct['total'];
+							$tntv=$tntv+$ct['verified'];
+							$tntt=$tntt+$ct['total'];
+							$ct['percentage'] ==100? $process++ : $process;
+						}
+					}
+				}
+			}
+
+
+
+			if(!empty($cat['unspecified']) && ($projects[0]->project_type=='UN' || $projects[0]->project_type=='CD'))
+			{
+				$overall=0;
+				$process=0;
+				if(count($cat['unspecified'])>0)
+				{
+					$us=0;
+					foreach($cat['unspecified'] as $ct)
+					{ 
+						if($ct['category']==$alcat->item_category)
+						{
+							$overall=$overall+$ct['percentage'];
+							$overallverified=$overallverified+$ct['verified'];
+							$overalltotal=$overalltotal+$ct['total'];
+							$tutv=$tutv+$ct['verified'];
+							$tutt=$tutt+$ct['total'];
+							$ct['percentage'] ==100? $process++ : $process;
+						}
+					}
+				}
+			}
+			// if($projects[0]->project_type=='CD' )
+			// {
+				$my_array[$alcat->item_category]['percentage'] = round(($overallverified/$overalltotal)*100,2);
+				$my_array[$alcat->item_category]['overallverified'] = $overallverified;
+				$my_array[$alcat->item_category]['overalltotal'] = $overalltotal;
+			// }
+		}
+
+
+		$LineItemBreakupChart_dataPoints1 = array();
+		$LineItemBreakupChart_dataPoints2 = array();
+		foreach($my_array as $my_array_key=>$my_array_value){			
+			$LineItemBreakupChart_dataPoints1[] = array("label"=> $my_array_key, "y"=> $my_array_value['percentage']);
+			$LineItemBreakupChart_dataPoints2[] = array("label"=> $my_array_key, "y"=> 100-(int)$my_array_value['percentage']);
+		}
 		$data['LineItemBreakupChart_dataPoints1']=$LineItemBreakupChart_dataPoints1;
 		$data['LineItemBreakupChart_dataPoints2']=$LineItemBreakupChart_dataPoints2;
 		
 
-		// $LineItemBreakup_DonutChart_dataPoints = array( 
-		// 	array("label"=>"Verified", "symbol" => "VRF","y"=>46.6),
-		// 	array("label"=>"Not Verified", "symbol" => "NTVRF","y"=>27.7),
-		// );
+		$filled = ($ttt+$tntt+$tutt) > 0 ? round((($ttv+$tntv+$tutv)/($ttt+$tntt+$tutt))*100,2).'0':'0';
+		$LineItemBreakup_DonutChart_dataPoints = array( 
+			array("label"=>"Verified", "symbol" => "VRF","y"=>($filled/10)),
+			array("label"=>"Not Verified", "symbol" => "NTVRF","y"=>100-($filled/10)),
+		);
 		$data['LineItemBreakup_DonutChart_dataPoints']=$LineItemBreakup_DonutChart_dataPoints;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		$AmountwiseBreakupChart_dataPoints1 = array(
-			array("label"=> "OE", "y"=> 13),
-			array("label"=> "COMP", "y"=> 21),
-			array("label"=> "VEH", "y"=> 24),
-		);
 		
-		$AmountwiseBreakupChart_dataPoints2 = array(
-			array("label"=> "OE", "y"=> 6),
-			array("label"=> "COMP", "y"=> 12),
-			array("label"=> "VEH", "y"=> 13),
-		);
+
+
+
+		$ttv=0;
+		$ttt=0;
+		$tntv=0;
+		$tntt=0;
+		$tutv=0;
+		$tutt=0;
+		$totalCount=0;                                                                        
+		$my_array1 = array();
+		foreach($allcategories['categories'] as $alcat)
+		{
+			$count=0;
+			if(!empty($cat['tagged']) && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD'))
+			{
+				if(count($cat['tagged'])>0)
+				{
+					$tg=0;
+					foreach($cat['tagged'] as $ct)
+					{ 
+						if($ct['category']==$alcat->item_category)
+						{
+							$count=$count+$ct['verified'];
+							$totalCount=$totalCount+$ct['verified'];
+						}
+					}
+				}
+			}
+			if(!empty($cat['untagged']) && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD'))
+			{
+				if(count($cat['untagged'])>0)
+				{
+					$ut=0;
+					foreach($cat['untagged'] as $ct)
+					{ 
+						if($ct['category']==$alcat->item_category)
+						{
+							$count=$count+$ct['verified'];
+							$totalCount=$totalCount+$ct['verified'];
+						}
+					}
+				}
+			}
+			if(!empty($cat['unspecified']) && ($projects[0]->project_type=='UN' || $projects[0]->project_type=='CD'))
+			{
+				if(count($cat['unspecified'])>0)
+				{
+					$us=0;
+					foreach($cat['unspecified'] as $ct)
+					{ 
+						if($ct['category']==$alcat->item_category)
+						{
+							$count=$count+$ct['verified'];
+							$totalCount=$totalCount+$ct['verified'];
+						}
+					}
+				}
+			}
+			// echo $count.' of '.$alcat->catitems.' Li';
+
+
+
+
+			if(!empty($cat['tagged']) && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD'))
+			{
+				$overall=0;
+				$overallverified=0;
+				$overalltotal=0;
+				$process=0;
+				if(count($cat['tagged'])>0)
+				{
+					$tg=0;
+					foreach($cat['tagged'] as $ct)
+					{ 
+						if($ct['category']==$alcat->item_category)
+						{
+							$overall=$overall+$ct['amountpercentage'];
+							$overallverified=$overallverified+$ct['verifiedamount'];
+							$overalltotal=$overalltotal+$ct['totalamount'];
+							$ttv=$ttv+$ct['verifiedamount'];
+							$ttt=$ttt+$ct['totalamount'];
+							$ct['amountpercentage'] ==100? $process++ : $process;
+							}
+					}
+				}
+			}
+
+
+			if(!empty($cat['untagged']) && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD'))
+			{
+				if(count($cat['untagged'])>0)
+				{
+					$ut=0;
+					foreach($cat['untagged'] as $ct)
+					{ 
+						if($ct['category']==$alcat->item_category)
+						{
+							$overall=$overall+$ct['amountpercentage'];
+							$overallverified=$overallverified+$ct['verifiedamount'];
+							$overalltotal=$overalltotal+$ct['totalamount'];
+							$tntv=$tntv+$ct['verifiedamount'];
+							$tntt=$tntt+$ct['totalamount'];
+							$ct['amountpercentage'] ==100? $process++ : $process;
+						}
+					}
+				}
+			}
+
+			if(!empty($cat['unspecified']) && ($projects[0]->project_type=='UN' || $projects[0]->project_type=='CD'))
+			{
+				if(count($cat['unspecified'])>0)
+				{
+					$us=0;
+					foreach($cat['unspecified'] as $ct)
+					{ 
+						if($ct['category']==$alcat->item_category)
+						{
+							$overall=$overall+$ct['amountpercentage'];
+							$overallverified=$overallverified+$ct['verifiedamount'];
+							$overalltotal=$overalltotal+$ct['totalamount'];
+							$tutv=$tutv+$ct['verifiedamount'];
+						$tutt=$tutt+$ct['totalamount'];
+							$ct['amountpercentage'] ==100? $process++ : $process;
+						}
+					}
+				}
+			}
+
+
+			if($projects[0]->project_type=='CD' )
+			{
+				echo getmoney_format(round((($overallverified/$overalltotal)*100),2)).'% <br>'.getmoney_format(round(($overallverified/100000),2)).' of '.getmoney_format(round(($overalltotal/100000),2)).' Lacs';
+
+				$my_array1[$alcat->item_category]['percentage'] = getmoney_format(round((($overallverified/$overalltotal)*100),2));
+				$my_array1[$alcat->item_category]['overallverified'] = getmoney_format(round(($overallverified/100000),2));
+				$my_array1[$alcat->item_category]['overalltotal'] = getmoney_format(round(($overalltotal/100000),2));
+
+
+			}
+			
+			// echo "<br>";
+			// echo "<br>";
+			// echo "<br>";
+
+		}
+
+		// echo getmoney_format(number_format((($ttv+$tntv+$tutv)/100000),2,'.', '')).' of '.getmoney_format(number_format((($ttt+$tntt+$tutt)/100000),2,'.', '')).' Lacs';
+		// echo "<br>";
+		// echo "<br>";
+		// echo ($ttt+$tntt+$tutt) > 0 ? round((($ttv+$tntv+$tutv)/($ttt+$tntt+$tutt))*100,2).' %': '0 %';
 		
+
+
+		$filled = ($ttt+$tntt+$tutt) > 0 ? round((($ttv+$tntv+$tutv)/($ttt+$tntt+$tutt))*100,2).' 0 ': '0 ';
+
+		// echo '<pre>filled ';
+		// print_r($filled);
+		// echo '</pre>';
+		// exit();
+		// echo '<pre>my_array1 ';
+		// print_r($my_array1);
+		// echo '</pre>';
+		// exit();
+
+		// exit();
+
+		$AmountwiseBreakupChart_dataPoints1 = array();
+		$AmountwiseBreakupChart_dataPoints2 = array();
+		foreach($my_array1 as $my_array1_key=>$my_array1_value){			
+			$AmountwiseBreakupChart_dataPoints1[] = array("label"=> $my_array1_key, "y"=> $my_array1_value['percentage']);
+			$AmountwiseBreakupChart_dataPoints2[] = array("label"=> $my_array1_key, "y"=> 100-(int)$my_array1_value['percentage']);
+		}
+	
 		
+		// $AmountwiseBreakupChart_dataPoints1 = array(
+		// 	array("label"=> "OE", "y"=> 13),
+		// 	array("label"=> "COMP", "y"=> 21),
+		// );
+		// $AmountwiseBreakupChart_dataPoints2 = array(
+		// 	array("label"=> "OE", "y"=> 6),
+		// 	array("label"=> "COMP", "y"=> 12),
+		// );
 		$data['AmountwiseBreakupChart_dataPoints1']=$AmountwiseBreakupChart_dataPoints1;
 		$data['AmountwiseBreakupChart_dataPoints2']=$AmountwiseBreakupChart_dataPoints2;
-	
-
+		
 
 		$AmountwiseBreakup_DonutChart_dataPoints = array( 
-			array("label"=>"Verified", "symbol" => "VRF","y"=>46.6),
-			array("label"=>"Not Verified", "symbol" => "NTVRF","y"=>27.7),
+			array("label"=>"Verified", "symbol" => "VRF","y"=>91.60),
+			array("label"=>"Not Verified", "symbol" => "NTVRF","y"=>9.4),
 		);
+
+		// number_format((float)$filled, 2, '.', '');
+		$calculation = 100-floatval($filled);
+		// echo '<pre>calculation s';
+		// print_r($calculation);
+		// echo '</pre>';
+
+		// echo '<pre>filled ';
+		// print_r();
+		// echo '</pre>';
+		// exit();
+		// exit();
+		$y_value = number_format((float)$calculation, 2, '.', '');
+		// echo '<pre>y_value : ';
+		// print_r();
+		// echo '</pre>';
+		// exit();
+		// echo '<pre>';
+		// print_r(number_format((float)$calculation, 2, '.', ''));
+		// echo '</pre>';
+		// exit();
+
+		$AmountwiseBreakup_DonutChart_dataPoints = array( 
+			array("label"=>"Verified", "symbol" => "VRF","y"=>round($filled)),
+			array("label"=>"Not Verified", "symbol" => "NTVRF","y"=>round($y_value)),
+		);
+
+
 		$data['AmountwiseBreakup_DonutChart_dataPoints']=$AmountwiseBreakup_DonutChart_dataPoints;
 
 
