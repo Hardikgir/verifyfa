@@ -7655,10 +7655,310 @@ public function downloadExceptionChangesUpdationsofItems()
 
 		
 
-		// echo '<pre>projects :';
-		// print_r($projects);
-		// echo '</pre>';
-		// exit();
+		$OverallProjectStatusChart_dataPoints1 = array(
+			array("label"=> "Single", "y"=> 13),
+			array("label"=> "Married", "y"=> 21),
+			array("label"=> "Married and have Kids", "y"=> 24),
+			array("label"=> "Single Parent", "y"=> 15)
+		);
+		
+		$OverallProjectStatusChart_dataPoints2 = array(
+			array("label"=> "Single", "y"=> 6),
+			array("label"=> "Married", "y"=> 12),
+			array("label"=> "Married and have Kids", "y"=> 13),
+			array("label"=> "Single Parent", "y"=> 7)
+		);
+		
+		$OverallProjectStatusChart_dataPoints3 = array(
+			array("label"=> "Single", "y"=> 5),
+			array("label"=> "Married", "y"=> 9),
+			array("label"=> "Married and have Kids", "y"=> 10),
+			array("label"=> "Single Parent", "y"=> 6)
+		);
+		
+		$OverallProjectStatusChart_dataPoints4 = array(
+			array("label"=> "Single", "y"=> 3),
+			array("label"=> "Married", "y"=> 8),
+			array("label"=> "Married and have Kids", "y"=> 9),
+			array("label"=> "Single Parent", "y"=> 3)
+		);
+		
+		$OverallProjectStatusChart_dataPoints5 = array(
+			array("label"=> "Single", "y"=> 3),
+			array("label"=> "Married", "y"=> 5),
+			array("label"=> "Married and have Kids", "y"=> 4),
+			array("label"=> "Single Parent", "y"=> 2)
+		);
+		
+		$OverallProjectStatusChart_dataPoints6 = array(
+			array("label"=> "Single", "y"=> 2),
+			array("label"=> "Married", "y"=> 3),
+			array("label"=> "Married and have Kids", "y"=> 4),
+			array("label"=> "Single Parent", "y"=> 2)
+		);
+		
+		$OverallProjectStatusChart_dataPoints7 = array(
+			array("label"=> "Single", "y"=> 5),
+			array("label"=> "Married", "y"=> 9),
+			array("label"=> "Married and have Kids", "y"=> 9),
+			array("label"=> "Single Parent", "y"=> 5)
+		);
+
+		$data['OverallProjectStatusChart_dataPoints1']=$OverallProjectStatusChart_dataPoints1;
+		$data['OverallProjectStatusChart_dataPoints2']=$OverallProjectStatusChart_dataPoints2;
+		$data['OverallProjectStatusChart_dataPoints3']=$OverallProjectStatusChart_dataPoints3;
+		$data['OverallProjectStatusChart_dataPoints4']=$OverallProjectStatusChart_dataPoints4;
+		$data['OverallProjectStatusChart_dataPoints5']=$OverallProjectStatusChart_dataPoints5;
+		$data['OverallProjectStatusChart_dataPoints6']=$OverallProjectStatusChart_dataPoints6;
+		$data['OverallProjectStatusChart_dataPoints7']=$OverallProjectStatusChart_dataPoints7;
+
+
+
+
+
+
+
+
+
+
+
+		$LineItemBreakupChart_dataPoints1 = array(
+			array("label"=> "Single", "y"=> 13),
+			array("label"=> "Married", "y"=> 21),
+			array("label"=> "Married and have Kids", "y"=> 24),
+			array("label"=> "Single Parent", "y"=> 15)
+		);
+		
+		$LineItemBreakupChart_dataPoints2 = array(
+			array("label"=> "Single", "y"=> 6),
+			array("label"=> "Married", "y"=> 12),
+			array("label"=> "Married and have Kids", "y"=> 13),
+			array("label"=> "Single Parent", "y"=> 7)
+		);
+		
+		$LineItemBreakupChart_dataPoints3 = array(
+			array("label"=> "Single", "y"=> 5),
+			array("label"=> "Married", "y"=> 9),
+			array("label"=> "Married and have Kids", "y"=> 10),
+			array("label"=> "Single Parent", "y"=> 6)
+		);
+		
+		$LineItemBreakupChart_dataPoints4 = array(
+			array("label"=> "Single", "y"=> 3),
+			array("label"=> "Married", "y"=> 8),
+			array("label"=> "Married and have Kids", "y"=> 9),
+			array("label"=> "Single Parent", "y"=> 3)
+		);
+		
+		$LineItemBreakupChart_dataPoints5 = array(
+			array("label"=> "Single", "y"=> 3),
+			array("label"=> "Married", "y"=> 5),
+			array("label"=> "Married and have Kids", "y"=> 4),
+			array("label"=> "Single Parent", "y"=> 2)
+		);
+		
+		$LineItemBreakupChart_dataPoints6 = array(
+			array("label"=> "Single", "y"=> 2),
+			array("label"=> "Married", "y"=> 3),
+			array("label"=> "Married and have Kids", "y"=> 4),
+			array("label"=> "Single Parent", "y"=> 2)
+		);
+		
+		$LineItemBreakupChart_dataPoints7 = array(
+			array("label"=> "Single", "y"=> 5),
+			array("label"=> "Married", "y"=> 9),
+			array("label"=> "Married and have Kids", "y"=> 9),
+			array("label"=> "Single Parent", "y"=> 5)
+		);
+
+		$data['LineItemBreakupChart_dataPoints1']=$LineItemBreakupChart_dataPoints1;
+		$data['LineItemBreakupChart_dataPoints2']=$LineItemBreakupChart_dataPoints2;
+		$data['LineItemBreakupChart_dataPoints3']=$LineItemBreakupChart_dataPoints3;
+		$data['LineItemBreakupChart_dataPoints4']=$LineItemBreakupChart_dataPoints4;
+		$data['LineItemBreakupChart_dataPoints5']=$LineItemBreakupChart_dataPoints5;
+		$data['LineItemBreakupChart_dataPoints6']=$LineItemBreakupChart_dataPoints6;
+		$data['LineItemBreakupChart_dataPoints7']=$LineItemBreakupChart_dataPoints7;
+
+
+		$LineItemBreakup_DonutChart_dataPoints = array( 
+			array("label"=>"Oxygen", "symbol" => "O","y"=>46.6),
+			array("label"=>"Silicon", "symbol" => "Si","y"=>27.7),
+			array("label"=>"Aluminium", "symbol" => "Al","y"=>13.9),
+			array("label"=>"Iron", "symbol" => "Fe","y"=>5),
+			array("label"=>"Calcium", "symbol" => "Ca","y"=>3.6),
+			array("label"=>"Sodium", "symbol" => "Na","y"=>2.6),
+			array("label"=>"Magnesium", "symbol" => "Mg","y"=>2.1),
+			array("label"=>"Others", "symbol" => "Others","y"=>1.5),
+		);
+		$data['LineItemBreakup_DonutChart_dataPoints']=$LineItemBreakup_DonutChart_dataPoints;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		$AmountwiseBreakupChart_dataPoints1 = array(
+			array("label"=> "Single", "y"=> 13),
+			array("label"=> "Married", "y"=> 21),
+			array("label"=> "Married and have Kids", "y"=> 24),
+			array("label"=> "Single Parent", "y"=> 15)
+		);
+		
+		$AmountwiseBreakupChart_dataPoints2 = array(
+			array("label"=> "Single", "y"=> 6),
+			array("label"=> "Married", "y"=> 12),
+			array("label"=> "Married and have Kids", "y"=> 13),
+			array("label"=> "Single Parent", "y"=> 7)
+		);
+		
+		$AmountwiseBreakupChart_dataPoints3 = array(
+			array("label"=> "Single", "y"=> 5),
+			array("label"=> "Married", "y"=> 9),
+			array("label"=> "Married and have Kids", "y"=> 10),
+			array("label"=> "Single Parent", "y"=> 6)
+		);
+		
+		$AmountwiseBreakupChart_dataPoints4 = array(
+			array("label"=> "Single", "y"=> 3),
+			array("label"=> "Married", "y"=> 8),
+			array("label"=> "Married and have Kids", "y"=> 9),
+			array("label"=> "Single Parent", "y"=> 3)
+		);
+		
+		$AmountwiseBreakupChart_dataPoints5 = array(
+			array("label"=> "Single", "y"=> 3),
+			array("label"=> "Married", "y"=> 5),
+			array("label"=> "Married and have Kids", "y"=> 4),
+			array("label"=> "Single Parent", "y"=> 2)
+		);
+		
+		$AmountwiseBreakupChart_dataPoints6 = array(
+			array("label"=> "Single", "y"=> 2),
+			array("label"=> "Married", "y"=> 3),
+			array("label"=> "Married and have Kids", "y"=> 4),
+			array("label"=> "Single Parent", "y"=> 2)
+		);
+		
+		$AmountwiseBreakupChart_dataPoints7 = array(
+			array("label"=> "Single", "y"=> 5),
+			array("label"=> "Married", "y"=> 9),
+			array("label"=> "Married and have Kids", "y"=> 9),
+			array("label"=> "Single Parent", "y"=> 5)
+		);
+
+		$data['AmountwiseBreakupChart_dataPoints1']=$AmountwiseBreakupChart_dataPoints1;
+		$data['AmountwiseBreakupChart_dataPoints2']=$AmountwiseBreakupChart_dataPoints2;
+		$data['AmountwiseBreakupChart_dataPoints3']=$AmountwiseBreakupChart_dataPoints3;
+		$data['AmountwiseBreakupChart_dataPoints4']=$AmountwiseBreakupChart_dataPoints4;
+		$data['AmountwiseBreakupChart_dataPoints5']=$AmountwiseBreakupChart_dataPoints5;
+		$data['AmountwiseBreakupChart_dataPoints6']=$AmountwiseBreakupChart_dataPoints6;
+		$data['AmountwiseBreakupChart_dataPoints7']=$AmountwiseBreakupChart_dataPoints7;
+
+
+		$AmountwiseBreakup_DonutChart_dataPoints = array( 
+			array("label"=>"Oxygen", "symbol" => "O","y"=>46.6),
+			array("label"=>"Silicon", "symbol" => "Si","y"=>27.7),
+			array("label"=>"Aluminium", "symbol" => "Al","y"=>13.9),
+			array("label"=>"Iron", "symbol" => "Fe","y"=>5),
+			array("label"=>"Calcium", "symbol" => "Ca","y"=>3.6),
+			array("label"=>"Sodium", "symbol" => "Na","y"=>2.6),
+			array("label"=>"Magnesium", "symbol" => "Mg","y"=>2.1),
+			array("label"=>"Others", "symbol" => "Others","y"=>1.5),
+		);
+		$data['AmountwiseBreakup_DonutChart_dataPoints']=$AmountwiseBreakup_DonutChart_dataPoints;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
+		$ResourcewiseUtilizationChart_dataPoints1 = array(
+			array("label"=> "Single", "y"=> 13),
+			array("label"=> "Married", "y"=> 21),
+			array("label"=> "Married and have Kids", "y"=> 24),
+			array("label"=> "Single Parent", "y"=> 15)
+		);
+		
+		$ResourcewiseUtilizationChart_dataPoints2 = array(
+			array("label"=> "Single", "y"=> 6),
+			array("label"=> "Married", "y"=> 12),
+			array("label"=> "Married and have Kids", "y"=> 13),
+			array("label"=> "Single Parent", "y"=> 7)
+		);
+		
+		$ResourcewiseUtilizationChart_dataPoints3 = array(
+			array("label"=> "Single", "y"=> 5),
+			array("label"=> "Married", "y"=> 9),
+			array("label"=> "Married and have Kids", "y"=> 10),
+			array("label"=> "Single Parent", "y"=> 6)
+		);
+		
+		$ResourcewiseUtilizationChart_dataPoints4 = array(
+			array("label"=> "Single", "y"=> 3),
+			array("label"=> "Married", "y"=> 8),
+			array("label"=> "Married and have Kids", "y"=> 9),
+			array("label"=> "Single Parent", "y"=> 3)
+		);
+		
+		$ResourcewiseUtilizationChart_dataPoints5 = array(
+			array("label"=> "Single", "y"=> 3),
+			array("label"=> "Married", "y"=> 5),
+			array("label"=> "Married and have Kids", "y"=> 4),
+			array("label"=> "Single Parent", "y"=> 2)
+		);
+		
+		$ResourcewiseUtilizationChart_dataPoints6 = array(
+			array("label"=> "Single", "y"=> 2),
+			array("label"=> "Married", "y"=> 3),
+			array("label"=> "Married and have Kids", "y"=> 4),
+			array("label"=> "Single Parent", "y"=> 2)
+		);
+		
+		$ResourcewiseUtilizationChart_dataPoints7 = array(
+			array("label"=> "Single", "y"=> 5),
+			array("label"=> "Married", "y"=> 9),
+			array("label"=> "Married and have Kids", "y"=> 9),
+			array("label"=> "Single Parent", "y"=> 5)
+		);
+
+		$data['ResourcewiseUtilizationChart_dataPoints1']=$ResourcewiseUtilizationChart_dataPoints1;
+		$data['ResourcewiseUtilizationChart_dataPoints2']=$ResourcewiseUtilizationChart_dataPoints2;
+		$data['ResourcewiseUtilizationChart_dataPoints3']=$ResourcewiseUtilizationChart_dataPoints3;
+		$data['ResourcewiseUtilizationChart_dataPoints4']=$ResourcewiseUtilizationChart_dataPoints4;
+		$data['ResourcewiseUtilizationChart_dataPoints5']=$ResourcewiseUtilizationChart_dataPoints5;
+		$data['ResourcewiseUtilizationChart_dataPoints6']=$ResourcewiseUtilizationChart_dataPoints6;
+		$data['ResourcewiseUtilizationChart_dataPoints7']=$ResourcewiseUtilizationChart_dataPoints7;
+
+
+		$ResourcewiseUtilization_DonutChart_dataPoints = array( 
+			array("label"=>"Oxygen", "symbol" => "O","y"=>46.6),
+			array("label"=>"Silicon", "symbol" => "Si","y"=>27.7),
+			array("label"=>"Aluminium", "symbol" => "Al","y"=>13.9),
+			array("label"=>"Iron", "symbol" => "Fe","y"=>5),
+			array("label"=>"Calcium", "symbol" => "Ca","y"=>3.6),
+			array("label"=>"Sodium", "symbol" => "Na","y"=>2.6),
+			array("label"=>"Magnesium", "symbol" => "Mg","y"=>2.1),
+			array("label"=>"Others", "symbol" => "Others","y"=>1.5),
+		);
+		$data['ResourcewiseUtilization_DonutChart_dataPoints']=$ResourcewiseUtilization_DonutChart_dataPoints;
+ 
 
 	
 		$data['projects']=$projects;
