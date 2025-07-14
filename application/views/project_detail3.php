@@ -453,7 +453,7 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                                     $tntt=$tntt+$ct['total'];
                                                                                     $ct['percentage'] ==100? $process++ : $process;
                                                                             ?>
-                                                                            <td><?php echo "asdsaD".$ct['percentage'].'% <br/>'.$ct['verified'].' of '.$ct['total'].' Li';?></td>
+                                                                            <td><?php echo "".$ct['percentage'].'% <br/>'.$ct['verified'].' of '.$ct['total'].' Li';?></td>
                                                                             <?php
                                                                                 $ut++;
                                                                                 }
@@ -765,7 +765,13 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                                     $ct['amountpercentage'] ==100? $process++ : $process;
                                                                             ?>
                                                                             
-                                                                            <td><?php echo $ct['amountpercentage'].'% <br/>'.getmoney_format(round(($ct['verifiedamount']/100000),2)).' of '.getmoney_format(round(($ct['totalamount']/100000),2)).' Lacs';?></td>
+                                                                            <td><?php
+                                                                            
+                                                                          
+
+                                                                            // echo $ct['verifiedamount']/100000;
+
+                                                                            echo $ct['amountpercentage'].'% <br/>'.getmoney_format(round(($ct['verifiedamount']/100000),2)).' of '.getmoney_format(round(($ct['totalamount']/100000),2)).' Lacs';?></td>
                                                                             <?php
                                                                             $tg++;
                                                                                 }
@@ -1737,7 +1743,7 @@ $('.closethismodel').click(function(){
         data: [{
             type: "doughnut",
             indexLabel: "{symbol} : {y}",
-            yValueFormatString: "#\"\"",
+            yValueFormatString: "#,##0\"%\"",
             showInLegend: true,
             legendText: "{label} : {y}",
             dataPoints: <?php echo json_encode($LineItemBreakup_DonutChart_dataPoints, JSON_NUMERIC_CHECK); ?>

@@ -7266,11 +7266,11 @@ public function downloadExceptionChangesUpdationsofItems()
 		$non_tag_not_verified=$this->db->select('count(*) as non_tag_not_verified')->where(array('tag_status_y_n_na'=>'N',"verification_status !="=>'Verified'))->get($project_name)->row()->non_tag_not_verified;
 		
 		$OverallProjectStatusChart_Verified_dataPoints = array(
-			array("label"=> "Tag", "y"=> $tag_verified),
+			array("label"=> "Tagged", "y"=> $tag_verified),
 			array("label"=> "Not Tagged", "y"=> $non_tag_verified)			
 		);
 		$OverallProjectStatusChart_NotVerified_dataPoints = array(
-			array("label"=> "Tag", "y"=> $tag_not_verified),
+			array("label"=> "Tagged", "y"=> $tag_not_verified),
 			array("label"=> "Not Tagged", "y"=> $non_tag_not_verified)
 		);
 		$data['OverallProjectStatusChart_Verified_dataPoints']=$OverallProjectStatusChart_Verified_dataPoints;
@@ -7422,8 +7422,8 @@ public function downloadExceptionChangesUpdationsofItems()
 
 		$filled = ($ttt+$tntt+$tutt) > 0 ? round((($ttv+$tntv+$tutv)/($ttt+$tntt+$tutt))*100,2).'0':'0';
 		$LineItemBreakup_DonutChart_dataPoints = array( 
-			array("label"=>"Verified", "symbol" => "VRF","y"=>($filled/10)),
-			array("label"=>"Not Verified", "symbol" => "NTVRF","y"=>100-($filled/10)),
+			array("label"=>"Verified", "symbol" => "Verified","y"=>($filled/10)),
+			array("label"=>"Not Verified", "symbol" => "Not-Verified","y"=>100-($filled/10)),
 		);
 		$data['LineItemBreakup_DonutChart_dataPoints']=$LineItemBreakup_DonutChart_dataPoints;
 
@@ -7588,6 +7588,7 @@ public function downloadExceptionChangesUpdationsofItems()
 		$data['AmountwiseBreakupChart_dataPoints2']=$AmountwiseBreakupChart_dataPoints2;
 		
 
+		
 		$calculation = 100-floatval($filled);
 		$y_value = number_format((float)$calculation, 2, '.', '');
 		
