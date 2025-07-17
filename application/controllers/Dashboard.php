@@ -266,12 +266,9 @@ class Dashboard extends CI_Controller {
 	
 		$data['overdue_datapoint'] = $overdue_datapoint;
 
-		// echo '<pre>data ';
-		// print_r($data);
-		// echo '</pre>';
-		// exit();
-
-		$this->load->view('dashboard2',$data);		
+		// $this->load->view('dashboard2',$data);		
+		$this->load->view('admindashboard',$data);		
+		
 
 
 
@@ -285,11 +282,6 @@ class Dashboard extends CI_Controller {
 
 	public function User()
 	{   
-
-		// echo '<pre>_SESSION ';
-		// print_r($_SESSION);
-		// echo '</pre>';
-		// exit();
 
 		$admin_registered_user_id = $_SESSION['logged_in']['admin_registered_user_id'];
 		$user_id=$this->user_id;
@@ -1002,7 +994,7 @@ class Dashboard extends CI_Controller {
 		$this->load->view('users',array("meta"=>$data,"users"=>$users));
 
 	}
-	public function projectdetail($id)
+	public function projectdetail_Previous_14July($id)
 	{
 		$condition=array('id'=>$id);
 		$projects=$this->tasks->get_data('company_projects',$condition);	
@@ -7225,7 +7217,7 @@ public function downloadExceptionChangesUpdationsofItems()
 
 
 
-	public function projectdetail3($id)
+	public function projectdetail($id)
 	{
 		$condition=array('id'=>$id);
 		$projects=$this->tasks->get_data('company_projects',$condition);	
@@ -7626,6 +7618,8 @@ public function downloadExceptionChangesUpdationsofItems()
 
 		$verifier_users_array = array();
 		$category_array = array();
+
+		/*
 		foreach($project_details as $project_details_key=>$project_details_value){
 			if(!empty($project_details_value->verified_by)){
 				$project_details_array[$project_details_value->item_category][$project_details_value->firstName][] = 1;
@@ -7640,32 +7634,53 @@ public function downloadExceptionChangesUpdationsofItems()
 				$category_array[] = $project_details_value->item_category;
 			}
 
+		} */
+
+
+		$user_wise_count = array();
+		foreach($project_details as $project_details_key=>$project_details_value){
+			if(!empty($project_details_value->verified_by)){
+				$project_details_array[$project_details_value->firstName][$project_details_value->item_category][] = 1;
+				$project_details_array2[$project_details_value->item_category][$project_details_value->firstName][] = 1;
+			}
+			if(!in_array($project_details_value->item_category,$verifier_users_array)){
+				$verifier_users_array[] = $project_details_value->item_category;
+			}
+			if(!in_array($project_details_value->firstName,$category_array)){
+				$category_array[] = $project_details_value->firstName;
+			}
+			$user_wise_count[$project_details_value->firstName][] = 1;
+
+			
 		}
 
+
+	
 
 
 		$ResourcewiseUtilizationChart_datapoint = array();
 		$ResourcewiseUtilization_DonutChart_dataPoints_array = array();
 		$count_value = 0;
 
+		// echo '<pre>project_details_array ';
+		// print_r($project_details_array);
+		// echo '</pre>';
+		// exit();
+
+		
+
+
 		foreach($project_details_array as $project_details_array_key=>$project_details_array_value){
 
 			$ResourcewiseUtilizationChart_dataPoints1 = array();
 			foreach($verifier_users_array as $verifier_users_array_Key=>$verifier_users_array_value){
-				// $my_value = count($project_details_array[$project_details_array_key][$verifier_users_array_value]);
-
-				
-
 				if(isset($project_details_array[$project_details_array_key][$verifier_users_array_value])){
 					$ResourcewiseUtilizationChart_dataPoints1[] = array("label"=> $verifier_users_array_value, "y"=> count($project_details_array[$project_details_array_key][$verifier_users_array_value]));
-
 					$ResourcewiseUtilization_DonutChart_dataPoints_array[$verifier_users_array_value][] = count($project_details_array[$project_details_array_key][$verifier_users_array_value]);
-
 				}
-				
-				
-				// $ResourcewiseUtilization_DonutChart_dataPoints_array[$verifier_users_array_value][] = count($project_details_array[$project_details_array_key][$verifier_users_array_value]);
 			}
+
+			
 
 			$ResourcewiseUtilizationChart_datapoint[] = array(
 				"type"=> "stackedColumn100",
@@ -7678,6 +7693,15 @@ public function downloadExceptionChangesUpdationsofItems()
 		}
 		
 
+		// echo '<pre>user_wise_count :: ';
+		// print_r($user_wise_count);
+		// echo '</pre>';
+		// exit();
+
+		// // echo '<pre>ResourcewiseUtilizationChart_datapoint ';
+		// // print_r($ResourcewiseUtilizationChart_datapoint);
+		// // echo '</pre>';
+		// exit();
 	
 
 
@@ -7689,15 +7713,51 @@ public function downloadExceptionChangesUpdationsofItems()
 			$ResourcewiseUtilization_DonutChart_dataPoints_array1[] = array("label"=>$ResourcewiseUtilization_DonutChart_dataPoints_array_key, "symbol" => $ResourcewiseUtilization_DonutChart_dataPoints_array_key,"y"=>array_sum($ResourcewiseUtilization_DonutChart_dataPoints_array_value));
 
 		}
+
+
+		// echo '<pre>ResourcewiseUtilization_DonutChart_dataPoints_array1 ';
+		// print_r($ResourcewiseUtilization_DonutChart_dataPoints_array1);
+		// echo '</pre>';
 		
-		$data['ResourcewiseUtilization_DonutChart_dataPoints']=$ResourcewiseUtilization_DonutChart_dataPoints_array1;
+
+
+		// echo '<pre>user_wise_count ';
+		// print_r($user_wise_count);
+		// echo '</pre>';
+		// exit();
+
+		
+			$ResourcewiseUtilizationChart_dataPoints1 = array();
+			foreach($user_wise_count as $user_wise_count_key=>$user_wise_count_value){
+
+				
+				$ResourcewiseUtilizationChart_dataPoints1[] = array(
+						"label"=> $user_wise_count_key, 
+						"symbol"=> $user_wise_count_key, 
+						"y"=> count($user_wise_count_value),
+					);
+			}
+
+			// echo '<pre>ResourcewiseUtilizationChart_dataPoints1 ::';
+			// print_r($ResourcewiseUtilizationChart_dataPoints1);
+			// echo '</pre>';
+
+			// echo '<pre>ResourcewiseUtilization_DonutChart_dataPoints_array1 ::';
+			// print_r($ResourcewiseUtilization_DonutChart_dataPoints_array1);
+			// echo '</pre>';
+			// exit();
+			// exit();
+
+		
+		$data['ResourcewiseUtilization_DonutChart_dataPoints']=$ResourcewiseUtilizationChart_dataPoints1;
 		
 
 	
 		$data['projects']=$projects;
 		$data['page_title']="Dashboard";
 
-		$this->load->view('project_detail3',$data);
+		// $this->load->view('project_detail3',$data);
+		$this->load->view('project_detail_view',$data);
 		
 	}
 

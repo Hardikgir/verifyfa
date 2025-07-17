@@ -173,7 +173,7 @@ class Superadmin_controller extends CI_Controller {
 		COUNT(CASE WHEN balance_refundable BETWEEN 20001  AND 30000 THEN 1 END) AS "20001-30000",
 		COUNT(CASE WHEN balance_refundable BETWEEN 30001 AND 40000 THEN 1 END) AS "30001-40000",
 		COUNT(CASE WHEN balance_refundable > 40001 THEN 1 END) AS "Above 40000"
-			FROM v74_ci_verifyfa_db.registred_users_payment
+			FROM registred_users_payment
 		');
 		$registered_user_plan = $query->row();
 
