@@ -1,0 +1,32 @@
+Date :- 14/08/2025
+
+-> Register user if Expired then Group admin Button(Continue as GroupAdmin) should be Disbled in Register user.
+-> If Expired (Group Admin) then user not be able to login :- This is Working perfect
+-> Dashboard Should be 2 Type
+    -> Admin Dashboard
+        -> Only Block Card Should be their (Group admin ko leke h) abhi admin page h vo sahi h
+        -> Niche vala Dashboard board that both Dashboard showing in same page (Block Card & Graph)
+        -> Graph Section only for Functional User(Entity own,Process owner, Verify)  ye unke liye Graph h hi nai
+    -> User Dashboard
+
+
+Dahboard Should be Another way as showing in Document (Only for Function user Thier is only 4)
+-> User Dashboard
+-> Project Dashboard (Only Manage k liye hi h )
+-> Plan Cycle (Only Manage k liye hi h )
+-> 
+
+-> In Table for Manager (Project Dahboard) in that table you have to add 2 column (Company,Location)
+-> Filter should be work as currently working in report Section
+-> 
+
+11:56 to Whole Flow Discussio Regarding Inner Graph.
+
+
+
+For User Login
+
+Role :- Group Admin
+Entity :- PROBUDS
+User :- jasmeet@probuds.co.in
+Pass :- 123456

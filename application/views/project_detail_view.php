@@ -326,12 +326,12 @@ $allcategories=getCategories($projects[0]->project_name);
                                                         <div class="tab-pane fade show active" id="nav-chart" role="tabpanel" aria-labelledby="nav-chart-tab">
                                                             <div class="row m-5">
 
-                                                                <div class="col-md-12">
+                                                                <div class="col-md-6">
                                                                    
                                                                     <div id="LineItemBreakupChart" style="height: 420px; width: 100%;"></div>
                                                                 </div>
 
-                                                                <div class="col-md-12">
+                                                                <div class="col-md-6">
                                                                    
                                                                     <div id="LineItemBreakup_DonutChart" style="height: 420px; width: 100%;"></div>
                                                                 </div>
@@ -628,11 +628,11 @@ $allcategories=getCategories($projects[0]->project_name);
 
 
                                                             
-                                                                <div class="col-md-12">
+                                                                <div class="col-md-6">
                                                                     <div id="AmountwiseBreakupChart" style="height: 420px; width: 100%;"></div>
                                                                 </div>
 
-                                                                <div class="col-md-12">
+                                                                <div class="col-md-6">
                                                                     <div id="AmountwiseBreakup_DonutChart" style="height: 420px; width: 100%;"></div>
                                                                 </div>
 
@@ -979,11 +979,11 @@ $allcategories=getCategories($projects[0]->project_name);
                                                             <div class="row my-5">
 
 
-                                                               <div class="col-md-12">
+                                                               <div class="col-md-6">
                                                                     <div id="ResourcewiseUtilizationChart" style="height: 420px; width: 100%;"></div>
                                                                 </div>
 
-                                                                <div class="col-md-12">
+                                                                <div class="col-md-6">
                                                                     <div id="ResourcewiseUtilization_DonutChart" style="height: 420px; width: 100%;"></div>
                                                                 </div>
 
