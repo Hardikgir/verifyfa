@@ -14,26 +14,26 @@ foreach($projects as $project)
 
     if(($verifiercount == '1') || ($check_itemowner_count =='1') || ($check_process_owner_count == '1') ||  ($check_manager_count == '1')){
 
-    if($project->status==0)
-    {
-        $open_projects++;
-        if($project->VerifiedQuantity !=0){
-        $open_projectdetails.=", ".$project->project_name.'('.round(($project->VerifiedQuantity/$project->TotalQuantity)*100,2).' %)';
-       }else{
-         $open_projectdetails.='0%';
-       }
+        if($project->status==0)
+        {
+            $open_projects++;
+            if($project->VerifiedQuantity !=0){
+            $open_projectdetails.=", ".$project->project_name.'('.round(($project->VerifiedQuantity/$project->TotalQuantity)*100,2).' %)';
+        }else{
+            $open_projectdetails.='0%';
+        }
+        }
+        if($project->status==1)
+        {
+            $closed_projects++;
+            $close_projectdetails.=", ".$project->project_name.'('.round(($project->VerifiedQuantity/$project->TotalQuantity)*100,2).' %)';
+        }
+        if($project->status==2)
+        {
+            $cancelled_projects++;
+            $cancel_projectdetails.=", ".$project->project_name.'('.round(($project->VerifiedQuantity/$project->TotalQuantity)*100,2).' %)';
+        }
     }
-    if($project->status==1)
-    {
-        $closed_projects++;
-        $close_projectdetails.=", ".$project->project_name.'('.round(($project->VerifiedQuantity/$project->TotalQuantity)*100,2).' %)';
-    }
-    if($project->status==2)
-    {
-        $cancelled_projects++;
-        $cancel_projectdetails.=", ".$project->project_name.'('.round(($project->VerifiedQuantity/$project->TotalQuantity)*100,2).' %)';
-    }
-}
 }
 ?>
 <script>

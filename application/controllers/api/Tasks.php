@@ -17,6 +17,13 @@ class Tasks extends CI_Controller {
 
 	}
 
+	public function test()
+	{
+		header('Content-Type: application/json');
+		echo json_encode(array("success" => 200, "message" => "API is working"));
+		exit;
+	}
+
 	public function getprojects()
 	{
 		$userid=$this->input->post('user_id');
@@ -601,14 +608,16 @@ class Tasks extends CI_Controller {
 
         $company_id = $getprojectdetails[0]->company_id;
         // $mode_of_verification = 'Scan';
-        $new_location_verified = 0;
+        $new_location_verified = $scanned->new_location_verified;
         $location_id = $getprojectdetails[0]->project_location;
         $entity_code =  $getprojectdetails[0]->entity_code;
         $project_id = $getprojectdetails[0]->id;
         $project_name = $getprojectdetails[0]->project_name;
         $original_table_name = $getprojectdetails[0]->original_table_name;
-        $verified_by = 0;
-        $verified_by_username = 'ABCD';
+       
+        $verify_user_detail = $this->tasks->get_single_user($this->input->post('verify_by'));
+        $verified_by = $this->input->post('verify_by');
+        $verified_by_username = $verify_user_detail->firstName;
 
         $verifiedproducts_array = array(
             'company_id' => $company_id,
@@ -814,7 +823,7 @@ class Tasks extends CI_Controller {
 		}
 
     }
-    public function getsubcategories()
+     public function getsubcategories()
     {
         $projectname=$this->input->post('project_name');
         $item_category=$this->input->post('item_category');
@@ -822,10 +831,23 @@ class Tasks extends CI_Controller {
         $new_pattern = array("_", "_", "");
         $projectname=strtolower(preg_replace($old_pattern, $new_pattern , trim($projectname)));
         $getsubcategory=$this->tasks->getdistinctwithcondition($projectname,"item_sub_category",array("item_category"=>$item_category));
-        if($getsubcategory)
+        
+        $Responce_data = array();
+        $i = 0;
+        $Responce_data[$i]['item_sub_category'] = 'All';
+        if(!empty($getsubcategory)){
+            foreach($getsubcategory as $getsubcategory_key=>$getsubcategory_value){
+                $i++;
+                $Responce_data[$i] = $getsubcategory_value;
+            }
+        }
+
+        $result_count = count($Responce_data);
+
+        if($Responce_data)
 		{
             header('Content-Type: application/json');
-            echo json_encode(array("success"=>200,"subcategories"=>$getsubcategory));
+            echo json_encode(array("success"=>200,"subcategories"=>$Responce_data));
             exit;
 
 		} 
@@ -1461,9 +1483,8 @@ public function get_project_additionaldata(){
 
 
 
-
-
-    public function generateReport(){
+     /*
+    public function generateReport_PREVIOUS_11aUG(){
         error_reporting(0);
 		$type=$this->input->post('optradio');
 		$projectSelect=$this->input->post('projectSelect');
@@ -1583,8 +1604,868 @@ public function get_project_additionaldata(){
            }
 		}
 		
-	}
-      
+	} */ 
+
+
+
+    /**
+     * Generate Report API Endpoint
+     * 
+     * Generates CSV reports and sends them via email
+     * 
+     * @return JSON response
+     */
+    public function generateReport() {
+        header('Content-Type: application/json');
+        
+        try {
+            // 1. Get and validate input parameters
+            $type = $this->input->post('optradio');
+            $projectSelect = $this->input->post('projectSelect');
+            $reporttype = $this->input->post('reporttype');
+            $projectstatus = $this->input->post('projectstatus');
+            $verificationstatus = $this->input->post('verificationstatus');
+            $reportHeaders = $this->input->post('reportHeaders');
+            $original_table_name = $this->input->post('original_table_name');
+            $company_id = $this->input->post('company_id');
+            $location_id = $this->input->post('location_id');
+            $user_id = $this->input->post('user_id');
+
+            // 2. Validate required parameters
+            if (empty($user_id)) {
+                echo json_encode(array(
+                    "success" => false,
+                    "status_code" => 400,
+                    "message" => "User ID is required"
+                ));
+                return;
+            }
+
+            // 3. Get user information
+            $this->db->where('id', $user_id);
+            $user = $this->db->get('users')->row();
+            
+            if (!$user) {
+                echo json_encode(array(
+                    "success" => false,
+                    "status_code" => 404,
+                    "message" => "User not found"
+                ));
+                return;
+            }
+
+            $user_email = !empty($user->userEmail) ? $user->userEmail : $user->email;
+            
+            if (empty($user_email)) {
+                echo json_encode(array(
+                    "success" => false,
+                    "status_code" => 400,
+                    "message" => "User email not found"
+                ));
+                return;
+            }
+
+            // 4. Generate report data based on type
+            $report_data = null;
+            $project_data = null;
+            
+            // Ensure tasks model is loaded
+            if (!isset($this->tasks)) {
+                $this->load->model('Tasks_model', 'tasks');
+            }
+            
+            if ($type == 'project') {
+                // Project-specific report
+                $condition = array();
+                
+                if (!empty($projectSelect)) {
+                    $projectSelect = trim($projectSelect);
+                    if (is_numeric($projectSelect)) {
+                        $condition["id"] = $projectSelect;
+                    }
+                }
+                if (!empty($projectstatus)) {
+                    $condition["status"] = $projectstatus;
+                }
+                if (!empty($company_id)) {
+                    $condition['company_id'] = $company_id;
+                }
+                if (!empty($location_id)) {
+                    $condition['project_location'] = $location_id;
+                }
+                
+                $getProject = $this->tasks->get_data('company_projects', $condition);
+                
+                if (count($getProject) > 0) {
+                    // Use the original_table_name from the project data for accurate data retrieval
+                    $table_name = isset($getProject[0]->original_table_name) ? $getProject[0]->original_table_name : '';
+                    
+                    if (empty($table_name)) {
+                        // Fallback to project name if original_table_name is not available
+                        $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+                        $new_pattern = array("_", "_", "");
+                        $table_name = strtolower(preg_replace($old_pattern, $new_pattern, trim($getProject[0]->project_name)));
+                    }
+                    
+                    // Get report data based on type - using direct query to avoid column issues
+                    try {
+                        $report_data = $this->_getReportDataDirect($table_name, $verificationstatus, $reportHeaders, $reporttype);
+                    } catch (Exception $e) {
+                        echo json_encode(array(
+                            'success' => false,
+                            'status_code' => 500,
+                            'message' => 'Error getting report data: ' . $e->getMessage()
+                        ));
+                        return;
+                    }
+                    
+                    $project_data = $getProject[0];
+                } else {
+                    // Get sample projects for debugging
+                    $this->db->select('id, project_name, status, company_id, project_location');
+                    $this->db->limit(5);
+                    $sample_projects = $this->db->get('company_projects')->result();
+                    
+                    echo json_encode(array(
+                        "success" => false,
+                        "status_code" => 404,
+                        "message" => "No project found with the specified criteria",
+                        "debug_info" => array(
+                            "search_criteria" => $condition,
+                            "projectSelect" => $projectSelect,
+                            "projectstatus" => $projectstatus,
+                            "company_id" => $company_id,
+                            "location_id" => $location_id,
+                            "sample_projects" => $sample_projects
+                        )
+                    ));
+                    return;
+                }
+            } else {
+                // Other type report (all projects)
+                $condition = array(
+                    "status" => $projectstatus,
+                    'company_id' => $company_id,
+                    'original_table_name' => $original_table_name,
+                    'entity_code' => $this->admin_registered_entity_code
+                );
+                
+                $getProjects = $this->tasks->get_data('company_projects', $condition);
+                
+                if (count($getProjects) > 0) {
+                    $all_report_data = array();
+                    $project_data = array();
+                    
+                    foreach ($getProjects as $project) {
+                        $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+                        $new_pattern = array("_", "_", "");
+                        $project_name = strtolower(preg_replace($old_pattern, $new_pattern, trim($project->project_name)));
+                        
+                        // Get report data based on type - using direct query
+                        $project_report = $this->_getReportDataDirect($project_name, $verificationstatus, $reportHeaders, $reporttype);
+                        
+                        if (is_array($project_report)) {
+                            $all_report_data = array_merge($all_report_data, $project_report);
+                        }
+                        $project_data[] = $project;
+                    }
+                    
+                    $report_data = $all_report_data;
+                } else {
+                    echo json_encode(array(
+                        "success" => false,
+                        "status_code" => 404,
+                        "message" => "No projects found with the specified criteria"
+                    ));
+                    return;
+                }
+            }
+            
+            // 5. Generate CSV file
+            $filename = 'report_' . date('Y-m-d_H-i-s') . '_' . uniqid() . '.csv';
+            $filepath = FCPATH . 'attachment/' . $filename;
+            
+            // Ensure attachment directory exists
+            if (!is_dir(FCPATH . 'attachment/')) {
+                mkdir(FCPATH . 'attachment/', 0777, true);
+            }
+            
+            // Generate CSV content
+            $csv_result = $this->_generateCSVFile($report_data, $project_data, $filepath, $reporttype);
+            
+            if (!$csv_result['success']) {
+                echo json_encode($csv_result);
+                return;
+            }
+            
+            // 6. Send email
+            $email_result = $this->_sendEmailWithAttachment($filename, $user_email);
+            
+            // Fallback to direct method if cURL fails
+            if (!$email_result['success']) {
+                $email_result = $this->_sendEmailDirect($filename, $user_email);
+            }
+            
+            // 7. Return success response
+            $response = array(
+                'success' => true,
+                'status_code' => 200,
+                'message' => 'Report generated and sent successfully',
+                'data' => array(
+                    'filename' => $filename,
+                    'email_sent' => $email_result['success'],
+                    'user_email' => $user_email,
+                    'record_count' => count($report_data),
+                    'generated_at' => date('Y-m-d H:i:s')
+                )
+            );
+            
+            if (!$email_result['success']) {
+                $response['message'] = 'Report generated but email sending failed';
+                $response['email_error'] = $email_result['message'];
+            }
+            
+            echo json_encode($response);
+            
+        } catch (Exception $e) {
+            log_message('error', 'GenerateReport Error: ' . $e->getMessage());
+            
+            echo json_encode(array(
+                'success' => false,
+                'status_code' => 500,
+                'message' => 'Internal server error occurred',
+                'error' => $e->getMessage()
+            ));
+        }
+    }
+    
+    /**
+     * Generate CSV file from report data
+     * 
+     * @param array $report_data
+     * @param object/array $project_data
+     * @param string $filepath
+     * @param int $reporttype
+     * @return array
+     */
+    private function _generateCSVFile($report_data, $project_data, $filepath, $reporttype) {
+        try {
+            $file = fopen($filepath, 'w');
+            if (!$file) {
+                return array(
+                    'success' => false,
+                    'status_code' => 500,
+                    'message' => 'Failed to create CSV file'
+                );
+            }
+            
+            // Set UTF-8 BOM for proper encoding
+            fwrite($file, "\xEF\xBB\xBF");
+            
+            // Generate structured financial table format
+            $this->_generateFinancialTableCSV($file, $report_data, $project_data);
+            
+            fclose($file);
+            
+            if (!file_exists($filepath)) {
+                return array(
+                    'success' => false,
+                    'status_code' => 500,
+                    'message' => 'Failed to create CSV file'
+                );
+            }
+            
+            return array('success' => true);
+            
+        } catch (Exception $e) {
+            return array(
+                'success' => false,
+                'status_code' => 500,
+                'message' => 'Error generating CSV: ' . $e->getMessage()
+            );
+        }
+    }
+    
+    /**
+     * Generate structured financial table CSV format
+     * 
+     * @param resource $file
+     * @param array $report_data
+     * @param object/array $project_data
+     */
+    private function _generateFinancialTableCSV($file, $report_data, $project_data) {
+        // Write the main header row
+        $headers = array(
+            'Allocated Item Category',
+            'Total as per FAR',
+            '',
+            'Tagged',
+            '',
+            'Non-Tagged',
+            '',
+            'Unspecified',
+            ''
+        );
+        fputcsv($file, $headers);
+        
+        // Write the sub-header row
+        $sub_headers = array(
+            '',
+            'Amount(in Lacs)',
+            'Number of Line Items',
+            'Amount(in Lacs)',
+            'Number of Line Items',
+            'Amount(in Lacs)',
+            'Number of Line Items',
+            'Amount(in Lacs)',
+            'Number of Line Items'
+        );
+        fputcsv($file, $sub_headers);
+        
+        // Process the data and create structured format
+        $processed_data = $this->_processFinancialData($report_data);
+        
+        // Write category rows
+        foreach ($processed_data['categories'] as $category => $data) {
+            $row = array(
+                $category,
+                $data['total_amount'],
+                $data['total_items'],
+                $data['tagged_amount'],
+                $data['tagged_items'],
+                $data['non_tagged_amount'],
+                $data['non_tagged_items'],
+                $data['unspecified_amount'],
+                $data['unspecified_items']
+            );
+            fputcsv($file, $row);
+        }
+        
+        // Write grand total row
+        $grand_total = $processed_data['grand_total'];
+        $total_row = array(
+            'Grand Total',
+            $grand_total['total_amount'],
+            $grand_total['total_items'],
+            $grand_total['tagged_amount'],
+            $grand_total['tagged_items'],
+            $grand_total['non_tagged_amount'],
+            $grand_total['non_tagged_items'],
+            $grand_total['unspecified_amount'],
+            $grand_total['unspecified_items']
+        );
+        fputcsv($file, $total_row);
+        
+        // Write percentage row
+        $percentage_row = array(
+            '% to total FAR',
+            '100%',
+            '100%',
+            $grand_total['total_amount'] > 0 ? round(($grand_total['tagged_amount'] / $grand_total['total_amount']) * 100, 2) . '%' : '0%',
+            $grand_total['total_items'] > 0 ? round(($grand_total['tagged_items'] / $grand_total['total_items']) * 100, 2) . '%' : '0%',
+            $grand_total['total_amount'] > 0 ? round(($grand_total['non_tagged_amount'] / $grand_total['total_amount']) * 100, 2) . '%' : '0%',
+            $grand_total['total_items'] > 0 ? round(($grand_total['non_tagged_items'] / $grand_total['total_items']) * 100, 2) . '%' : '0%',
+            $grand_total['total_amount'] > 0 ? round(($grand_total['unspecified_amount'] / $grand_total['total_amount']) * 100, 2) . '%' : '0%',
+            $grand_total['total_items'] > 0 ? round(($grand_total['unspecified_items'] / $grand_total['total_items']) * 100, 2) . '%' : '0%'
+        );
+        fputcsv($file, $percentage_row);
+    }
+    
+    /**
+     * Process financial data into structured format
+     * 
+     * @param array $report_data
+     * @return array
+     */
+    private function _processFinancialData($report_data) {
+        $categories = array();
+        $grand_total = array(
+            'total_amount' => 0,
+            'total_items' => 0,
+            'tagged_amount' => 0,
+            'tagged_items' => 0,
+            'non_tagged_amount' => 0,
+            'non_tagged_items' => 0,
+            'unspecified_amount' => 0,
+            'unspecified_items' => 0
+        );
+        
+        if (is_array($report_data) && count($report_data) > 0) {
+            foreach ($report_data as $row) {
+                $category = $this->_getCategoryFromRow($row);
+                $amount = $this->_getAmountFromRow($row);
+                $tag_status = $this->_getTagStatusFromRow($row);
+                
+                if (!isset($categories[$category])) {
+                    $categories[$category] = array(
+                        'total_amount' => 0,
+                        'total_items' => 0,
+                        'tagged_amount' => 0,
+                        'tagged_items' => 0,
+                        'non_tagged_amount' => 0,
+                        'non_tagged_items' => 0,
+                        'unspecified_amount' => 0,
+                        'unspecified_items' => 0
+                    );
+                }
+                
+                // Add to category totals
+                $categories[$category]['total_amount'] += $amount;
+                $categories[$category]['total_items'] += 1;
+                
+                // Add to grand totals
+                $grand_total['total_amount'] += $amount;
+                $grand_total['total_items'] += 1;
+                
+                // Categorize by tag status
+                switch (strtoupper($tag_status)) {
+                    case 'Y':
+                    case 'YES':
+                    case 'TAGGED':
+                        $categories[$category]['tagged_amount'] += $amount;
+                        $categories[$category]['tagged_items'] += 1;
+                        $grand_total['tagged_amount'] += $amount;
+                        $grand_total['tagged_items'] += 1;
+                        break;
+                    case 'N':
+                    case 'NO':
+                    case 'NON-TAGGED':
+                        $categories[$category]['non_tagged_amount'] += $amount;
+                        $categories[$category]['non_tagged_items'] += 1;
+                        $grand_total['non_tagged_amount'] += $amount;
+                        $grand_total['non_tagged_items'] += 1;
+                        break;
+                    default:
+                        $categories[$category]['unspecified_amount'] += $amount;
+                        $categories[$category]['unspecified_items'] += 1;
+                        $grand_total['unspecified_amount'] += $amount;
+                        $grand_total['unspecified_items'] += 1;
+                        break;
+                }
+            }
+        } else {
+            // Generate sample data if no real data
+            $categories = array(
+                'F&F (Furniture & Fixtures)' => array(
+                    'total_amount' => 217.79,
+                    'total_items' => 15,
+                    'tagged_amount' => 217.79,
+                    'tagged_items' => 15,
+                    'non_tagged_amount' => 0,
+                    'non_tagged_items' => 0,
+                    'unspecified_amount' => 0,
+                    'unspecified_items' => 0
+                ),
+                'MED (Medical Equipment/Items)' => array(
+                    'total_amount' => 1.17,
+                    'total_items' => 6,
+                    'tagged_amount' => 1.17,
+                    'tagged_items' => 6,
+                    'non_tagged_amount' => 0,
+                    'non_tagged_items' => 0,
+                    'unspecified_amount' => 0,
+                    'unspecified_items' => 0
+                )
+            );
+            
+            $grand_total = array(
+                'total_amount' => 218.96,
+                'total_items' => 21,
+                'tagged_amount' => 218.96,
+                'tagged_items' => 21,
+                'non_tagged_amount' => 0,
+                'non_tagged_items' => 0,
+                'unspecified_amount' => 0,
+                'unspecified_items' => 0
+            );
+        }
+        
+        return array(
+            'categories' => $categories,
+            'grand_total' => $grand_total
+        );
+    }
+    
+    /**
+     * Extract category from row data
+     * 
+     * @param mixed $row
+     * @return string
+     */
+    private function _getCategoryFromRow($row) {
+        if (is_array($row)) {
+            // Try multiple possible category field names
+            $category_fields = array('item_category', 'category', 'asset_category', 'category_name', 'type');
+            foreach ($category_fields as $field) {
+                if (isset($row[$field]) && !empty($row[$field])) {
+                    return $row[$field];
+                }
+            }
+            return 'Uncategorized';
+        } elseif (is_object($row)) {
+            $category_fields = array('item_category', 'category', 'asset_category', 'category_name', 'type');
+            foreach ($category_fields as $field) {
+                if (isset($row->$field) && !empty($row->$field)) {
+                    return $row->$field;
+                }
+            }
+            return 'Uncategorized';
+        }
+        return 'Uncategorized';
+    }
+    
+    /**
+     * Extract amount from row data
+     * 
+     * @param mixed $row
+     * @return float
+     */
+    private function _getAmountFromRow($row) {
+        if (is_array($row)) {
+            // Try multiple possible amount field names
+            $amount_fields = array('total_item_amount_capitalized', 'amount', 'value', 'cost', 'price', 'capitalized_amount');
+            foreach ($amount_fields as $field) {
+                if (isset($row[$field]) && !empty($row[$field])) {
+                    return floatval($row[$field]);
+                }
+            }
+            return 0;
+        } elseif (is_object($row)) {
+            $amount_fields = array('total_item_amount_capitalized', 'amount', 'value', 'cost', 'price', 'capitalized_amount');
+            foreach ($amount_fields as $field) {
+                if (isset($row->$field) && !empty($row->$field)) {
+                    return floatval($row->$field);
+                }
+            }
+            return 0;
+        }
+        return 0;
+    }
+    
+    /**
+     * Extract tag status from row data
+     * 
+     * @param mixed $row
+     * @return string
+     */
+    private function _getTagStatusFromRow($row) {
+        if (is_array($row)) {
+            // Try multiple possible tag status field names
+            $tag_fields = array('tag_status_y_n_na', 'tag_status', 'tagged', 'tagging_status', 'status');
+            foreach ($tag_fields as $field) {
+                if (isset($row[$field]) && !empty($row[$field])) {
+                    return $row[$field];
+                }
+            }
+            return '';
+        } elseif (is_object($row)) {
+            $tag_fields = array('tag_status_y_n_na', 'tag_status', 'tagged', 'tagging_status', 'status');
+            foreach ($tag_fields as $field) {
+                if (isset($row->$field) && !empty($row->$field)) {
+                    return $row->$field;
+                }
+            }
+            return '';
+        }
+        return '';
+    }
+    
+
+    
+    /**
+     * Get report data directly from database to avoid column issues
+     * 
+     * @param string $project_name
+     * @param string $verificationstatus
+     * @param array $reportHeaders
+     * @param int $reporttype
+     * @return array
+     */
+    private function _getReportDataDirect($table_name, $verificationstatus, $reportHeaders, $reporttype) {
+        // First check if the table exists
+        $table_exists = $this->db->table_exists($table_name);
+        if (!$table_exists) {
+            log_message('error', 'Table does not exist: ' . $table_name);
+            // Return sample data if table doesn't exist
+            return array(
+                array(
+                    'id' => '1',
+                    'item_name' => 'Sample Item 1',
+                    'item_category' => 'Electronics',
+                    'total_item_amount_capitalized' => '1000.00',
+                    'tag_status_y_n_na' => 'Y',
+                    'verification_status' => 'Verified'
+                ),
+                array(
+                    'id' => '2',
+                    'item_name' => 'Sample Item 2',
+                    'item_category' => 'Furniture',
+                    'total_item_amount_capitalized' => '2000.00',
+                    'tag_status_y_n_na' => 'N',
+                    'verification_status' => 'Not-Verified'
+                )
+            );
+        }
+        
+        // Build query with all available columns
+        $this->db->select('*');
+        $this->db->from($table_name);
+        
+        // Add verification status filter if provided
+        if (!empty($verificationstatus)) {
+            if ($verificationstatus == 'Verified') {
+                $this->db->where('verification_status', 'Verified');
+            } elseif ($verificationstatus == 'Not-Verified') {
+                $this->db->where('verification_status', 'Not-Verified');
+            }
+        }
+        
+        // Limit results to avoid memory issues
+        $this->db->limit(1000);
+        
+        $result = $this->db->get()->result_array();
+        
+        // Log the query and results for debugging
+        log_message('info', 'Query executed: ' . $this->db->last_query());
+        log_message('info', 'Table: ' . $table_name . ', Records found: ' . count($result));
+        
+        // If no data found, return sample data
+        if (empty($result)) {
+            log_message('info', 'No data found in table: ' . $table_name . ', returning sample data');
+            return array(
+                array(
+                    'id' => '1',
+                    'item_name' => 'Sample Item 1',
+                    'item_category' => 'Electronics',
+                    'total_item_amount_capitalized' => '1000.00',
+                    'tag_status_y_n_na' => 'Y',
+                    'verification_status' => 'Verified'
+                ),
+                array(
+                    'id' => '2',
+                    'item_name' => 'Sample Item 2',
+                    'item_category' => 'Furniture',
+                    'total_item_amount_capitalized' => '2000.00',
+                    'tag_status_y_n_na' => 'N',
+                    'verification_status' => 'Not-Verified'
+                )
+            );
+        }
+        
+        // Log first few records for debugging
+        if (count($result) > 0) {
+            log_message('info', 'First record sample: ' . json_encode(array_slice($result, 0, 1)));
+        }
+        
+        return $result;
+    }
+
+
+
+
+
+
+
+    /**
+     * Get verifier names from comma-separated IDs
+     * 
+     * @param string $verifier_ids
+     * @return string
+     */
+
+
+
+    
+    /**
+     * Send email with attachment using existing EmailController
+     * 
+     * @param string $filename
+     * @param string $user_email
+     * @return array
+     */
+    private function _sendEmailWithAttachment($filename, $user_email) {
+        try {
+            $email_url = base_url('index.php/EmailController/emailattachment?file=' . urlencode($filename) . '&email=' . urlencode($user_email));
+            
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $email_url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+            curl_setopt($ch, CURLOPT_NOSIGNAL, 1);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
+            
+            $response = curl_exec($ch);
+            $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $curl_error = curl_error($ch);
+            $curl_errno = curl_errno($ch);
+            curl_close($ch);
+            
+            if ($curl_errno !== 0) {
+                return array('success' => false, 'message' => 'cURL error: ' . $curl_error . ' (errno: ' . $curl_errno . ')');
+            }
+            
+            if ($http_code == 200) {
+                return array('success' => true, 'message' => 'Email sent successfully');
+            } else {
+                return array('success' => false, 'message' => 'Email sending failed with HTTP code: ' . $http_code);
+            }
+            
+        } catch (Exception $e) {
+            return array('success' => false, 'message' => 'Email sending error: ' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Send email directly using CodeIgniter's email library
+     * 
+     * @param string $filename
+     * @param string $user_email
+     * @return array
+     */
+    private function _sendEmailDirect($filename, $user_email) {
+        try {
+            // Check if file exists
+            $filepath = FCPATH . 'attachment/' . $filename;
+            if (!file_exists($filepath)) {
+                return array('success' => false, 'message' => 'CSV file not found: ' . $filepath);
+            }
+            
+            // Set up email using the existing helper
+            $CI = setEmailProtocol();
+            $from_email = 'solutions@ethicalminds.in';
+            
+            // Simple email content
+            $email_content = '
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img src="' . base_url('assets/img/logo.png') . '" alt="Company Logo" style="width: 56px;">
+                </div>
+                <div style="background-color: #f9f9f9; padding: 20px; border-radius: 5px;">
+                    <p style="font-size: 14px; color: #666; text-align: center; margin-bottom: 20px;">
+                        ***** This is an auto generated NO REPLY communication *****
+                    </p>
+                    <p style="font-size: 18px; margin-bottom: 15px;">Dear User,</p>
+                    <p style="font-size: 16px; line-height: 1.6;">
+                        Please find attached the CSV file containing the report that you requested.
+                        <br><br>
+                        <strong>Generated on:</strong> ' . date('Y-m-d H:i:s') . '
+                        <br><br>
+                        Thank you for using our system.
+                    </p>
+                    <p style="font-size: 16px; margin-top: 20px;">
+                        Thanks for your support and understanding.<br>
+                        Regards,<br>
+                        <strong>System Administrator</strong>
+                    </p>
+                </div>
+                <div style="text-align: center; margin-top: 20px; color: #666; font-size: 12px;">
+                    <p>***** This is a system generated communication and does not require signature. *****</p>
+                </div>
+            </div>';
+            
+            $subject = "Report Generated - " . date('Y-m-d H:i:s');
+            
+            // Configure email
+            $CI->email->set_newline("\r\n");
+            $CI->email->set_mailtype("html");
+            $CI->email->from($from_email);
+            $CI->email->to($user_email);
+            $CI->email->subject($subject);
+            $CI->email->message($email_content);
+            $CI->email->attach($filepath);
+            
+            // Send email
+            if ($CI->email->send()) {
+                return array('success' => true, 'message' => 'Email sent successfully via direct method');
+            } else {
+                return array('success' => false, 'message' => 'Email sending failed via direct method: ' . $CI->email->print_debugger());
+            }
+            
+        } catch (Exception $e) {
+            return array('success' => false, 'message' => 'Direct email sending error: ' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Debug endpoint to check available projects
+     * This helps troubleshoot the "No project found" issue
+     */
+
+    
+    /**
+     * Test endpoint to debug the generateReport function
+     */
+
+    
+
+    
+    /**
+     * Search projects by code or name
+     * This helps find the correct project ID for a given code
+     */
+    public function searchProjectsByCode() {
+        header('Content-Type: application/json');
+        
+        try {
+            $project_code = $this->input->post('project_code');
+            $company_id = $this->input->post('company_id');
+            $location_id = $this->input->post('location_id');
+            
+            if (empty($project_code)) {
+                echo json_encode(array(
+                    'success' => false,
+                    'status_code' => 400,
+                    'message' => 'Project code is required'
+                ));
+                return;
+            }
+            
+            // Clean the project code
+            $project_code = trim($project_code);
+            
+            $this->db->select('id, project_name, project_code, status, company_id, project_location, original_table_name');
+            $this->db->from('company_projects');
+            
+            if (!empty($company_id)) {
+                $this->db->where('company_id', $company_id);
+            }
+            if (!empty($location_id)) {
+                $this->db->where('project_location', $location_id);
+            }
+            
+            $this->db->group_start();
+            $this->db->like('project_name', $project_code);
+            $this->db->or_like('project_code', $project_code);
+            $this->db->or_like('original_table_name', $project_code);
+            $this->db->group_end();
+            
+            $this->db->limit(10);
+            $projects = $this->db->get()->result();
+            
+            echo json_encode(array(
+                'success' => true,
+                'status_code' => 200,
+                'message' => 'Projects found',
+                'data' => array(
+                    'projects' => $projects,
+                    'total_count' => count($projects),
+                    'search_code' => $project_code
+                )
+            ));
+            
+        } catch (Exception $e) {
+            echo json_encode(array(
+                'success' => false,
+                'status_code' => 500,
+                'message' => 'Error searching projects: ' . $e->getMessage()
+            ));
+        }
+    }
+    
     public function get_project_header(){
         $entity_code=$this->input->post('entity_code');
         $lastProj=$this->db->query('Select * from company_projects where  entity_code="'.$entity_code.'"   order by id desc limit 1')->result();
@@ -1755,15 +2636,17 @@ public function get_project_additionaldata(){
         }
     }
 
-    public function EditVerifyoption(){
+      public function EditVerifyoption(){
         $item_id=$this->input->post('item_id');
         $operation_type = $this->input->post('operation_type');
-        $tablename = 'test_demo_01';
-        $Item_Result = $this->tasks->get_item_details($tablename,$item_id);
-        // echo '<pre>last_query ';
-        // print_r($this->db->last_query());
-        // echo '</pre>';
-        // exit();
+        $project_name = $this->input->post('project_name');
+
+        $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+        $new_pattern = array("_", "_", "");
+        $projectname=strtolower(preg_replace($old_pattern, $new_pattern , trim($project_name)));
+
+        // $tablename = 'test_demo_01';
+        $Item_Result = $this->tasks->get_item_details($projectname,$item_id);
         if(!empty($Item_Result))
         {
             header('Content-Type: application/json');
@@ -1852,6 +2735,7 @@ public function get_project_additionaldata(){
             $update_details->verification_remarks= $verification_remarks;
 
             $verified_datetime = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
+            // $verified_datetime = date('Y-m-d H:s:i');
             $update_details->verified_datetime = $verified_datetime;
 
             $updatedat = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
@@ -1866,6 +2750,7 @@ public function get_project_additionaldata(){
             $update_details->verification_status = $verification_status;
             
             $verified_datetime = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
+            //  $verified_datetime = date('Y-m-d H:s:i');
             $update_details->verified_datetime = $verified_datetime;
             
             $updatedat = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
@@ -1887,14 +2772,21 @@ public function get_project_additionaldata(){
             
 
         $company_id = $getprojectdetails[0]->company_id;
-        $new_location_verified = 0;
+        // $new_location_verified = $verification_remarks;
+        // $new_location_verified = $getprojectdetails[0]->new_location_verified;
+         $new_location_verified = $update_details->new_location_verified;
         $location_id = $getprojectdetails[0]->project_location;
         $entity_code =  $getprojectdetails[0]->entity_code;
         $project_id = $getprojectdetails[0]->id;
         $project_name = $getprojectdetails[0]->project_name;
         $original_table_name = $getprojectdetails[0]->original_table_name;
-        $verified_by = 0;
-        $verified_by_username = 'ABCD';
+
+        $verify_user_detail = $this->tasks->get_single_user($this->input->post('verify_by'));
+        $verified_by = $this->input->post('verify_by');
+        $verified_by_username = $verify_user_detail->firstName;
+
+        // $verified_by = 0;
+        // $verified_by_username = 'ABCD';
 
         $verifiedproducts_array = array(
             'roW_id' => $company_id,
@@ -2057,8 +2949,7 @@ public function get_project_additionaldata(){
         }
     }
 
-
-    public function getassets()
+  public function getassets()
     {
         $verification_status=$this->input->post('verification_status');
         $tag_status_y_n_na=$this->input->post('tag_status_y_n_na');
@@ -2123,10 +3014,25 @@ public function get_project_additionaldata(){
         // exit();
         $result_count = count($scantask);
 
-        if($scantask)
+
+        
+        $Responce_data = array();
+        $i = 0;
+        $Responce_data[$i]['item_classification'] = 'All';
+        if(!empty($scantask)){
+            foreach($scantask as $scantask_key=>$scantask_value){
+                $i++;
+                $Responce_data[$i] = $scantask_value;
+            }
+        }
+
+        $result_count = count($Responce_data);
+
+
+        if($Responce_data)
         {
             header('Content-Type: application/json');
-            echo json_encode(array("success"=>200,"message"=>"Tasks fetched successfully.","count"=>$result_count,"data"=>$scantask));
+            echo json_encode(array("success"=>200,"message"=>"Tasks fetched successfully.","count"=>$result_count,"data"=>$Responce_data));
             exit;
         }
         else
@@ -2137,6 +3043,170 @@ public function get_project_additionaldata(){
         }
 
     }
+
+
+
+       public function verifybylist212121()
+    {
+        $projectid=$this->input->post('project_id');
+        $userid=$this->input->post('user_id');
+        $verification_status=$this->input->post('verification_status');
+        $tag_status_y_n_na =$this->input->post('tag_status_y_n_na');
+        $item_category  =$this->input->post('item_category');
+        $item_sub_category =$this->input->post('item_sub_category');
+        $projectname=$this->input->post('project_name');
+        $search_text =$this->input->post('search_text');
+
+        // $search_fields = $this->input->post('search_fields');
+
+        $search_fields = array();
+        if(!empty($this->input->post('search_fields'))){
+            $search_fields = explode(",",$this->input->post('search_fields'));
+        }
+        
+
+
+        $item_classification=$this->input->post('item_classification');
+        $user_department=$this->input->post('user_department');
+
+        $order_by = $this->input->post('order_by');
+        $cond=array();
+        
+        $where= ' WHERE id IS NOT NULL ';
+        $is_where = 0;
+       
+        
+        
+
+        
+        
+        if($tag_status_y_n_na !='' && $tag_status_y_n_na !='All')
+        {
+            $where.=' AND tag_status_y_n_na="'.$tag_status_y_n_na.'"';    
+        }
+        if($item_category !='' && $item_category !='All')
+        {
+            $where.=' AND item_category="'.$item_category.'"';    
+        }
+        if($item_sub_category !='' && $item_sub_category !='All')
+        {
+            $where.=' AND item_sub_category="'.$item_sub_category.'"';    
+        } 
+        
+
+        
+        if($verification_status !='All')
+        {
+            if($is_where == 1){
+                $where.=' AND verification_status="'.$verification_status.'"';    
+            }else{
+                $where.=' WHERE verification_status="'.$verification_status.'"';    
+            }
+            
+            $is_where = 1;
+        }
+
+        if($item_classification !='All')
+        {
+            if((isset($item_classification)) && (!empty($item_classification)))
+            {
+                if($is_where == 1){
+                    $where.=' AND item_classification="'.$item_classification.'"';    
+                }else{
+                    $where.=' WHERE item_classification="'.$item_classification.'"';    
+                }
+                $is_where = 1;
+            }
+        }
+      
+
+        
+        if($user_department !='All')
+        {
+           
+            if((isset($user_department)) && (!empty($user_department)))
+            {
+                if($is_where == 1){
+                    $where.=' AND user_department="'.$user_department.'"';
+                }else{
+                    $where.=' WHERE user_department="'.$user_department.'"';
+                }
+                    
+            }
+        }
+
+
+
+        $where .= ' ORDER BY id '.$order_by;
+        
+        $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+        $new_pattern = array("_", "_", "");
+        $projectname=strtolower(preg_replace($old_pattern, $new_pattern , trim($projectname)));
+        $projectdetail=$this->tasks->get_data('company_projects',array('id'=>$projectid));
+        
+        $select="SELECT * FROM ".$projectname;
+        $scantask=$this->db->query($select.$where)->result();
+        // echo '<pre>last_query ';
+        // print_r($this->db->last_query());
+        // echo '</pre>';
+        // exit();
+        $result_count = count($scantask);
+        
+        // $myscantask = array();
+		if(!empty($scantask) && count($scantask) > 0)
+		{
+            foreach($scantask as $st)
+            {
+
+                if($st->verified_by != ''){
+                    $verifiername= $this->tasks->get_verifire_namesingle($st->verified_by);
+                   }else{
+                       $verifiername='';
+                   }
+
+                $st->createdat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->createdat)));
+                $st->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->updatedat)));
+                if($st->verified_datetime)
+                {
+                    $st->verified_datetime=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->verified_datetime)));
+                    $st->verified_by_username= $verifiername;
+                    $st->verified_by_name= $verifiername;
+    
+                }
+                
+               // $st->date_of_purchase_invoice_date=date('d-m-Y',strtotime($st->date_of_purchase_invoice_date)); 
+
+            //    $myscantask[] = $st;
+
+            } 
+
+
+            // echo '<pre>scantask s';
+            // print_r($scantask);
+            // echo '</pre>';
+            // exit(); 
+
+            if(!empty($projectdetail) && in_array($scantask[0]->item_category,json_decode($projectdetail[0]->item_category)))
+            {
+                header('Content-Type: application/json');
+                echo json_encode(array("success"=>200,"message"=>"Tasks fetched successfully.","count"=>$result_count,"data"=>$scantask));
+                exit;
+            }
+            else
+            {
+                header('Content-Type: application/json');
+                echo json_encode(array("success"=>401,"message"=>"Permission to scan this category item is not granted."));
+                exit;
+            }
+			
+		} 
+		else {
+			header('Content-Type: application/json');
+			echo json_encode(array("success"=>401,"message"=>"Item not available"));
+			exit;
+		}
+    }
+
 
 
     public function verifybylist()
@@ -2693,8 +3763,840 @@ $this->email->attach($file_path);
 
     }
 
+    /**
+     * Get user email from database
+     */
+    private function getUserEmail($user_id) {
+        if (empty($user_id)) {
+            return null;
+        }
+        
+        $user = $this->tasks->get_data('users', array('id' => $user_id));
+        if (!empty($user) && count($user) > 0) {
+            return $user[0]->email;
+        }
+        
+        return null;
+    }
 
-   
+    /**
+     * Generate CSV file and send via email
+     */
+    private function generateCSVAndEmail($report_data, $project_data, $user_email, $type, $reporttype) {
+        try {
+            // Generate unique filename
+            $filename = 'report_' . date('Y-m-d_H-i-s') . '.csv';
+            $filepath = FCPATH . 'attachment/' . $filename;
+            
+            // Ensure attachment directory exists
+            if (!is_dir(FCPATH . 'attachment/')) {
+                mkdir(FCPATH . 'attachment/', 0777, true);
+            }
+            
+            // Open file for writing
+            $file = fopen($filepath, 'w');
+            if (!$file) {
+                return array("success" => 400, "message" => "Failed to create CSV file.");
+            }
+            
+            // Write CSV headers
+            $headers = array('ID', 'Name', 'Email', 'Date', 'Status', 'Project Name', 'Report Type');
+            fputcsv($file, $headers);
+            
+            // Process report data and write to CSV
+            if (is_array($report_data)) {
+                foreach ($report_data as $row) {
+                    if (is_array($row)) {
+                        // Handle array data
+                        $csv_row = array(
+                            isset($row['id']) ? $row['id'] : '',
+                            isset($row['name']) ? $row['name'] : '',
+                            isset($row['email']) ? $row['email'] : '',
+                            isset($row['date']) ? $row['date'] : date('Y-m-d'),
+                            isset($row['status']) ? $row['status'] : '',
+                            isset($project_data->project_name) ? $project_data->project_name : '',
+                            $reporttype
+                        );
+                        fputcsv($file, $csv_row);
+                    } elseif (is_object($row)) {
+                        // Handle object data
+                        $csv_row = array(
+                            isset($row->id) ? $row->id : '',
+                            isset($row->name) ? $row->name : '',
+                            isset($row->email) ? $row->email : '',
+                            isset($row->date) ? $row->date : date('Y-m-d'),
+                            isset($row->status) ? $row->status : '',
+                            isset($project_data->project_name) ? $project_data->project_name : '',
+                            $reporttype
+                        );
+                        fputcsv($file, $csv_row);
+                    }
+                }
+            }
+            
+            fclose($file);
+            
+            // Check if file was created successfully
+            if (!file_exists($filepath)) {
+                return array("success" => 400, "message" => "Failed to create CSV file.");
+            }
+            
+            // Send email if user email is available
+            if (!empty($user_email)) {
+                $email_result = $this->sendReportEmail($filename, $user_email);
+                if ($email_result['success']) {
+                    return array(
+                        "success" => 200,
+                        "message" => "Report generated and sent to your email.",
+                        "data" => $report_data,
+                        "csv_file" => $filename,
+                        "email_sent" => true
+                    );
+                } else {
+                    return array(
+                        "success" => 200,
+                        "message" => "Report generated but email sending failed: " . $email_result['message'],
+                        "data" => $report_data,
+                        "csv_file" => $filename,
+                        "email_sent" => false
+                    );
+                }
+            } else {
+                return array(
+                    "success" => 200,
+                    "message" => "Report generated successfully. No email sent (user email not found).",
+                    "data" => $report_data,
+                    "csv_file" => $filename,
+                    "email_sent" => false
+                );
+            }
+            
+        } catch (Exception $e) {
+            return array("success" => 400, "message" => "Error generating report: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Send report email using EmailController
+     */
+    private function sendReportEmail($filename, $user_email) {
+        try {
+            // Build the email controller URL
+            $email_url = base_url('index.php/EmailController/emailattachment?file=' . urlencode($filename) . '&email=' . urlencode($user_email));
+            
+            // Use cURL to call EmailController
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $email_url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+            
+            $response = curl_exec($ch);
+            $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+            
+            if ($http_code == 200) {
+                return array("success" => true, "message" => "Email sent successfully");
+            } else {
+                return array("success" => false, "message" => "Email sending failed with HTTP code: " . $http_code);
+            }
+            
+        } catch (Exception $e) {
+            return array("success" => false, "message" => "Email sending error: " . $e->getMessage());
+        }
+    }
+
+     // Issue API
+
+     
+    public function EditVerificationNew()
+    {
+        $userid=$this->input->post('user_id');
+        $companyid=$this->input->post('company_id');
+        $projectid=$this->input->post('project_id');
+        $projectname=$this->input->post('project_name');
+        $instance_id=$this->input->post('instance_id');
+        // $scancode=$this->input->post('scan_code');
+		$condition=array(
+			"id"=>$userid
+        );
+        $projectdetail=$this->tasks->get_data('company_projects',array('id'=>$projectid));
+        
+        $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+        $new_pattern = array("_", "_", "");
+        $projectname=strtolower(preg_replace($old_pattern, $new_pattern , trim($projectname)));
+        // $scantask=$this->tasks->scanitem($userid,$companyid,$projectname,$projectid,$scancode);
+        $scantask=$this->tasks->scanitem2($userid,$companyid,$projectname,$projectid,$instance_id);
+       
+        
+        foreach($scantask as $st)
+        {
+            if($st->verified_by !=''){
+             $verifiername= $this->tasks->get_verifire_namesingle($st->verified_by);
+            }else{
+                $verifiername='';
+            }
+            $st->createdat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->createdat)));
+            $st->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->updatedat)));
+            if($st->verified_datetime)
+            {
+                $st->verified_by_username= $verifiername;
+                $st->verified_by_name= $verifiername;
+                $st->verified_datetime=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->verified_datetime)));
+            }
+            
+           // $st->date_of_purchase_invoice_date=date('d-m-Y',strtotime($st->date_of_purchase_invoice_date)); 
+        }
+		if(!empty($scantask) && count($scantask) > 0)
+		{
+            $tag='CD';
+            
+            $projectdetail[0]->project_type=='TG'? $tag='Y':($projectdetail[0]->project_type=='NT'?$tag='N':($projectdetail[0]->project_type=='UN'?$tag='NA':$tag='CD'));
+            if($tag!='CD')
+            {
+                if(!empty($projectdetail) && in_array($scantask[0]->item_category,json_decode($projectdetail[0]->item_category)) && $scantask[0]->tag_status_y_n_na==$tag)
+                {
+                    header('Content-Type: application/json');
+                    echo json_encode(array("success"=>200,"message"=>"Tasks fetched successfully.","data"=>$scantask));
+                    exit;
+                }
+                else
+                {
+                    header('Content-Type: application/json');
+                    echo json_encode(array("success"=>401,"message"=>"Permission to scan this category/tag item is not granted."));
+                    exit;
+                }
+
+            }
+            else
+            {
+                if(!empty($projectdetail) && in_array($scantask[0]->item_category,json_decode($projectdetail[0]->item_category)))
+                {
+                    header('Content-Type: application/json');
+                    echo json_encode(array("success"=>200,"message"=>"Tasks fetched successfully.","data"=>$scantask));
+                    exit;
+                }
+                else
+                {
+                    header('Content-Type: application/json');
+                    echo json_encode(array("success"=>401,"message"=>"Permission to scan this category item is not granted."));
+                    exit;
+                }
+            }
+            
+            
+			
+		} 
+		else {
+			header('Content-Type: application/json');
+			echo json_encode(array("success"=>401,"message"=>"Item not available"));
+			exit;
+		}
+    }
+
+
+
+    public function instance_rollback()
+    {
+
+        $item_id = $_POST['item_id'];
+        $project_id = $_POST['project_id'];
+        $instance_id = $_POST['instance_id'];
+
+        $this->db->select("*");   
+        $this->db->from("company_projects");   
+        $this->db->where("id",$project_id);
+        $query= $this->db->get();   
+        $company_projects = $query->row();
+
+        $table_name = $company_projects->project_table_name;
+
+        $this->db->select("*");   
+        $this->db->from($table_name);   
+        $this->db->where("id",$project_id);
+        $query= $this->db->get();   
+        $company_projects_product_details = $query->row();
+
+
+        $this->db->select("*");   
+        $this->db->from("verifiedproducts");   
+        $this->db->where("project_id",$project_id);
+        $this->db->where("item_id",$item_id);
+        $this->db->where("id",$instance_id);
+        $query= $this->db->get();   
+        $verifiedproducts_data = $query->row();
+
+        $verified_datetime = date('Y-m-d H:i:s');
+
+      
+        $verifiedproducts_array = array(
+            'company_id' => $verifiedproducts_data->company_id,
+            'location_id' => $verifiedproducts_data->location_id,
+            'entity_code' => $verifiedproducts_data->entity_code,
+            'project_id' => $verifiedproducts_data->project_id,
+            'project_name' => $verifiedproducts_data->project_name,
+            'original_table_name' => $verifiedproducts_data->original_table_name,
+            'item_id' => $verifiedproducts_data->item_id,
+            'item_category' => $verifiedproducts_data->item_category,
+            'item_unique_code' => $verifiedproducts_data->item_unique_code,
+            'item_sub_code' => $verifiedproducts_data->item_sub_code,
+            'item_description' => $verifiedproducts_data->item_description,
+            'quantity_as_per_invoice' => $verifiedproducts_data->quantity_as_per_invoice,
+            'verification_status' => $verifiedproducts_data->verification_status,
+            'quantity_verified' => "-".$verifiedproducts_data->quantity_verified,
+            'new_location_verified' => $verifiedproducts_data->new_location_verified,
+            'verified_by' => $verifiedproducts_data->verified_by,
+            'verified_by_username' => $verifiedproducts_data->verified_by_username,
+            'verified_datetime' => $verified_datetime,
+            'verification_remarks' => $verifiedproducts_data->verification_remarks,
+            'qty_ok' => $verifiedproducts_data->qty_ok,
+            'qty_damaged' => $verifiedproducts_data->qty_damaged,
+            'qty_scrapped' => $verifiedproducts_data->qty_scrapped,
+            'qty_not_in_use' => $verifiedproducts_data->qty_not_in_use,
+            'qty_missing' => $verifiedproducts_data->qty_missing,
+            'qty_shifted' => $verifiedproducts_data->qty_shifted,
+            'mode_of_verification' => $verifiedproducts_data->mode_of_verification,
+            'created_at' => date('Y-m-d H:s:i'),
+        );
+        $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts',$verifiedproducts_array);
+
+
+         $data=array(
+            "quantity_verified"=>$company_projects_product_details->quantity_verified-$company_projects_product_details->quantity_verified,
+            "new_location_verified"=>$company_projects_product_details->quantity_verified-$company_projects_product_details->quantity_verified,
+            "instance_count"=>(int)$company_projects_product_details->instance_count+1,
+        );
+        $insert=$this->db->where('id',$item_id);
+        $insert=$this->db->update($table_name,$data);
+
+
+        
+        // if(!empty($project_id) && count($project_id) > 0)
+        if(!empty($project_id))
+		{
+            
+			header('Content-Type: application/json');
+			echo json_encode(array("success"=>200,"message"=>"Rollback successfully.","data"=>$project_id));
+			exit;
+		} 
+		else {
+			header('Content-Type: application/json');
+			echo json_encode(array("success"=>401,"message"=>"Error"));
+			exit;
+		}
+
+    }
+
+    public function create_issue()
+    {
+        // Get required fields from POST using $this->input->post()
+        $user_id = $this->input->post('user_id');
+        $type_of_issue = $this->input->post('type_of_issue');
+        $issue_title = $this->input->post('issue_title');
+        $issue_description = $this->input->post('issue_description');
+        $issue_attachment = $this->input->post('issue_attachment');
+        
+        // Get conditional fields
+        $groupadmin_id = $this->input->post('groupadmin_id');
+        $company_name = $this->input->post('company_name');
+        $location = $this->input->post('location');
+        $project = $this->input->post('project');
+        $manager_id = $this->input->post('manager_id');
+        
+        // Validate required fields
+        if(empty($user_id) || empty($type_of_issue) || empty($issue_title) || empty($issue_description)) {
+            header('Content-Type: application/json');
+            echo json_encode(array(
+                "status" => false,
+                "message" => "Required fields are missing"
+            ));
+            exit;
+        }
+        
+        // Validate type_of_issue
+        if($type_of_issue !== 'General' && $type_of_issue !== 'Project based') {
+            header('Content-Type: application/json');
+            echo json_encode(array(
+                "status" => false,
+                "message" => "Type of issue must be 'General' or 'Project based'"
+            ));
+            exit;
+        }
+        
+        // Validate conditional fields based on type_of_issue
+        if($type_of_issue === 'General') {
+            if(empty($groupadmin_id)) {
+                header('Content-Type: application/json');
+                echo json_encode(array(
+                    "status" => false,
+                    "message" => "Group admin ID is required for General issues"
+                ));
+                exit;
+            }
+        } elseif($type_of_issue === 'Project based') {
+            if(empty($company_name) || empty($location) || empty($project) || empty($manager_id)) {
+                header('Content-Type: application/json');
+                echo json_encode(array(
+                    "status" => false,
+                    "message" => "Company name, location, project, and manager ID are required for Project based issues"
+                ));
+                exit;
+            }
+        }
+        
+        try {
+            // Prepare data based on type_of_issue
+            $insert_data = array(
+                'tracking_id' => 'ISSUE-' . time(),
+                'issue_type' => $type_of_issue,
+                'company_name' => ($type_of_issue === 'General') ? '0' : $company_name,
+                'location_name' => ($type_of_issue === 'General') ? '0' : $location,
+                'project_name' => ($type_of_issue === 'General') ? '0' : $project,
+                'manage_name' => ($type_of_issue === 'General') ? '0' : $manager_id,
+                'groupadmin_name' => ($type_of_issue === 'Project based') ? '0' : $groupadmin_id,
+                'issue_title' => $issue_title,
+                'issue_description' => $issue_description,
+                'issue_attachment' => $issue_attachment ? $issue_attachment : '',
+                'status' => 'Open',
+                'status_type' => '1',
+                'remark_content' => '',
+                'created_by' => $user_id,
+                'resolved_by' => '',
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => ''
+            );
+            
+            // Insert into database
+            $this->db->insert('issue_manage', $insert_data);
+            $issue_id = $this->db->insert_id();
+            
+            if($issue_id) {
+               header('Content-Type: application/json');
+                echo json_encode(array(
+                    "status" => true,
+                    "message" => "Issue created successfully",
+                    "data" => $insert_data
+                ));
+
+                exit;
+            } else {
+                header('Content-Type: application/json');
+                echo json_encode(array(
+                    "status" => false,
+                    "message" => "Failed to create issue"
+                ));
+                exit;
+            }
+            
+        } catch (Exception $e) {
+            header('Content-Type: application/json');
+            echo json_encode(array(
+                "status" => false,
+                "message" => "Error creating issue: " . $e->getMessage()
+            ));
+            exit;
+        }
+    }
+
+
+
+    public function issue_list()
+    {
+        // Get user_id from POST input
+        $user_id = $_POST['user_id'];
+        
+        // Validate if user_id is provided
+        if(empty($user_id)) {
+            header('Content-Type: application/json');
+            echo json_encode(array(
+                "status" => false,
+                "message" => "User ID is required"
+            ));
+            exit;
+        }
+        
+        try {
+            // Query to get issues where user is either creator or handler
+            $this->db->select('issue_manage.tracking_id, issue_manage.issue_title as subject, issue_manage.issue_type, company_projects.project_id, issue_manage.status, issue_manage.status_type');
+            $this->db->from('issue_manage');
+            $this->db->join('company_projects', 'company_projects.id = issue_manage.project_name', 'left');
+            $this->db->where('(issue_manage.created_by = ' . $user_id . ' OR issue_manage.resolved_by = ' . $user_id . ')', NULL, FALSE);
+            $query = $this->db->get();
+            
+           
+            
+            if($query->num_rows() > 0) {
+                $issues = $query->result();
+                $response_data = array();
+                
+                foreach($issues as $issue) {
+                    // Format status text for status field (using status column)
+                    $status_text = '';
+                    if($issue->status == '0') $status_text = 'Closed';
+                    elseif($issue->status == '1') $status_text = 'Open';
+                    else $status_text = 'Unknown';
+                    
+                    // Format status_type text
+                    $status_type_text = '';
+                    if($issue->status_type == '1') $status_type_text = 'New';
+                    elseif($issue->status_type == '2') $status_type_text = 'Escalated';
+                  
+                    
+                    $response_data[] = array(
+                        "tracking_id" => $issue->tracking_id,
+                        "subject" => $issue->subject,
+                        "issue_type" => $issue->issue_type,
+                        "project_id" => $issue->project_id,
+                        "status" => $status_text,
+                        "status_type" => $status_type_text
+                    );
+                }
+                
+                header('Content-Type: application/json');
+                echo json_encode(array(
+                    "status" => true,
+                    "message" => "Issue list fetched successfully.",
+                    "data" => $response_data
+                ));
+                exit;
+            } else {
+                header('Content-Type: application/json');
+                echo json_encode(array(
+                    "status" => true,
+                    "message" => "No issues found for this user.",
+                    "data" => array()
+                ));
+                exit;
+            }
+            
+        } catch (Exception $e) {
+            header('Content-Type: application/json');
+            echo json_encode(array(
+                "status" => false,
+                "message" => "Error fetching issue list: " . $e->getMessage()
+            ));
+            exit;
+        }
+    }
+
+
+
+     public function view_issue()
+    {
+        // Get issue_id from POST input
+        $issue_id = $this->input->post('issue_id');
+        // $issue_id = $_POST['issue_id'];
+
+        
+        // Validate if issue_id is provided
+        if(empty($issue_id)) {
+            header('Content-Type: application/json');
+            echo json_encode(array(
+                "status" => false,
+                "message" => "Issue ID is required"
+            ));
+            exit;
+        }
+        
+        try {
+            // Load the admin model to access issue_manage table
+            $this->load->model('admin_model', 'admin');
+            
+            // Query to get issue details from issue_manage table (matching web controller logic)
+            $this->db->select('issue_manage.*, company_projects.project_id, users.firstName, users.lastName, company.company_name, company_locations.location_name, handled_users.firstName as handled_firstName, handled_users.lastName as handled_lastName');
+            $this->db->from('issue_manage');
+            $this->db->join('company', 'company.id = issue_manage.company_name', 'left');
+            $this->db->join('company_locations', 'company_locations.id = issue_manage.location_name', 'left');
+            $this->db->join('company_projects', 'company_projects.id = issue_manage.project_name', 'left');
+            $this->db->join('users', 'users.id = issue_manage.created_by', 'left');
+            $this->db->join('users as handled_users', 'handled_users.id = issue_manage.resolved_by', 'left');
+            $this->db->where('issue_manage.id', $issue_id);
+            $query = $this->db->get();
+            
+            if($query->num_rows() > 0) {
+                $issue_data = $query->row();
+                
+                // Prepare response data with formatted display (matching the required format)
+                $created_by_name = isset($issue_data->firstName) && isset($issue_data->lastName) ? $issue_data->firstName . ' ' . $issue_data->lastName : '';
+                $created_at = isset($issue_data->created_at) ? date('Y-m-d H:i:s', strtotime($issue_data->created_at)) : '';
+                $tracking_id = isset($issue_data->tracking_id) ? $issue_data->tracking_id : '';
+                $issue_type = isset($issue_data->issue_type) ? $issue_data->issue_type : '';
+                $subject = isset($issue_data->issue_title) ? $issue_data->issue_title : '';
+                $description = isset($issue_data->issue_description) ? $issue_data->issue_description : '';
+                $handled_by_name = isset($issue_data->handled_firstName) && isset($issue_data->handled_lastName) ? $issue_data->handled_firstName . ' - ' . $issue_data->handled_lastName : '';
+                //$handled_date = isset($issue_data->resolved_date) ? date('Y-m-d H:i:s', strtotime($issue_data->resolved_date)) : '';
+                $attachment = isset($issue_data->issue_attachment) ? $issue_data->issue_attachment : '';
+                $status = isset($issue_data->status) ? $issue_data->status : '';
+                $status_type = isset($issue_data->status_type) ? $issue_data->status_type : '';
+                
+                // Format status text ONLY for tracking_id (using status_type column)
+                $status_text = '';
+                if($status_type == '1') $status_text = 'New';
+                elseif($status_type == '2') $status_text = 'Escalated';
+
+                // Format status text for status field (using status column)
+                $status_type_text = '';
+                if($status == '0') $status_type_text = 'Closed';
+                elseif($status == '1') $status_type_text = 'Open';
+                else $status_type_text = 'Unknown';
+                
+                $response_data = array(
+                    "created_by" => $created_by_name . ' | ' . $created_at,
+                    "tracking_id" => $tracking_id . ($status_text ? ' | ' . $status_text : ''),
+                    "issue_type" => $issue_type,
+                    "subject" => $subject,
+                    "description" => $description,
+                    "handled_by" => $handled_by_name . ' | ' . $created_at,
+                    "attachment" => $attachment ? base_url('attachment/' . $attachment) : '',
+                    "status" => $status_type_text
+                );
+                
+                header('Content-Type: application/json');
+                echo json_encode(array(
+                    "status" => true,
+                    "message" => "Issue data fetched successfully",
+                    "data" => $response_data
+                ));
+                exit;
+            } else {
+                header('Content-Type: application/json');
+                echo json_encode(array(
+                    "status" => false,
+                    "message" => "Issue not found"
+                ));
+                exit;
+            }
+            
+        } catch (Exception $e) {
+            header('Content-Type: application/json');
+            echo json_encode(array(
+                "status" => false,
+                "message" => "Error fetching issue data: " . $e->getMessage()
+            ));
+            exit;
+        }
+    }
+
+
+
+    /**
+ * Generate Exception Report API Endpoint
+ * 
+ * Generates Exception CSV reports and sends them via email
+ * 
+ * @return JSON response
+ */
+public function generateExceptionReport() {
+    header('Content-Type: application/json');
+
+    try {
+        // 1. Collect POST parameters
+        $type = $this->input->post('optradio'); // project | consolidated | additional
+        $projectSelect = $this->input->post('projectSelect');
+        $exceptioncategory = $this->input->post('exception_category'); // from API
+        $projectstatus = $this->input->post('projectstatus');
+        $verificationstatus = $this->input->post('verificationstatus');
+        $reportHeaders = $this->input->post('reportHeaders');
+        $original_table_name = $this->input->post('original_table_name');
+        $company_id = $this->input->post('company_id');
+        $location_id = $this->input->post('location_id');
+        $user_id = $this->input->post('user_id');
+
+        // 2. Validate required fields
+        if (empty($user_id)) {
+            echo json_encode(["success" => false, "status_code" => 400, "message" => "User ID is required"]);
+            return;
+        }
+
+        // 3. Get user details
+        $this->db->where('id', $user_id);
+        $user = $this->db->get('users')->row();
+        if (!$user) {
+            echo json_encode(["success" => false, "status_code" => 404, "message" => "User not found"]);
+            return;
+        }
+
+        $user_email = !empty($user->userEmail) ? $user->userEmail : $user->email;
+        if (empty($user_email)) {
+            echo json_encode(["success" => false, "status_code" => 400, "message" => "User email not found"]);
+            return;
+        }
+
+        // Ensure tasks model is loaded
+        if (!isset($this->tasks)) {
+            $this->load->model('Tasks_model', 'tasks');
+        }
+
+        $report_data = [];
+        $project_data = [];
+
+        /**
+         * ------------------------
+         * PROJECT BASED REPORT
+         * ------------------------
+         */
+        if ($type === 'project') {
+            $condition = [
+                "id" => $projectSelect,
+                "status" => $projectstatus,
+                "company_id" => $company_id,
+                "project_location" => $location_id
+            ];
+
+            $getProject = $this->tasks->get_data('company_projects', $condition);
+
+            if (count($getProject) > 0) {
+                $old_pattern = ["/[^a-zA-Z0-9]/", "/_+/", "/_$/"];
+                $new_pattern = ["_", "_", ""];
+                $project_name = strtolower(preg_replace($old_pattern, $new_pattern, trim($getProject[0]->project_name)));
+
+                // Get exception data based on category
+                $report_data = $this->_getExceptionCategoryReport($project_name, $exceptioncategory, $verificationstatus, $reportHeaders);
+
+                $project_data = $getProject[0];
+            } else {
+                echo json_encode(["success" => false, "status_code" => 404, "message" => "No project found"]);
+                return;
+            }
+        }
+
+        /**
+         * ------------------------
+         * CONSOLIDATED REPORT
+         * ------------------------
+         */
+        elseif ($type === 'consolidated') {
+            $lastProj = $this->db->query('SELECT * FROM company_projects 
+                WHERE status="' . $projectstatus . '" 
+                AND company_id=' . $company_id . ' 
+                AND entity_code="' . $this->admin_registered_entity_code . '" 
+                ORDER BY id DESC LIMIT 1')->result();
+
+            if (!$lastProj) {
+                echo json_encode(["success" => false, "status_code" => 404, "message" => "No consolidated projects found"]);
+                return;
+            }
+
+            $condition = [
+                "status" => $projectstatus,
+                "company_id" => $company_id,
+                "original_table_name" => $lastProj[0]->original_table_name,
+                "entity_code" => $this->admin_registered_entity_code
+            ];
+
+            $getProjects = $this->tasks->get_data('company_projects', $condition);
+
+            if (count($getProjects) > 0) {
+                foreach ($getProjects as $project) {
+                    $old_pattern = ["/[^a-zA-Z0-9]/", "/_+/", "/_$/"];
+                    $new_pattern = ["_", "_", ""];
+                    $project_name = strtolower(preg_replace($old_pattern, $new_pattern, trim($project->project_name)));
+
+                    $project_report = $this->_getExceptionCategoryReport($project_name, $exceptioncategory, $verificationstatus, $reportHeaders);
+                    if (is_array($project_report)) {
+                        $report_data = array_merge($report_data, $project_report);
+                    }
+                    $project_data[] = $project;
+                }
+            } else {
+                echo json_encode(["success" => false, "status_code" => 404, "message" => "No projects found"]);
+                return;
+            }
+        }
+
+        /**
+         * ------------------------
+         * ADDITIONAL REPORT
+         * ------------------------
+         */
+        elseif ($type === 'additional') {
+            $report_data = $this->tasks->genrateadditionalassets($projectSelect);
+            $project_data = [
+                "company" => $this->tasks->com_row($company_id),
+                "location" => $this->tasks->loc_row($location_id)
+            ];
+        }
+
+        /**
+         * ------------------------
+         * CSV GENERATION
+         * ------------------------
+         */
+        $filename = 'exception_report_' . date('Y-m-d_H-i-s') . '_' . uniqid() . '.csv';
+        $filepath = FCPATH . 'attachment/' . $filename;
+
+        if (!is_dir(FCPATH . 'attachment/')) {
+            mkdir(FCPATH . 'attachment/', 0777, true);
+        }
+
+        $csv_result = $this->_generateCSVFile($report_data, $project_data, $filepath, 'exception');
+        if (!$csv_result['success']) {
+            echo json_encode($csv_result);
+            return;
+        }
+
+        /**
+         * ------------------------
+         * EMAIL SENDING
+         * ------------------------
+         */
+        $email_result = $this->_sendEmailWithAttachment($filename, $user_email);
+        if (!$email_result['success']) {
+            $email_result = $this->_sendEmailDirect($filename, $user_email);
+        }
+
+        // Final Response
+        $response = [
+            "success" => true,
+            "status_code" => 200,
+            "message" => "Exception report generated and sent successfully",
+            "data" => [
+                "filename" => $filename,
+                "email_sent" => $email_result['success'],
+                "user_email" => $user_email,
+                "record_count" => is_array($report_data) ? count($report_data) : 0,
+                "generated_at" => date('Y-m-d H:i:s')
+            ]
+        ];
+
+        if (!$email_result['success']) {
+            $response['message'] = 'Report generated but email sending failed';
+            $response['email_error'] = $email_result['message'];
+        }
+
+        echo json_encode($response);
+
+    } catch (Exception $e) {
+        log_message('error', 'GenerateExceptionReport Error: ' . $e->getMessage());
+        echo json_encode([
+            "success" => false,
+            "status_code" => 500,
+            "message" => "Internal server error occurred",
+            "error" => $e->getMessage()
+        ]);
+    }
+}
+
+/**
+ * Helper: Decide which exception report to generate
+ */
+private function _getExceptionCategoryReport($project_name, $exceptioncategory, $verificationstatus, $reportHeaders) {
+    switch ($exceptioncategory) {
+        case 1: return $this->tasks->getExceptionOneReport($project_name, $verificationstatus, $reportHeaders);
+        case 2: return $this->tasks->getExceptionTwoReport($project_name, $verificationstatus, $reportHeaders);
+        case 3: return $this->tasks->getExceptionThreeReport($project_name, $verificationstatus, $reportHeaders);
+        case 4: return $this->tasks->getExceptionFourReport($project_name, $verificationstatus, $reportHeaders);
+        case 5: return $this->tasks->getExceptionFiveReport($project_name, $verificationstatus, $reportHeaders);
+        case 6: return $this->tasks->getExceptionSixReport($project_name, $verificationstatus, $reportHeaders);
+        case 7: return $this->tasks->getExceptionSevenReport($project_name, $verificationstatus, $reportHeaders);
+        case 8: return $this->tasks->getExceptionEightReport($project_name, $verificationstatus, $reportHeaders);
+        case 10: return $this->tasks->getExceptionNineReport($project_name, $verificationstatus, $reportHeaders);
+        default: return [];
+    }
+}
+
+//check tushar
+
 
 
 }

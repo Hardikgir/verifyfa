@@ -12,6 +12,24 @@ class Registeredusercontroller extends CI_Controller {
 	}
 
     public function registered_user_dashboard(){
+
+
+        $id = $this->session->userdata('registered_user_id');
+        $data['page_title']="My Subscription";
+        $data['user_data']=$this->Registered_user_model->get_registerd_user($id);
+        $data['payment_data']=$this->Registered_user_model->get_registred_users_payment_all($id);
+        $data['plan_data']=$this->Registered_user_model->get_registered_user_plan($id);
+
+      
+        $this->db->select('register_user_plan_log.*, subscription_plan.*');
+		$this->db->from(' subscription_plan');
+		$this->db->join('register_user_plan_log','register_user_plan_log.plan_id= subscription_plan.id');
+		$this->db->where('register_user_plan_log.register_user_id',$id);
+		$getnotifications=$this->db->get();
+		$Subscription_plan_result = $getnotifications->row();
+        $data['Subscription_plan']= $Subscription_plan_result;
+
+
         $data['page_title']="Dashboard";
         $this->load->view("registered-user/dashboard",$data);
 
@@ -239,7 +257,38 @@ class Registeredusercontroller extends CI_Controller {
           
        }
     }
-    
+   public function index() {
+        // 1. Get the current user's ID from the session.
+        $user_id = $this->session->userdata('registered_user_id');
+        $data_for_view = []; // Initialize an array to pass to the view.
+
+        // 2. Check if a user is logged in.
+        if ($user_id) {
+            // 3. Query the database to get the plan_end_date.
+            $this->db->select('plan_end_date');
+            $this->db->from('registered_user_plan');
+            $this->db->where('registered_user_id', $user_id);
+            $query = $this->db->get();
+
+            // 4. Check if a plan was found for the user.
+            if ($query->num_rows() > 0) {
+                $result = $query->row();
+                // Add the plan_end_date to the data array.
+                $data_for_view['plan_end_date'] = $result->plan_end_date;
+            } else {
+                // If no plan is found, you can set the date to null.
+                $data_for_view['plan_end_date'] = null;
+            }
+        } else {
+            // If no user is logged in, also set to null.
+            $data_for_view['plan_end_date'] = null;
+        }
+
+        // 5. Load your view and pass the $data_for_view array to it.
+        // CRITICAL: Replace 'your_page_view' with the actual name of your view file.
+        // For example: $this->load->view('registered_user_dashboard', $data_for_view);
+        $this->load->view('your_page_view', $data_for_view);
+    }
     
  
 }

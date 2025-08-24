@@ -30,7 +30,7 @@ class Dashboard extends CI_Controller {
 		// Load session library
 		$this->load->library('session');	
 		if (!$this->session->userdata('logged_in')) {
-            redirect(base_url()."index.php/login", 'refresh');
+			redirect(base_url()."index.php/login", 'refresh');
 		}
 		else
 		{ 
@@ -94,7 +94,7 @@ class Dashboard extends CI_Controller {
 		}
 	 }
 
- 	}
+	}
  
 	public function get_all_company_user_role($entity_code){
 		$this->db->select("*");
@@ -107,8 +107,9 @@ class Dashboard extends CI_Controller {
 
 	public function index()
 	{   
+
+		$admin_registered_user_id = $_SESSION['logged_in']['admin_registered_user_id'];
 		$user_id=$this->user_id;
-		
 		$entity_code=$this->admin_registered_entity_code;
 		
 		$company_id_imp='';
@@ -123,48 +124,865 @@ class Dashboard extends CI_Controller {
 			$location_id = implode(',',$roledata1);
 		}
 		$register_user_id=$this->admin_registered_user_id;
-            
+			
 		// $condition=array('company_id'=>$this->company_id);
-       $condition=array('company_id IN ('.$company_id_imp.') AND project_location IN ('.$location_id.')',"entity_code"=>$this->admin_registered_entity_code);
+	   $condition=array('company_id IN ('.$company_id_imp.') AND project_location IN ('.$location_id.')',"entity_code"=>$this->admin_registered_entity_code);
 
-        if($this->input->post('company_id') && $this->input->post('company_id') !=''){
+		if($this->input->post('company_id') && $this->input->post('company_id') !=''){
 			$condition=array('company_id'=>$this->input->post('company_id'));
-        }
+		}
 
-      	if($this->input->post('location_id') && $this->input->post('location_id') !=''){
+		if($this->input->post('location_id') && $this->input->post('location_id') !=''){
 			$condition=array('company_id'=>$this->input->post('company_id'), 'project_location'=>$this->input->post('location_id'),);
-        }
+		}
+
+		// $condition = array();
+		
+		$projects=$this->tasks->get_data('company_projects',$condition);	
+
+		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+		$new_pattern = array("_", "_", "");
+		foreach($projects as $project)
+		{
+			$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($project->project_name)));
+			$getprojectdetails=$this->tasks->projectdetail($project_name);
+			 
+			if(!empty($getprojectdetails))
+			{
+				$project->TotalQuantity= ((int)$getprojectdetails[0]->TotalQuantity);
+				if($getprojectdetails[0]->VerifiedQuantity !='')
+				$project->VerifiedQuantity=$getprojectdetails[0]->VerifiedQuantity;
+				else
+				$project->VerifiedQuantity=0;
+			}
+			else
+			{   
+				$project->TotalQuantity=0;
+				$project->VerifiedQuantity=0;
+			}
+			
+		}
+
+
+		$data['projects']=$projects;
+		$data['page_title']="Dashboard";
+		$data['company_data_list']=$this->company_data_list();
+
+		$this->db->select("*");
+		$this->db->from('registred_users');
+		$this->db->where('id',$admin_registered_user_id);
+		$query=$this->db->get();
+		$registred_users_details = $query->row();
+
+		$this->db->select("*");
+		$this->db->from('subscription_plan');
+		$this->db->where('id',$registred_users_details->plan_id);
+		$query=$this->db->get();
+		$subscription_plan_details = $query->row();
+
+		$this->db->select("*");
+		$this->db->from('registered_user_plan');
+		$this->db->where('regiistered_user_id',$admin_registered_user_id);
+		$this->db->where('plan_id',$registred_users_details->plan_id);
+		$query=$this->db->get();
+		$registered_user_plan_details = $query->row();
+		
+		$data['subscription_plan_details'] = $subscription_plan_details;
+		$data['registred_users_details'] = $registred_users_details;
+		$data['registered_user_plan_details'] = $registered_user_plan_details;
+		
+		$total_company_query = $this->db->query('SELECT * FROM company where registered_user_id = '.$admin_registered_user_id);
+		$total_company_count = $total_company_query->num_rows();
+
+		$total_company_locations_query = $this->db->query('SELECT * FROM company_locations where registered_user_id = '.$admin_registered_user_id);
+		$total_company_locations_count = $total_company_locations_query->num_rows();
+
+		$total_users_query = $this->db->query('SELECT * FROM users where registered_user_id = '.$admin_registered_user_id);
+		$total_users_count = $total_users_query->num_rows();
+
+		$data['total_company_count'] = $total_company_count;
+		$data['total_company_locations_count'] = $total_company_locations_count;
+		$data['total_users_count'] = $total_users_count;
+
+
+
+
+		// Role-based project filtering and chart data
+		$user_id = $this->user_id;
+		$user_role = $this->session->userdata('role'); // Adjust if your role is stored differently
+
+		// Map roles to project fields
+		$role_field_map = array(
+			'project_verifier' => 'project_verifier',
+			'process_owner'    => 'process_owner',
+			'item_owner'       => 'item_owner',
+			'manager'          => 'manager',
+			'assigned_by'      => 'assigned_by',
+		);
+
+		$role_where = '';
+		if (isset($role_field_map[$user_role])) {
+			$field = $role_field_map[$user_role];
+			$role_where = "FIND_IN_SET('$user_id', $field)";
+		} else {
+			// If user has multiple roles or fallback, show all relevant projects
+			$role_where =
+				"FIND_IN_SET('$user_id', project_verifier) OR " .
+				"FIND_IN_SET('$user_id', process_owner) OR " .
+				"FIND_IN_SET('$user_id', item_owner) OR " .
+				"FIND_IN_SET('$user_id', manager) OR " .
+				"FIND_IN_SET('$user_id', assigned_by)";
+		}
+
+		$query = "SELECT * FROM company_projects WHERE status IN (0,1,2) AND ($role_where) ORDER BY id DESC";
+		$projects = $this->db->query($query)->result();
+
+		$within_time_dataPoint_open_projects = 0;
+		$within_time_dataPoint_closed_projects = 0;
+		$within_time_dataPoint_cancelled_projects = 0;
+
+		$overdue_datapoint_open_projects = 0;
+		$overdue_datapoint_closed_projects = 0;
+		$overdue_datapoint_cancelled_projects = 0;
+
+		foreach($projects as $projects_key=>$projects_value){
+			$today = date("Y-m-d H:i:s");
+			$due_date = $projects_value->due_date;
+
+			if($projects_value->status == 0){
+				if($today<$due_date){
+					$within_time_dataPoint_open_projects++;
+				}
+				if($today>$due_date){
+					$overdue_datapoint_open_projects++;
+				}
+			}else if($projects_value->status == 1){
+				if($today<$due_date){
+					$within_time_dataPoint_closed_projects++;
+				}
+				if($today>$due_date){
+					$overdue_datapoint_closed_projects++;
+				}
+			}else if($projects_value->status == 2){
+				if($today<$due_date){
+					$within_time_dataPoint_cancelled_projects++;
+				}
+				if($today>$due_date){
+					$overdue_datapoint_cancelled_projects++;
+				}
+			}
+		}
+
+		$within_time_dataPoint = array();
+		$within_time_dataPoint[] = array("label"=> "Open Projects", "y"=> $within_time_dataPoint_open_projects);
+		$within_time_dataPoint[] = array("label"=> "Closed Projects", "y"=> $within_time_dataPoint_closed_projects);
+		$within_time_dataPoint[] = array("label"=> "Cancelled Projects", "y"=> $within_time_dataPoint_cancelled_projects);
+		$data['within_time_dataPoint'] = $within_time_dataPoint;
+
+		$overdue_datapoint = array();
+		$overdue_datapoint[] = array("label"=> "Open Projects", "y"=> $overdue_datapoint_open_projects);
+		$overdue_datapoint[] = array("label"=> "Closed Projects", "y"=> $overdue_datapoint_closed_projects);
+		$overdue_datapoint[] = array("label"=> "Cancelled Projects", "y"=> $overdue_datapoint_cancelled_projects);
+		$data['overdue_datapoint'] = $overdue_datapoint;
+
+		// $this->load->view('dashboard2',$data);		
+		$this->load->view('admindashboard',$data);		
+		
+
+
+
+
+
+
+
+
+	}
+
+
+	public function User()
+	{   
+
+		$admin_registered_user_id = $_SESSION['logged_in']['admin_registered_user_id'];
+		$user_id=$this->user_id;
+		$entity_code=$this->admin_registered_entity_code;
+		
+		
+		$company_id_imp='';
+		$location_id='';
+		$role_result_com = $this->get_all_company_user_role($entity_code);
+
+		if(!empty($role_result_com)){
+			foreach($role_result_com as $row_role){
+				$roledata[]=$row_role->company_id;
+				$roledata1[]=$row_role->location_id;
+			}
+			$company_id_imp = implode(',',$roledata);
+			$location_id = implode(',',$roledata1);
+		}
+		$register_user_id=$this->admin_registered_user_id;
+		   
+		
+		// $condition=array('company_id'=>$this->company_id);
+	   $condition=array('company_id IN ('.$company_id_imp.') AND project_location IN ('.$location_id.')',"entity_code"=>$this->admin_registered_entity_code);
+
+		if($this->input->post('company_id') && $this->input->post('company_id') !=''){
+			$condition=array('company_id'=>$this->input->post('company_id'));
+		}
+
+		if($this->input->post('location_id') && $this->input->post('location_id') !=''){
+			$condition=array('company_id'=>$this->input->post('company_id'), 'project_location'=>$this->input->post('location_id'),);
+		}
+
+		// $condition = array();
+		
+	
+		$projects=$this->tasks->get_data('company_projects',$condition);	
+		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+		$new_pattern = array("_", "_", "");
+		foreach($projects as $project)
+		{
+			$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($project->project_name)));
+			$getprojectdetails=$this->tasks->projectdetail($project_name);
+			 
+			if(!empty($getprojectdetails))
+			{
+				$project->TotalQuantity= ((int)$getprojectdetails[0]->TotalQuantity);
+				if($getprojectdetails[0]->VerifiedQuantity !='')
+				$project->VerifiedQuantity=$getprojectdetails[0]->VerifiedQuantity;
+				else
+				$project->VerifiedQuantity=0;
+			}
+			else
+			{   
+				$project->TotalQuantity=0;
+				$project->VerifiedQuantity=0;
+			}
+			
+		}
+
+		$data['projects']=$projects;
+		$data['page_title']="User Dashboard";
+
+		// $company_data_query=$this->db->query("select * from user_role where user_id = '".$user_id."' Group by company_id");
+		$company_data_query=$this->db->query("select * from user_role where user_id = '".$user_id."'");
+		$company_data_list = $company_data_query->result();
+
+		
+		
+		$company_dropdown_array = array();
+		$company_array = array();
+		$location_array = array();
+		foreach($company_data_list as $company_data_list){
+			if(!in_array($company_data_list->company_id, $company_array)){
+				$company_dropdown_array[]['company_id'] = $company_data_list->company_id;
+			}
+			$company_array[] = $company_data_list->company_id;
+			$location_array[] = $company_data_list->location_id;
+		}
+	
+		$data['company_data_list']=$company_dropdown_array;
+
+
+		
+	
+
+		$company_datas = implode(",", $company_array);
+		$location_datas = implode(",", $location_array);
+
+		// $company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location IN ('.$location_datas.') AND company_projects.status = 0 AND item_owner = "'.$user_id.'"')->result();
+
+
+		// $company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location IN ('.$location_datas.') AND company_projects.status = 0 AND item_owner = "'.$user_id.'"')->result();
+
+		
+		// $company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location IN ('.$location_datas.') AND item_owner = "'.$user_id.'"')->result();
+
+
+		$company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id')->result();
+		
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
+
+		
+
+		$project_base_count = array();
+		$withing_time = array();
+		$due_date = array();
+		foreach($company_projects as $company_projects_key=>$company_projects_value){
+
+			$project_due_date = $company_projects_value->due_date;
+			$project_name = $company_projects_value->project_name;
+			$due_date = $project_due_date; // Format: Y-m-d
+			$today = date('Y-m-d');
+
+			if ($due_date <= $today) {
+				$project_base_count[$company_projects_value->company_name]['overdue'][] = 1;
+			} else {
+				$project_base_count[$company_projects_value->company_name]['withindate'][] = 1;
+			}
+		}
+
+
+
+		$graph_data = array();
+		$count = 1;
+
+		$overdue_array = array();
+		$withindate_array = array();
+		$count_zero = 1;
+		$count = 0;
+		foreach($project_base_count as $project_base_count_key=>$project_base_count_value){
+			
+
+			$overdue_array[$count]['label'] = $project_base_count_key;
+			$withindate_array[$count]['label'] = $project_base_count_key;
+			$overdue_count_data = 0;
+			$withindate_count_data = 0;
+			if(isset($project_base_count[$project_base_count_key]['overdue'])){
+				$overdue_count_data = count($project_base_count[$project_base_count_key]['overdue']);
+				$project_base_count[$project_base_count_key]['overdue_count'] = count($project_base_count[$project_base_count_key]['overdue']);
+				$graph_data[$project_base_count_key]['overdue_count'] = count($project_base_count[$project_base_count_key]['overdue'] );
+			}else{
+				$overdue_count_data = 0;
+				$project_base_count[$project_base_count_key]['overdue_count'] = 0;
+				$graph_data[$project_base_count_key]['overdue_count'] = 0;
+			}
+
+			$overdue_array[$count]['y'] = $overdue_count_data;
+			$overdue_array[$count]['id'] = $count_zero;
+
+			if(isset($project_base_count[$project_base_count_key]['withindate'])){
+				$withindate_count_data = count($project_base_count[$project_base_count_key]['withindate']);
+				$project_base_count[$project_base_count_key]['withindate_count'] = count($project_base_count[$project_base_count_key]['withindate']);
+				$graph_data[$project_base_count_key]['withindate_count'] = count($project_base_count[$project_base_count_key]['withindate']);
+			}else{
+				$withindate_count_data = 0;
+				$project_base_count[$project_base_count_key]['withindate_count'] = 0;
+				$graph_data[$project_base_count_key]['withindate_count'] = 0;
+			}
+
+			$withindate_array[$count]['y'] = $withindate_count_data;
+			$withindate_array[$count]['id'] = $count_zero;
+			$count++;
+			$count_zero++;
+		}
+
+
+		$company_mapped_query = $this->db->query('SELECT count(company_id) as company_mapped FROM user_role where user_role.user_id = '.$user_id.' Group by company_id');
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
+		$company_mapped_query_result = $company_mapped_query->row();
+		$data['Companies_Mapped'] = $company_mapped_query_result->company_mapped;
+
+		$location_mapped_query = $this->db->query('SELECT count(location_id) as location_mapped FROM user_role where user_role.user_id = '.$user_id);
+		$location_mapped_query_result = $location_mapped_query->row();
+		$data['Locations_mapped'] = $location_mapped_query_result->location_mapped;
+
+		$Closed_Projects_query = $this->db->query('SELECT * FROM company_projects where status in (2,3) AND company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location IN ('.$location_datas.') AND company_projects.status = 0 AND item_owner = "'.$user_id.'"');
+		$Closed_Projects_count = $Closed_Projects_query->num_rows();
+		$data['Closed_Projects'] = $Closed_Projects_count;
+
+		$Cancelled_Projects_query = $this->db->query('SELECT * FROM company_projects where status = "0" AND cancelled_date IS NOT NULL AND company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location IN ('.$location_datas.') AND company_projects.status = 0 AND item_owner = "'.$user_id.'"');
+		$Cancelled_Projects_count = $Cancelled_Projects_query->num_rows();
+		$data['Cancelled_Projects'] = $Cancelled_Projects_count;
+
+		// echo '<pre>overdue_array ';
+		// print_r($overdue_array);
+		// echo '</pre>';
+		// exit();
+		
+		$data['overdue_array'] = $overdue_array;
+		$data['withindate_array'] = $withindate_array;
+
+		// $projects=$this->db->query('SELECT * from company_projects where status = 0')->result();
+
+		$projects=$this->db->query('SELECT * from company_projects where item_owner = '.$user_id)->result();
+		$stackedBarchartContainer_array = array();
+		
+		$count = 0;
+		foreach($projects as $projects_key=>$projects_value){
+			$project_start_date = $projects_value->start_date;
+			$project_end_date = $projects_value->due_date;
+			$project_name_value = $projects_value->project_name;
+			$stackedBarchartContainer_array[$count]['y'] = [(strtotime($project_start_date. ' + 1 day')), (strtotime($project_end_date. ' + 1 day'))];
+			// $stackedBarchartContainer_array[$count]['label'] = mb_strimwidth($project_name_value, 0, 10, "...");;
+			$stackedBarchartContainer_array[$count]['label'] = $project_name_value;
+			$count++;
+		}
+		$data['stackedBarchartContainer_array'] = $stackedBarchartContainer_array;
+
+
+		// $entity_code = $_SESSION['logged_in']['admin_registered_entity_code'];
+		$vrifier_users = $this->db->query("SELECT users.id as user_id,users.firstName as user_firstName FROM users LEFT JOIN user_role ON users.id = user_role.user_id WHERE FIND_IN_SET('1', user_role.user_role) AND user_role.entity_code = '".$entity_code."' GROUP BY user_role.user_id")->result();
+		$data['vrifier_users'] = $vrifier_users;
+
+		$this->load->view('Userdashboard',$data);	
+	}
+
+
+	public function User_Backup_PREVIOUS_Work_02July()
+	{   
+
+		$admin_registered_user_id = $_SESSION['logged_in']['admin_registered_user_id'];
+		$user_id=$this->user_id;
+		$entity_code=$this->admin_registered_entity_code;
+		
+		$company_id_imp='';
+		$location_id='';
+		$role_result_com = $this->get_all_company_user_role($entity_code);
+		if(!empty($role_result_com)){
+			foreach($role_result_com as $row_role){
+				$roledata[]=$row_role->company_id;
+				$roledata1[]=$row_role->location_id;
+			}
+			$company_id_imp = implode(',',$roledata);
+			$location_id = implode(',',$roledata1);
+		}
+		$register_user_id=$this->admin_registered_user_id;
+			
+		// $condition=array('company_id'=>$this->company_id);
+	   $condition=array('company_id IN ('.$company_id_imp.') AND project_location IN ('.$location_id.')',"entity_code"=>$this->admin_registered_entity_code);
+
+		if($this->input->post('company_id') && $this->input->post('company_id') !=''){
+			$condition=array('company_id'=>$this->input->post('company_id'));
+		}
+
+		if($this->input->post('location_id') && $this->input->post('location_id') !=''){
+			$condition=array('company_id'=>$this->input->post('company_id'), 'project_location'=>$this->input->post('location_id'),);
+		}
 
 		// $condition = array();
 		
 		$projects=$this->tasks->get_data('company_projects',$condition);	
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
-        foreach($projects as $project)
-        {
-            $project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($project->project_name)));
-            $getprojectdetails=$this->tasks->projectdetail($project_name);
+		foreach($projects as $project)
+		{
+			$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($project->project_name)));
+			$getprojectdetails=$this->tasks->projectdetail($project_name);
 			 
-            if(!empty($getprojectdetails))
-            {
-                $project->TotalQuantity= ((int)$getprojectdetails[0]->TotalQuantity);
-                if($getprojectdetails[0]->VerifiedQuantity !='')
-                $project->VerifiedQuantity=$getprojectdetails[0]->VerifiedQuantity;
-                else
-                $project->VerifiedQuantity=0;
-            }
-            else
-            {   
-                $project->TotalQuantity=0;
-                $project->VerifiedQuantity=0;
-            }
-            
+			if(!empty($getprojectdetails))
+			{
+				$project->TotalQuantity= ((int)$getprojectdetails[0]->TotalQuantity);
+				if($getprojectdetails[0]->VerifiedQuantity !='')
+				$project->VerifiedQuantity=$getprojectdetails[0]->VerifiedQuantity;
+				else
+				$project->VerifiedQuantity=0;
+			}
+			else
+			{   
+				$project->TotalQuantity=0;
+				$project->VerifiedQuantity=0;
+			}
+			
 		}
 
 		$data['projects']=$projects;
-		$data['page_title']="Dashboard";
-		$data['company_data_list']=$this->company_data_list();
-		$this->load->view('dashboard2',$data);		
+		$data['page_title']="User Dashboard";
+
+		$company_data_query=$this->db->query("select * from user_role where user_id = '".$user_id."'");
+		$company_data_list = $company_data_query->result();
+
+		$data['company_data_list']=$company_data_list;
+
+		$this->db->select("*");
+		$this->db->from('registred_users');
+		$this->db->where('id',$admin_registered_user_id);
+		$query=$this->db->get();
+		$registred_users_details = $query->row();
+
+		$this->db->select("*");
+		$this->db->from('subscription_plan');
+		$this->db->where('id',$registred_users_details->plan_id);
+		$query=$this->db->get();
+		$subscription_plan_details = $query->row();
+
+		$this->db->select("*");
+		$this->db->from('registered_user_plan');
+		$this->db->where('regiistered_user_id',$admin_registered_user_id);
+		$this->db->where('plan_id',$registred_users_details->plan_id);
+		$query=$this->db->get();
+		$registered_user_plan_details = $query->row();
+		
+		$data['subscription_plan_details'] = $subscription_plan_details;
+		$data['registred_users_details'] = $registred_users_details;
+		$data['registered_user_plan_details'] = $registered_user_plan_details;
+		
+		$total_company_query = $this->db->query('SELECT * FROM company where registered_user_id = '.$admin_registered_user_id);
+		$total_company_count = $total_company_query->num_rows();
+
+		$total_company_locations_query = $this->db->query('SELECT * FROM company_locations where registered_user_id = '.$admin_registered_user_id);
+		$total_company_locations_count = $total_company_locations_query->num_rows();
+
+		$total_users_query = $this->db->query('SELECT * FROM users where registered_user_id = '.$admin_registered_user_id);
+		$total_users_count = $total_users_query->num_rows();
+
+		$data['total_company_count'] = $total_company_count;
+		$data['total_company_locations_count'] = $total_company_locations_count;
+		$data['total_users_count'] = $total_users_count;
+		// $this->load->view('dashboard2',$data);		
+
+
+
+
+
+
+
+
+		$open_projects=0;
+		$closed_projects=0;
+		$cancelled_projects=0;
+		$open_projectdetails="";
+		$close_projectdetails="";
+		$cancel_projectdetails="";
+		foreach($projects as $project)
+		{
+			$verifiercount = check_verifier_count($project->id,$this->user_id);
+			$check_itemowner_count = check_itemowner_count($project->id,$this->user_id);
+			$check_process_owner_count = check_process_owner_count($project->id,$this->user_id);
+			$check_manager_count = check_manager_count($project->id,$this->user_id);
+
+			if(($verifiercount == '1') || ($check_itemowner_count =='1') || ($check_process_owner_count == '1') ||  ($check_manager_count == '1')){
+
+				if($project->status==0)
+				{
+					$open_projects++;
+					if($project->VerifiedQuantity !=0){
+					$open_projectdetails.=", ".$project->project_name.'('.round(($project->VerifiedQuantity/$project->TotalQuantity)*100,2).' %)';
+				}else{
+					$open_projectdetails.='0%';
+				}
+				}
+				if($project->status==1)
+				{
+					$closed_projects++;
+					$close_projectdetails.=", ".$project->project_name.'('.round(($project->VerifiedQuantity/$project->TotalQuantity)*100,2).' %)';
+				}
+				if($project->status==2)
+				{
+					$cancelled_projects++;
+					$cancel_projectdetails.=", ".$project->project_name.'('.round(($project->VerifiedQuantity/$project->TotalQuantity)*100,2).' %)';
+				}
+			}
+		}
+
+
+		$company_array = array();
+		foreach($data['company_data_list'] as $company_details){
+			$company_array[] = $company_details->company_id;
+		}
+
+		$company_datas = implode(",", $company_array);
+		$company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.company_id IN ('.$company_datas.')')->result();
+		
+		$project_base_count = array();
+		$withing_time = array();
+		$due_date = array();
+		foreach($company_projects as $company_projects_key=>$company_projects_value){
+
+			$project_due_date = $company_projects_value->due_date;
+			$project_name = $company_projects_value->project_name;
+			$due_date = $project_due_date; // Format: Y-m-d
+			$today = date('Y-m-d');
+
+			if ($due_date <= $today) {
+				$project_base_count[$company_projects_value->company_name]['overdue'][] = 1;
+			} else {
+				$project_base_count[$company_projects_value->company_name]['withindate'][] = 1;
+			}
+		}
+
+
+
+		$graph_data = array();
+		$count = 1;
+
+		$overdue_array = array();
+		$withindate_array = array();
+		$count_zero = 1;
+		$count = 0;
+		foreach($project_base_count as $project_base_count_key=>$project_base_count_value){
+			
+
+			$overdue_array[$count]['label'] = $project_base_count_key;
+			$withindate_array[$count]['label'] = $project_base_count_key;
+			$overdue_count_data = 0;
+			$withindate_count_data = 0;
+			if(isset($project_base_count[$project_base_count_key]['overdue'])){
+				$overdue_count_data = count($project_base_count[$project_base_count_key]['overdue']);
+				$project_base_count[$project_base_count_key]['overdue_count'] = count($project_base_count[$project_base_count_key]['overdue']);
+				$graph_data[$project_base_count_key]['overdue_count'] = count($project_base_count[$project_base_count_key]['overdue'] );
+			}else{
+				$overdue_count_data = 0;
+				$project_base_count[$project_base_count_key]['overdue_count'] = 0;
+				$graph_data[$project_base_count_key]['overdue_count'] = 0;
+			}
+
+			$overdue_array[$count]['y'] = $overdue_count_data;
+			$overdue_array[$count]['id'] = $count_zero;
+
+			if(isset($project_base_count[$project_base_count_key]['withindate'])){
+				$withindate_count_data = count($project_base_count[$project_base_count_key]['withindate']);
+				$project_base_count[$project_base_count_key]['withindate_count'] = count($project_base_count[$project_base_count_key]['withindate']);
+				$graph_data[$project_base_count_key]['withindate_count'] = count($project_base_count[$project_base_count_key]['withindate']);
+			}else{
+				$withindate_count_data = 0;
+				$project_base_count[$project_base_count_key]['withindate_count'] = 0;
+				$graph_data[$project_base_count_key]['withindate_count'] = 0;
+			}
+
+			$withindate_array[$count]['y'] = $withindate_count_data;
+			$withindate_array[$count]['id'] = $count_zero;
+			$count++;
+			$count_zero++;
+		}
+
+
+		$this->db->select("*");
+		$this->db->from('company_projects');
+		$query=$this->db->get();
+		$registered_user_plan = $query->result();
+
+
+
+
+		$this->db->select("*");
+		$this->db->from('registered_user_plan');
+		$query=$this->db->get();
+		$registered_user_plan = $query->result();
+
+
+		$this->db->select("id,title");
+		$this->db->from('subscription_plan');
+		$query=$this->db->get();
+		$subscription_plan = $query->result();
+
+		$subscription_plan_array = array();
+
+		$TypeSubscriptionActiveChart_type = array('Original','Renewals','Resubscriptions');
+
+
+		
+		
+		foreach($TypeSubscriptionActiveChart_type as $TypeSubscriptionActiveChart_type_key=>$TypeSubscriptionActiveChart_type_value){
+			foreach($subscription_plan as $subscription_plan_key=>$subscription_plan_value){
+				$subscription_plan_array[$TypeSubscriptionActiveChart_type_value][] = array("label"=> $subscription_plan_value->title, "id"=> $subscription_plan_value->id);
+			}
+		}
+
+		$OriginalPoints = array();
+		foreach($subscription_plan_array['Original'] as $subscription_plan_array_key=>$subscription_plan_array_value){
+			$query = $this->db->query('SELECT * FROM subscription_plan LEFT JOIN registered_user_plan ON subscription_plan.id = registered_user_plan.plan_id where registered_user_plan.category_subscription = "Original" AND registered_user_plan.plan_id = '.$subscription_plan_array_value['id']);
+			$total_count = $query->num_rows();
+			$subscription_plan_array_value['y'] = $total_count;
+			$OriginalPoints[] = $subscription_plan_array_value;
+		}
+
+		
+
+		$RenewalsPoints = array();
+		foreach($subscription_plan_array['Renewals'] as $subscription_plan_array_key=>$subscription_plan_array_value){
+
+			$query = $this->db->query('SELECT * FROM subscription_plan LEFT JOIN registered_user_plan ON subscription_plan.id = registered_user_plan.plan_id where registered_user_plan.category_subscription = "Renewals" AND registered_user_plan.plan_id = '.$subscription_plan_array_value['id']);
+			$total_count = $query->num_rows();
+			$subscription_plan_array_value['y'] = $total_count;
+			$RenewalsPoints[] = $subscription_plan_array_value;
+		}
+
+		$ResubscriptionsPoints = array();
+		foreach($subscription_plan_array['Resubscriptions'] as $subscription_plan_array_key=>$subscription_plan_array_value){
+			$query = $this->db->query('SELECT * FROM subscription_plan LEFT JOIN registered_user_plan ON subscription_plan.id = registered_user_plan.plan_id where registered_user_plan.category_subscription = "Resubscriptions" AND registered_user_plan.plan_id = '.$subscription_plan_array_value['id']);
+			$total_count = $query->num_rows();
+			$subscription_plan_array_value['y'] = $total_count;
+			$ResubscriptionsPoints[] = $subscription_plan_array_value;
+		}
+
+		$data['OriginalPoints'] = $OriginalPoints;
+		$data['RenewalsPoints'] = $RenewalsPoints;
+		$data['ResubscriptionsPoints'] = $ResubscriptionsPoints;
+
+		$company_mapped_query = $this->db->query('SELECT count(company_id) as company_mapped FROM user_role where user_role.user_id = '.$user_id);
+		$company_mapped_query_result = $company_mapped_query->row();
+		$data['Companies_Mapped'] = $company_mapped_query_result->company_mapped;
+
+		$location_mapped_query = $this->db->query('SELECT count(location_id) as location_mapped FROM user_role where user_role.user_id = '.$user_id);
+		$location_mapped_query_result = $location_mapped_query->row();
+		// $data['Locations_mapped'] = $location_mapped_query_result->location_mapped;
+		$data['Locations_mapped'] = $location_mapped_query_result->location_mapped;
+
+		$Closed_Projects_query = $this->db->query('SELECT * FROM company_projects where status in (2,3)');
+		$Closed_Projects_count = $Closed_Projects_query->num_rows();
+		$data['Closed_Projects'] = $Closed_Projects_count;
+
+		$Cancelled_Projects_query = $this->db->query('SELECT * FROM company_projects where status = "0" AND cancelled_date IS NOT NULL');
+		$Cancelled_Projects_count = $Cancelled_Projects_query->num_rows();
+		$data['Cancelled_Projects'] = $Cancelled_Projects_count;
+		
+		$data['overdue_array'] = $overdue_array;
+		$data['withindate_array'] = $withindate_array;
+
+		$this->load->view('Userdashboard',$data);	
+	}
+
+
+
+
+
+	public function ApplicableOpenProjectGraph(){
+
+		
+		$company_datas = $_POST['company_id'];
+		$location_datas = $_POST['location_id'];
+		$user_id=$this->user_id;
+		// $company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.company_id IN ('.$company_datas.')')->result();
+
+		$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.status = 0')->result();
+
+		$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND item_owner = '.$user_id.' AND company_projects.status = 0')->result();
+
+
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
+
+
+		if(!empty($location_datas)){
+			// $company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location = '.$location_datas)->result();
+
+			$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND item_owner = '.$user_id.' AND company_projects.project_location = '.$location_datas.' AND company_projects.status = 0')->result();
+
+			// echo '<pre>last_query ';
+			// print_r($this->db->last_query());
+			// echo '</pre>';
+			// exit();
+		}
+
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// // exit();
+
+		// echo '<pre>company_projects ';
+		// print_r($company_projects);
+		// echo '</pre>';
+		// // exit();
+		
+		$project_base_count = array();
+		$withing_time = array();
+		$due_date = array();
+		foreach($company_projects as $company_projects_key=>$company_projects_value){
+
+			$project_due_date = $company_projects_value->due_date;
+			$project_name = $company_projects_value->project_name;
+			$due_date = $project_due_date; // Format: Y-m-d
+			$today = date('Y-m-d');
+
+			// if ($due_date <= $today) {
+			// 	$project_base_count[$company_projects_value->company_name]['overdue'][] = 1;
+			// } else {
+			// 	$project_base_count[$company_projects_value->company_name]['withindate'][] = 1;
+			// }
+
+			if ($due_date <= $today) {
+				$project_base_count[$company_projects_value->location_name]['overdue'][] = 1;
+			} else {
+				$project_base_count[$company_projects_value->location_name]['withindate'][] = 1;
+			}
+		}
+
+		// echo '<pre>';
+		// print_r($project_base_count);
+		// echo '</pre>';
+		// exit();
+
+
+		$graph_data = array();
+		$count = 1;
+
+		$overdue_array = array();
+		$withindate_array = array();
+		$count_zero = 1;
+		$count = 0;
+		foreach($project_base_count as $project_base_count_key=>$project_base_count_value){
+			
+
+			$overdue_array[$count]['label'] = $project_base_count_key;
+			$withindate_array[$count]['label'] = $project_base_count_key;
+			$overdue_count_data = 0;
+			$withindate_count_data = 0;
+			if(isset($project_base_count[$project_base_count_key]['overdue'])){
+				$overdue_count_data = count($project_base_count[$project_base_count_key]['overdue']);
+				$project_base_count[$project_base_count_key]['overdue_count'] = count($project_base_count[$project_base_count_key]['overdue']);
+				$graph_data[$project_base_count_key]['overdue_count'] = count($project_base_count[$project_base_count_key]['overdue'] );
+			}else{
+				$overdue_count_data = 0;
+				$project_base_count[$project_base_count_key]['overdue_count'] = 0;
+				$graph_data[$project_base_count_key]['overdue_count'] = 0;
+			}
+
+			$overdue_array[$count]['y'] = $overdue_count_data;
+			$overdue_array[$count]['id'] = $count_zero;
+
+			if(isset($project_base_count[$project_base_count_key]['withindate'])){
+				$withindate_count_data = count($project_base_count[$project_base_count_key]['withindate']);
+				$project_base_count[$project_base_count_key]['withindate_count'] = count($project_base_count[$project_base_count_key]['withindate']);
+				$graph_data[$project_base_count_key]['withindate_count'] = count($project_base_count[$project_base_count_key]['withindate']);
+			}else{
+				$withindate_count_data = 0;
+				$project_base_count[$project_base_count_key]['withindate_count'] = 0;
+				$graph_data[$project_base_count_key]['withindate_count'] = 0;
+			}
+
+			$withindate_array[$count]['y'] = $withindate_count_data;
+			$withindate_array[$count]['id'] = $count_zero;
+			$count++;
+			$count_zero++;
+		}
+
+		$data['overdue_array'] = $overdue_array;
+		$data['withindate_array'] = $withindate_array;
+		echo json_encode($data);
+	}
+
+
+	public function ApplicableOpenProjectGraphProjectWise(){
+			
+		$user_id=$this->user_id;
+		$application_open_project_company_id = $_POST['application_open_project_company_id'];
+		$application_open_project_company_location = $_POST['application_open_project_company_location'];
+
+		$application_open_project_project_id = $_POST['application_open_project_project_id'];
+		$application_open_project_verifier = $_POST['application_open_project_verifier'];
+		$user_id=$this->user_id;
+
+
+		// $projects=$this->db->query('SELECT * from company_projects where status = 0 AND company_id = "'.$application_open_project_company_id.'" AND project_location = "'.$application_open_project_company_location.'" AND FIND_IN_SET("'.$application_open_project_verifier.'", company_projects.project_verifier)')->result();
+		
+		$projects=$this->db->query('SELECT * from company_projects where company_id = "'.$application_open_project_company_id.'" AND project_location = "'.$application_open_project_company_location.'" AND FIND_IN_SET("'.$application_open_project_verifier.'", company_projects.project_verifier) AND item_owner = '.$user_id)->result();
+		
+		$stackedBarchartContainer_array = array();
+		
+		$count = 0;
+		foreach($projects as $projects_key=>$projects_value){
+			$project_start_date = $projects_value->start_date;
+			$project_end_date = $projects_value->due_date;
+			$project_name_value = $projects_value->project_name;
+			$stackedBarchartContainer_array[$count]['y'] = [(strtotime($project_start_date. ' + 1 day')), (strtotime($project_end_date. ' + 1 day'))];
+			// $stackedBarchartContainer_array[$count]['label'] = mb_strimwidth($project_name_value, 0, 10, "...");;
+			$stackedBarchartContainer_array[$count]['label'] = $project_name_value;
+			$count++;
+		}
+		$data['stackedBarchartContainer_array'] = $stackedBarchartContainer_array;
+
+		echo json_encode($data);
+
+
+
 	}
 
 	public function Two(){
@@ -175,16 +993,16 @@ class Dashboard extends CI_Controller {
 	}
 
 	public function company_data_list(){
-        $entity_code=$this->admin_registered_entity_code;
-        $userid=$this->user_id;
-        $query=$this->db->query("select * from user_role where  entity_code='".$entity_code."'  AND FIND_IN_SET(0,user_role) GROUP BY company_id");
+		$entity_code=$this->admin_registered_entity_code;
+		$userid=$this->user_id;
+		$query=$this->db->query("select * from user_role where  entity_code='".$entity_code."'  AND FIND_IN_SET(0,user_role) GROUP BY company_id");
 		return $query->result();
 	}
 
 	public function company_data_list_new(){
-        $entity_code=$this->admin_registered_entity_code;
-        $userid=$this->user_id;
-        $query=$this->db->query("select * from user_role where  entity_code='".$entity_code."' AND  user_id='".$userid."'  AND  company_id!='0' GROUP BY company_id");
+		$entity_code=$this->admin_registered_entity_code;
+		$userid=$this->user_id;
+		$query=$this->db->query("select * from user_role where  entity_code='".$entity_code."' AND  user_id='".$userid."'  AND  company_id!='0' GROUP BY company_id");
 		return $query->result();
 	}
 
@@ -195,41 +1013,48 @@ class Dashboard extends CI_Controller {
 		$this->load->view('users',array("meta"=>$data,"users"=>$users));
 
 	}
-	public function projectdetail($id)
+	public function projectdetail_Previous_14July($id)
 	{
 		$condition=array('id'=>$id);
 		$projects=$this->tasks->get_data('company_projects',$condition);	
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
-        foreach($projects as $project)
-        {
-            $project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($project->project_name)));
-            $getprojectdetails=$this->tasks->projectdetail($project_name);
+		foreach($projects as $project)
+		{
+			$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($project->project_name)));
+			$getprojectdetails=$this->tasks->projectdetail($project_name);
 			// echo $this->db->last_query();
-           
-            if(!empty($getprojectdetails))
-            {
-                $project->TotalQuantity= ((int)$getprojectdetails[0]->TotalQuantity);
-                if($getprojectdetails[0]->VerifiedQuantity !='')
-                $project->VerifiedQuantity=$getprojectdetails[0]->VerifiedQuantity;
-                else
-                $project->VerifiedQuantity=0;
-            }
-            else
-            {   
-                $project->TotalQuantity=0;
-                $project->VerifiedQuantity=0;
+			if(!empty($getprojectdetails))
+			{
+				$project->TotalQuantity= ((int)$getprojectdetails[0]->TotalQuantity);
+				if($getprojectdetails[0]->VerifiedQuantity !='')
+				$project->VerifiedQuantity=$getprojectdetails[0]->VerifiedQuantity;
+				else
+				$project->VerifiedQuantity=0;
+			}
+			else
+			{   
+				$project->TotalQuantity=0;
+				$project->VerifiedQuantity=0;
 			}
 			$condition2=array('id'=>$project->company_id);
 			$company=$this->tasks->get_data('company',$condition2);
 			$companylocation=$this->tasks->get_data('company_locations',array('id'=>$project->project_location));
 			$project->company_name=$company[0]->company_name;
-            $project->project_location=$companylocation[0]->location_name;
+			$project->project_location=$companylocation[0]->location_name;
 		}
+
+
+
+		$listing=getTagUntag($projects[0]->project_name);
+		$cat=getTagUntagCategories($projects[0]->project_name);
+		$allcategories=getCategories($projects[0]->project_name);
+		
 
 		// print_r($projects);
 		$data['projects']=$projects;
 		$data['page_title']="Dashboard";
+
 		$this->load->view('project_detail',$data);
 		
 	}
@@ -239,29 +1064,29 @@ class Dashboard extends CI_Controller {
 		$projects=$this->tasks->get_data('company_projects',$condition);	
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
-        foreach($projects as $project)
-        {
-            $project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($project->project_name)));
-            $getprojectdetails=$this->tasks->projectdetail($project_name);
-           
-            if(!empty($getprojectdetails))
-            {
-                $project->TotalQuantity= ((int)$getprojectdetails[0]->TotalQuantity);
-                if($getprojectdetails[0]->VerifiedQuantity !='')
-                $project->VerifiedQuantity=$getprojectdetails[0]->VerifiedQuantity;
-                else
-                $project->VerifiedQuantity=0;
-            }
-            else
-            {   
-                $project->TotalQuantity=0;
-                $project->VerifiedQuantity=0;
+		foreach($projects as $project)
+		{
+			$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($project->project_name)));
+			$getprojectdetails=$this->tasks->projectdetail($project_name);
+		   
+			if(!empty($getprojectdetails))
+			{
+				$project->TotalQuantity= ((int)$getprojectdetails[0]->TotalQuantity);
+				if($getprojectdetails[0]->VerifiedQuantity !='')
+				$project->VerifiedQuantity=$getprojectdetails[0]->VerifiedQuantity;
+				else
+				$project->VerifiedQuantity=0;
+			}
+			else
+			{   
+				$project->TotalQuantity=0;
+				$project->VerifiedQuantity=0;
 			}
 			$condition2=array('id'=>$project->company_id);
 			$company=$this->tasks->get_data('company',$condition2);
 			$companylocation=$this->tasks->get_data('company_locations',array('id'=>$project->project_location));
 			$project->company_name=$company[0]->company_name;
-            $project->project_location=$companylocation[0]->location_name;
+			$project->project_location=$companylocation[0]->location_name;
 		}
 		$data['projects']=$projects;
 		$data['projectId']=$id;
@@ -999,7 +1824,7 @@ class Dashboard extends CI_Controller {
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Start Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
-    	$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Period of Verification");
@@ -1055,11 +1880,11 @@ class Dashboard extends CI_Controller {
 		$writer->setPreCalculateFormulas(false);
 		$filename = 'Project report details FAR';
  
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
-        header('Cache-Control: max-age=0');
-        
-        $writer->save('php://output');
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Cache-Control: max-age=0');
+		
+		$writer->save('php://output');
 	}
 	public function downloadProjectReportTagged($location_id)
 	{
@@ -1155,7 +1980,7 @@ class Dashboard extends CI_Controller {
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Start Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
-    	$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Period of Verification");
@@ -1211,11 +2036,11 @@ class Dashboard extends CI_Controller {
 		$writer->setPreCalculateFormulas(false);
 		$filename = 'Project report details Tagged';
  
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
-        header('Cache-Control: max-age=0');
-        
-        $writer->save('php://output');
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Cache-Control: max-age=0');
+		
+		$writer->save('php://output');
 	}
 	public function downloadProjectReportNonTagged()
 	{
@@ -1312,7 +2137,7 @@ class Dashboard extends CI_Controller {
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Start Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
-    	$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Period of Verification");
@@ -1369,11 +2194,11 @@ class Dashboard extends CI_Controller {
 		$writer->setPreCalculateFormulas(false);
 		$filename = 'Project report details Non-Tagged';
  
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
-        header('Cache-Control: max-age=0');
-        
-        $writer->save('php://output');
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Cache-Control: max-age=0');
+		
+		$writer->save('php://output');
 	}
 	public function downloadProjectReportUnspecified()
 	{
@@ -1464,7 +2289,7 @@ class Dashboard extends CI_Controller {
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Start Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
-    	$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Period of Verification");
@@ -1520,11 +2345,11 @@ class Dashboard extends CI_Controller {
 		$writer->setPreCalculateFormulas(false);
 		$filename = 'Project report details Unspecified';
  
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
-        header('Cache-Control: max-age=0');
-        
-        $writer->save('php://output');
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Cache-Control: max-age=0');
+		
+		$writer->save('php://output');
 	}
 	public function downloadProjectReportAllocated($projectid)
 	{
@@ -1614,7 +2439,7 @@ class Dashboard extends CI_Controller {
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Start Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
-    	$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Period of Verification");
@@ -1668,11 +2493,11 @@ class Dashboard extends CI_Controller {
 		$writer->setPreCalculateFormulas(false);
 		$filename = 'Project report details FAR';
  
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
-        header('Cache-Control: max-age=0');
-        
-        $writer->save('php://output');
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Cache-Control: max-age=0');
+		
+		$writer->save('php://output');
 	}
 	
 	public function downloadProjectReportUnallocated()
@@ -2048,7 +2873,7 @@ class Dashboard extends CI_Controller {
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 
-    	$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 
@@ -2152,11 +2977,11 @@ class Dashboard extends CI_Controller {
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
 		$writer->setPreCalculateFormulas(false);
 		$filename = $ReportTitle;
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
-        header('Cache-Control: max-age=0');
-        
-        $writer->save('php://output');
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Cache-Control: max-age=0');
+		
+		$writer->save('php://output');
 	}
 	public function downloadExceptionOneAllocatedReport($projectid,$reportOneType)
 	{
@@ -2293,7 +3118,7 @@ class Dashboard extends CI_Controller {
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Start Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
-    	$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Period of Verification");
@@ -2379,11 +3204,11 @@ class Dashboard extends CI_Controller {
 		$writer->setPreCalculateFormulas(false);
 		$filename = 'Exception Report';
  
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
-        header('Cache-Control: max-age=0');
-        
-        $writer->save('php://output');
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Cache-Control: max-age=0');
+		
+		$writer->save('php://output');
 	}
 
 	// Hardik
@@ -2644,7 +3469,7 @@ class Dashboard extends CI_Controller {
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 
-    	$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 
@@ -2859,11 +3684,11 @@ class Dashboard extends CI_Controller {
 			$filename = $report_type.'NotVerifiedReport_'.$dateddmmyy;
 		}
  
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
-        header('Cache-Control: max-age=0');
-        
-        $writer->save('php://output');
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Cache-Control: max-age=0');
+		
+		$writer->save('php://output');
 	}
 
 
@@ -2999,7 +3824,7 @@ class Dashboard extends CI_Controller {
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Start Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
-    	$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Period of Verification");
@@ -3143,11 +3968,11 @@ class Dashboard extends CI_Controller {
 		$writer->setPreCalculateFormulas(false);
 		$filename = 'Exception Report';
  
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
-        header('Cache-Control: max-age=0');
-        
-        $writer->save('php://output');
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Cache-Control: max-age=0');
+		
+		$writer->save('php://output');
 	}
 	public function downloadExceptionFourReport($item_category)
 	{
@@ -3301,7 +4126,7 @@ class Dashboard extends CI_Controller {
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Start Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
-    	$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Period of Verification");
@@ -3380,11 +4205,11 @@ class Dashboard extends CI_Controller {
 		$writer->setPreCalculateFormulas(false);
 		$filename = 'Exception Report';
  
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
-        header('Cache-Control: max-age=0');
-        
-        $writer->save('php://output');
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Cache-Control: max-age=0');
+		
+		$writer->save('php://output');
 	}
 	public function downloadExceptionFourAllReport()
 	{
@@ -3539,7 +4364,7 @@ class Dashboard extends CI_Controller {
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Start Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
-    	$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Period of Verification");
@@ -3618,11 +4443,11 @@ class Dashboard extends CI_Controller {
 		$writer->setPreCalculateFormulas(false);
 		$filename = 'verificationRemarksReport';
  
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
-        header('Cache-Control: max-age=0');
-        
-        $writer->save('php://output');
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Cache-Control: max-age=0');
+		
+		$writer->save('php://output');
 	}
 	public function downloadExceptionFourConsolidatedReport($projectid)
 	{
@@ -3731,7 +4556,7 @@ class Dashboard extends CI_Controller {
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Start Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
-    	$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Period of Verification");
@@ -3810,11 +4635,11 @@ class Dashboard extends CI_Controller {
 		$writer->setPreCalculateFormulas(false);
 		$filename = 'Exception Report';
  
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
-        header('Cache-Control: max-age=0');
-        
-        $writer->save('php://output');
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Cache-Control: max-age=0');
+		
+		$writer->save('php://output');
 	}
 	public function downloadExceptionFiveReport($item_category)
 	{
@@ -3956,7 +4781,7 @@ class Dashboard extends CI_Controller {
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Start Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
-    	$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Period of Verification");
@@ -4033,11 +4858,11 @@ class Dashboard extends CI_Controller {
 		$writer->setPreCalculateFormulas(false);
 		$filename = 'itemNotesReport';
  
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
-        header('Cache-Control: max-age=0');
-        
-        $writer->save('php://output');
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Cache-Control: max-age=0');
+		
+		$writer->save('php://output');
 	}
 	public function downloadExceptionFiveAllReport()
 	{
@@ -4179,7 +5004,7 @@ class Dashboard extends CI_Controller {
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Start Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
-    	$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Period of Verification");
@@ -4256,11 +5081,11 @@ class Dashboard extends CI_Controller {
 		$writer->setPreCalculateFormulas(false);
 		$filename = 'Exception Report';
  
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
-        header('Cache-Control: max-age=0');
-        
-        $writer->save('php://output');
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Cache-Control: max-age=0');
+		
+		$writer->save('php://output');
 	}
 	public function downloadExceptionFiveConsolidatedReport($projectid)
 	{
@@ -4358,7 +5183,7 @@ class Dashboard extends CI_Controller {
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Start Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
-    	$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Period of Verification");
@@ -4435,11 +5260,11 @@ class Dashboard extends CI_Controller {
 		$writer->setPreCalculateFormulas(false);
 		$filename = 'Exception Report';
  
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
-        header('Cache-Control: max-age=0');
-        
-        $writer->save('php://output');
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Cache-Control: max-age=0');
+		
+		$writer->save('php://output');
 	}
 	public function downloadExceptionEightReport($mode)
 	{
@@ -4585,7 +5410,7 @@ class Dashboard extends CI_Controller {
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Start Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
-    	$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Period of Verification");
@@ -4693,11 +5518,11 @@ class Dashboard extends CI_Controller {
 		$writer->setPreCalculateFormulas(false);
 		$filename = 'modeReport_'.$mode;
  
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
-        header('Cache-Control: max-age=0');
-        
-        $writer->save('php://output');
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Cache-Control: max-age=0');
+		
+		$writer->save('php://output');
 	}
 	public function downloadExceptionEightConsolidatedReport($projectid)
 	{
@@ -4798,7 +5623,7 @@ class Dashboard extends CI_Controller {
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Start Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
-    	$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Period of Verification");
@@ -4904,11 +5729,11 @@ class Dashboard extends CI_Controller {
 		$writer->setPreCalculateFormulas(false);
 		$filename = 'Exception Report';
  
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
-        header('Cache-Control: max-age=0');
-        
-        $writer->save('php://output');
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Cache-Control: max-age=0');
+		
+		$writer->save('php://output');
 	}
 
 
@@ -4956,10 +5781,10 @@ class Dashboard extends CI_Controller {
 	}
   
 	public function additional_report($project_id){
-        
-        $this->db->select("*");
-        $this->db->from("additional_data");
-        $this->db->where("id",$project_id);
+		
+		$this->db->select("*");
+		$this->db->from("additional_data");
+		$this->db->where("id",$project_id);
 		$queresultry= $this->db->get()->result();
 
 		$data['additionaldata']=$result;
@@ -4975,30 +5800,30 @@ class Dashboard extends CI_Controller {
 		$projects=$this->tasks->get_data('company_projects',$condition);	
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
-        foreach($projects as $project)
-        {
-            $project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($project->project_name)));
-            $getprojectdetails=$this->tasks->projectdetail($project_name);
+		foreach($projects as $project)
+		{
+			$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($project->project_name)));
+			$getprojectdetails=$this->tasks->projectdetail($project_name);
 			// echo $this->db->last_query();
-           
-            if(!empty($getprojectdetails))
-            {
-                $project->TotalQuantity= ((int)$getprojectdetails[0]->TotalQuantity);
-                if($getprojectdetails[0]->VerifiedQuantity !='')
-                $project->VerifiedQuantity=$getprojectdetails[0]->VerifiedQuantity;
-                else
-                $project->VerifiedQuantity=0;
-            }
-            else
-            {   
-                $project->TotalQuantity=0;
-                $project->VerifiedQuantity=0;
+		   
+			if(!empty($getprojectdetails))
+			{
+				$project->TotalQuantity= ((int)$getprojectdetails[0]->TotalQuantity);
+				if($getprojectdetails[0]->VerifiedQuantity !='')
+				$project->VerifiedQuantity=$getprojectdetails[0]->VerifiedQuantity;
+				else
+				$project->VerifiedQuantity=0;
+			}
+			else
+			{   
+				$project->TotalQuantity=0;
+				$project->VerifiedQuantity=0;
 			}
 			$condition2=array('id'=>$project->company_id);
 			$company=$this->tasks->get_data('company',$condition2);
 			$companylocation=$this->tasks->get_data('company_locations',array('id'=>$project->project_location));
 			$project->company_name=$company[0]->company_name;
-            $project->project_location=$companylocation[0]->location_name;
+			$project->project_location=$companylocation[0]->location_name;
 		}
 
 		// print_r($projects);
@@ -5063,51 +5888,51 @@ public function downloadExceptionChangesUpdationsofItems()
 		$headerCondition=array('table_name'=>$table_name);
 
 		$company_projects = $this->db->query("SELECT *  FROM company_projects WHERE id='".$projectid."'")->row();
-        $project_id = $company_projects->id;
-        $company_id = $company_projects->company_id;
-        $original_table_name = $company_projects->original_table_name;
-        $project_table_name = $company_projects->project_table_name;
+		$project_id = $company_projects->id;
+		$company_id = $company_projects->company_id;
+		$original_table_name = $company_projects->original_table_name;
+		$project_table_name = $company_projects->project_table_name;
 
 
-        $project_headers = $this->db->query("SELECT *  FROM project_headers WHERE project_id='".$projectid."' AND is_editable = 1")->result();
-        // $project_header_column = array('id','item_sub_category','location_of_the_item_last_verified');
+		$project_headers = $this->db->query("SELECT *  FROM project_headers WHERE project_id='".$projectid."' AND is_editable = 1")->result();
+		// $project_header_column = array('id','item_sub_category','location_of_the_item_last_verified');
 			$project_header_column = array('id','item_sub_category');
-        foreach($project_headers as $project_headers_value){
-            $project_header_column[] = $project_headers_value->keyname;
-        }
-        $project_header_column_value = implode(',', $project_header_column);
-     
+		foreach($project_headers as $project_headers_value){
+			$project_header_column[] = $project_headers_value->keyname;
+		}
+		$project_header_column_value = implode(',', $project_header_column);
+	 
 
 
-        $project_table_result = $this->db->query("SELECT ".$project_header_column_value." FROM ".$project_table_name)->result();
-        $existing_id_array = array();
-        foreach($project_table_result as $project_table_value){
-            $existing_id_array[] = $project_table_value->id;
-        }
-        $existing_id_value = implode(',', $existing_id_array);
-      
+		$project_table_result = $this->db->query("SELECT ".$project_header_column_value." FROM ".$project_table_name)->result();
+		$existing_id_array = array();
+		foreach($project_table_result as $project_table_value){
+			$existing_id_array[] = $project_table_value->id;
+		}
+		$existing_id_value = implode(',', $existing_id_array);
+	  
 
-        // $project_header_column_base = array('id','item_sub_category','new_location_verified');
+		// $project_header_column_base = array('id','item_sub_category','new_location_verified');
 		$project_header_column_base = array('id','item_sub_category');
-        foreach($project_headers as $project_headers_value){
-            $project_header_column_base[] = $project_headers_value->keyname;
-        }
-        $project_header_column_base_value = implode(',', $project_header_column_base);
-        $original_table_result = $this->db->query("SELECT ".$project_header_column_base_value." FROM ".$original_table_name." WHERE id in (".$existing_id_value.") ")->result();
+		foreach($project_headers as $project_headers_value){
+			$project_header_column_base[] = $project_headers_value->keyname;
+		}
+		$project_header_column_base_value = implode(',', $project_header_column_base);
+		$original_table_result = $this->db->query("SELECT ".$project_header_column_base_value." FROM ".$original_table_name." WHERE id in (".$existing_id_value.") ")->result();
 
-        $different_array = array();
+		$different_array = array();
 		$Updated_value_array = array();
-        foreach($project_table_result as $project_table_key=>$project_table_value){
+		foreach($project_table_result as $project_table_key=>$project_table_value){
 
-            foreach($project_header_column as $project_header_column_new_value)
-            {
+			foreach($project_header_column as $project_header_column_new_value)
+			{
 				if($original_table_result[$project_table_key]->$project_header_column_new_value != $project_table_result[$project_table_key]->$project_header_column_new_value){
 					// $Updated_value_array[$project_header_column_new_value]['New'][] = $original_table_result[$project_table_key]->$project_header_column_new_value;
 					// $Updated_value_array[$project_header_column_new_value]['Old'][] = $project_table_result[$project_table_key]->$project_header_column_new_value;
 					$Updated_value_array[$project_header_column_new_value]['MixValue'][] = $original_table_result[$project_table_key]->$project_header_column_new_value." | ".$project_table_result[$project_table_key]->$project_header_column_new_value;
 				}
-            }
-        }
+			}
+		}
 
 
 
@@ -5324,7 +6149,7 @@ public function downloadExceptionChangesUpdationsofItems()
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 
-    	$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Due Date");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 
@@ -5441,11 +6266,11 @@ public function downloadExceptionChangesUpdationsofItems()
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
 		$writer->setPreCalculateFormulas(false);
 		$filename = $ReportTitle;
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
-        header('Cache-Control: max-age=0');
-        
-        $writer->save('php://output');
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Cache-Control: max-age=0');
+		
+		$writer->save('php://output');
 	}
 	*/
 
@@ -5453,7 +6278,7 @@ public function downloadExceptionChangesUpdationsofItems()
 
 
 
-	public function downloadExceptionChangesUpdationsofItems()
+	public function downloadExceptionChangesUpdationsofItems11()
 	{
 
 		$projectid = 26;
@@ -5471,51 +6296,50 @@ public function downloadExceptionChangesUpdationsofItems()
 		$headerCondition=array('table_name'=>$table_name);
 
 		$company_projects = $this->db->query("SELECT *  FROM company_projects WHERE id='".$projectid."'")->row();
-        $project_id = $company_projects->id;
-        $company_id = $company_projects->company_id;
-        $original_table_name = $company_projects->original_table_name;
-        $project_table_name = $company_projects->project_table_name;
+		$project_id = $company_projects->id;
+		$company_id = $company_projects->company_id;
+		$original_table_name = $company_projects->original_table_name;
+		$project_table_name = $company_projects->project_table_name;
 
 
-        $project_headers = $this->db->query("SELECT *  FROM project_headers WHERE project_id='".$projectid."' AND is_editable = 1")->result();
-        // $project_header_column = array('id','item_sub_category','location_of_the_item_last_verified');
+		$project_headers = $this->db->query("SELECT *  FROM project_headers WHERE project_id='".$projectid."' AND is_editable = 1")->result();
 			$project_header_column = array('id','item_sub_category');
-        foreach($project_headers as $project_headers_value){
-            $project_header_column[] = $project_headers_value->keyname;
-        }
-        $project_header_column_value = implode(',', $project_header_column);
-     
+		foreach($project_headers as $project_headers_value){
+			$project_header_column[] = $project_headers_value->keyname;
+		}
+		$project_header_column_value = implode(',', $project_header_column);
+	 
 
 
-        $project_table_result = $this->db->query("SELECT ".$project_header_column_value." FROM ".$project_table_name)->result();
-        $existing_id_array = array();
-        foreach($project_table_result as $project_table_value){
-            $existing_id_array[] = $project_table_value->id;
-        }
-        $existing_id_value = implode(',', $existing_id_array);
-      
+		$project_table_result = $this->db->query("SELECT ".$project_header_column_value." FROM ".$project_table_name)->result();
+		$existing_id_array = array();
+		foreach($project_table_result as $project_table_value){
+			$existing_id_array[] = $project_table_value->id;
+		}
+		$existing_id_value = implode(',', $existing_id_array);
+	  
 
-        // $project_header_column_base = array('id','item_sub_category','new_location_verified');
+		// $project_header_column_base = array('id','item_sub_category','new_location_verified');
 		$project_header_column_base = array('id','item_sub_category');
-        foreach($project_headers as $project_headers_value){
-            $project_header_column_base[] = $project_headers_value->keyname;
-        }
-        $project_header_column_base_value = implode(',', $project_header_column_base);
-        $original_table_result = $this->db->query("SELECT ".$project_header_column_base_value." FROM ".$original_table_name." WHERE id in (".$existing_id_value.") ")->result();
+		foreach($project_headers as $project_headers_value){
+			$project_header_column_base[] = $project_headers_value->keyname;
+		}
+		$project_header_column_base_value = implode(',', $project_header_column_base);
+		$original_table_result = $this->db->query("SELECT ".$project_header_column_base_value." FROM ".$original_table_name." WHERE id in (".$existing_id_value.") ")->result();
 
-        $different_array = array();
+		$different_array = array();
 		$Updated_value_array = array();
-        foreach($project_table_result as $project_table_key=>$project_table_value){
+		foreach($project_table_result as $project_table_key=>$project_table_value){
 
-            foreach($project_header_column as $project_header_column_new_value)
-            {
+			foreach($project_header_column as $project_header_column_new_value)
+			{
 				if($original_table_result[$project_table_key]->$project_header_column_new_value != $project_table_result[$project_table_key]->$project_header_column_new_value){
 					// $Updated_value_array[$project_header_column_new_value]['New'][] = $original_table_result[$project_table_key]->$project_header_column_new_value;
 					// $Updated_value_array[$project_header_column_new_value]['Old'][] = $project_table_result[$project_table_key]->$project_header_column_new_value;
 					$Updated_value_array[$project_header_column_new_value][$original_table_result[$project_table_key]->item_sub_category][$original_table_result[$project_table_key]->id] = $original_table_result[$project_table_key]->$project_header_column_new_value." | ".$project_table_result[$project_table_key]->$project_header_column_new_value;
 				}
-            }
-        }
+			}
+		}
 
 
 
@@ -5692,7 +6516,7 @@ public function downloadExceptionChangesUpdationsofItems()
 				// echo '</pre>';
 				// exit(); 
 				// exit(); 
-				// $sheet->setCellValue($rowHeads[$cnt].$rowCount,$gr[$colsArray[$rh]] );
+				$sheet->setCellValue($rowHeads[$cnt].$rowCount,$gr[$colsArray[$rh]] );
 				$cnt++;
 			}
 			// echo '<pre>rowCount ';
@@ -5704,24 +6528,1260 @@ public function downloadExceptionChangesUpdationsofItems()
 			$rowCount++;
 		}
 
-		
-		
+
+		$tablename = 'tenmaytwentyone';
 
 
+		$company_projects = $this->db->query("SELECT *  FROM company_projects WHERE project_table_name='".$tablename."'")->row();
+		// echo '<pre>last_query 1';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
 		// exit();
+		$project_id = $company_projects->id;
+		$company_id = $company_projects->company_id;
+		$original_table_name = $company_projects->original_table_name;
+		$project_table_name = $company_projects->project_table_name;
+
+
+		$project_headers = $this->db->query("SELECT *  FROM project_headers WHERE project_id='".$project_id."' AND is_editable = 1")->result();
+		$project_header_column = array('id','item_sub_category','location_of_the_item_last_verified');
+		foreach($project_headers as $project_headers_value){
+			$project_header_column[] = $project_headers_value->keyname;
+		}
+		$project_header_column_value = implode(',', $project_header_column);
+	 
+
+
+		$project_table_result = $this->db->query("SELECT ".$project_header_column_value." FROM ".$project_table_name)->result();
+	   
+		$existing_id_array = array();
+		foreach($project_table_result as $project_table_value){
+			$existing_id_array[] = $project_table_value->id;
+		}
+		$existing_id_value = implode(',', $existing_id_array);
+	  
+
+		$project_header_column_base = array('id','item_sub_category','new_location_verified');
+		foreach($project_headers as $project_headers_value){
+			$project_header_column_base[] = $project_headers_value->keyname;
+		}
+		$project_header_column_base_value = implode(',', $project_header_column_base);
+		$original_table_result = $this->db->query("SELECT ".$project_header_column_base_value." FROM ".$original_table_name." WHERE id in (".$existing_id_value.") ")->result();
+	   
+		$different_array = array();
+		foreach($project_table_result as $project_table_key=>$project_table_value){
+
+			foreach($project_header_column as $project_header_column_new_value)
+			{
+
+				if($project_header_column_new_value == 'location_of_the_item_last_verified'){
+
+					if($original_table_result[$project_table_key]->new_location_verified != $project_table_result[$project_table_key]->$project_header_column_new_value){
+						$different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value][] = 1;
+					}
+
+				}else{
+					if($original_table_result[$project_table_key]->$project_header_column_new_value != $project_table_result[$project_table_key]->$project_header_column_new_value){
+					$different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value][] = 1;
+				}
+				}
+
+			   
+			}
+		}
+		$different_array['project_header_column_value'] = $project_header_column_value; 
+		$project_header_column_value = explode(",",$project_header_column_value);
+		unset($project_header_column_value[0]);
+		unset($project_header_column_value[1]);
+
+		// echo '<pre>project_header_column_value ';
+		// print_r($project_header_column_value);
+		// echo '</pre>';
+		// exit(); 
 
 		$spreadsheet1= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 		$sheet1 = $spreadsheet1->getActiveSheet();
-		$sheet1->setCellValue("A1", "Hardik Development Test");
+		// $sheet1->setCellValue("A1", "Hardik Development Test");
+		$rowCount = 1;
+		$cnt = 0;
+		// foreach($data['different'] as $key=>$value){ 
+			foreach($project_header_column_value as $project_header_column_value_value){
+
+				// echo '<pre> ';
+				// print_r($project_header_column_value_value);
+				// echo '</pre>';
+				// // exit(); 
+
+				// echo '<pre>cnt ';
+				// print_r($cnt);
+				// echo '</pre>';
+
+				// echo '<pre>rowHeads ';
+				// print_r($rowHeads);
+				// echo '</pre>';
+
+				// echo '<pre>rowCount ';
+				// print_r($rowCount);
+				// echo '</pre>';
+
+				// echo '<pre>rowCount ';
+				// print_r($rowHeads[$cnt].$rowCount);
+				// echo '</pre>';
+				// exit(); 
+
+				// exit(); 
+				// exit(); 
+				// exit(); 
+
+				$sheet1->setCellValue($rowHeads[$cnt].$rowCount,ucfirst(str_replace('_',' ',$project_header_column_value_value)) );
+				
+				$cnt++;
+
+			}
+
+
+			// exit();
+		// }
+
+
+			/*
+		$project_header_column_value = explode(",",$data['project_header_column_value']);
+		unset($project_header_column_value[0]);
+		unset($project_header_column_value[1]);
+		echo '<tr>';
+		echo '<th>Allocated Item Category</th>';
+		foreach($project_header_column_value as $project_header_column_value_value){
+			echo '<th>';
+			echo ucfirst(str_replace('_',' ',$project_header_column_value_value));
+			echo '</th>';
+		}
+		echo '</tr>';
+
+
+		foreach($data['different'] as $key=>$value){ 
+			foreach($project_header_column_value as $project_header_column_value_value){
+				echo '<td>';
+				if(isset($data['different'][$key][$project_header_column_value_value])){
+					echo count($data['different'][$key][$project_header_column_value_value]);
+				}else{
+					echo "0";
+				}
+				echo '</td>';
+			}
+		}
+
+		
+
+		echo '<pre>different_array ';
+		print_r($different_array);
+		echo '</pre>';
+		exit(); 
+		*/
+
+		// exit();
+
+		// $spreadsheet1= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+		// $sheet1 = $spreadsheet1->getActiveSheet();
+		// $sheet1->setCellValue("A1", "Hardik Development Test");
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet1, "Xlsx");
 		$writer->setPreCalculateFormulas(false);
 		$filename = $ReportTitle;
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
-        header('Cache-Control: max-age=0');
-        
-        $writer->save('php://output');
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Cache-Control: max-age=0');
+		
+		$writer->save('php://output');
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public function downloadExceptionChangesUpdationsofItems()
+	{
+		require 'vendor/autoload.php';
+		$spreadsheet1= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+		$sheet1 = $spreadsheet1->getActiveSheet();
+		$ReportTitle = 'ChangesUpdationsofItems';
+		$spreadsheet= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+		$sheet = $spreadsheet->getActiveSheet();
+
+
+		$rowHeads=array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ','BA','BB','BC','BD','BE','BF','BG','BH','BI','BJ','BK','BL','BM','BN','BO','BP','BQ','BR','BS','BT','BU','BV','BW','BX','BY','BZ','CA','CB','CC','CD','CE','CF','CG','CH','CI','CJ','CK','CL','CM','CN','CO','CP','CQ','CR','CS','CT','CU','CV','CW','CX','CY','CZ');
+
+		$tablename = 'tenmaytwentyone';
+		$company_projects = $this->db->query("SELECT *  FROM company_projects WHERE project_table_name='".$tablename."'")->row();
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
+		$project_id = $company_projects->id;
+		$company_id = $company_projects->company_id;
+		$original_table_name = $company_projects->original_table_name;
+		$project_table_name = $company_projects->project_table_name;
+
+
+		$project_headers = $this->db->query("SELECT *  FROM project_headers WHERE project_id='".$project_id."' AND is_editable = 1")->result();
+		
+
+		$project_header_column = array('id','item_sub_category','location_of_the_item_last_verified');
+		foreach($project_headers as $project_headers_value){
+			$project_header_column[] = $project_headers_value->keyname;
+		}
+		$project_header_column_value = implode(',', $project_header_column);
+		$project_table_result = $this->db->query("SELECT ".$project_header_column_value." FROM ".$project_table_name)->result();
+	   
+		$existing_id_array = array();
+		foreach($project_table_result as $project_table_value){
+			$existing_id_array[] = $project_table_value->id;
+		}
+		$existing_id_value = implode(',', $existing_id_array);
+	  
+
+		$project_header_column_base = array('id','item_sub_category','new_location_verified');
+		foreach($project_headers as $project_headers_value){
+			$project_header_column_base[] = $project_headers_value->keyname;
+		}
+		$project_header_column_base_value = implode(',', $project_header_column_base);
+		$original_table_result = $this->db->query("SELECT ".$project_header_column_base_value." FROM ".$original_table_name." WHERE id in (".$existing_id_value.") ")->result();
+	
+		$different_array = array();
+		foreach($project_table_result as $project_table_key=>$project_table_value){
+			foreach($project_header_column as $project_header_column_new_value)
+			{
+				if($project_header_column_new_value == 'location_of_the_item_last_verified'){
+					if($original_table_result[$project_table_key]->new_location_verified != $project_table_result[$project_table_key]->$project_header_column_new_value){
+						$different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value]['old_value'][] = $original_table_result[$project_table_key]->new_location_verified;
+						$different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value]['new_value'][] = $project_table_result[$project_table_key]->$project_header_column_new_value;
+					}
+				}else{
+					if($original_table_result[$project_table_key]->$project_header_column_new_value != $project_table_result[$project_table_key]->$project_header_column_new_value){
+						$different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value]['old_value'][] = $original_table_result[$project_table_key]->$project_header_column_new_value;
+						$different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value]['new_value'][] = $project_table_result[$project_table_key]->$project_header_column_new_value;
+					}
+				}
+			}
+		}
+
+		
+		$different_array['project_header_column_value'] = $project_header_column_value; 
+
+		$project_header_column_value = explode(",",$project_header_column_value);
+		unset($project_header_column_value[0]);
+		unset($project_header_column_value[1]);
+
+		
+		$rowCount = 1;
+		$cnt = 0;
+
+		
+
+		foreach($project_header_column_value as $project_header_column_value_value){
+			$sheet1->setCellValue($rowHeads[$cnt].$rowCount,ucfirst(str_replace('_',' ',$project_header_column_value_value)));
+			$sheet1->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+			$sheet1->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+			$cnt++;
+		}
+
+		$rowCount = 2;
+		$cnt = 0;
+		$all_value = array();
+		foreach($different_array['different'] as $differentkey=>$differentvalue){
+			$old_value = '';
+			$new_value = '';
+			foreach($differentvalue['location_of_the_item_last_verified']['old_value'] as $location_of_the_item_last_verified_key=>$location_of_the_item_last_verified_value_old){
+					$all_value[] = "Old :- ".$location_of_the_item_last_verified_value_old." || New :- ".$differentvalue['location_of_the_item_last_verified']['new_value'][$location_of_the_item_last_verified_key];
+			}
+		}
+		$rowCount = 2;
+		$cnt1 = 0;
+		foreach($all_value as $all_value_value){
+			$sheet1->setCellValue($rowHeads[$cnt1].$rowCount,$all_value_value);
+			$rowCount++;
+		}
+
+		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet1,"Xlsx");
+		$writer->setPreCalculateFormulas(false);
+		$filename = $ReportTitle ;
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Cache-Control: max-age=0');
+		$writer->save('php://output');
+	}
+
+
+
+	public function projectdetail2($id)
+	{
+		$condition=array('id'=>$id);
+		$projects=$this->tasks->get_data('company_projects',$condition);	
+
+		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+		$new_pattern = array("_", "_", "");
+		foreach($projects as $project)
+		{
+			$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($project->project_name)));
+			$getprojectdetails=$this->tasks->projectdetail($project_name);
+			// echo $this->db->last_query();
+			if(!empty($getprojectdetails))
+			{
+				$project->TotalQuantity= ((int)$getprojectdetails[0]->TotalQuantity);
+				if($getprojectdetails[0]->VerifiedQuantity !='')
+				$project->VerifiedQuantity=$getprojectdetails[0]->VerifiedQuantity;
+				else
+				$project->VerifiedQuantity=0;
+			}
+			else
+			{   
+				$project->TotalQuantity=0;
+				$project->VerifiedQuantity=0;
+			}
+			$condition2=array('id'=>$project->company_id);
+			$company=$this->tasks->get_data('company',$condition2);
+			$companylocation=$this->tasks->get_data('company_locations',array('id'=>$project->project_location));
+			$project->company_name=$company[0]->company_name;
+			$project->project_location=$companylocation[0]->location_name;
+		}
+
+
+
+		$listing=getTagUntag($projects[0]->project_name);
+		$cat=getTagUntagCategories($projects[0]->project_name);
+		$allcategories=getCategories($projects[0]->project_name);
+
+
+		//HArdik Code Start From HErer
+
+		if($projects[0]->project_type=='TG')
+		{
+
+		}
+		if($projects[0]->project_type=='NT')
+		{
+
+		}
+
+		if($projects[0]->project_type=='UN')
+		{
+
+		}
+
+		if($projects[0]->project_type=='CD')
+		{
+			if($listing['ytotal']!=0 && $listing['ntotal']!=0 && $listing['natotal']!=0){
+
+			}else if($listing['ytotal']!=0 && $listing['ntotal']!=0 && $listing['natotal']==0){
+
+			}else if($listing['ytotal']!=0 && $listing['ntotal']==0 && $listing['natotal']==0){
+			
+			}else if($listing['ytotal']!=0 && $listing['ntotal']==0 && $listing['natotal']!=0){
+
+			}else if($listing['ytotal']==0 && $listing['ntotal']==0 && $listing['natotal']!=0){
+
+			}else if($listing['ytotal']==0 && $listing['ntotal']!=0 && $listing['natotal']!=0){
+
+			}else if($listing['ytotal']==0 && $listing['ntotal']!=0 && $listing['natotal']==0){
+
+			}
+		}
+
+		
+			$tcatlabels=array();
+			$tcatdata=array();
+			$atcatlabels=array();
+			$atcatdata=array();
+			$cnt1=0;
+			$tcattotalpercentage=0;
+			$atcattotalpercentage=0;
+			$taggedOverall=[];
+			$totaltaggedOverall=[];
+			$amounttaggedOverall=[];
+			$amounttotaltaggedOverall=[];
+
+
+			$taggedpieChart = array();
+			$amounttaggedpieChart = array();
+			$count_zero = 0;
+			$count =1;
+			if(count($cat['tagged'])>0 && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD')){		//taggedpieChart	//amounttaggedpieChart
+				foreach($cat['tagged'] as $tcat)
+				{
+					$taggedOverall[$tcat['category']]=$tcat['verified'];
+					$totaltaggedOverall[$tcat['category']]=$tcat['total'];
+					$amounttaggedOverall[$tcat['category']]=$tcat['verifiedamount'];
+					$amounttotaltaggedOverall[$tcat['category']]=$tcat['totalamount'];
+					$tcattotalpercentage=$tcattotalpercentage+$tcat['percentage'];
+					$atcattotalpercentage=$atcattotalpercentage+$tcat['amountpercentage'];
+					array_push($tcatlabels,$tcat['category'].' ('.round(($tcat['percentage']/count($cat['tagged'])),2).' %)');
+					array_push($tcatdata,round(($tcat['percentage']/count($cat['tagged'])),2));
+					array_push($atcatlabels,$tcat['category'].' ('.$tcat['amountpercentage'].' %)');
+					array_push($atcatdata,$tcat['amountpercentage']);
+					$cnt1++;
+
+					$taggedpieChart[$count_zero]['label'] = $tcat['category'];
+					$taggedpieChart[$count_zero]['y'] = round(($tcat['percentage']/count($cat['tagged'])),2);
+					$taggedpieChart[$count_zero]['id'] = $count;
+
+
+					$amounttaggedpieChart[$count_zero]['label'] = $tcat['category'];
+					$amounttaggedpieChart[$count_zero]['y'] = $tcat['amountpercentage'];;
+					$amounttaggedpieChart[$count_zero]['id'] = $count;
+
+
+					$count++;
+					$count_zero++;
+				}
+			}
+
+
+			$data['taggedpieChart'] = $taggedpieChart; 
+			$data['amounttaggedpieChart'] = $amounttaggedpieChart; 
+			// echo '<pre>tcatlabels ::';
+			// print_r($tcatlabels);
+			// echo '</pre>';
+			// echo '<pre>tcatdata ::';
+			// print_r($tcatdata);
+			// echo '</pre>';
+			// exit();
+			// exit();
+
+			$utcatlabels=[];
+			$utcatdata=[];
+			$autcatlabels=[];
+			$autcatdata=[];
+			$cnt2=0;
+			$utcattotalpercentage=0;
+			$autcattotalpercentage=0;
+			$untaggedOverall=[];
+			$totaluntaggedOverall=[];
+			$amountuntaggedOverall=[];
+			$amounttotaluntaggedOverall=[];
+			if(count($cat['untagged'])>0 && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD')){	//untaggedpieChart	//amountuntaggedpieChart
+				foreach($cat['untagged'] as $utcat)
+				{
+					$untaggedOverall[$utcat['category']]=$utcat['verified'];
+					$totaluntaggedOverall[$utcat['category']]=$utcat['total'];
+					$amountuntaggedOverall[$utcat['category']]=$utcat['verifiedamount'];
+					$amounttotaluntaggedOverall[$utcat['category']]=$utcat['totalamount'];
+					$utcattotalpercentage+=$utcat['percentage'];
+					$autcattotalpercentage+=$utcat['amountpercentage'];
+					array_push($utcatlabels,$utcat['category'].' ('.round(($utcat['percentage']/count($cat['untagged'])),2).' %)');
+					array_push($utcatdata,round(($utcat['percentage']/count($cat['untagged'])),2));
+					array_push($autcatlabels,$utcat['category'].' ('.$utcat['amountpercentage'].' %)');
+					array_push($autcatdata,$utcat['amountpercentage']);
+					$cnt2++;
+				}
+			}
+
+			$uscatlabels=array();
+			$uscatdata=array();
+			$auscatlabels=array();
+			$auscatdata=array();
+			$cnt3=0;
+			$uscattotalpercentage=0;
+			$auscattotalpercentage=0;
+			$ustaggedOverall=[];
+			$totalustaggedOverall=[];
+			$amountustaggedOverall=[];
+			$amounttotalustaggedOverall=[];
+			if(count($cat['unspecified'])>0 && ($projects[0]->project_type=='UN' || $projects[0]->project_type=='CD')){			//unspecifiedpieChart	//amountunspecifiedpieChart
+				foreach($cat['unspecified'] as $uscat)
+				{
+					$untaggedOverall[$uscat['category']]=$uscat['verified'];
+					$totalustaggedOverall[$uscat['category']]=$uscat['total'];
+					$amountustaggedOverall[$uscat['category']]=$uscat['verifiedamount'];
+					$amounttotalustaggedOverall[$uscat['category']]=$uscat['totalamount'];
+					$uscattotalpercentage+=$uscat['percentage'];
+					$auscattotalpercentage+=$uscat['amountpercentage'];
+					array_push($uscatlabels,$uscat['category'].' ('.round(($uscat['percentage']/count($cat['unspecified'])),2).' %)');
+					array_push($uscatdata,round(($uscat['percentage']/count($cat['unspecified'])),2));
+					array_push($auscatlabels,$uscat['category'].' ('.$uscat['amountpercentage'].' %)');
+					array_push($auscatdata,$uscat['amountpercentage']);
+					$cnt3++;
+				}
+			}
+
+			$ResourcewiseUtilizationChart = array();
+			$count_zero = 0;
+			$count =1;
+
+			$yverifiernames=array();
+			$yverifierperc=array();
+			if($listing['ytotal']>0 && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD'))
+			{		//resourcetaggedpieChart	//resourceuntaggedpieChart
+				foreach($listing['projectverifiers'] as $list)
+				{
+				
+					array_push($yverifiernames,get_UserName($list->user_id).' ('.round(($list->usertagged/$listing['ytotal'])*100,2).' %)');
+					array_push($yverifierperc,round(($list->usertagged/$listing['ytotal'])*100,2));
+
+
+					$ResourcewiseUtilizationChart[$count_zero]['label'] = get_UserName($list->user_id);
+					$ResourcewiseUtilizationChart[$count_zero]['y'] = round(($list->usertagged/$listing['ytotal'])*100,2);
+					$ResourcewiseUtilizationChart[$count_zero]['id'] = $count;
+					$count++;
+					$count_zero++;
+
+				}
+
+			}
+
+			$data['ResourcewiseUtilizationChart'] = $ResourcewiseUtilizationChart;
+
+			$yverifiernames=array();
+			$yverifierperc=array();
+			if($listing['natotal']>0 && ($projects[0]->project_type=='UN' || $projects[0]->project_type=='CD'))
+			{		//resourceunspecifiedpieChart
+				foreach($listing['projectverifiers'] as $list)
+				{
+					array_push($yverifiernames,get_UserName($list->user_id).' ('.round(($list->userunspecified/$listing['natotal'])*100,2).' %)');
+					array_push($yverifierperc,round(($list->userunspecified/$listing['natotal'])*100,2));
+				
+				}
+			}
+
+
+
+
+			$merger=[];
+			$totalmerger=[];
+			$amountmerger=[];
+			$amounttotalmerger=[];
+			if(count($cat['tagged'])>0 && count($cat['untagged'])>0 && count($cat['unspecified'])>0)
+			{
+				foreach (array_keys($taggedOverall + $untaggedOverall+$ustaggedOverall) as $item) {
+				$merger[$item] = (isset($taggedOverall[$item]) ? $taggedOverall[$item] : 0) + (isset($untaggedOverall[$item]) ? $untaggedOverall[$item] : 0) + (isset($ustaggedOverall[$item]) ? $ustaggedOverall[$item] : 0);
+				}
+				foreach (array_keys($totaltaggedOverall + $totaluntaggedOverall+$ustaggedOverall) as $item) {
+					$totalmerger[$item] = (isset($totaltaggedOverall[$item]) ? $totaltaggedOverall[$item] : 0) + (isset($totaluntaggedOverall[$item]) ? $totaluntaggedOverall[$item] : 0) + (isset($totalustaggedOverall[$item]) ? $totalustaggedOverall[$item] : 0);
+				}
+				foreach (array_keys($amounttaggedOverall + $amountuntaggedOverall+$amountustaggedOverall) as $item) {
+					$amountmerger[$item] = (isset($amounttaggedOverall[$item]) ? $amounttaggedOverall[$item] : 0) + (isset($amountuntaggedOverall[$item]) ? $amountuntaggedOverall[$item] : 0) + (isset($amountustaggedOverall[$item]) ? $amountustaggedOverall[$item] : 0);
+				}
+				foreach (array_keys($amounttotaltaggedOverall + $amounttotaluntaggedOverall+$amountustaggedOverall) as $item) {
+					$amounttotalmerger[$item] = (isset($amounttotaltaggedOverall[$item]) ? $amounttotaltaggedOverall[$item] : 0) + (isset($amounttotaluntaggedOverall[$item]) ? $amounttotaluntaggedOverall[$item] : 0) + (isset($amounttotalustaggedOverall[$item]) ? $amounttotalustaggedOverall[$item] : 0);
+				}
+				
+			}
+			else if(count($cat['tagged'])>0 && count($cat['untagged'])>0 && count($cat['unspecified'])==0)
+			{
+				foreach (array_keys($taggedOverall + $untaggedOverall) as $item) {
+					$merger[$item] = (isset($taggedOverall[$item]) ? $taggedOverall[$item] : 0) + (isset($untaggedOverall[$item]) ? $untaggedOverall[$item] : 0);
+				}
+				foreach (array_keys($totaltaggedOverall + $totaluntaggedOverall) as $item) {
+					$totalmerger[$item] = (isset($totaltaggedOverall[$item]) ? $totaltaggedOverall[$item] : 0) + (isset($totaluntaggedOverall[$item]) ? $totaluntaggedOverall[$item] : 0);
+				}
+				foreach (array_keys($amounttaggedOverall + $amountuntaggedOverall) as $item) {
+					$amountmerger[$item] = (isset($amounttaggedOverall[$item]) ? $amounttaggedOverall[$item] : 0) + (isset($amountuntaggedOverall[$item]) ? $amountuntaggedOverall[$item] : 0);
+				}
+				foreach (array_keys($amounttotaltaggedOverall + $amounttotaluntaggedOverall) as $item) {
+					$amounttotalmerger[$item] = (isset($amounttotaltaggedOverall[$item]) ? $amounttotaltaggedOverall[$item] : 0) + (isset($amounttotaluntaggedOverall[$item]) ? $amounttotaluntaggedOverall[$item] : 0);
+				}
+			}
+			else if(count($cat['tagged'])>0 && count($cat['untagged'])==0 && count($cat['unspecified'])>0)
+			{
+				foreach (array_keys($taggedOverall + $ustaggedOverall) as $item) {
+					$merger[$item] = (isset($taggedOverall[$item]) ? $taggedOverall[$item] : 0) + (isset($ustaggedOverall[$item]) ? $ustaggedOverall[$item] : 0);
+				}
+				foreach (array_keys($totaltaggedOverall + $ustaggedOverall) as $item) {
+					$totalmerger[$item] = (isset($totaltaggedOverall[$item]) ? $totaltaggedOverall[$item] : 0) + (isset($totalustaggedOverall[$item]) ? $totalustaggedOverall[$item] : 0);
+				}
+				foreach (array_keys($amounttaggedOverall+$amountustaggedOverall) as $item) {
+					$amountmerger[$item] = (isset($amounttaggedOverall[$item]) ? $amounttaggedOverall[$item] : 0) + (isset($amountustaggedOverall[$item]) ? $amountustaggedOverall[$item] : 0);
+				}
+				foreach (array_keys($amounttotaltaggedOverall +$amountustaggedOverall) as $item) {
+					$amounttotalmerger[$item] = (isset($amounttotaltaggedOverall[$item]) ? $amounttotaltaggedOverall[$item] : 0) + (isset($amounttotalustaggedOverall[$item]) ? $amounttotalustaggedOverall[$item] : 0);
+				}
+			}
+			else if(count($cat['tagged'])==0 && count($cat['untagged'])>0 && count($cat['unspecified'])>0)
+			{
+				foreach (array_keys($untaggedOverall+$ustaggedOverall) as $item) {
+					$merger[$item] = (isset($untaggedOverall[$item]) ? $untaggedOverall[$item] : 0) + (isset($ustaggedOverall[$item]) ? $ustaggedOverall[$item] : 0);
+				}
+				foreach (array_keys($totaluntaggedOverall+$ustaggedOverall) as $item) {
+					$totalmerger[$item] = (isset($totaluntaggedOverall[$item]) ? $totaluntaggedOverall[$item] : 0) + (isset($totalustaggedOverall[$item]) ? $totalustaggedOverall[$item] : 0);
+				}
+				foreach (array_keys($amountuntaggedOverall+$amountustaggedOverall) as $item) {
+					$amountmerger[$item] = (isset($amountuntaggedOverall[$item]) ? $amountuntaggedOverall[$item] : 0) + (isset($amountustaggedOverall[$item]) ? $amountustaggedOverall[$item] : 0);
+				}
+				foreach (array_keys($amounttotaluntaggedOverall+$amountustaggedOverall) as $item) {
+					$amounttotalmerger[$item] = (isset($amounttotaluntaggedOverall[$item]) ? $amounttotaluntaggedOverall[$item] : 0) + (isset($amounttotalustaggedOverall[$item]) ? $amounttotalustaggedOverall[$item] : 0);
+				}
+			}
+			else if(count($cat['tagged'])==0 && count($cat['untagged'])==0 && count($cat['unspecified'])>0)
+			{
+				$merger=$ustaggedOverall;
+				$totalmerger=$totalustaggedOverall;
+				$amountmerger=$amountustaggedOverall;
+				$amounttotalmerger=$amounttotalustaggedOverall;
+			}
+			else if(count($cat['tagged'])==0 && count($cat['untagged'])>0 && count($cat['unspecified'])==0)
+			{
+				$merger=$untaggedOverall;
+				$totalmerger=$totaluntaggedOverall;
+				$amountmerger=$amountuntaggedOverall;
+				$amounttotalmerger=$amounttotaluntaggedOverall;
+			}
+			else if(count($cat['tagged'])>0 && count($cat['untagged'])==0 && count($cat['unspecified'])==0)
+			{
+				$merger=$taggedOverall;
+				$totalmerger=$totaltaggedOverall;
+				$amountmerger=$amounttaggedOverall;
+				$amounttotalmerger=$amounttotaltaggedOverall;
+			}
+
+
+			// echo '<pre>merger ::';
+			// print_r($merger);
+			// echo '</pre>';
+			// exit();
+
+			$libarlabels=[];
+			$libarvalues=[];
+			$amountbarlabels=[];
+			$amountbarvalues=[];
+			foreach($merger as $key=> $item )
+			{
+				array_push($libarlabels,$key);
+				array_push($libarvalues,round(($item/$totalmerger[$key])*100,2));
+				
+			}
+			foreach($amountmerger as $key=> $item )
+			{
+				array_push($amountbarlabels,$key);
+				array_push($amountbarvalues,round(($item/$amounttotalmerger[$key])*100,2));
+			}
+
+
+			///libarchart		//amountbarchart
+
+
+
+
+		//HArdik Code End Here
+
+
+
+
+		/*
+		echo '<pre>listing ';
+		print_r($listing);
+		echo '</pre>';
+		// exit();
+
+
+		$value1 = round(($listing['yverified']/$listing['ytotal'])*100,2);
+		$value2 = 100-(round((($listing['yverified'])/($listing['ytotal']))*100,2));
+		$data = array($value1,$value2);
+
+		echo '<pre>data ';
+		print_r($data);
+		echo '</pre>';
+		// exit();
+
+		$donutlabel1_cal = round(($listing['yverified']/$listing['ytotal'])*100,2);
+		$donutlabel1 = "Tagged (".$donutlabel1_cal." %): ".$listing['yverified']." of ".$listing['ytotal']." Li";
+
+		$donutlabel2_cal = 100-(round((($listing['yverified'])/($listing['ytotal']))*100,2));		
+		$my_value = $listing['ytotal']-$listing['yverified'];
+		$donutlabel2 = "Unverified (".$donutlabel2_cal." %) : ".$my_value.") of ".($listing['ytotal'])." Li";
+		*/
+
+		$tagged_filled_percentage = round(($listing['yverified']/$listing['ytotal'])*100,2);
+		$unverify_filled_percentage = 100-(round((($listing['yverified'])/($listing['ytotal']))*100,2));
+
+		$tagged_count_value = $listing['yverified'];
+		$unverify_count_value = $listing['ytotal']-$listing['yverified'];
+		$my_value = $listing['ytotal']-$listing['yverified'];
+
+
+		$graph_array_data[0]['label'] = "Tagged";
+		$graph_array_data[0]['y'] = $tagged_filled_percentage;
+		// $graph_array_data[0]['y'] = $tagged_count_value;
+		$graph_array_data[0]['id'] = 1;
+
+		
+		$graph_array_data[1]['label'] = "Unverified";
+		$graph_array_data[1]['y'] = $unverify_filled_percentage;
+		// $graph_array_data[1]['y'] = $unverify_count_value;
+		$graph_array_data[1]['id'] = 2;
+
+		$data['graph_array_data'] = $graph_array_data;
+
+		
+
+		// echo '<pre>projects :';
+		// print_r($projects);
+		// echo '</pre>';
+		// exit();
+
+	
+		$data['projects']=$projects;
+		$data['page_title']="Dashboard";
+
+		$this->load->view('project_detail2',$data);
+		
+	}
+
+
+
+
+	public function projectdetail($id)
+	{
+		$condition=array('id'=>$id);
+		$projects=$this->tasks->get_data('company_projects',$condition);	
+		
+
+		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+		$new_pattern = array("_", "_", "");
+		foreach($projects as $project)
+		{
+			$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($project->project_name)));
+			$getprojectdetails=$this->tasks->projectdetail($project_name);
+			if(!empty($getprojectdetails))
+			{
+				$project->TotalQuantity= ((int)$getprojectdetails[0]->TotalQuantity);
+				if($getprojectdetails[0]->VerifiedQuantity !='')
+				$project->VerifiedQuantity=$getprojectdetails[0]->VerifiedQuantity;
+				else
+				$project->VerifiedQuantity=0;
+			}
+			else
+			{   
+				$project->TotalQuantity=0;
+				$project->VerifiedQuantity=0;
+			}
+			$condition2=array('id'=>$project->company_id);
+			$company=$this->tasks->get_data('company',$condition2);
+			$companylocation=$this->tasks->get_data('company_locations',array('id'=>$project->project_location));
+			$project->company_name=$company[0]->company_name;
+			$project->project_location=$companylocation[0]->location_name;
+		}
+
+
+
+		// OverallProjectStatusChart Start From Here
+		$tag_verified=$this->db->select('count(*) as tag_verified')->where(array('tag_status_y_n_na'=>'Y',"verification_status"=>'Verified'))->get($project_name)->row()->tag_verified;
+		$tag_not_verified=$this->db->select('count(*) as tag_not_verified')->where(array('tag_status_y_n_na'=>'Y',"verification_status !="=>'Verified'))->get($project_name)->row()->tag_not_verified;
+		$non_tag_verified=$this->db->select('count(*) as non_tag_verified')->where(array('tag_status_y_n_na'=>'N',"verification_status"=>'Verified'))->get($project_name)->row()->non_tag_verified;
+		$non_tag_not_verified=$this->db->select('count(*) as non_tag_not_verified')->where(array('tag_status_y_n_na'=>'N',"verification_status !="=>'Verified'))->get($project_name)->row()->non_tag_not_verified;
+		
+		$OverallProjectStatusChart_Verified_dataPoints = array(
+			array("label"=> "Tagged", "y"=> $tag_verified),
+			array("label"=> "Not Tagged", "y"=> $non_tag_verified)			
+		);
+		$OverallProjectStatusChart_NotVerified_dataPoints = array(
+			array("label"=> "Tagged", "y"=> $tag_not_verified),
+			array("label"=> "Not Tagged", "y"=> $non_tag_not_verified)
+		);
+		$data['OverallProjectStatusChart_Verified_dataPoints']=$OverallProjectStatusChart_Verified_dataPoints;
+		$data['OverallProjectStatusChart_NotVerified_dataPoints']=$OverallProjectStatusChart_NotVerified_dataPoints;
+		// OverallProjectStatusChart End From Here
+
+
+
+
+
+
+
+		$listing=getTagUntag($projects[0]->project_name);
+		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($projects[0]->project_name)));    
+
+		$listing=getTagUntag($projects[0]->project_name);
+		$cat=getTagUntagCategories($projects[0]->project_name);
+		
+		
+
+
+
+	
+
+		$allcategories=getCategories($projects[0]->project_name);
+
+
+		
+
+	
+
+		$ttv=0;
+		$ttt=0;
+		$tntv=0;
+		$tntt=0;
+		$tutv=0;
+		$tutt=0;
+		$tamt=0;
+
+
+		$my_array = array();
+		foreach($allcategories['categories'] as $alcat){
+
+			$overallverified=0;
+			$overalltotal=0;
+		
+
+
+			if(!empty($cat['tagged']) && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD'))
+			{
+				$overall=0;
+				$process=0;
+
+				// echo '<pre>tagged :';
+				// print_r($cat['tagged']);
+				// echo '</pre>';
+				// exit();
+				if(count($cat['tagged'])>0)
+				{
+					$tg=0;
+					foreach($cat['tagged'] as $ct)
+					{ 
+						if($ct['category']==$alcat->item_category)
+						{
+							$overall=$overall+$ct['percentage'];
+							$overallverified=$overallverified+$ct['verified'];
+							$overalltotal=$overalltotal+$ct['total'];
+							$ttv=$ttv+$ct['verified'];
+							$ttt=$ttt+$ct['total'];
+							$ct['percentage'] ==100? $process++ : $process;
+
+						}
+					}
+				}
+			}
+
+			if(!empty($cat['untagged']) && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD'))
+			{
+
+				// echo '<pre>untagged :';
+				// print_r($cat['untagged']);
+				// echo '</pre>';
+				// exit();
+				$overall=0;
+				$process=0;
+				if(count($cat['untagged'])>0)
+				{
+					$ut=0;
+					foreach($cat['untagged'] as $ct)
+					{ 
+						if($ct['category']==$alcat->item_category)
+						{
+							$overall=$overall+$ct['percentage'];
+							$overallverified=$overallverified+$ct['verified'];
+							$overalltotal=$overalltotal+$ct['total'];
+							$tntv=$tntv+$ct['verified'];
+							$tntt=$tntt+$ct['total'];
+							$ct['percentage'] ==100? $process++ : $process;
+						}
+					}
+				}
+			}
+
+
+
+			if(!empty($cat['unspecified']) && ($projects[0]->project_type=='UN' || $projects[0]->project_type=='CD'))
+			{
+				$overall=0;
+				$process=0;
+				if(count($cat['unspecified'])>0)
+				{
+					$us=0;
+					foreach($cat['unspecified'] as $ct)
+					{ 
+						if($ct['category']==$alcat->item_category)
+						{
+							$overall=$overall+$ct['percentage'];
+							$overallverified=$overallverified+$ct['verified'];
+							$overalltotal=$overalltotal+$ct['total'];
+							$tutv=$tutv+$ct['verified'];
+							$tutt=$tutt+$ct['total'];
+							$ct['percentage'] ==100? $process++ : $process;
+						}
+					}
+				}
+			}
+			// if($projects[0]->project_type=='CD' )
+			// {
+				$my_array[$alcat->item_category]['percentage'] = round(($overallverified/$overalltotal)*100,2);
+				$my_array[$alcat->item_category]['overallverified'] = $overallverified;
+				$my_array[$alcat->item_category]['overalltotal'] = $overalltotal;
+			// }
+		}
+
+		// echo '<pre>my_array ';
+		// print_r($my_array);
+		// echo '</pre>';
+		// exit();
+
+		$LineItemBreakupChart_dataPoints1 = array();
+		$LineItemBreakupChart_dataPoints2 = array();
+		foreach($my_array as $my_array_key=>$my_array_value){			
+			$LineItemBreakupChart_dataPoints1[] = array("label"=> $my_array_key, "y"=> $my_array_value['percentage']);
+			$LineItemBreakupChart_dataPoints2[] = array("label"=> $my_array_key, "y"=> 100-(int)$my_array_value['percentage']);
+		}
+		$data['LineItemBreakupChart_dataPoints1']=$LineItemBreakupChart_dataPoints1;
+		$data['LineItemBreakupChart_dataPoints2']=$LineItemBreakupChart_dataPoints2;
+		
+
+		$filled = ($ttt+$tntt+$tutt) > 0 ? round((($ttv+$tntv+$tutv)/($ttt+$tntt+$tutt))*100,2).'0':'0';
+		$LineItemBreakup_DonutChart_dataPoints = array( 
+			array("label"=>"Verified", "symbol" => "Verified","y"=>($filled/10)),
+			array("label"=>"Not Verified", "symbol" => "Not-Verified","y"=>100-($filled/10)),
+		);
+		$data['LineItemBreakup_DonutChart_dataPoints']=$LineItemBreakup_DonutChart_dataPoints;
+
+		
+
+
+
+		$ttv=0;
+		$ttt=0;
+		$tntv=0;
+		$tntt=0;
+		$tutv=0;
+		$tutt=0;
+		$totalCount=0;                                                                        
+		$my_array1 = array();
+		foreach($allcategories['categories'] as $alcat)
+		{
+			$count=0;
+			if(!empty($cat['tagged']) && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD'))
+			{
+				if(count($cat['tagged'])>0)
+				{
+					$tg=0;
+					foreach($cat['tagged'] as $ct)
+					{ 
+						if($ct['category']==$alcat->item_category)
+						{
+							$count=$count+$ct['verified'];
+							$totalCount=$totalCount+$ct['verified'];
+						}
+					}
+				}
+			}
+			if(!empty($cat['untagged']) && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD'))
+			{
+				if(count($cat['untagged'])>0)
+				{
+					$ut=0;
+					foreach($cat['untagged'] as $ct)
+					{ 
+						if($ct['category']==$alcat->item_category)
+						{
+							$count=$count+$ct['verified'];
+							$totalCount=$totalCount+$ct['verified'];
+						}
+					}
+				}
+			}
+			if(!empty($cat['unspecified']) && ($projects[0]->project_type=='UN' || $projects[0]->project_type=='CD'))
+			{
+				if(count($cat['unspecified'])>0)
+				{
+					$us=0;
+					foreach($cat['unspecified'] as $ct)
+					{ 
+						if($ct['category']==$alcat->item_category)
+						{
+							$count=$count+$ct['verified'];
+							$totalCount=$totalCount+$ct['verified'];
+						}
+					}
+				}
+			}
+			// echo $count.' of '.$alcat->catitems.' Li';
+
+
+
+
+			if(!empty($cat['tagged']) && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD'))
+			{
+				$overall=0;
+				$overallverified=0;
+				$overalltotal=0;
+				$process=0;
+				if(count($cat['tagged'])>0)
+				{
+					$tg=0;
+					foreach($cat['tagged'] as $ct)
+					{ 
+						if($ct['category']==$alcat->item_category)
+						{
+							$overall=$overall+$ct['amountpercentage'];
+							$overallverified=$overallverified+$ct['verifiedamount'];
+							$overalltotal=$overalltotal+$ct['totalamount'];
+							$ttv=$ttv+$ct['verifiedamount'];
+							$ttt=$ttt+$ct['totalamount'];
+							$ct['amountpercentage'] ==100? $process++ : $process;
+							}
+					}
+				}
+			}
+
+
+			if(!empty($cat['untagged']) && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD'))
+			{
+				if(count($cat['untagged'])>0)
+				{
+					$ut=0;
+					foreach($cat['untagged'] as $ct)
+					{ 
+						if($ct['category']==$alcat->item_category)
+						{
+							$overall=$overall+$ct['amountpercentage'];
+							$overallverified=$overallverified+$ct['verifiedamount'];
+							$overalltotal=$overalltotal+$ct['totalamount'];
+							$tntv=$tntv+$ct['verifiedamount'];
+							$tntt=$tntt+$ct['totalamount'];
+							$ct['amountpercentage'] ==100? $process++ : $process;
+						}
+					}
+				}
+			}
+
+			if(!empty($cat['unspecified']) && ($projects[0]->project_type=='UN' || $projects[0]->project_type=='CD'))
+			{
+				if(count($cat['unspecified'])>0)
+				{
+					$us=0;
+					foreach($cat['unspecified'] as $ct)
+					{ 
+						if($ct['category']==$alcat->item_category)
+						{
+							$overall=$overall+$ct['amountpercentage'];
+							$overallverified=$overallverified+$ct['verifiedamount'];
+							$overalltotal=$overalltotal+$ct['totalamount'];
+							$tutv=$tutv+$ct['verifiedamount'];
+						$tutt=$tutt+$ct['totalamount'];
+							$ct['amountpercentage'] ==100? $process++ : $process;
+						}
+					}
+				}
+			}
+
+
+			if($projects[0]->project_type=='CD' )
+			{
+				// echo getmoney_format(round((($overallverified/$overalltotal)*100),2)).'% <br>'.getmoney_format(round(($overallverified/100000),2)).' of '.getmoney_format(round(($overalltotal/100000),2)).' Lacs';
+
+				$my_array1[$alcat->item_category]['percentage'] = getmoney_format(round((($overallverified/$overalltotal)*100),2));
+				$my_array1[$alcat->item_category]['overallverified'] = getmoney_format(round(($overallverified/100000),2));
+				$my_array1[$alcat->item_category]['overalltotal'] = getmoney_format(round(($overalltotal/100000),2));
+
+
+			}
+			
+		
+
+		}
+
+	
+
+		$filled = ($ttt+$tntt+$tutt) > 0 ? round((($ttv+$tntv+$tutv)/($ttt+$tntt+$tutt))*100,2).' 0 ': '0 ';
+
+		$AmountwiseBreakupChart_dataPoints1 = array();
+		$AmountwiseBreakupChart_dataPoints2 = array();
+		foreach($my_array1 as $my_array1_key=>$my_array1_value){			
+			$AmountwiseBreakupChart_dataPoints1[] = array("label"=> $my_array1_key, "y"=> $my_array1_value['percentage']);
+			$AmountwiseBreakupChart_dataPoints2[] = array("label"=> $my_array1_key, "y"=> 100-(int)$my_array1_value['percentage']);
+		}
+	
+		$data['AmountwiseBreakupChart_dataPoints1']=$AmountwiseBreakupChart_dataPoints1;
+		$data['AmountwiseBreakupChart_dataPoints2']=$AmountwiseBreakupChart_dataPoints2;
+		
+
+		
+		$calculation = 100-floatval($filled);
+		$y_value = number_format((float)$calculation, 2, '.', '');
+		
+		
+	   $AmountwiseBreakup_DonutChart_dataPoints = array( 
+		   array("label"=>"Verified", "symbol" => "VRF","y"=>round((float)$filled)),
+		   array("label"=>"Not Verified", "symbol" => "NTVRF","y"=>round((float)$y_value)),
+	   );
+
+
+		$data['AmountwiseBreakup_DonutChart_dataPoints']=$AmountwiseBreakup_DonutChart_dataPoints;
+
+
+
+
+
+
+
+
+		$project_details=$this->db->select('*')->get($project_name)->result();
+
+
+		 $this->db->select($project_name.'.*,users.firstName');
+		$this->db->from($project_name);
+		$this->db->join('users', $project_name.'.verified_by = users.id'); 
+		$query = $this->db->get();
+		$project_details = $query->result();
+	
+		// echo '<pre>project_details ';
+		// print_r($project_details);
+		// echo '</pre>';
+		// exit();
+
+		$project_details_array = array();
+		$project_details_array2 = array();
+
+		$verifier_users_array = array();
+		$category_array = array();
+
+		/*
+		foreach($project_details as $project_details_key=>$project_details_value){
+			if(!empty($project_details_value->verified_by)){
+				$project_details_array[$project_details_value->item_category][$project_details_value->firstName][] = 1;
+				$project_details_array2[$project_details_value->firstName][$project_details_value->item_category][] = 1;
+			}
+
+			if(!in_array($project_details_value->firstName,$verifier_users_array)){
+				$verifier_users_array[] = $project_details_value->firstName;
+			}
+			
+			if(!in_array($project_details_value->item_category,$category_array)){
+				$category_array[] = $project_details_value->item_category;
+			}
+
+		} */
+
+
+		$user_wise_count = array();
+		foreach($project_details as $project_details_key=>$project_details_value){
+			if(!empty($project_details_value->verified_by)){
+				$project_details_array[$project_details_value->firstName][$project_details_value->item_category][] = 1;
+				$project_details_array2[$project_details_value->item_category][$project_details_value->firstName][] = 1;
+			}
+			if(!in_array($project_details_value->item_category,$verifier_users_array)){
+				$verifier_users_array[] = $project_details_value->item_category;
+			}
+			if(!in_array($project_details_value->firstName,$category_array)){
+				$category_array[] = $project_details_value->firstName;
+			}
+			$user_wise_count[$project_details_value->firstName][] = 1;
+
+			
+		}
+
+
+	
+
+
+		$ResourcewiseUtilizationChart_datapoint = array();
+		$ResourcewiseUtilization_DonutChart_dataPoints_array = array();
+		$count_value = 0;
+
+		// echo '<pre>project_details_array ';
+		// print_r($project_details_array);
+		// echo '</pre>';
+		// exit();
+
+		
+
+
+		foreach($project_details_array as $project_details_array_key=>$project_details_array_value){
+
+			$ResourcewiseUtilizationChart_dataPoints1 = array();
+			foreach($verifier_users_array as $verifier_users_array_Key=>$verifier_users_array_value){
+				if(isset($project_details_array[$project_details_array_key][$verifier_users_array_value])){
+					$ResourcewiseUtilizationChart_dataPoints1[] = array("label"=> $verifier_users_array_value, "y"=> count($project_details_array[$project_details_array_key][$verifier_users_array_value]));
+					$ResourcewiseUtilization_DonutChart_dataPoints_array[$verifier_users_array_value][] = count($project_details_array[$project_details_array_key][$verifier_users_array_value]);
+				}
+			}
+
+			
+
+			$ResourcewiseUtilizationChart_datapoint[] = array(
+				"type"=> "stackedColumn100",
+				"name"=> $project_details_array_key,
+				"showInLegend"=>true,
+				"yValueFormatString"=>"#,##0 ",
+				"dataPoints" => $ResourcewiseUtilizationChart_dataPoints1,
+			);
+			$count_value++;
+		}
+		
+
+		// echo '<pre>user_wise_count :: ';
+		// print_r($user_wise_count);
+		// echo '</pre>';
+		// exit();
+
+		// // echo '<pre>ResourcewiseUtilizationChart_datapoint ';
+		// // print_r($ResourcewiseUtilizationChart_datapoint);
+		// // echo '</pre>';
+		// exit();
+	
+
+
+		$data['ResourcewiseUtilizationChart_datapoint'] = $ResourcewiseUtilizationChart_datapoint;
+
+		$ResourcewiseUtilization_DonutChart_dataPoints_array1 = array();
+		foreach($ResourcewiseUtilization_DonutChart_dataPoints_array as $ResourcewiseUtilization_DonutChart_dataPoints_array_key=>$ResourcewiseUtilization_DonutChart_dataPoints_array_value){
+			
+			$ResourcewiseUtilization_DonutChart_dataPoints_array1[] = array("label"=>$ResourcewiseUtilization_DonutChart_dataPoints_array_key, "symbol" => $ResourcewiseUtilization_DonutChart_dataPoints_array_key,"y"=>array_sum($ResourcewiseUtilization_DonutChart_dataPoints_array_value));
+
+		}
+
+
+		// echo '<pre>ResourcewiseUtilization_DonutChart_dataPoints_array1 ';
+		// print_r($ResourcewiseUtilization_DonutChart_dataPoints_array1);
+		// echo '</pre>';
+		
+
+
+		// echo '<pre>user_wise_count ';
+		// print_r($user_wise_count);
+		// echo '</pre>';
+		// exit();
+
+		
+			$ResourcewiseUtilizationChart_dataPoints1 = array();
+			foreach($user_wise_count as $user_wise_count_key=>$user_wise_count_value){
+
+				
+				$ResourcewiseUtilizationChart_dataPoints1[] = array(
+						"label"=> $user_wise_count_key, 
+						"symbol"=> $user_wise_count_key, 
+						"y"=> count($user_wise_count_value),
+					);
+			}
+
+			// echo '<pre>ResourcewiseUtilizationChart_dataPoints1 ::';
+			// print_r($ResourcewiseUtilizationChart_dataPoints1);
+			// echo '</pre>';
+
+			// echo '<pre>ResourcewiseUtilization_DonutChart_dataPoints_array1 ::';
+			// print_r($ResourcewiseUtilization_DonutChart_dataPoints_array1);
+			// echo '</pre>';
+			// exit();
+			// exit();
+
+		
+		$data['ResourcewiseUtilization_DonutChart_dataPoints']=$ResourcewiseUtilizationChart_dataPoints1;
+		
+
+	
+		$data['projects']=$projects;
+		$data['page_title']="Dashboard";
+
+		// $this->load->view('project_detail3',$data);
+		$this->load->view('project_detail_view',$data);
+		
+	}
+
 
 	
 }
+ 

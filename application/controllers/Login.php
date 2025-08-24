@@ -68,6 +68,10 @@ class Login extends CI_Controller {
 			);
 			$update=$this->login->update_data('users ',$updatedata,$condition);	
 
+			if($_SESSION['logged_in']['main_role'] == '0'){
+				redirect(base_url()."index.php/dashboard/user");
+			}
+
 			redirect(base_url()."index.php/dashboard");
 		} 
 		else {

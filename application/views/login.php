@@ -59,6 +59,9 @@
 							</div>
 						</div>
 						<div class="card-body px-lg-5 py-lg-5">
+							<?php 
+							
+							?>
 							<div class="alert alert-danger" style="<?php echo $this->session->flashdata('error_message')!=''?'':'display:none;'; ?>" role="alert">
 								<?php echo $this->session->flashdata('error_message'); ?>
 							</div>

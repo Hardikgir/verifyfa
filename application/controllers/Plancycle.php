@@ -602,6 +602,31 @@ class Plancycle extends CI_Controller {
 		}
 	}
 
+
+	public function getprojectidndata(){
+		$company_id = $_POST['company_id'];
+		$location_id = $_POST['location_id'];
+		$resulttttt = $this->plancycle->GetLocationdatabyid($company_id);
+
+		$this->db->select('id,project_id');
+        $this->db->from('company_projects');
+        $this->db->where('company_id',$company_id);
+		$this->db->where('project_location',$location_id);
+		$getdata=$this->db->get();
+		$resulttttt = $getdata->result();
+
+
+		?>
+				<option value="">Select Project ID</option>
+		<?php
+		foreach($resulttttt as $dataa){
+			?>
+				<option value="<?php echo $dataa->id; ?>"><?php echo $dataa->project_id; ?></option>	
+			<?php
+		}
+	}
+
+
 	public function getlocationdatanew1(){
 		$company_id = $_POST['company_id'];
 		$location_id = $_POST['location_id'];
