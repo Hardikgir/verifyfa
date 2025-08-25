@@ -105,6 +105,252 @@ class Dashboard extends CI_Controller {
 
 	}
 
+
+	public function admin(){
+
+
+		$admin_registered_user_id = $_SESSION['logged_in']['admin_registered_user_id'];
+		$user_id=$this->user_id;
+		$entity_code=$this->admin_registered_entity_code;
+		
+		$company_id_imp='';
+		$location_id='';
+		$role_result_com = $this->get_all_company_user_role($entity_code);
+		if(!empty($role_result_com)){
+			foreach($role_result_com as $row_role){
+				$roledata[]=$row_role->company_id;
+				$roledata1[]=$row_role->location_id;
+			}
+			$company_id_imp = implode(',',$roledata);
+			$location_id = implode(',',$roledata1);
+		}
+		$register_user_id=$this->admin_registered_user_id;
+
+		// Common For All Funcionality Start Here
+		$condition=array('company_id IN ('.$company_id_imp.') AND project_location IN ('.$location_id.')',"entity_code"=>$this->admin_registered_entity_code);
+		if($this->input->post('company_id') && $this->input->post('company_id') !=''){
+			$condition=array('company_id'=>$this->input->post('company_id'));
+		}
+		if($this->input->post('location_id') && $this->input->post('location_id') !=''){
+			$condition=array('company_id'=>$this->input->post('company_id'), 'project_location'=>$this->input->post('location_id'),);
+		}		
+		$projects=$this->tasks->get_data('company_projects',$condition);	
+		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+		$new_pattern = array("_", "_", "");
+		foreach($projects as $project)
+		{
+			$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($project->project_name)));
+			$getprojectdetails=$this->tasks->projectdetail($project_name);
+			 
+			if(!empty($getprojectdetails))
+			{
+				$project->TotalQuantity= ((int)$getprojectdetails[0]->TotalQuantity);
+				if($getprojectdetails[0]->VerifiedQuantity !='')
+				$project->VerifiedQuantity=$getprojectdetails[0]->VerifiedQuantity;
+				else
+				$project->VerifiedQuantity=0;
+			}
+			else
+			{   
+				$project->TotalQuantity=0;
+				$project->VerifiedQuantity=0;
+			}
+			
+		}
+		$data['projects']=$projects;
+		// Common For All Funcionality End Here
+		$data['page_title']="Dashboard";
+		
+
+		$this->db->select("*");
+		$this->db->from('registred_users');
+		$this->db->where('id',$admin_registered_user_id);
+		$query=$this->db->get();
+		$registred_users_details = $query->row();
+
+		$this->db->select("*");
+		$this->db->from('subscription_plan');
+		$this->db->where('id',$registred_users_details->plan_id);
+		$query=$this->db->get();
+		$subscription_plan_details = $query->row();
+
+		$this->db->select("*");
+		$this->db->from('registered_user_plan');
+		$this->db->where('regiistered_user_id',$admin_registered_user_id);
+		$this->db->where('plan_id',$registred_users_details->plan_id);
+		$query=$this->db->get();
+		$registered_user_plan_details = $query->row();
+		
+		$data['subscription_plan_details'] = $subscription_plan_details;
+		$data['registred_users_details'] = $registred_users_details;
+		$data['registered_user_plan_details'] = $registered_user_plan_details;
+		
+		$total_company_query = $this->db->query('SELECT * FROM company where registered_user_id = '.$admin_registered_user_id);
+		$total_company_count = $total_company_query->num_rows();
+
+		$total_company_locations_query = $this->db->query('SELECT * FROM company_locations where registered_user_id = '.$admin_registered_user_id);
+		$total_company_locations_count = $total_company_locations_query->num_rows();
+
+		$total_users_query = $this->db->query('SELECT * FROM users where registered_user_id = '.$admin_registered_user_id);
+		$total_users_count = $total_users_query->num_rows();
+
+		$data['total_company_count'] = $total_company_count;
+		$data['total_company_locations_count'] = $total_company_locations_count;
+		$data['total_users_count'] = $total_users_count;
+		$this->load->view('admindashboardView',$data);	
+	}
+
+	public function project()
+	{   
+
+		$admin_registered_user_id = $_SESSION['logged_in']['admin_registered_user_id'];
+		$user_id=$this->user_id;
+		$entity_code=$this->admin_registered_entity_code;
+		
+		$company_id_imp='';
+		$location_id='';
+		$role_result_com = $this->get_all_company_user_role($entity_code);
+		if(!empty($role_result_com)){
+			foreach($role_result_com as $row_role){
+				$roledata[]=$row_role->company_id;
+				$roledata1[]=$row_role->location_id;
+			}
+			$company_id_imp = implode(',',$roledata);
+			$location_id = implode(',',$roledata1);
+		}
+		$register_user_id=$this->admin_registered_user_id;
+			
+		// $condition=array('company_id'=>$this->company_id);
+	   $condition=array('company_id IN ('.$company_id_imp.') AND project_location IN ('.$location_id.')',"entity_code"=>$this->admin_registered_entity_code);
+
+		if($this->input->post('company_id') && $this->input->post('company_id') !=''){
+			$condition=array('company_id'=>$this->input->post('company_id'));
+		}
+
+		if($this->input->post('location_id') && $this->input->post('location_id') !=''){
+			$condition=array('company_id'=>$this->input->post('company_id'), 'project_location'=>$this->input->post('location_id'),);
+		}
+
+		// $condition = array();
+		
+		$projects=$this->tasks->get_data('company_projects',$condition);	
+
+		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+		$new_pattern = array("_", "_", "");
+		foreach($projects as $project)
+		{
+			$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($project->project_name)));
+			$getprojectdetails=$this->tasks->projectdetail($project_name);
+			 
+			if(!empty($getprojectdetails))
+			{
+				$project->TotalQuantity= ((int)$getprojectdetails[0]->TotalQuantity);
+				if($getprojectdetails[0]->VerifiedQuantity !='')
+				$project->VerifiedQuantity=$getprojectdetails[0]->VerifiedQuantity;
+				else
+				$project->VerifiedQuantity=0;
+			}
+			else
+			{   
+				$project->TotalQuantity=0;
+				$project->VerifiedQuantity=0;
+			}
+			
+		}
+
+
+		$data['projects']=$projects;
+		$data['page_title']="Project Dashboard";
+		$data['company_data_list']=$this->company_data_list();
+
+		
+
+
+
+		// Role-based project filtering and chart data
+		$user_id = $this->user_id;
+		$user_role = $this->session->userdata('role'); // Adjust if your role is stored differently
+
+		// Map roles to project fields
+		$role_field_map = array(
+			'project_verifier' => 'project_verifier',
+			'process_owner'    => 'process_owner',
+			'item_owner'       => 'item_owner',
+			'manager'          => 'manager',
+			'assigned_by'      => 'assigned_by',
+		);
+
+		$role_where = '';
+		if (isset($role_field_map[$user_role])) {
+			$field = $role_field_map[$user_role];
+			$role_where = "FIND_IN_SET('$user_id', $field)";
+		} else {
+			// If user has multiple roles or fallback, show all relevant projects
+			$role_where =
+				"FIND_IN_SET('$user_id', project_verifier) OR " .
+				"FIND_IN_SET('$user_id', process_owner) OR " .
+				"FIND_IN_SET('$user_id', item_owner) OR " .
+				"FIND_IN_SET('$user_id', manager) OR " .
+				"FIND_IN_SET('$user_id', assigned_by)";
+		}
+
+		$query = "SELECT * FROM company_projects WHERE status IN (0,1,2) AND ($role_where) ORDER BY id DESC";
+		$projects = $this->db->query($query)->result();
+
+		$within_time_dataPoint_open_projects = 0;
+		$within_time_dataPoint_closed_projects = 0;
+		$within_time_dataPoint_cancelled_projects = 0;
+
+		$overdue_datapoint_open_projects = 0;
+		$overdue_datapoint_closed_projects = 0;
+		$overdue_datapoint_cancelled_projects = 0;
+
+		foreach($projects as $projects_key=>$projects_value){
+			$today = date("Y-m-d H:i:s");
+			$due_date = $projects_value->due_date;
+
+			if($projects_value->status == 0){
+				if($today<$due_date){
+					$within_time_dataPoint_open_projects++;
+				}
+				if($today>$due_date){
+					$overdue_datapoint_open_projects++;
+				}
+			}else if($projects_value->status == 1){
+				if($today<$due_date){
+					$within_time_dataPoint_closed_projects++;
+				}
+				if($today>$due_date){
+					$overdue_datapoint_closed_projects++;
+				}
+			}else if($projects_value->status == 2){
+				if($today<$due_date){
+					$within_time_dataPoint_cancelled_projects++;
+				}
+				if($today>$due_date){
+					$overdue_datapoint_cancelled_projects++;
+				}
+			}
+		}
+
+		$within_time_dataPoint = array();
+		$within_time_dataPoint[] = array("label"=> "Open Projects", "y"=> $within_time_dataPoint_open_projects);
+		$within_time_dataPoint[] = array("label"=> "Closed Projects", "y"=> $within_time_dataPoint_closed_projects);
+		$within_time_dataPoint[] = array("label"=> "Cancelled Projects", "y"=> $within_time_dataPoint_cancelled_projects);
+		$data['within_time_dataPoint'] = $within_time_dataPoint;
+
+		$overdue_datapoint = array();
+		$overdue_datapoint[] = array("label"=> "Open Projects", "y"=> $overdue_datapoint_open_projects);
+		$overdue_datapoint[] = array("label"=> "Closed Projects", "y"=> $overdue_datapoint_closed_projects);
+		$overdue_datapoint[] = array("label"=> "Cancelled Projects", "y"=> $overdue_datapoint_cancelled_projects);
+		$data['overdue_datapoint'] = $overdue_datapoint;
+
+		// $this->load->view('dashboard2',$data);		
+		$this->load->view('projectdashboardView',$data);	
+
+	}
+
+
 	public function index()
 	{   
 
@@ -297,7 +543,6 @@ class Dashboard extends CI_Controller {
 
 
 	}
-
 
 	public function User()
 	{   
@@ -7774,7 +8019,7 @@ public function downloadExceptionChangesUpdationsofItems()
 
 	
 		$data['projects']=$projects;
-		$data['page_title']="Dashboard";
+		$data['page_title']="Project Detail";
 
 		// $this->load->view('project_detail3',$data);
 		$this->load->view('project_detail_view',$data);

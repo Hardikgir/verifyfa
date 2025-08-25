@@ -123,6 +123,8 @@ $user_role_subadmin_cnt=user_role_subadmin_cnt($user_id,$entity_code);
 			</div>
 			<div class="sidebar-wrapper">
 
+			
+
 			<ul class="nav">
 
 				
@@ -180,11 +182,14 @@ $user_role_subadmin_cnt=user_role_subadmin_cnt($user_id,$entity_code);
 <?php 
 $usercntrole=Count_user_role();
 $role_base_title = 'Admin';
-$dashboard_url = base_url().'index.php/dashboard';
-if($usercntrole == '3'){
+// $dashboard_url = base_url().'index.php/dashboard';
+$dashboard_url = base_url().'index.php/dashboard/admin';
+if($usercntrole == '3' || $usercntrole == '2' || $usercntrole == '1'){
 	$role_base_title = 'User';
 	$dashboard_url = base_url().'index.php/dashboard/User';
 }
+
+
 
 if($usercntrole > 0){ 
 	
@@ -197,11 +202,17 @@ if($usercntrole != '3'){
 					</li>
 					<hr class="hr" />
 					<li class="nav-item <?php if(($page_title=='Dashboard')){ echo 'active'; } ?>">
-						<a class="nav-link" href="#"> <i class="material-icons">dashboard</i>
+						<a class="nav-link" href="<?php echo $dashboard_url; ?>"> <i class="material-icons">dashboard</i>
 							<p><?php echo $role_base_title; ?> Dashboard</p>
 						</a>
 					</li>
 					<?php } ?>
+
+					<li class="nav-item <?php if(($page_title=='Project Dashboard') || ($page_title=='Project Detail')){echo 'active';}?><?php if(($page_title=='')){ echo 'active'; } ?>">
+						<a class="nav-link" href="<?php echo base_url().'index.php/dashboard/project'; ?>"> <i class="material-icons">dashboard</i>
+							<p>Project Dashboard</p>
+						</a>
+					</li>
 
       <?php 
 		if(($user_role_addmin_cnt > 0)){ 
@@ -301,11 +312,12 @@ if($usercntrole != '3'){
 						</a>
 					</li> */ ?>
 
+					<?php /*
 					<li class="nav-item <?php echo $page_title=='User Dashboard'?'active':'';?> ">
 						<a class="nav-link" href="<?php echo $dashboard_url;?>"> <i class="material-icons">dashboard</i>
 							<p>Dashboard</p>
 						</a>
-					</li>
+					</li> */ ?>
 
 					
           <?php 
