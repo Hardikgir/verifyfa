@@ -1258,51 +1258,7 @@ class Dashboard extends CI_Controller {
 		$this->load->view('users',array("meta"=>$data,"users"=>$users));
 
 	}
-	public function projectdetail_Previous_14July($id)
-	{
-		$condition=array('id'=>$id);
-		$projects=$this->tasks->get_data('company_projects',$condition);	
-		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
-		$new_pattern = array("_", "_", "");
-		foreach($projects as $project)
-		{
-			$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($project->project_name)));
-			$getprojectdetails=$this->tasks->projectdetail($project_name);
-			// echo $this->db->last_query();
-			if(!empty($getprojectdetails))
-			{
-				$project->TotalQuantity= ((int)$getprojectdetails[0]->TotalQuantity);
-				if($getprojectdetails[0]->VerifiedQuantity !='')
-				$project->VerifiedQuantity=$getprojectdetails[0]->VerifiedQuantity;
-				else
-				$project->VerifiedQuantity=0;
-			}
-			else
-			{   
-				$project->TotalQuantity=0;
-				$project->VerifiedQuantity=0;
-			}
-			$condition2=array('id'=>$project->company_id);
-			$company=$this->tasks->get_data('company',$condition2);
-			$companylocation=$this->tasks->get_data('company_locations',array('id'=>$project->project_location));
-			$project->company_name=$company[0]->company_name;
-			$project->project_location=$companylocation[0]->location_name;
-		}
-
-
-
-		$listing=getTagUntag($projects[0]->project_name);
-		$cat=getTagUntagCategories($projects[0]->project_name);
-		$allcategories=getCategories($projects[0]->project_name);
-		
-
-		// print_r($projects);
-		$data['projects']=$projects;
-		$data['page_title']="Dashboard";
-
-		$this->load->view('project_detail',$data);
-		
-	}
+	
 	public function projectprint($id)
 	{
 		$condition=array('id'=>$id);
@@ -7066,417 +7022,7 @@ public function downloadExceptionChangesUpdationsofItems()
 
 
 
-	public function projectdetail2($id)
-	{
-		$condition=array('id'=>$id);
-		$projects=$this->tasks->get_data('company_projects',$condition);	
-
-		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
-		$new_pattern = array("_", "_", "");
-		foreach($projects as $project)
-		{
-			$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($project->project_name)));
-			$getprojectdetails=$this->tasks->projectdetail($project_name);
-			// echo $this->db->last_query();
-			if(!empty($getprojectdetails))
-			{
-				$project->TotalQuantity= ((int)$getprojectdetails[0]->TotalQuantity);
-				if($getprojectdetails[0]->VerifiedQuantity !='')
-				$project->VerifiedQuantity=$getprojectdetails[0]->VerifiedQuantity;
-				else
-				$project->VerifiedQuantity=0;
-			}
-			else
-			{   
-				$project->TotalQuantity=0;
-				$project->VerifiedQuantity=0;
-			}
-			$condition2=array('id'=>$project->company_id);
-			$company=$this->tasks->get_data('company',$condition2);
-			$companylocation=$this->tasks->get_data('company_locations',array('id'=>$project->project_location));
-			$project->company_name=$company[0]->company_name;
-			$project->project_location=$companylocation[0]->location_name;
-		}
-
-
-
-		$listing=getTagUntag($projects[0]->project_name);
-		$cat=getTagUntagCategories($projects[0]->project_name);
-		$allcategories=getCategories($projects[0]->project_name);
-
-
-		//HArdik Code Start From HErer
-
-		if($projects[0]->project_type=='TG')
-		{
-
-		}
-		if($projects[0]->project_type=='NT')
-		{
-
-		}
-
-		if($projects[0]->project_type=='UN')
-		{
-
-		}
-
-		if($projects[0]->project_type=='CD')
-		{
-			if($listing['ytotal']!=0 && $listing['ntotal']!=0 && $listing['natotal']!=0){
-
-			}else if($listing['ytotal']!=0 && $listing['ntotal']!=0 && $listing['natotal']==0){
-
-			}else if($listing['ytotal']!=0 && $listing['ntotal']==0 && $listing['natotal']==0){
-			
-			}else if($listing['ytotal']!=0 && $listing['ntotal']==0 && $listing['natotal']!=0){
-
-			}else if($listing['ytotal']==0 && $listing['ntotal']==0 && $listing['natotal']!=0){
-
-			}else if($listing['ytotal']==0 && $listing['ntotal']!=0 && $listing['natotal']!=0){
-
-			}else if($listing['ytotal']==0 && $listing['ntotal']!=0 && $listing['natotal']==0){
-
-			}
-		}
-
-		
-			$tcatlabels=array();
-			$tcatdata=array();
-			$atcatlabels=array();
-			$atcatdata=array();
-			$cnt1=0;
-			$tcattotalpercentage=0;
-			$atcattotalpercentage=0;
-			$taggedOverall=[];
-			$totaltaggedOverall=[];
-			$amounttaggedOverall=[];
-			$amounttotaltaggedOverall=[];
-
-
-			$taggedpieChart = array();
-			$amounttaggedpieChart = array();
-			$count_zero = 0;
-			$count =1;
-			if(count($cat['tagged'])>0 && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD')){		//taggedpieChart	//amounttaggedpieChart
-				foreach($cat['tagged'] as $tcat)
-				{
-					$taggedOverall[$tcat['category']]=$tcat['verified'];
-					$totaltaggedOverall[$tcat['category']]=$tcat['total'];
-					$amounttaggedOverall[$tcat['category']]=$tcat['verifiedamount'];
-					$amounttotaltaggedOverall[$tcat['category']]=$tcat['totalamount'];
-					$tcattotalpercentage=$tcattotalpercentage+$tcat['percentage'];
-					$atcattotalpercentage=$atcattotalpercentage+$tcat['amountpercentage'];
-					array_push($tcatlabels,$tcat['category'].' ('.round(($tcat['percentage']/count($cat['tagged'])),2).' %)');
-					array_push($tcatdata,round(($tcat['percentage']/count($cat['tagged'])),2));
-					array_push($atcatlabels,$tcat['category'].' ('.$tcat['amountpercentage'].' %)');
-					array_push($atcatdata,$tcat['amountpercentage']);
-					$cnt1++;
-
-					$taggedpieChart[$count_zero]['label'] = $tcat['category'];
-					$taggedpieChart[$count_zero]['y'] = round(($tcat['percentage']/count($cat['tagged'])),2);
-					$taggedpieChart[$count_zero]['id'] = $count;
-
-
-					$amounttaggedpieChart[$count_zero]['label'] = $tcat['category'];
-					$amounttaggedpieChart[$count_zero]['y'] = $tcat['amountpercentage'];;
-					$amounttaggedpieChart[$count_zero]['id'] = $count;
-
-
-					$count++;
-					$count_zero++;
-				}
-			}
-
-
-			$data['taggedpieChart'] = $taggedpieChart; 
-			$data['amounttaggedpieChart'] = $amounttaggedpieChart; 
-			// echo '<pre>tcatlabels ::';
-			// print_r($tcatlabels);
-			// echo '</pre>';
-			// echo '<pre>tcatdata ::';
-			// print_r($tcatdata);
-			// echo '</pre>';
-			// exit();
-			// exit();
-
-			$utcatlabels=[];
-			$utcatdata=[];
-			$autcatlabels=[];
-			$autcatdata=[];
-			$cnt2=0;
-			$utcattotalpercentage=0;
-			$autcattotalpercentage=0;
-			$untaggedOverall=[];
-			$totaluntaggedOverall=[];
-			$amountuntaggedOverall=[];
-			$amounttotaluntaggedOverall=[];
-			if(count($cat['untagged'])>0 && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD')){	//untaggedpieChart	//amountuntaggedpieChart
-				foreach($cat['untagged'] as $utcat)
-				{
-					$untaggedOverall[$utcat['category']]=$utcat['verified'];
-					$totaluntaggedOverall[$utcat['category']]=$utcat['total'];
-					$amountuntaggedOverall[$utcat['category']]=$utcat['verifiedamount'];
-					$amounttotaluntaggedOverall[$utcat['category']]=$utcat['totalamount'];
-					$utcattotalpercentage+=$utcat['percentage'];
-					$autcattotalpercentage+=$utcat['amountpercentage'];
-					array_push($utcatlabels,$utcat['category'].' ('.round(($utcat['percentage']/count($cat['untagged'])),2).' %)');
-					array_push($utcatdata,round(($utcat['percentage']/count($cat['untagged'])),2));
-					array_push($autcatlabels,$utcat['category'].' ('.$utcat['amountpercentage'].' %)');
-					array_push($autcatdata,$utcat['amountpercentage']);
-					$cnt2++;
-				}
-			}
-
-			$uscatlabels=array();
-			$uscatdata=array();
-			$auscatlabels=array();
-			$auscatdata=array();
-			$cnt3=0;
-			$uscattotalpercentage=0;
-			$auscattotalpercentage=0;
-			$ustaggedOverall=[];
-			$totalustaggedOverall=[];
-			$amountustaggedOverall=[];
-			$amounttotalustaggedOverall=[];
-			if(count($cat['unspecified'])>0 && ($projects[0]->project_type=='UN' || $projects[0]->project_type=='CD')){			//unspecifiedpieChart	//amountunspecifiedpieChart
-				foreach($cat['unspecified'] as $uscat)
-				{
-					$untaggedOverall[$uscat['category']]=$uscat['verified'];
-					$totalustaggedOverall[$uscat['category']]=$uscat['total'];
-					$amountustaggedOverall[$uscat['category']]=$uscat['verifiedamount'];
-					$amounttotalustaggedOverall[$uscat['category']]=$uscat['totalamount'];
-					$uscattotalpercentage+=$uscat['percentage'];
-					$auscattotalpercentage+=$uscat['amountpercentage'];
-					array_push($uscatlabels,$uscat['category'].' ('.round(($uscat['percentage']/count($cat['unspecified'])),2).' %)');
-					array_push($uscatdata,round(($uscat['percentage']/count($cat['unspecified'])),2));
-					array_push($auscatlabels,$uscat['category'].' ('.$uscat['amountpercentage'].' %)');
-					array_push($auscatdata,$uscat['amountpercentage']);
-					$cnt3++;
-				}
-			}
-
-			$ResourcewiseUtilizationChart = array();
-			$count_zero = 0;
-			$count =1;
-
-			$yverifiernames=array();
-			$yverifierperc=array();
-			if($listing['ytotal']>0 && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD'))
-			{		//resourcetaggedpieChart	//resourceuntaggedpieChart
-				foreach($listing['projectverifiers'] as $list)
-				{
-				
-					array_push($yverifiernames,get_UserName($list->user_id).' ('.round(($list->usertagged/$listing['ytotal'])*100,2).' %)');
-					array_push($yverifierperc,round(($list->usertagged/$listing['ytotal'])*100,2));
-
-
-					$ResourcewiseUtilizationChart[$count_zero]['label'] = get_UserName($list->user_id);
-					$ResourcewiseUtilizationChart[$count_zero]['y'] = round(($list->usertagged/$listing['ytotal'])*100,2);
-					$ResourcewiseUtilizationChart[$count_zero]['id'] = $count;
-					$count++;
-					$count_zero++;
-
-				}
-
-			}
-
-			$data['ResourcewiseUtilizationChart'] = $ResourcewiseUtilizationChart;
-
-			$yverifiernames=array();
-			$yverifierperc=array();
-			if($listing['natotal']>0 && ($projects[0]->project_type=='UN' || $projects[0]->project_type=='CD'))
-			{		//resourceunspecifiedpieChart
-				foreach($listing['projectverifiers'] as $list)
-				{
-					array_push($yverifiernames,get_UserName($list->user_id).' ('.round(($list->userunspecified/$listing['natotal'])*100,2).' %)');
-					array_push($yverifierperc,round(($list->userunspecified/$listing['natotal'])*100,2));
-				
-				}
-			}
-
-
-
-
-			$merger=[];
-			$totalmerger=[];
-			$amountmerger=[];
-			$amounttotalmerger=[];
-			if(count($cat['tagged'])>0 && count($cat['untagged'])>0 && count($cat['unspecified'])>0)
-			{
-				foreach (array_keys($taggedOverall + $untaggedOverall+$ustaggedOverall) as $item) {
-				$merger[$item] = (isset($taggedOverall[$item]) ? $taggedOverall[$item] : 0) + (isset($untaggedOverall[$item]) ? $untaggedOverall[$item] : 0) + (isset($ustaggedOverall[$item]) ? $ustaggedOverall[$item] : 0);
-				}
-				foreach (array_keys($totaltaggedOverall + $totaluntaggedOverall+$ustaggedOverall) as $item) {
-					$totalmerger[$item] = (isset($totaltaggedOverall[$item]) ? $totaltaggedOverall[$item] : 0) + (isset($totaluntaggedOverall[$item]) ? $totaluntaggedOverall[$item] : 0) + (isset($totalustaggedOverall[$item]) ? $totalustaggedOverall[$item] : 0);
-				}
-				foreach (array_keys($amounttaggedOverall + $amountuntaggedOverall+$amountustaggedOverall) as $item) {
-					$amountmerger[$item] = (isset($amounttaggedOverall[$item]) ? $amounttaggedOverall[$item] : 0) + (isset($amountuntaggedOverall[$item]) ? $amountuntaggedOverall[$item] : 0) + (isset($amountustaggedOverall[$item]) ? $amountustaggedOverall[$item] : 0);
-				}
-				foreach (array_keys($amounttotaltaggedOverall + $amounttotaluntaggedOverall+$amountustaggedOverall) as $item) {
-					$amounttotalmerger[$item] = (isset($amounttotaltaggedOverall[$item]) ? $amounttotaltaggedOverall[$item] : 0) + (isset($amounttotaluntaggedOverall[$item]) ? $amounttotaluntaggedOverall[$item] : 0) + (isset($amounttotalustaggedOverall[$item]) ? $amounttotalustaggedOverall[$item] : 0);
-				}
-				
-			}
-			else if(count($cat['tagged'])>0 && count($cat['untagged'])>0 && count($cat['unspecified'])==0)
-			{
-				foreach (array_keys($taggedOverall + $untaggedOverall) as $item) {
-					$merger[$item] = (isset($taggedOverall[$item]) ? $taggedOverall[$item] : 0) + (isset($untaggedOverall[$item]) ? $untaggedOverall[$item] : 0);
-				}
-				foreach (array_keys($totaltaggedOverall + $totaluntaggedOverall) as $item) {
-					$totalmerger[$item] = (isset($totaltaggedOverall[$item]) ? $totaltaggedOverall[$item] : 0) + (isset($totaluntaggedOverall[$item]) ? $totaluntaggedOverall[$item] : 0);
-				}
-				foreach (array_keys($amounttaggedOverall + $amountuntaggedOverall) as $item) {
-					$amountmerger[$item] = (isset($amounttaggedOverall[$item]) ? $amounttaggedOverall[$item] : 0) + (isset($amountuntaggedOverall[$item]) ? $amountuntaggedOverall[$item] : 0);
-				}
-				foreach (array_keys($amounttotaltaggedOverall + $amounttotaluntaggedOverall) as $item) {
-					$amounttotalmerger[$item] = (isset($amounttotaltaggedOverall[$item]) ? $amounttotaltaggedOverall[$item] : 0) + (isset($amounttotaluntaggedOverall[$item]) ? $amounttotaluntaggedOverall[$item] : 0);
-				}
-			}
-			else if(count($cat['tagged'])>0 && count($cat['untagged'])==0 && count($cat['unspecified'])>0)
-			{
-				foreach (array_keys($taggedOverall + $ustaggedOverall) as $item) {
-					$merger[$item] = (isset($taggedOverall[$item]) ? $taggedOverall[$item] : 0) + (isset($ustaggedOverall[$item]) ? $ustaggedOverall[$item] : 0);
-				}
-				foreach (array_keys($totaltaggedOverall + $ustaggedOverall) as $item) {
-					$totalmerger[$item] = (isset($totaltaggedOverall[$item]) ? $totaltaggedOverall[$item] : 0) + (isset($totalustaggedOverall[$item]) ? $totalustaggedOverall[$item] : 0);
-				}
-				foreach (array_keys($amounttaggedOverall+$amountustaggedOverall) as $item) {
-					$amountmerger[$item] = (isset($amounttaggedOverall[$item]) ? $amounttaggedOverall[$item] : 0) + (isset($amountustaggedOverall[$item]) ? $amountustaggedOverall[$item] : 0);
-				}
-				foreach (array_keys($amounttotaltaggedOverall +$amountustaggedOverall) as $item) {
-					$amounttotalmerger[$item] = (isset($amounttotaltaggedOverall[$item]) ? $amounttotaltaggedOverall[$item] : 0) + (isset($amounttotalustaggedOverall[$item]) ? $amounttotalustaggedOverall[$item] : 0);
-				}
-			}
-			else if(count($cat['tagged'])==0 && count($cat['untagged'])>0 && count($cat['unspecified'])>0)
-			{
-				foreach (array_keys($untaggedOverall+$ustaggedOverall) as $item) {
-					$merger[$item] = (isset($untaggedOverall[$item]) ? $untaggedOverall[$item] : 0) + (isset($ustaggedOverall[$item]) ? $ustaggedOverall[$item] : 0);
-				}
-				foreach (array_keys($totaluntaggedOverall+$ustaggedOverall) as $item) {
-					$totalmerger[$item] = (isset($totaluntaggedOverall[$item]) ? $totaluntaggedOverall[$item] : 0) + (isset($totalustaggedOverall[$item]) ? $totalustaggedOverall[$item] : 0);
-				}
-				foreach (array_keys($amountuntaggedOverall+$amountustaggedOverall) as $item) {
-					$amountmerger[$item] = (isset($amountuntaggedOverall[$item]) ? $amountuntaggedOverall[$item] : 0) + (isset($amountustaggedOverall[$item]) ? $amountustaggedOverall[$item] : 0);
-				}
-				foreach (array_keys($amounttotaluntaggedOverall+$amountustaggedOverall) as $item) {
-					$amounttotalmerger[$item] = (isset($amounttotaluntaggedOverall[$item]) ? $amounttotaluntaggedOverall[$item] : 0) + (isset($amounttotalustaggedOverall[$item]) ? $amounttotalustaggedOverall[$item] : 0);
-				}
-			}
-			else if(count($cat['tagged'])==0 && count($cat['untagged'])==0 && count($cat['unspecified'])>0)
-			{
-				$merger=$ustaggedOverall;
-				$totalmerger=$totalustaggedOverall;
-				$amountmerger=$amountustaggedOverall;
-				$amounttotalmerger=$amounttotalustaggedOverall;
-			}
-			else if(count($cat['tagged'])==0 && count($cat['untagged'])>0 && count($cat['unspecified'])==0)
-			{
-				$merger=$untaggedOverall;
-				$totalmerger=$totaluntaggedOverall;
-				$amountmerger=$amountuntaggedOverall;
-				$amounttotalmerger=$amounttotaluntaggedOverall;
-			}
-			else if(count($cat['tagged'])>0 && count($cat['untagged'])==0 && count($cat['unspecified'])==0)
-			{
-				$merger=$taggedOverall;
-				$totalmerger=$totaltaggedOverall;
-				$amountmerger=$amounttaggedOverall;
-				$amounttotalmerger=$amounttotaltaggedOverall;
-			}
-
-
-			// echo '<pre>merger ::';
-			// print_r($merger);
-			// echo '</pre>';
-			// exit();
-
-			$libarlabels=[];
-			$libarvalues=[];
-			$amountbarlabels=[];
-			$amountbarvalues=[];
-			foreach($merger as $key=> $item )
-			{
-				array_push($libarlabels,$key);
-				array_push($libarvalues,round(($item/$totalmerger[$key])*100,2));
-				
-			}
-			foreach($amountmerger as $key=> $item )
-			{
-				array_push($amountbarlabels,$key);
-				array_push($amountbarvalues,round(($item/$amounttotalmerger[$key])*100,2));
-			}
-
-
-			///libarchart		//amountbarchart
-
-
-
-
-		//HArdik Code End Here
-
-
-
-
-		/*
-		echo '<pre>listing ';
-		print_r($listing);
-		echo '</pre>';
-		// exit();
-
-
-		$value1 = round(($listing['yverified']/$listing['ytotal'])*100,2);
-		$value2 = 100-(round((($listing['yverified'])/($listing['ytotal']))*100,2));
-		$data = array($value1,$value2);
-
-		echo '<pre>data ';
-		print_r($data);
-		echo '</pre>';
-		// exit();
-
-		$donutlabel1_cal = round(($listing['yverified']/$listing['ytotal'])*100,2);
-		$donutlabel1 = "Tagged (".$donutlabel1_cal." %): ".$listing['yverified']." of ".$listing['ytotal']." Li";
-
-		$donutlabel2_cal = 100-(round((($listing['yverified'])/($listing['ytotal']))*100,2));		
-		$my_value = $listing['ytotal']-$listing['yverified'];
-		$donutlabel2 = "Unverified (".$donutlabel2_cal." %) : ".$my_value.") of ".($listing['ytotal'])." Li";
-		*/
-
-		$tagged_filled_percentage = round(($listing['yverified']/$listing['ytotal'])*100,2);
-		$unverify_filled_percentage = 100-(round((($listing['yverified'])/($listing['ytotal']))*100,2));
-
-		$tagged_count_value = $listing['yverified'];
-		$unverify_count_value = $listing['ytotal']-$listing['yverified'];
-		$my_value = $listing['ytotal']-$listing['yverified'];
-
-
-		$graph_array_data[0]['label'] = "Tagged";
-		$graph_array_data[0]['y'] = $tagged_filled_percentage;
-		// $graph_array_data[0]['y'] = $tagged_count_value;
-		$graph_array_data[0]['id'] = 1;
-
-		
-		$graph_array_data[1]['label'] = "Unverified";
-		$graph_array_data[1]['y'] = $unverify_filled_percentage;
-		// $graph_array_data[1]['y'] = $unverify_count_value;
-		$graph_array_data[1]['id'] = 2;
-
-		$data['graph_array_data'] = $graph_array_data;
-
-		
-
-		// echo '<pre>projects :';
-		// print_r($projects);
-		// echo '</pre>';
-		// exit();
-
 	
-		$data['projects']=$projects;
-		$data['page_title']="Dashboard";
-
-		$this->load->view('project_detail2',$data);
-		
-	}
 
 
 
@@ -8026,6 +7572,464 @@ public function downloadExceptionChangesUpdationsofItems()
 		
 	}
 
+
+	public function projectdetail_Previous1($id)
+	{
+		$condition=array('id'=>$id);
+		$projects=$this->tasks->get_data('company_projects',$condition);	
+		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+		$new_pattern = array("_", "_", "");
+		foreach($projects as $project)
+		{
+			$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($project->project_name)));
+			$getprojectdetails=$this->tasks->projectdetail($project_name);
+			// echo $this->db->last_query();
+			if(!empty($getprojectdetails))
+			{
+				$project->TotalQuantity= ((int)$getprojectdetails[0]->TotalQuantity);
+				if($getprojectdetails[0]->VerifiedQuantity !='')
+				$project->VerifiedQuantity=$getprojectdetails[0]->VerifiedQuantity;
+				else
+				$project->VerifiedQuantity=0;
+			}
+			else
+			{   
+				$project->TotalQuantity=0;
+				$project->VerifiedQuantity=0;
+			}
+			$condition2=array('id'=>$project->company_id);
+			$company=$this->tasks->get_data('company',$condition2);
+			$companylocation=$this->tasks->get_data('company_locations',array('id'=>$project->project_location));
+			$project->company_name=$company[0]->company_name;
+			$project->project_location=$companylocation[0]->location_name;
+		}
+
+
+
+		$listing=getTagUntag($projects[0]->project_name);
+		$cat=getTagUntagCategories($projects[0]->project_name);
+		$allcategories=getCategories($projects[0]->project_name);
+		
+
+		// print_r($projects);
+		$data['projects']=$projects;
+		$data['page_title']="Dashboard";
+
+		$this->load->view('project_detail',$data);
+		
+	}
+
+	public function projectdetail_Previous2($id)
+	{
+		$condition=array('id'=>$id);
+		$projects=$this->tasks->get_data('company_projects',$condition);	
+
+		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+		$new_pattern = array("_", "_", "");
+		foreach($projects as $project)
+		{
+			$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($project->project_name)));
+			$getprojectdetails=$this->tasks->projectdetail($project_name);
+			// echo $this->db->last_query();
+			if(!empty($getprojectdetails))
+			{
+				$project->TotalQuantity= ((int)$getprojectdetails[0]->TotalQuantity);
+				if($getprojectdetails[0]->VerifiedQuantity !='')
+				$project->VerifiedQuantity=$getprojectdetails[0]->VerifiedQuantity;
+				else
+				$project->VerifiedQuantity=0;
+			}
+			else
+			{   
+				$project->TotalQuantity=0;
+				$project->VerifiedQuantity=0;
+			}
+			$condition2=array('id'=>$project->company_id);
+			$company=$this->tasks->get_data('company',$condition2);
+			$companylocation=$this->tasks->get_data('company_locations',array('id'=>$project->project_location));
+			$project->company_name=$company[0]->company_name;
+			$project->project_location=$companylocation[0]->location_name;
+		}
+
+
+
+		$listing=getTagUntag($projects[0]->project_name);
+		$cat=getTagUntagCategories($projects[0]->project_name);
+		$allcategories=getCategories($projects[0]->project_name);
+
+
+		//HArdik Code Start From HErer
+
+		if($projects[0]->project_type=='TG')
+		{
+
+		}
+		if($projects[0]->project_type=='NT')
+		{
+
+		}
+
+		if($projects[0]->project_type=='UN')
+		{
+
+		}
+
+		if($projects[0]->project_type=='CD')
+		{
+			if($listing['ytotal']!=0 && $listing['ntotal']!=0 && $listing['natotal']!=0){
+
+			}else if($listing['ytotal']!=0 && $listing['ntotal']!=0 && $listing['natotal']==0){
+
+			}else if($listing['ytotal']!=0 && $listing['ntotal']==0 && $listing['natotal']==0){
+			
+			}else if($listing['ytotal']!=0 && $listing['ntotal']==0 && $listing['natotal']!=0){
+
+			}else if($listing['ytotal']==0 && $listing['ntotal']==0 && $listing['natotal']!=0){
+
+			}else if($listing['ytotal']==0 && $listing['ntotal']!=0 && $listing['natotal']!=0){
+
+			}else if($listing['ytotal']==0 && $listing['ntotal']!=0 && $listing['natotal']==0){
+
+			}
+		}
+
+		
+			$tcatlabels=array();
+			$tcatdata=array();
+			$atcatlabels=array();
+			$atcatdata=array();
+			$cnt1=0;
+			$tcattotalpercentage=0;
+			$atcattotalpercentage=0;
+			$taggedOverall=[];
+			$totaltaggedOverall=[];
+			$amounttaggedOverall=[];
+			$amounttotaltaggedOverall=[];
+
+
+			$taggedpieChart = array();
+			$amounttaggedpieChart = array();
+			$count_zero = 0;
+			$count =1;
+			if(count($cat['tagged'])>0 && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD')){		//taggedpieChart	//amounttaggedpieChart
+				foreach($cat['tagged'] as $tcat)
+				{
+					$taggedOverall[$tcat['category']]=$tcat['verified'];
+					$totaltaggedOverall[$tcat['category']]=$tcat['total'];
+					$amounttaggedOverall[$tcat['category']]=$tcat['verifiedamount'];
+					$amounttotaltaggedOverall[$tcat['category']]=$tcat['totalamount'];
+					$tcattotalpercentage=$tcattotalpercentage+$tcat['percentage'];
+					$atcattotalpercentage=$atcattotalpercentage+$tcat['amountpercentage'];
+					array_push($tcatlabels,$tcat['category'].' ('.round(($tcat['percentage']/count($cat['tagged'])),2).' %)');
+					array_push($tcatdata,round(($tcat['percentage']/count($cat['tagged'])),2));
+					array_push($atcatlabels,$tcat['category'].' ('.$tcat['amountpercentage'].' %)');
+					array_push($atcatdata,$tcat['amountpercentage']);
+					$cnt1++;
+
+					$taggedpieChart[$count_zero]['label'] = $tcat['category'];
+					$taggedpieChart[$count_zero]['y'] = round(($tcat['percentage']/count($cat['tagged'])),2);
+					$taggedpieChart[$count_zero]['id'] = $count;
+
+
+					$amounttaggedpieChart[$count_zero]['label'] = $tcat['category'];
+					$amounttaggedpieChart[$count_zero]['y'] = $tcat['amountpercentage'];;
+					$amounttaggedpieChart[$count_zero]['id'] = $count;
+
+
+					$count++;
+					$count_zero++;
+				}
+			}
+
+
+			$data['taggedpieChart'] = $taggedpieChart; 
+			$data['amounttaggedpieChart'] = $amounttaggedpieChart; 
+			// echo '<pre>tcatlabels ::';
+			// print_r($tcatlabels);
+			// echo '</pre>';
+			// echo '<pre>tcatdata ::';
+			// print_r($tcatdata);
+			// echo '</pre>';
+			// exit();
+			// exit();
+
+			$utcatlabels=[];
+			$utcatdata=[];
+			$autcatlabels=[];
+			$autcatdata=[];
+			$cnt2=0;
+			$utcattotalpercentage=0;
+			$autcattotalpercentage=0;
+			$untaggedOverall=[];
+			$totaluntaggedOverall=[];
+			$amountuntaggedOverall=[];
+			$amounttotaluntaggedOverall=[];
+			if(count($cat['untagged'])>0 && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD')){	//untaggedpieChart	//amountuntaggedpieChart
+				foreach($cat['untagged'] as $utcat)
+				{
+					$untaggedOverall[$utcat['category']]=$utcat['verified'];
+					$totaluntaggedOverall[$utcat['category']]=$utcat['total'];
+					$amountuntaggedOverall[$utcat['category']]=$utcat['verifiedamount'];
+					$amounttotaluntaggedOverall[$utcat['category']]=$utcat['totalamount'];
+					$utcattotalpercentage+=$utcat['percentage'];
+					$autcattotalpercentage+=$utcat['amountpercentage'];
+					array_push($utcatlabels,$utcat['category'].' ('.round(($utcat['percentage']/count($cat['untagged'])),2).' %)');
+					array_push($utcatdata,round(($utcat['percentage']/count($cat['untagged'])),2));
+					array_push($autcatlabels,$utcat['category'].' ('.$utcat['amountpercentage'].' %)');
+					array_push($autcatdata,$utcat['amountpercentage']);
+					$cnt2++;
+				}
+			}
+
+			$uscatlabels=array();
+			$uscatdata=array();
+			$auscatlabels=array();
+			$auscatdata=array();
+			$cnt3=0;
+			$uscattotalpercentage=0;
+			$auscattotalpercentage=0;
+			$ustaggedOverall=[];
+			$totalustaggedOverall=[];
+			$amountustaggedOverall=[];
+			$amounttotalustaggedOverall=[];
+			if(count($cat['unspecified'])>0 && ($projects[0]->project_type=='UN' || $projects[0]->project_type=='CD')){			//unspecifiedpieChart	//amountunspecifiedpieChart
+				foreach($cat['unspecified'] as $uscat)
+				{
+					$untaggedOverall[$uscat['category']]=$uscat['verified'];
+					$totalustaggedOverall[$uscat['category']]=$uscat['total'];
+					$amountustaggedOverall[$uscat['category']]=$uscat['verifiedamount'];
+					$amounttotalustaggedOverall[$uscat['category']]=$uscat['totalamount'];
+					$uscattotalpercentage+=$uscat['percentage'];
+					$auscattotalpercentage+=$uscat['amountpercentage'];
+					array_push($uscatlabels,$uscat['category'].' ('.round(($uscat['percentage']/count($cat['unspecified'])),2).' %)');
+					array_push($uscatdata,round(($uscat['percentage']/count($cat['unspecified'])),2));
+					array_push($auscatlabels,$uscat['category'].' ('.$uscat['amountpercentage'].' %)');
+					array_push($auscatdata,$uscat['amountpercentage']);
+					$cnt3++;
+				}
+			}
+
+			$ResourcewiseUtilizationChart = array();
+			$count_zero = 0;
+			$count =1;
+
+			$yverifiernames=array();
+			$yverifierperc=array();
+			if($listing['ytotal']>0 && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD'))
+			{		//resourcetaggedpieChart	//resourceuntaggedpieChart
+				foreach($listing['projectverifiers'] as $list)
+				{
+				
+					array_push($yverifiernames,get_UserName($list->user_id).' ('.round(($list->usertagged/$listing['ytotal'])*100,2).' %)');
+					array_push($yverifierperc,round(($list->usertagged/$listing['ytotal'])*100,2));
+
+
+					$ResourcewiseUtilizationChart[$count_zero]['label'] = get_UserName($list->user_id);
+					$ResourcewiseUtilizationChart[$count_zero]['y'] = round(($list->usertagged/$listing['ytotal'])*100,2);
+					$ResourcewiseUtilizationChart[$count_zero]['id'] = $count;
+					$count++;
+					$count_zero++;
+
+				}
+
+			}
+
+			$data['ResourcewiseUtilizationChart'] = $ResourcewiseUtilizationChart;
+
+			$yverifiernames=array();
+			$yverifierperc=array();
+			if($listing['natotal']>0 && ($projects[0]->project_type=='UN' || $projects[0]->project_type=='CD'))
+			{		//resourceunspecifiedpieChart
+				foreach($listing['projectverifiers'] as $list)
+				{
+					array_push($yverifiernames,get_UserName($list->user_id).' ('.round(($list->userunspecified/$listing['natotal'])*100,2).' %)');
+					array_push($yverifierperc,round(($list->userunspecified/$listing['natotal'])*100,2));
+				
+				}
+			}
+
+
+
+
+			$merger=[];
+			$totalmerger=[];
+			$amountmerger=[];
+			$amounttotalmerger=[];
+			if(count($cat['tagged'])>0 && count($cat['untagged'])>0 && count($cat['unspecified'])>0)
+			{
+				foreach (array_keys($taggedOverall + $untaggedOverall+$ustaggedOverall) as $item) {
+				$merger[$item] = (isset($taggedOverall[$item]) ? $taggedOverall[$item] : 0) + (isset($untaggedOverall[$item]) ? $untaggedOverall[$item] : 0) + (isset($ustaggedOverall[$item]) ? $ustaggedOverall[$item] : 0);
+				}
+				foreach (array_keys($totaltaggedOverall + $totaluntaggedOverall+$ustaggedOverall) as $item) {
+					$totalmerger[$item] = (isset($totaltaggedOverall[$item]) ? $totaltaggedOverall[$item] : 0) + (isset($totaluntaggedOverall[$item]) ? $totaluntaggedOverall[$item] : 0) + (isset($totalustaggedOverall[$item]) ? $totalustaggedOverall[$item] : 0);
+				}
+				foreach (array_keys($amounttaggedOverall + $amountuntaggedOverall+$amountustaggedOverall) as $item) {
+					$amountmerger[$item] = (isset($amounttaggedOverall[$item]) ? $amounttaggedOverall[$item] : 0) + (isset($amountuntaggedOverall[$item]) ? $amountuntaggedOverall[$item] : 0) + (isset($amountustaggedOverall[$item]) ? $amountustaggedOverall[$item] : 0);
+				}
+				foreach (array_keys($amounttotaltaggedOverall + $amounttotaluntaggedOverall+$amountustaggedOverall) as $item) {
+					$amounttotalmerger[$item] = (isset($amounttotaltaggedOverall[$item]) ? $amounttotaltaggedOverall[$item] : 0) + (isset($amounttotaluntaggedOverall[$item]) ? $amounttotaluntaggedOverall[$item] : 0) + (isset($amounttotalustaggedOverall[$item]) ? $amounttotalustaggedOverall[$item] : 0);
+				}
+				
+			}
+			else if(count($cat['tagged'])>0 && count($cat['untagged'])>0 && count($cat['unspecified'])==0)
+			{
+				foreach (array_keys($taggedOverall + $untaggedOverall) as $item) {
+					$merger[$item] = (isset($taggedOverall[$item]) ? $taggedOverall[$item] : 0) + (isset($untaggedOverall[$item]) ? $untaggedOverall[$item] : 0);
+				}
+				foreach (array_keys($totaltaggedOverall + $totaluntaggedOverall) as $item) {
+					$totalmerger[$item] = (isset($totaltaggedOverall[$item]) ? $totaltaggedOverall[$item] : 0) + (isset($totaluntaggedOverall[$item]) ? $totaluntaggedOverall[$item] : 0);
+				}
+				foreach (array_keys($amounttaggedOverall + $amountuntaggedOverall) as $item) {
+					$amountmerger[$item] = (isset($amounttaggedOverall[$item]) ? $amounttaggedOverall[$item] : 0) + (isset($amountuntaggedOverall[$item]) ? $amountuntaggedOverall[$item] : 0);
+				}
+				foreach (array_keys($amounttotaltaggedOverall + $amounttotaluntaggedOverall) as $item) {
+					$amounttotalmerger[$item] = (isset($amounttotaltaggedOverall[$item]) ? $amounttotaltaggedOverall[$item] : 0) + (isset($amounttotaluntaggedOverall[$item]) ? $amounttotaluntaggedOverall[$item] : 0);
+				}
+			}
+			else if(count($cat['tagged'])>0 && count($cat['untagged'])==0 && count($cat['unspecified'])>0)
+			{
+				foreach (array_keys($taggedOverall + $ustaggedOverall) as $item) {
+					$merger[$item] = (isset($taggedOverall[$item]) ? $taggedOverall[$item] : 0) + (isset($ustaggedOverall[$item]) ? $ustaggedOverall[$item] : 0);
+				}
+				foreach (array_keys($totaltaggedOverall + $ustaggedOverall) as $item) {
+					$totalmerger[$item] = (isset($totaltaggedOverall[$item]) ? $totaltaggedOverall[$item] : 0) + (isset($totalustaggedOverall[$item]) ? $totalustaggedOverall[$item] : 0);
+				}
+				foreach (array_keys($amounttaggedOverall+$amountustaggedOverall) as $item) {
+					$amountmerger[$item] = (isset($amounttaggedOverall[$item]) ? $amounttaggedOverall[$item] : 0) + (isset($amountustaggedOverall[$item]) ? $amountustaggedOverall[$item] : 0);
+				}
+				foreach (array_keys($amounttotaltaggedOverall +$amountustaggedOverall) as $item) {
+					$amounttotalmerger[$item] = (isset($amounttotaltaggedOverall[$item]) ? $amounttotaltaggedOverall[$item] : 0) + (isset($amounttotalustaggedOverall[$item]) ? $amounttotalustaggedOverall[$item] : 0);
+				}
+			}
+			else if(count($cat['tagged'])==0 && count($cat['untagged'])>0 && count($cat['unspecified'])>0)
+			{
+				foreach (array_keys($untaggedOverall+$ustaggedOverall) as $item) {
+					$merger[$item] = (isset($untaggedOverall[$item]) ? $untaggedOverall[$item] : 0) + (isset($ustaggedOverall[$item]) ? $ustaggedOverall[$item] : 0);
+				}
+				foreach (array_keys($totaluntaggedOverall+$ustaggedOverall) as $item) {
+					$totalmerger[$item] = (isset($totaluntaggedOverall[$item]) ? $totaluntaggedOverall[$item] : 0) + (isset($totalustaggedOverall[$item]) ? $totalustaggedOverall[$item] : 0);
+				}
+				foreach (array_keys($amountuntaggedOverall+$amountustaggedOverall) as $item) {
+					$amountmerger[$item] = (isset($amountuntaggedOverall[$item]) ? $amountuntaggedOverall[$item] : 0) + (isset($amountustaggedOverall[$item]) ? $amountustaggedOverall[$item] : 0);
+				}
+				foreach (array_keys($amounttotaluntaggedOverall+$amountustaggedOverall) as $item) {
+					$amounttotalmerger[$item] = (isset($amounttotaluntaggedOverall[$item]) ? $amounttotaluntaggedOverall[$item] : 0) + (isset($amounttotalustaggedOverall[$item]) ? $amounttotalustaggedOverall[$item] : 0);
+				}
+			}
+			else if(count($cat['tagged'])==0 && count($cat['untagged'])==0 && count($cat['unspecified'])>0)
+			{
+				$merger=$ustaggedOverall;
+				$totalmerger=$totalustaggedOverall;
+				$amountmerger=$amountustaggedOverall;
+				$amounttotalmerger=$amounttotalustaggedOverall;
+			}
+			else if(count($cat['tagged'])==0 && count($cat['untagged'])>0 && count($cat['unspecified'])==0)
+			{
+				$merger=$untaggedOverall;
+				$totalmerger=$totaluntaggedOverall;
+				$amountmerger=$amountuntaggedOverall;
+				$amounttotalmerger=$amounttotaluntaggedOverall;
+			}
+			else if(count($cat['tagged'])>0 && count($cat['untagged'])==0 && count($cat['unspecified'])==0)
+			{
+				$merger=$taggedOverall;
+				$totalmerger=$totaltaggedOverall;
+				$amountmerger=$amounttaggedOverall;
+				$amounttotalmerger=$amounttotaltaggedOverall;
+			}
+
+
+			// echo '<pre>merger ::';
+			// print_r($merger);
+			// echo '</pre>';
+			// exit();
+
+			$libarlabels=[];
+			$libarvalues=[];
+			$amountbarlabels=[];
+			$amountbarvalues=[];
+			foreach($merger as $key=> $item )
+			{
+				array_push($libarlabels,$key);
+				array_push($libarvalues,round(($item/$totalmerger[$key])*100,2));
+				
+			}
+			foreach($amountmerger as $key=> $item )
+			{
+				array_push($amountbarlabels,$key);
+				array_push($amountbarvalues,round(($item/$amounttotalmerger[$key])*100,2));
+			}
+
+
+			///libarchart		//amountbarchart
+
+
+
+
+		//HArdik Code End Here
+
+
+
+
+		/*
+		echo '<pre>listing ';
+		print_r($listing);
+		echo '</pre>';
+		// exit();
+
+
+		$value1 = round(($listing['yverified']/$listing['ytotal'])*100,2);
+		$value2 = 100-(round((($listing['yverified'])/($listing['ytotal']))*100,2));
+		$data = array($value1,$value2);
+
+		echo '<pre>data ';
+		print_r($data);
+		echo '</pre>';
+		// exit();
+
+		$donutlabel1_cal = round(($listing['yverified']/$listing['ytotal'])*100,2);
+		$donutlabel1 = "Tagged (".$donutlabel1_cal." %): ".$listing['yverified']." of ".$listing['ytotal']." Li";
+
+		$donutlabel2_cal = 100-(round((($listing['yverified'])/($listing['ytotal']))*100,2));		
+		$my_value = $listing['ytotal']-$listing['yverified'];
+		$donutlabel2 = "Unverified (".$donutlabel2_cal." %) : ".$my_value.") of ".($listing['ytotal'])." Li";
+		*/
+
+		$tagged_filled_percentage = round(($listing['yverified']/$listing['ytotal'])*100,2);
+		$unverify_filled_percentage = 100-(round((($listing['yverified'])/($listing['ytotal']))*100,2));
+
+		$tagged_count_value = $listing['yverified'];
+		$unverify_count_value = $listing['ytotal']-$listing['yverified'];
+		$my_value = $listing['ytotal']-$listing['yverified'];
+
+
+		$graph_array_data[0]['label'] = "Tagged";
+		$graph_array_data[0]['y'] = $tagged_filled_percentage;
+		// $graph_array_data[0]['y'] = $tagged_count_value;
+		$graph_array_data[0]['id'] = 1;
+
+		
+		$graph_array_data[1]['label'] = "Unverified";
+		$graph_array_data[1]['y'] = $unverify_filled_percentage;
+		// $graph_array_data[1]['y'] = $unverify_count_value;
+		$graph_array_data[1]['id'] = 2;
+
+		$data['graph_array_data'] = $graph_array_data;
+
+		
+
+		// echo '<pre>projects :';
+		// print_r($projects);
+		// echo '</pre>';
+		// exit();
+
+	
+		$data['projects']=$projects;
+		$data['page_title']="Dashboard";
+
+		$this->load->view('project_detail2',$data);
+		
+	}
 
 	
 }

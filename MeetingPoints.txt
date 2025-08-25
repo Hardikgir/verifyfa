@@ -30,3 +30,28 @@ Role :- Group Admin
 Entity :- PROBUDS
 User :- jasmeet@probuds.co.in
 Pass :- 123456
+
+
+Previous Project Details Pages Link
+-> http://localhost/codeigniter/verifyfa/index.php/dashboard/projectdetail/1
+-> http://localhost/codeigniter/verifyfa/index.php/dashboard/projectdetail_Previous1/1
+-> http://localhost/codeigniter/verifyfa/index.php/dashboard/projectdetail_Previous2/1
+
+-> http://localhost/codeigniter/verifyfa/index.php/ProjectDetails/one/1
+-> http://localhost/codeigniter/verifyfa/index.php/ProjectDetails/two/1 (PREVIOUS CODE WORKING PERFECT)
+-> http://localhost/codeigniter/verifyfa/index.php/ProjectDetails/three/1
+
+
+
+
+Project id :- 
+SELECT * FROM v74_ci_verifyfa_live_server_db.testing1;
+SELECT id,item_category,item_sub_category,item_unique_code,item_sub_code,item_classification,verifiable_status_y_n_na,tag_status_y_n_na,date_of_item_capitalization,total_item_amount_capitalized,verified_by,mode_of_verification  FROM v74_ci_verifyfa_live_server_db.testing1;
+
+Line Item (Li) Breakup :- 
+
+
+Amount wise Breakup :- 
+
+
+Resource wise Utilization :- 
