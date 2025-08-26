@@ -354,10 +354,10 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                             <th>Tagged</th>
                                                                             <?php
                                                                             }
-                                                                            if(count($cat['unspecified'])>0 && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD' ))
+                                                                            if(count($cat['untagged'])>0 && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD' ))
                                                                             {
                                                                             ?>
-                                                                            <th>Non-Tagged <?php echo count($cat['untagged']);?></th>
+                                                                            <th>Non-Tagged <?php // echo count($cat['untagged']);?></th>
                                                                             <?php
                                                                             }
                                                                             if(!empty($cat['unspecified']) && ($projects[0]->project_type=='UN' || $projects[0]->project_type=='CD'))
@@ -433,16 +433,16 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                             <?php
                                                                             } 
                                                                             }
-                                                                            if(!empty($cat['unspecified']) && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD'))
+                                                                            if(!empty($cat['untagged']) && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD'))
                                                                             {
                                                                             $overall=0;
                                                                             // $overallverified=0;
                                                                             // $overalltotal=0;
                                                                             $process=0;
-                                                                            if(count($cat['unspecified'])>0)
+                                                                            if(count($cat['untagged'])>0)
                                                                             {
                                                                             $ut=0;
-                                                                            foreach($cat['unspecified'] as $ct)
+                                                                            foreach($cat['untagged'] as $ct)
                                                                             { 
                                                                                 if($ct['category']==$alcat->item_category)
                                                                                 {
@@ -557,7 +557,7 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                             <?php 
                                                                             }
                                                                             ?>
-                                                                           
+                                                                           <td></td>
                                                                         </tr>
                                                                         <tr class=" text-center">
                                                                             <td><strong>%</strong></td>
@@ -588,7 +588,7 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                             <?php 
                                                                             }
                                                                             ?>
-                                                                           
+                                                                           <td></td>
                                                                         </tr>
                                                                     </tbody>
                                                                 </table>
@@ -655,7 +655,7 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                             {
                                                                                 echo '<th>Tagged</th>';
                                                                             }
-                                                                            if(count($cat['unspecified'])>0 && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD' ))
+                                                                            if(count($cat['untagged'])>0 && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD' ))
                                                                             {
                                                                                 echo '<th>Non-Tagged</th>';
                                                                             }
@@ -780,12 +780,12 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                             <?php
                                                                             } 
                                                                             }
-                                                                            if(!empty($cat['unspecified']) && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD'))
+                                                                            if(!empty($cat['untagged']) && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD'))
                                                                             {
-                                                                            if(count($cat['unspecified'])>0)
+                                                                            if(count($cat['untagged'])>0)
                                                                             {
                                                                             $ut=0;
-                                                                            foreach($cat['unspecified'] as $ct)
+                                                                            foreach($cat['untagged'] as $ct)
                                                                             { 
                                                                                 if($ct['category']==$alcat->item_category)
                                                                                 {
@@ -905,7 +905,7 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                             <?php 
                                                                             }
                                                                             ?>
-                                                                            
+                                                                             <td></td>
                                                                         </tr>
                                                                         <tr class=" text-center">
                                                                             <td><strong>%</strong></td>
@@ -936,7 +936,7 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                             <?php 
                                                                             }
                                                                             ?>
-                                                                           
+                                                                            <td></td>
                                                                         </tr>
                                                                     </tbody>
                                                                 </table>

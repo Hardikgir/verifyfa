@@ -207,12 +207,12 @@ if($usercntrole != '3'){
 						</a>
 					</li>
 					<?php } ?>
-
+	<?php /*
 					<li class="nav-item <?php if(($page_title=='Project Dashboard') || ($page_title=='Project Detail')){echo 'active';}?><?php if(($page_title=='')){ echo 'active'; } ?>">
 						<a class="nav-link" href="<?php echo base_url().'index.php/dashboard/project'; ?>"> <i class="material-icons">dashboard</i>
 							<p>Project Dashboard</p>
 						</a>
-					</li>
+					</li> */ ?>
 
       <?php 
 		if(($user_role_addmin_cnt > 0)){ 

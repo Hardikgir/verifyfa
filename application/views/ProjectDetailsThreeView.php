@@ -716,7 +716,7 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                             <th>Tagged</th>
                                                                             <?php
                                                                             }
-                                                                            if(count($cat['unspecified'])>0 && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD' ))
+                                                                            if(count($cat['untagged'])>0 && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD' ))
                                                                             {
                                                                             ?>
                                                                             <th>Non-Tagged</th>

@@ -239,8 +239,8 @@ class ProjectDetails extends CI_Controller {
 
 		$filled = ($ttt+$tntt+$tutt) > 0 ? round((($ttv+$tntv+$tutv)/($ttt+$tntt+$tutt))*100,2).'0':'0';
 		$LineItemBreakup_DonutChart_dataPoints = array( 
-			array("label"=>"Verified", "symbol" => "Verified","y"=>($filled/10)),
-			array("label"=>"Not Verified", "symbol" => "Not-Verified","y"=>100-($filled/10)),
+			array("label"=>"Verified", "symbol" => "Verified","y"=>$filled),
+			array("label"=>"Not Verified", "symbol" => "Not-Verified","y"=>100-$filled),
 		);
 		$data['LineItemBreakup_DonutChart_dataPoints']=$LineItemBreakup_DonutChart_dataPoints;
 
