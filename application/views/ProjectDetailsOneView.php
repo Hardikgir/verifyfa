@@ -433,16 +433,16 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                             <?php
                                                                             } 
                                                                             }
-                                                                            if(!empty($cat['untagged']) && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD'))
+                                                                            if(!empty($cat['unspecified']) && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD'))
                                                                             {
                                                                             $overall=0;
                                                                             // $overallverified=0;
                                                                             // $overalltotal=0;
                                                                             $process=0;
-                                                                            if(count($cat['untagged'])>0)
+                                                                            if(count($cat['unspecified'])>0)
                                                                             {
                                                                             $ut=0;
-                                                                            foreach($cat['untagged'] as $ct)
+                                                                            foreach($cat['unspecified'] as $ct)
                                                                             { 
                                                                                 if($ct['category']==$alcat->item_category)
                                                                                 {
@@ -557,7 +557,7 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                             <?php 
                                                                             }
                                                                             ?>
-                                                                            <td></td>
+                                                                           
                                                                         </tr>
                                                                         <tr class=" text-center">
                                                                             <td><strong>%</strong></td>
@@ -588,7 +588,7 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                             <?php 
                                                                             }
                                                                             ?>
-                                                                            <td></td>
+                                                                           
                                                                         </tr>
                                                                     </tbody>
                                                                 </table>
@@ -653,27 +653,19 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                             <?php
                                                                             if($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD' )
                                                                             {
-                                                                            ?>
-                                                                            <th>Tagged</th>
-                                                                            <?php
+                                                                                echo '<th>Tagged</th>';
                                                                             }
                                                                             if(count($cat['unspecified'])>0 && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD' ))
                                                                             {
-                                                                            ?>
-                                                                            <th>Non-Tagged</th>
-                                                                            <?php
+                                                                                echo '<th>Non-Tagged</th>';
                                                                             }
                                                                             if(!empty($cat['unspecified']) && ($projects[0]->project_type=='UN' || $projects[0]->project_type=='CD'))
                                                                             {
-                                                                            ?>
-                                                                            <th>Unspecified</th>
-                                                                            <?php
+                                                                                echo '<th>Unspecified</th>';
                                                                             }
                                                                             if($projects[0]->project_type=='CD' )
                                                                             {
-                                                                            ?>
-                                                                            <th>Overall</th>
-                                                                            <?php
+                                                                                echo '<th>Overall</th>';
                                                                             }
                                                                             ?>
                                                                             <th>Verification Status</th>
@@ -743,6 +735,7 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                             }
                                                                             ?>
                                                                             <td><?php echo $count.' of '.$alcat->catitems.' Li';?></td>
+                                                                            
                                                                             <?php
                                                                             if(!empty($cat['tagged']) && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD'))
                                                                             {
@@ -764,14 +757,11 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                                     $ttt=$ttt+$ct['totalamount'];
                                                                                     $ct['amountpercentage'] ==100? $process++ : $process;
                                                                             ?>
-                                                                            
-                                                                            <td><?php
-                                                                            
-                                                                          
-
-                                                                            // echo $ct['verifiedamount']/100000;
-
-                                                                            echo $ct['amountpercentage'].'% <br/>'.getmoney_format(round(($ct['verifiedamount']/100000),2)).' of '.getmoney_format(round(($ct['totalamount']/100000),2)).' Lacs';?></td>
+                                                                            <!-- Tagged Start -->
+                                                                            <td>
+                                                                                <?php echo $ct['amountpercentage'].'% <br/>'.getmoney_format(round(($ct['verifiedamount']/100000),2)).' of '.getmoney_format(round(($ct['totalamount']/100000),2)).' Lacs';?>
+                                                                            </td>
+                                                                            <!-- Tagged End -->
                                                                             <?php
                                                                             $tg++;
                                                                                 }
@@ -790,12 +780,12 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                             <?php
                                                                             } 
                                                                             }
-                                                                            if(!empty($cat['untagged']) && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD'))
+                                                                            if(!empty($cat['unspecified']) && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD'))
                                                                             {
-                                                                            if(count($cat['untagged'])>0)
+                                                                            if(count($cat['unspecified'])>0)
                                                                             {
                                                                             $ut=0;
-                                                                            foreach($cat['untagged'] as $ct)
+                                                                            foreach($cat['unspecified'] as $ct)
                                                                             { 
                                                                                 if($ct['category']==$alcat->item_category)
                                                                                 {
@@ -806,7 +796,12 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                                     $tntt=$tntt+$ct['totalamount'];
                                                                                     $ct['amountpercentage'] ==100? $process++ : $process;
                                                                             ?>
-                                                                            <td><?php echo $ct['amountpercentage'].'% <br/>'.getmoney_format(round(($ct['verifiedamount']/100000),2)).' of '.getmoney_format(round(($ct['totalamount']/100000),2)).' Lacs';?></td>
+
+                                                                            <!-- Overall Start -->
+                                                                            <td>
+                                                                                <?php echo $ct['amountpercentage'].'% <br/>'.getmoney_format(round(($ct['verifiedamount']/100000),2)).' of '.getmoney_format(round(($ct['totalamount']/100000),2)).' Lacs';?>
+                                                                            </td>
+                                                                             <!-- Overall End -->
                                                                             <?php
                                                                                 $ut++;
                                                                                 }
@@ -842,7 +837,11 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                                     $tutt=$tutt+$ct['totalamount'];
                                                                                         $ct['amountpercentage'] ==100? $process++ : $process;
                                                                                 ?>
-                                                                                <td><?php echo $ct['amountpercentage'].'% <br/>'.getmoney_format(round(($ct['verifiedamount']/100000),2)).' of '.getmoney_format(round(($ct['totalamount']/100000),2)).' Lacs';?></td>
+                                                                                <!-- Overall Start -->
+                                                                                <td>
+                                                                                    <?php echo $ct['amountpercentage'].'% <br/>'.getmoney_format(round(($ct['verifiedamount']/100000),2)).' of '.getmoney_format(round(($ct['totalamount']/100000),2)).' Lacs';?>
+                                                                                </td>
+                                                                                <!-- Overall Start -->
                                                                                 <?php
                                                                                     $us++;
                                                                                     }
@@ -906,7 +905,7 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                             <?php 
                                                                             }
                                                                             ?>
-                                                                            <td></td>
+                                                                            
                                                                         </tr>
                                                                         <tr class=" text-center">
                                                                             <td><strong>%</strong></td>
@@ -937,7 +936,7 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                             <?php 
                                                                             }
                                                                             ?>
-                                                                            <td></td>
+                                                                           
                                                                         </tr>
                                                                     </tbody>
                                                                 </table>

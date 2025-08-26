@@ -26,10 +26,25 @@ Dahboard Should be Another way as showing in Document (Only for Function user Th
 
 For User Login
 
-Role :- Group Admin
 Entity :- PROBUDS
+Role :- Group Admin
 User :- jasmeet@probuds.co.in
 Pass :- 123456
+
+Role :- Entity Owner
+User :- rajiv@test
+Pass :- 123456
+
+Role :- Manager
+User :- shubh@probuds.co.in
+Pass :- 123456
+
+
+Role :- Verifier
+User :- sangeet123dhn@gmail.com [OR] pradeep@probuds.co.in
+Pass :- 123456
+
+
 
 
 Previous Project Details Pages Link
@@ -48,6 +63,9 @@ Project id :-
 SELECT * FROM v74_ci_verifyfa_live_server_db.testing1;
 SELECT id,item_category,item_sub_category,item_unique_code,item_sub_code,item_classification,verifiable_status_y_n_na,tag_status_y_n_na,date_of_item_capitalization,total_item_amount_capitalized,verified_by,mode_of_verification  FROM v74_ci_verifyfa_live_server_db.testing1;
 
+
+
+
 Line Item (Li) Breakup :- 
 
 
@@ -55,3 +73,28 @@ Amount wise Breakup :-
 
 
 Resource wise Utilization :- 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Query :- 
+SELECT * FROM v74_ci_verifyfa_live_server_db.testing1;
+SELECT id,item_category,item_sub_category,item_unique_code,item_sub_code,item_classification,verifiable_status_y_n_na,tag_status_y_n_na,date_of_item_capitalization,total_item_amount_capitalized,verified_by,mode_of_verification  FROM v74_ci_verifyfa_live_server_db.testing1;
+
+SELECT id,item_category,item_sub_category,item_unique_code,item_sub_code,item_classification,verifiable_status_y_n_na,tag_status_y_n_na,date_of_item_capitalization,total_item_amount_capitalized,verified_by,mode_of_verification  FROM v74_ci_verifyfa_live_server_db.testing1 where item_category = 'COM';
+SELECT id,item_category,item_sub_category,item_unique_code,item_sub_code,item_classification,verifiable_status_y_n_na,tag_status_y_n_na,date_of_item_capitalization,total_item_amount_capitalized,verified_by,mode_of_verification  FROM v74_ci_verifyfa_live_server_db.testing1 where item_category = 'TJ';
+SELECT id,item_category,item_sub_category,item_unique_code,item_sub_code,item_classification,verifiable_status_y_n_na,tag_status_y_n_na,date_of_item_capitalization,total_item_amount_capitalized,verified_by,mode_of_verification  FROM v74_ci_verifyfa_live_server_db.testing1 where item_category = 'OE';
