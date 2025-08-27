@@ -37,8 +37,29 @@ class Login extends CI_Controller {
 		);
 		
 		$login=$this->login->get_data('users',$condition);
+
+	
 		if(!empty($login) && count($login) > 0)
 		{
+			$this->db->select('*');
+            $this->db->from('registered_user_plan');
+            $this->db->where('id',$login[0]->registered_user_id);
+            $query = $this->db->get();
+            $registered_user_plan_result= $query->row();
+		
+			$today = date("Y-m-d"); // current date
+			if ($today > $registered_user_plan_result->plan_end_date) {
+				$this->session->set_flashdata('error_message', 'This user subscription plan has been expired.');
+				redirect(base_url());
+				exit();
+			}
+			
+
+			if($login[0]->registered_user_id == '1'){
+				$this->session->set_flashdata('error_message', 'This User is already logged in. Contact your Group Admin to Reset the session, if required.');
+				redirect(base_url(),$condition);
+			}
+
 
 			if($login[0]->is_login == '1'){
 				$this->session->set_flashdata('error_message', 'This User is already logged in. Contact your Group Admin to Reset the session, if required.');
