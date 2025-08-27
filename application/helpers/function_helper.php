@@ -740,4 +740,26 @@ function get_role_name($role_id){
     return $rolename;
 }
 
+
+function get_user_all_roles($user_id,$entity_code){
+    $CI =& get_instance();
+    $query=$CI->db->query("select * from user_role where user_id =".$user_id." AND entity_code='".$entity_code."' ");
+    $data= $query->result();
+
+
+    $all_roles=array();
+    foreach($data as $row){
+        $roles=explode(",",$row->user_role);
+        $rolename="";
+        foreach($roles as $role){
+            $all_roles[]=$role;
+            $rolename .= get_role_name($role).",";
+        }
+        $row->rolename=substr_replace($rolename,"",-1);
+    }
+
+    $all_roles = array_unique($all_roles);
+    return $all_roles;
+}
+
 ?>

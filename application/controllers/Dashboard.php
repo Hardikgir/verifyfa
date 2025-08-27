@@ -159,7 +159,7 @@ class Dashboard extends CI_Controller {
 		}
 		$data['projects']=$projects;
 		// Common For All Funcionality End Here
-		$data['page_title']="Dashboard";
+		$data['page_title']="Admin Dashboard";
 		
 
 		$this->db->select("*");

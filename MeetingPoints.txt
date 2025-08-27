@@ -98,3 +98,8 @@ SELECT id,item_category,item_sub_category,item_unique_code,item_sub_code,item_cl
 SELECT id,item_category,item_sub_category,item_unique_code,item_sub_code,item_classification,verifiable_status_y_n_na,tag_status_y_n_na,date_of_item_capitalization,total_item_amount_capitalized,verified_by,mode_of_verification  FROM v74_ci_verifyfa_live_server_db.testing1 where item_category = 'COM';
 SELECT id,item_category,item_sub_category,item_unique_code,item_sub_code,item_classification,verifiable_status_y_n_na,tag_status_y_n_na,date_of_item_capitalization,total_item_amount_capitalized,verified_by,mode_of_verification  FROM v74_ci_verifyfa_live_server_db.testing1 where item_category = 'TJ';
 SELECT id,item_category,item_sub_category,item_unique_code,item_sub_code,item_classification,verifiable_status_y_n_na,tag_status_y_n_na,date_of_item_capitalization,total_item_amount_capitalized,verified_by,mode_of_verification  FROM v74_ci_verifyfa_live_server_db.testing1 where item_category = 'OE';
+
+
+Need To fix
+-> While Verify By Application Below column need to update
+    -> 
