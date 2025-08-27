@@ -227,14 +227,27 @@ class ProjectDetails extends CI_Controller {
             $my_array[$alcat->item_category]['overalltotal'] = $overalltotal;
 		}
 
-		$LineItemBreakupChart_dataPoints1 = array();
-		$LineItemBreakupChart_dataPoints2 = array();
-		foreach($my_array as $my_array_key=>$my_array_value){			
-			$LineItemBreakupChart_dataPoints1[] = array("label"=> $my_array_key, "y"=> $my_array_value['percentage']);
-			$LineItemBreakupChart_dataPoints2[] = array("label"=> $my_array_key, "y"=> 100-(int)$my_array_value['percentage']);
+		$LineItemBreakupChart_Verified_dataPoints1 = array();
+		$LineItemBreakupChart_NotVerified_dataPoints2 = array();
+		foreach($my_array as $my_array_key=>$my_array_value){		
+			/*	
+			$LineItemBreakupChart_Verified_dataPoints1[] = array("label"=> $my_array_key, "y"=> $my_array_value['percentage'],"customText" => "50");
+			$LineItemBreakupChart_NotVerified_dataPoints2[] = array("label"=> $my_array_key, "y"=> 100-(int)$my_array_value['percentage'],"customText" => "150"); */
+
+			$LineItemBreakupChart_Verified_dataPoints1[] = array("label"=> $my_array_key, "y"=> $my_array_value['percentage']);
+			$LineItemBreakupChart_NotVerified_dataPoints2[] = array("label"=> $my_array_key, "y"=> 100-(int)$my_array_value['percentage']);
 		}
-		$data['LineItemBreakupChart_dataPoints1']=$LineItemBreakupChart_dataPoints1;
-		$data['LineItemBreakupChart_dataPoints2']=$LineItemBreakupChart_dataPoints2;
+
+		// echo '<pre>LineItemBreakupChart_Verified_dataPoints1 ';
+		// print_r($LineItemBreakupChart_Verified_dataPoints1);
+		// echo '</pre>';
+
+		// echo '<pre>LineItemBreakupChart_NotVerified_dataPoints2 ';
+		// print_r($LineItemBreakupChart_NotVerified_dataPoints2);
+		// echo '</pre>';
+		// exit();
+		$data['LineItemBreakupChart_Verified_dataPoints1']=$LineItemBreakupChart_Verified_dataPoints1;
+		$data['LineItemBreakupChart_NotVerified_dataPoints2']=$LineItemBreakupChart_NotVerified_dataPoints2;
 		
 
 		$filled = ($ttt+$tntt+$tutt) > 0 ? round((($ttv+$tntv+$tutv)/($ttt+$tntt+$tutt))*100,2).'0':'0';
@@ -402,8 +415,8 @@ class ProjectDetails extends CI_Controller {
 		
 		
 	   $AmountwiseBreakup_DonutChart_dataPoints = array( 
-		   array("label"=>"Verified", "symbol" => "VRF","y"=>round((float)$filled)),
-		   array("label"=>"Not Verified", "symbol" => "NTVRF","y"=>round((float)$y_value)),
+		   array("label"=>"Verified", "symbol" => "Verified","y"=>round((float)$filled)),
+		   array("label"=>"Not Verified", "symbol" => "Not Verified","y"=>round((float)$y_value)),
 	   );
 
 

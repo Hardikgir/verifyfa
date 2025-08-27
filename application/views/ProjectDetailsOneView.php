@@ -1707,9 +1707,21 @@ $('.closethismodel').click(function(){
         },
         theme: "light2",
         animationEnabled: true,
-        toolTip:{
-            shared: true,
-            reversed: true
+        toolTip: {
+        shared: true,
+        reversed: true,
+        content: function(e) {
+            var content = "";
+            for (var i = 0; i < e.entries.length; i++) {
+                    var dp = e.entries[i].dataPoint;
+
+                    // Use custom property if available, otherwise show Y
+                    var customValue = dp.customText || dp.y;
+
+                    content += e.entries[i].dataSeries.name + " (" + dp.label + "): " + customValue + "<br/>";
+                }
+                return content;
+            }
         },
         axisY: {
             suffix: "%"
@@ -1721,14 +1733,14 @@ $('.closethismodel').click(function(){
                 showInLegend: true,
                 yValueFormatString: "#,##0 ",
                 color: "Green",
-                dataPoints: <?php echo json_encode($LineItemBreakupChart_dataPoints1, JSON_NUMERIC_CHECK); ?>
+                dataPoints: <?php echo json_encode($LineItemBreakupChart_Verified_dataPoints1, JSON_NUMERIC_CHECK); ?>
             },{
                 type: "stackedColumn100",
                 name: "Not Verified",
                 showInLegend: true,
                 yValueFormatString: "#,##0 ",
                 color: "Red",
-                dataPoints: <?php echo json_encode($LineItemBreakupChart_dataPoints2, JSON_NUMERIC_CHECK); ?>
+                dataPoints: <?php echo json_encode($LineItemBreakupChart_NotVerified_dataPoints2, JSON_NUMERIC_CHECK); ?>
             }
         ]
     });
