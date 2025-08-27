@@ -98,6 +98,12 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
   <div class="row">
     <div class="col-md-12 mt-5">
 
+    <form id="user_select_role" method="post" class="bg-white">
+       
+        <input type="hidden" name="user_select_role_val" id="user_select_role_val" value="">
+        <input type="submit" id="user_select_role_submit" style="display: none;">
+    </form>
+
     <div class="text-center">
 
                       <?php
@@ -112,10 +118,12 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
 
                     foreach($get_user_all_roles as $role){
                         $active_role = '';
-                        if($this->main_role == $role){
-                            $active_role = 'active';
+                            if(isset($_REQUEST['user_select_role_val'])){
+                                if($_REQUEST['user_select_role_val'] == $role){
+                                $active_role = 'active';
+                            }
                         }
-                        echo '<a href="javascript:void(0)" class="btn btn-primary mx-3 '.$active_role.'">'.get_role_name($role).'</a> ';                       
+                        echo '<a href="javascript:void(0)" onclick="user_select('.$role.')" class="btn btn-primary mx-3 '.$active_role.'">'.get_role_name($role).'</a> ';                       
                     }
 
                     ?>
@@ -123,6 +131,7 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
 
     </div>
     </div>
+    
 
 
     <div class="row">
@@ -627,4 +636,11 @@ $(document).ready(function(){
 
 
 });
+
+
+
+function user_select(active_role){
+    $('#user_select_role_val').val(active_role);
+    $('#user_select_role_submit').click();
+}
 </script>
