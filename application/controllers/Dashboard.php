@@ -235,6 +235,8 @@ class Dashboard extends CI_Controller {
 		
 		$projects=$this->tasks->get_data('company_projects',$condition);	
 
+		
+
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		foreach($projects as $project)
@@ -255,6 +257,10 @@ class Dashboard extends CI_Controller {
 				$project->TotalQuantity=0;
 				$project->VerifiedQuantity=0;
 			}
+
+
+			$project->LocationValue=get_LocationName($project->project_location);
+			$project->CompanyValue=get_CompanyName($project->company_id);
 			
 		}
 

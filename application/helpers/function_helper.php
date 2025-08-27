@@ -82,8 +82,20 @@ function get_CompanyName($id)
     {
         return "N/A";
     }
-    
-
+}
+function get_LocationName($id)
+{
+    $CI =& get_instance();
+    $CI->load->database();
+    $company_query=$CI->db->select('location_name')->where('id', $id)->get('company_locations')->result();
+    if(count($company_query) > 0)
+    {
+        return $company_query[0]->location_name;
+    }
+    else
+    {
+        return "N/A";
+    }
 }
 function getTagUntag($projectname)
 {

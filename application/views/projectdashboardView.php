@@ -162,9 +162,9 @@ $this->load->view('layouts/footer');
                                                             <div class="table-responsive">
                                                             <button type="submit" class="btn btn-primary">Clear Project/Data</button>
                                                                 <table class="table">
-                                                                    <thead class=" text-center">
+                                                                    <thead class="text-center_">
                                                                         <tr>
-                                                                            <th>#</th>
+                                                                            <!-- <th>#</th> -->
                                                                             <?php if($this->main_role == '5'){
                                                                                 echo '<th>#</th>';
                                                                             }else{
@@ -174,6 +174,8 @@ $this->load->view('layouts/footer');
                                                                             } ?>
                                                                             <th><span>Project ID</span></th>
                                                                             <th><span>Project Name</span></th>
+                                                                            <th><span>Company</span></th>
+                                                                            <th><span>Location</span></th>                                                                            
                                                                             <th><span>Date of Project assigned</span></th>
                                                                             <th><span>Due Date</span></th>
                                                                             <th><span>Remaining/(Overdue) Day</span></th>
@@ -202,9 +204,7 @@ $this->load->view('layouts/footer');
                                                                                 if($pro->status==0 || $pro->status==3)
                                                                                 { ?>
                                                                                     <tr class="text-center">
-                                                                                        <td>
-                                                                                           
-                                                                                        </td>
+                                                                                        
                                                                                         <?php
                                                                                         if($this->main_role == '5'){ ?>
                                                                                         <td>
@@ -244,6 +244,8 @@ $this->load->view('layouts/footer');
                                                                                                 <?php echo $pro->project_name;?>
                                                                                             </a>
                                                                                         </td>
+                                                                                        <td><?php echo $pro->CompanyValue;?></td>
+                                                                                        <td><?php echo $pro->LocationValue;?></td>
                                                                                         <td><span style="display:none;"><?php echo date_format(date_create($pro->start_date),'Ymd');?></span><?php echo date_format(date_create($pro->start_date),'d/m/Y');?></td>
                                                                                         <td><span style="display:none;"><?php echo date_format(date_create($pro->due_date),'Ymd');?></span><?php echo date_format(date_create($pro->due_date),'d/m/Y');?></td>
                                                                                         <td>
