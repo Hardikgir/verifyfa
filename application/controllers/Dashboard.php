@@ -267,8 +267,8 @@ class Dashboard extends CI_Controller {
 
 		$data['projects']=$projects;
 		$data['page_title']="Project Dashboard";
-		// $data['company_data_list']=$this->company_data_list();
-		$data['company_data_list']=$this->company_data_list_by_role($user_id,0);
+		$data['company_data_list']=$this->company_data_list();
+		// $data['company_data_list']=$this->company_data_list_by_role($user_id,0);
 		
 
 		
@@ -616,11 +616,16 @@ class Dashboard extends CI_Controller {
 		$data['projects']=$projects;
 		$data['page_title']="User Dashboard";
 
+		$role_id = 0;
+		
 		// $company_data_query=$this->db->query("select * from user_role where user_id = '".$user_id."' Group by company_id");
-		$company_data_query=$this->db->query("select * from user_role where user_id = '".$user_id."'");
+		// $company_data_query=$this->db->query("select * from user_role where user_id = '".$user_id."' AND company_id != 0");
+		$company_data_query=$this->db->query("select * from user_role where user_id = '".$user_id."' AND company_id != 0 AND FIND_IN_SET(".$role_id.",user_role) GROUP BY company_id");
+		
 		$company_data_list = $company_data_query->result();
 
-		
+
+
 		
 		$company_dropdown_array = array();
 		$company_array = array();

@@ -93,29 +93,7 @@ $this->load->view('layouts/footer');
         <form action="<?php echo base_url();?>index.php/dashboard/index" method="post" class="bg-white">
                 <br>
                 <div class="row">
-                    <div class="col-md-12 my-5">
-                        <div class="text-center">
-
-                      <?php
-                    $user_id=$this->user_id;
-                    $entity_code=$this->admin_registered_entity_code;
-                    $get_user_all_roles = get_user_all_roles($user_id,$entity_code); // get all user role company wise
-
-                    foreach($get_user_all_roles as $role){
-
-                        $active_role = '';
-                        if($this->main_role == $role){
-                            $active_role = 'active';
-                        }
-                        echo '<a href="javascript:void(0)" class="btn btn-primary mx-3 '.$active_role.'">'.get_role_name($role).'</a> ';                       
-                    }
-
-                    ?>
-                    </div>
-
-                    </div>
-
-
+                   
                 <div class="col-md-2 form-row">
                   
                 </div>

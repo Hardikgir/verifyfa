@@ -94,6 +94,37 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
 
 
 <div class="container-fluid">
+
+  <div class="row">
+    <div class="col-md-12 mt-5">
+
+    <div class="text-center">
+
+                      <?php
+                    $user_id=$this->user_id;
+                    $entity_code=$this->admin_registered_entity_code;
+                    $get_user_all_roles = get_user_all_roles($user_id,$entity_code); // get all user role company wise
+
+                    $key = array_search(5, $get_user_all_roles);
+                    if (false !== $key) {
+                        unset($get_user_all_roles[$key]);
+                    }
+
+                    foreach($get_user_all_roles as $role){
+                        $active_role = '';
+                        if($this->main_role == $role){
+                            $active_role = 'active';
+                        }
+                        echo '<a href="javascript:void(0)" class="btn btn-primary mx-3 '.$active_role.'">'.get_role_name($role).'</a> ';                       
+                    }
+
+                    ?>
+                    </div>
+
+    </div>
+    </div>
+
+
     <div class="row">
     <div class="col-md-4">
         <div class="card">
