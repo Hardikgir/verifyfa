@@ -274,7 +274,7 @@ $allcategories=getCategories($projects[0]->project_name);
                     </div>
                     <div class="row">
                         <div class="col-md-12 text-center">
-                            <buttton class="btn btn-warning btn-round showDetail" id="showDetail">Show Detail</buttton>
+                            <buttton class="btn btn-warning btn-round showDetail" id="showDetail">Hide Detail</buttton>
                         </div>
                     </div>
                     <div class="clearfix"></div>

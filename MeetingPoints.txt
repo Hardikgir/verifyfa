@@ -103,3 +103,13 @@ SELECT id,item_category,item_sub_category,item_unique_code,item_sub_code,item_cl
 Need To fix
 -> While Verify By Application Below column need to update
     -> 
+
+
+
+
+-> 3 Point is pending from Yesterday's Point
+1. Label Should be proper in Line Graph
+2. Resoounce Tab in Graph that should be proper Details
+3. Show/Hide Detail of page
+4. Project Details page Should be Proper.
+5. And Today's Points

@@ -95,43 +95,7 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
 
 <div class="container-fluid">
 
-  <div class="row">
-    <div class="col-md-12 mt-5">
 
-    <form id="user_select_role" method="post" class="bg-white">
-       
-        <input type="hidden" name="user_select_role_val" id="user_select_role_val" value="">
-        <input type="submit" id="user_select_role_submit" style="display: none;">
-    </form>
-
-    <div class="text-center">
-
-                      <?php
-                    $user_id=$this->user_id;
-                    $entity_code=$this->admin_registered_entity_code;
-                    $get_user_all_roles = get_user_all_roles($user_id,$entity_code); // get all user role company wise
-
-                    $key = array_search(5, $get_user_all_roles);
-                    if (false !== $key) {
-                        unset($get_user_all_roles[$key]);
-                    }
-
-                    foreach($get_user_all_roles as $role){
-                        $active_role = '';
-                            if(isset($_REQUEST['user_select_role_val'])){
-                                if($_REQUEST['user_select_role_val'] == $role){
-                                $active_role = 'active';
-                            }
-                        }
-                        echo '<a href="javascript:void(0)" onclick="user_select('.$role.')" class="btn btn-primary mx-3 '.$active_role.'">'.get_role_name($role).'</a> ';                       
-                    }
-
-                    ?>
-                    </div>
-
-    </div>
-    </div>
-    
 
 
     <div class="row">
@@ -231,7 +195,50 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
 
 
     <div class="container-fluid">
+
+      <div class="row">
+    <div class="col-md-12 mt-5">
+
+    <form id="user_select_role" method="post" class="bg-white">
+       
+        <input type="hidden" name="user_select_role_val" id="user_select_role_val" value="">
+        <input type="submit" id="user_select_role_submit" style="display: none;">
+    </form>
+
+    <div class="text-center">
+
+                      <?php
+                    $user_id=$this->user_id;
+                    $entity_code=$this->admin_registered_entity_code;
+                    $get_user_all_roles = get_user_all_roles($user_id,$entity_code); // get all user role company wise
+
+                    $key = array_search(5, $get_user_all_roles);
+                    if (false !== $key) {
+                        unset($get_user_all_roles[$key]);
+                    }
+
+                    foreach($get_user_all_roles as $role){
+                        $active_role = '';
+                            if(isset($_REQUEST['user_select_role_val'])){
+                                if($_REQUEST['user_select_role_val'] == $role){
+                                $active_role = 'active';
+                            }
+                        }
+                        echo '<a href="javascript:void(0)" onclick="user_select('.$role.')" class="btn btn-primary mx-3 '.$active_role.'">'.get_role_name($role).'</a> ';                       
+                    }
+
+                    ?>
+                    </div>
+
+    </div>
+    </div>
+    
+
+
  <div class="row">
+
+
+ 
 
 
     <div class="col-md-12 mt-5">
@@ -271,11 +278,14 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
 
 
     <!-- <div class="col-md-12 mt-5"> -->
-			<div  style="background: #fff;height: 150px;padding: 15px;">
+        <!-- <div style="display: none;"> -->
+			<div  style="background: #fff;height: 150px;padding: 15px;" >
 				<h2 class="text-center">Applicable to Open Project</h2>
 				
 			</div>
-			<div id="TypeSubscriptionActiveChart" style="height: 370px; width: 100%;"></div>
+           
+			<div id="TypeSubscriptionActiveChart" style="height: 370px; width: 100%;" ></div>
+            <!-- </div> -->
         </div>
 
         <div class="col-md-12 mt-5" >
