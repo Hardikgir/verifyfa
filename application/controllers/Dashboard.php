@@ -267,7 +267,9 @@ class Dashboard extends CI_Controller {
 
 		$data['projects']=$projects;
 		$data['page_title']="Project Dashboard";
-		$data['company_data_list']=$this->company_data_list();
+		// $data['company_data_list']=$this->company_data_list();
+		$data['company_data_list']=$this->company_data_list_by_role($user_id,0);
+		
 
 		
 
@@ -1254,6 +1256,13 @@ class Dashboard extends CI_Controller {
 		$entity_code=$this->admin_registered_entity_code;
 		$userid=$this->user_id;
 		$query=$this->db->query("select * from user_role where  entity_code='".$entity_code."' AND  user_id='".$userid."'  AND  company_id!='0' GROUP BY company_id");
+		return $query->result();
+	}
+
+	public function company_data_list_by_role($user_id,$role_id){
+		$entity_code=$this->admin_registered_entity_code;
+		$userid=$this->user_id;
+		$query=$this->db->query("select * from user_role where user_id='".$user_id."' AND entity_code='".$entity_code."' AND FIND_IN_SET(".$role_id.",user_role) GROUP BY company_id");
 		return $query->result();
 	}
 
