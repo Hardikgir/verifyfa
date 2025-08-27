@@ -616,11 +616,16 @@ class Dashboard extends CI_Controller {
 		$data['projects']=$projects;
 		$data['page_title']="User Dashboard";
 
-		$role_id = 0;
+		
+		$company_data_query=$this->db->query("select * from user_role where user_id = '".$user_id."' AND company_id != 0 GROUP BY company_id");
+		if(isset($_REQUEST['user_select_role_val'])){
+			$role_id = $_REQUEST['user_select_role_val'];
+			$company_data_query=$this->db->query("select * from user_role where user_id = '".$user_id."' AND company_id != 0 AND FIND_IN_SET(".$role_id.",user_role) GROUP BY company_id");
+		}
 		
 		// $company_data_query=$this->db->query("select * from user_role where user_id = '".$user_id."' Group by company_id");
 		// $company_data_query=$this->db->query("select * from user_role where user_id = '".$user_id."' AND company_id != 0");
-		$company_data_query=$this->db->query("select * from user_role where user_id = '".$user_id."' AND company_id != 0 AND FIND_IN_SET(".$role_id.",user_role) GROUP BY company_id");
+		
 		
 		$company_data_list = $company_data_query->result();
 
@@ -647,24 +652,10 @@ class Dashboard extends CI_Controller {
 		$company_datas = implode(",", $company_array);
 		$location_datas = implode(",", $location_array);
 
-		// $company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location IN ('.$location_datas.') AND company_projects.status = 0 AND item_owner = "'.$user_id.'"')->result();
-
-
-		// $company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location IN ('.$location_datas.') AND company_projects.status = 0 AND item_owner = "'.$user_id.'"')->result();
-
 		
-		// $company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location IN ('.$location_datas.') AND item_owner = "'.$user_id.'"')->result();
-
 
 		$company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id')->result();
-		
-		// echo '<pre>last_query ';
-		// print_r($this->db->last_query());
-		// echo '</pre>';
-		// exit();
-
-		
-
+	
 		$project_base_count = array();
 		$withing_time = array();
 		$due_date = array();
