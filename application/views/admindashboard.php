@@ -351,7 +351,7 @@ $this->load->view('layouts/footer');
                                                                                         ?>    
                                                                                         <?php echo $pro->project_id;?></td>
                                                                                         <td>
-                                                                                            <a href="<?php echo base_url();?>index.php/dashboard/projectdetail/<?php echo $pro->id; ?>">
+                                                                                            <a href="<?php echo base_url();?>index.php/ProjectDetails/one/<?php echo $pro->id; ?>">
                                                                                                 <?php echo $pro->project_name;?>
                                                                                             </a>
                                                                                         </td>
