@@ -245,6 +245,9 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
         <form id="userForm" method="post" class="bg-white">
                 <br>
                 <div class="row">
+<div class="col-md-12 text-center" style="background: #fff;padding: 15px;" >
+                  <h2 class="text-center">Status of Open Projects</h2>
+</div>
                 <div class="col-md-2 form-row">
                 </div>
                 <div class="col-md-4 form-row">
@@ -280,7 +283,7 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
     <!-- <div class="col-md-12 mt-5"> -->
             <div id="TypeSubscriptionActiveChart_section" style="display: none;">
                 <div  style="background: #fff;height: 150px;padding: 15px;" >
-                    <h2 class="text-center">Applicable to Open Project</h2>
+                    <!-- <h2 class="text-center">Applicable to Open Project</h2> -->
                     
                 </div>
             
@@ -293,6 +296,10 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
           <form id="application_open_project_userForm" method="post" class="bg-white">
                 <br>
                 <div class="row p-3">
+
+                <div class="col-md-12 text-center" style="background: #fff;padding: 15px;" >
+                  <h2 class="text-center">Status of Resource Allocation</h2>
+</div>
                 
 
                 <div class="col-md-3">
@@ -345,7 +352,7 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
 
         <div id="ApplicableOpenProjects_section" style="display: none;">
             <div style="background: #fff;padding: 15px;">
-            <h2 class="text-center">Applicable to Open Projects only</h2>
+            <!-- <h2 class="text-center">Applicable to Open Projects only</h2> -->
             <div id="chartContainer" style="height: 400px; width: 100%;"></div>
             </div>
             </div>

@@ -1886,7 +1886,7 @@ $('.closethismodel').click(function(){
         data: [{
             type: "doughnut",
             indexLabel: "{symbol} - {y}",
-            yValueFormatString: "#,##0\"%\"",
+            yValueFormatString: "#,##0\" Li\"",
             showInLegend: true,
             legendText: "{label} : {y}",
             dataPoints: <?php echo json_encode($ResourcewiseUtilization_DonutChart_dataPoints, JSON_NUMERIC_CHECK); ?>

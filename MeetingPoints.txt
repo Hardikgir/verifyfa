@@ -109,9 +109,9 @@ Need To fix
 
 -> 3 Point is pending from Yesterday's Point
 1. Label Should be proper in Line Graph
-2. Resoounce Tab in Graph that should be proper Details
-3. Show/Hide Detail of page
-4. User Dashboard Graph Related Point
+2. Resoounce Tab in Graph that should be proper Details :- Dobe 
+3. Show/Hide Detail of page :- Done
+4. User Dashboard Graph Related Point :- Done
 
 
 4. Project Details page Should be Proper.

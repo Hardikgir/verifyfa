@@ -556,7 +556,15 @@ class ProjectDetails extends CI_Controller {
 		}
 
 
-	
+		// echo '<pre>';
+		// print_r($ResourcewiseUtilizationChart_dataPoints1);
+		// echo '</pre>';
+		// exit();
+
+	// echo '<pre>user_wise_count ';
+	// print_r($user_wise_count);
+	// echo '</pre>';
+	// exit();
 		
 			$ResourcewiseUtilizationChart_dataPoints1 = array();
 			foreach($user_wise_count as $user_wise_count_key=>$user_wise_count_value){
@@ -568,6 +576,8 @@ class ProjectDetails extends CI_Controller {
 						"y"=> count($user_wise_count_value),
 					);
 			}
+			
+			
 
 		
 		$data['ResourcewiseUtilization_DonutChart_dataPoints']=$ResourcewiseUtilizationChart_dataPoints1;
