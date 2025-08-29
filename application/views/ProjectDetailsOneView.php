@@ -101,7 +101,7 @@ $allcategories=getCategories($projects[0]->project_name);
                         </div>
                         
                     </div>
-                    <div class="row inDetail">
+                    <div class="row inDetail" id="inDetail" style="display: none;">
                         <div class="col-md-8">
                             <div class="col-md-12">
                                 <div class="form-group">
@@ -274,9 +274,22 @@ $allcategories=getCategories($projects[0]->project_name);
                     </div>
                     <div class="row">
                         <div class="col-md-12 text-center">
-                            <buttton class="btn btn-warning btn-round showDetail" id="showDetail">Hide Detail</buttton>
+                            <buttton class="btn btn-warning btn-round showDetail" id="showDetail">Show Detail</buttton>
                         </div>
                     </div>
+
+
+
+
+                    <!-- <button id="toggleButton">Toggle Section</button>
+                    <div id="contentSection">
+                    <p>This is the section that will be shown and hidden.</p>
+                    </div> -->
+
+
+                    
+
+
                     <div class="clearfix"></div>
                     <?php
                         }
@@ -1882,6 +1895,17 @@ $('.closethismodel').click(function(){
     chart.render();
 
 }
+
+$(document).ready(function(){
+  $("#showDetail").click(function(){
+    $("#showDetail").text(function(i, text){
+        return text === "Show Detail" ? "Hide Detail" : "Show Detail";
+    })
+    $("#inDetail").fadeToggle("fast");
+    // $('#inDetail').delay(5000).fadeToggle(); 
+    // $("#inDetail").toggle();
+  });
+});
 
  
   </script>
