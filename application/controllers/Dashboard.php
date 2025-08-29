@@ -656,6 +656,10 @@ class Dashboard extends CI_Controller {
 
 		$company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id')->result();
 	
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
 		$project_base_count = array();
 		$withing_time = array();
 		$due_date = array();
@@ -1087,39 +1091,17 @@ class Dashboard extends CI_Controller {
 		$company_datas = $_POST['company_id'];
 		$location_datas = $_POST['location_id'];
 		$user_id=$this->user_id;
-		// $company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.company_id IN ('.$company_datas.')')->result();
+
 
 		$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.status = 0')->result();
 
-		$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND item_owner = '.$user_id.' AND company_projects.status = 0')->result();
-
-
-		// echo '<pre>last_query ';
-		// print_r($this->db->last_query());
-		// echo '</pre>';
-		// exit();
-
-
+		$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.status = 0')->result();
+			
 		if(!empty($location_datas)){
-			// $company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location = '.$location_datas)->result();
-
-			$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND item_owner = '.$user_id.' AND company_projects.project_location = '.$location_datas.' AND company_projects.status = 0')->result();
-
-			// echo '<pre>last_query ';
-			// print_r($this->db->last_query());
-			// echo '</pre>';
-			// exit();
+			$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location = '.$location_datas.' AND company_projects.status = 0')->result();
 		}
 
-		// echo '<pre>last_query ';
-		// print_r($this->db->last_query());
-		// echo '</pre>';
-		// // exit();
-
-		// echo '<pre>company_projects ';
-		// print_r($company_projects);
-		// echo '</pre>';
-		// // exit();
+	
 		
 		$project_base_count = array();
 		$withing_time = array();
@@ -1131,11 +1113,6 @@ class Dashboard extends CI_Controller {
 			$due_date = $project_due_date; // Format: Y-m-d
 			$today = date('Y-m-d');
 
-			// if ($due_date <= $today) {
-			// 	$project_base_count[$company_projects_value->company_name]['overdue'][] = 1;
-			// } else {
-			// 	$project_base_count[$company_projects_value->company_name]['withindate'][] = 1;
-			// }
 
 			if ($due_date <= $today) {
 				$project_base_count[$company_projects_value->location_name]['overdue'][] = 1;
@@ -1144,11 +1121,7 @@ class Dashboard extends CI_Controller {
 			}
 		}
 
-		// echo '<pre>';
-		// print_r($project_base_count);
-		// echo '</pre>';
-		// exit();
-
+		
 
 		$graph_data = array();
 		$count = 1;
@@ -1212,8 +1185,9 @@ class Dashboard extends CI_Controller {
 
 		// $projects=$this->db->query('SELECT * from company_projects where status = 0 AND company_id = "'.$application_open_project_company_id.'" AND project_location = "'.$application_open_project_company_location.'" AND FIND_IN_SET("'.$application_open_project_verifier.'", company_projects.project_verifier)')->result();
 		
-		$projects=$this->db->query('SELECT * from company_projects where company_id = "'.$application_open_project_company_id.'" AND project_location = "'.$application_open_project_company_location.'" AND FIND_IN_SET("'.$application_open_project_verifier.'", company_projects.project_verifier) AND item_owner = '.$user_id)->result();
+		$projects=$this->db->query('SELECT * from company_projects where company_id = "'.$application_open_project_company_id.'" AND project_location = "'.$application_open_project_company_location.'" AND FIND_IN_SET("'.$application_open_project_verifier.'", company_projects.project_verifier)')->result();
 		
+	
 		$stackedBarchartContainer_array = array();
 		
 		$count = 0;

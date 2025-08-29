@@ -238,14 +238,7 @@ class ProjectDetails extends CI_Controller {
 			$LineItemBreakupChart_NotVerified_dataPoints2[] = array("label"=> $my_array_key, "y"=> 100-(int)$my_array_value['percentage']);
 		}
 
-		// echo '<pre>LineItemBreakupChart_Verified_dataPoints1 ';
-		// print_r($LineItemBreakupChart_Verified_dataPoints1);
-		// echo '</pre>';
-
-		// echo '<pre>LineItemBreakupChart_NotVerified_dataPoints2 ';
-		// print_r($LineItemBreakupChart_NotVerified_dataPoints2);
-		// echo '</pre>';
-		// exit();
+		
 		$data['LineItemBreakupChart_Verified_dataPoints1']=$LineItemBreakupChart_Verified_dataPoints1;
 		$data['LineItemBreakupChart_NotVerified_dataPoints2']=$LineItemBreakupChart_NotVerified_dataPoints2;
 		
@@ -398,29 +391,62 @@ class ProjectDetails extends CI_Controller {
 
 		$filled = ($ttt+$tntt+$tutt) > 0 ? round((($ttv+$tntv+$tutv)/($ttt+$tntt+$tutt))*100,2).' 0 ': '0 ';
 
-		$AmountwiseBreakupChart_dataPoints1 = array();
-		$AmountwiseBreakupChart_dataPoints2 = array();
-		foreach($my_array1 as $my_array1_key=>$my_array1_value){			
-			$AmountwiseBreakupChart_dataPoints1[] = array("label"=> $my_array1_key, "y"=> $my_array1_value['percentage']);
-			$AmountwiseBreakupChart_dataPoints2[] = array("label"=> $my_array1_key, "y"=> 100-(int)$my_array1_value['percentage']);
-		}
-	
-		$data['AmountwiseBreakupChart_dataPoints1']=$AmountwiseBreakupChart_dataPoints1;
-		$data['AmountwiseBreakupChart_dataPoints2']=$AmountwiseBreakupChart_dataPoints2;
+		// 	$AmountwiseBreakupChart_dataPoints1 = array();
+		// 	$AmountwiseBreakupChart_dataPoints2 = array();
+		// 	foreach($my_array1 as $my_array1_key=>$my_array1_value){			
+		// 		$AmountwiseBreakupChart_dataPoints1[] = array("label"=> $my_array1_key, "y"=> $my_array1_value['percentage']);
+		// 		$AmountwiseBreakupChart_dataPoints2[] = array("label"=> $my_array1_key, "y"=> 100-(int)$my_array1_value['percentage']);
+		// 	}
 		
+		// 	$data['AmountwiseBreakupChart_dataPoints1']=$AmountwiseBreakupChart_dataPoints1;
+		// 	$data['AmountwiseBreakupChart_dataPoints2']=$AmountwiseBreakupChart_dataPoints2;
+			
 
-		
-		$calculation = 100-floatval($filled);
-		$y_value = number_format((float)$calculation, 2, '.', '');
-		
-		
-	   $AmountwiseBreakup_DonutChart_dataPoints = array( 
-		   array("label"=>"Verified", "symbol" => "Verified","y"=>round((float)$filled)),
-		   array("label"=>"Not Verified", "symbol" => "Not Verified","y"=>round((float)$y_value)),
-	   );
+			
+		// 	$calculation = 100-floatval($filled);
+		// 	$y_value = number_format((float)$calculation, 2, '.', '');
+			
+			
+		//    $AmountwiseBreakup_DonutChart_dataPoints = array( 
+		// 	   array("label"=>"Verified", "symbol" => "Verified","y"=>round((float)$filled)),
+		// 	   array("label"=>"Not Verified", "symbol" => "Not Verified","y"=>round((float)$y_value)),
+		//    );
 
 
-		$data['AmountwiseBreakup_DonutChart_dataPoints']=$AmountwiseBreakup_DonutChart_dataPoints;
+		// 	$data['AmountwiseBreakup_DonutChart_dataPoints']=$AmountwiseBreakup_DonutChart_dataPoints;
+
+
+		// amount wise breakup chart code end here
+
+	    $AmountwiseBreakupChart_dataPoints1 = array();
+        $AmountwiseBreakupChart_dataPoints2 = array();
+        foreach($my_array1 as $my_array1_key=>$my_array1_value){          
+            // Cast the values to float to ensure they are numeric before calculation
+            $verified_amount = (float) str_replace(',', '', $my_array1_value['overallverified']);
+            $total_amount = (float) str_replace(',', '', $my_array1_value['overalltotal']);
+
+            $AmountwiseBreakupChart_dataPoints1[] = array("label"=> $my_array1_key, "y"=> $verified_amount);
+            $AmountwiseBreakupChart_dataPoints2[] = array("label"=> $my_array1_key, "y"=> ($total_amount - $verified_amount));
+        }
+   
+        $data['AmountwiseBreakupChart_dataPoints1']=$AmountwiseBreakupChart_dataPoints1;
+        $data['AmountwiseBreakupChart_dataPoints2']=$AmountwiseBreakupChart_dataPoints2;
+       
+ 
+       
+       $calculation = 100-floatval($filled);
+       $y_value = number_format((float)$calculation, 2, '.', '');
+       
+       
+      $AmountwiseBreakup_DonutChart_dataPoints = array( 
+          array("label"=>"Verified", "symbol" => "Verified","y"=>round((float)$filled)),
+          array("label"=>"Not Verified", "symbol" => "Not Verified","y"=>round((float)$y_value)),
+      );
+
+
+      $data['AmountwiseBreakup_DonutChart_dataPoints']=$AmountwiseBreakup_DonutChart_dataPoints;
+
+
 
 
 
@@ -492,12 +518,7 @@ class ProjectDetails extends CI_Controller {
 		$ResourcewiseUtilization_DonutChart_dataPoints_array = array();
 		$count_value = 0;
 
-		// echo '<pre>project_details_array ';
-		// print_r($project_details_array);
-		// echo '</pre>';
-		// exit();
-
-		
+	
 
 
 		foreach($project_details_array as $project_details_array_key=>$project_details_array_value){
@@ -523,16 +544,6 @@ class ProjectDetails extends CI_Controller {
 		}
 		
 
-		// echo '<pre>user_wise_count :: ';
-		// print_r($user_wise_count);
-		// echo '</pre>';
-		// exit();
-
-		// // echo '<pre>ResourcewiseUtilizationChart_datapoint ';
-		// // print_r($ResourcewiseUtilizationChart_datapoint);
-		// // echo '</pre>';
-		// exit();
-	
 
 
 		$data['ResourcewiseUtilizationChart_datapoint'] = $ResourcewiseUtilizationChart_datapoint;
@@ -545,17 +556,7 @@ class ProjectDetails extends CI_Controller {
 		}
 
 
-		// echo '<pre>ResourcewiseUtilization_DonutChart_dataPoints_array1 ';
-		// print_r($ResourcewiseUtilization_DonutChart_dataPoints_array1);
-		// echo '</pre>';
-		
-
-
-		// echo '<pre>user_wise_count ';
-		// print_r($user_wise_count);
-		// echo '</pre>';
-		// exit();
-
+	
 		
 			$ResourcewiseUtilizationChart_dataPoints1 = array();
 			foreach($user_wise_count as $user_wise_count_key=>$user_wise_count_value){
@@ -567,16 +568,6 @@ class ProjectDetails extends CI_Controller {
 						"y"=> count($user_wise_count_value),
 					);
 			}
-
-			// echo '<pre>ResourcewiseUtilizationChart_dataPoints1 ::';
-			// print_r($ResourcewiseUtilizationChart_dataPoints1);
-			// echo '</pre>';
-
-			// echo '<pre>ResourcewiseUtilization_DonutChart_dataPoints_array1 ::';
-			// print_r($ResourcewiseUtilization_DonutChart_dataPoints_array1);
-			// echo '</pre>';
-			// exit();
-			// exit();
 
 		
 		$data['ResourcewiseUtilization_DonutChart_dataPoints']=$ResourcewiseUtilizationChart_dataPoints1;
@@ -865,6 +856,7 @@ class ProjectDetails extends CI_Controller {
 				
 				}
 			}
+			
 
 
 

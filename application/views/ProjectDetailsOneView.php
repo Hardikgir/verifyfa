@@ -1049,19 +1049,27 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                             if($listing['ytotal']>0 && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD'))
                                                                             {
                                                                             ?>
-                                                                            <td><?php echo round(($res->usertagged/$listing['ytotal'])*100,2).' %<br>'.$res->usertagged.' of '.$listing['ytotal']." Li";?></td> 
+                                                                            <td><?php /* echo round(($res->usertagged/$listing['ytotal'])*100,2).' %<br>'.$res->usertagged.' of '.$listing['ytotal']." Li"; */ 
+                                                                            
+                                                                            echo $res->usertagged.' of '.$listing['ytotal']." Li";
+                                                                            ?></td> 
                                                                             <?php
                                                                             }
                                                                             if($listing['ntotal']>0 && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD'))
                                                                             {
                                                                             ?>
-                                                                            <td><?php echo round(($res->useruntagged/$listing['ntotal'])*100,2).' %<br>'.$res->useruntagged.' of '.$listing['ntotal']." Li";?></td> 
+                                                                            <td><?php /* echo round(($res->useruntagged/$listing['ntotal'])*100,2).' %<br>'.$res->useruntagged.' of '.$listing['ntotal']." Li"; */
+                                                                            
+                                                                            echo $res->useruntagged.' of '.$listing['ntotal']." Li";
+                                                                            ?></td> 
                                                                             <?php
                                                                             }
                                                                             if($listing['natotal']>0 && ($projects[0]->project_type=='UN' || $projects[0]->project_type=='CD'))
                                                                             {
                                                                             ?>
-                                                                            <td><?php echo round(($res->userunspecified/$listing['natotal'])*100,2).' %<br>'.$res->userunspecified.' of '.$listing['natotal']." Li";?></td> 
+                                                                            <td><?php /* echo round(($res->userunspecified/$listing['natotal'])*100,2).' %<br>'.$res->userunspecified.' of '.$listing['natotal']." Li"; */
+                                                                            echo $res->userunspecified.' of '.$listing['natotal']." Li";
+                                                                            ?></td> 
                                                                             <?php
                                                                             }
                                                                             if($projects[0]->project_type=='CD')
@@ -1069,7 +1077,9 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                             ?>
                                                                             <td><?php $totuser=($res->usertagged+$res->useruntagged+$res->userunspecified);
                                                                             $totalall=$listing['natotal']+$listing['ytotal']+$listing['ntotal'];
-                                                                            echo round(($totuser/$totalall)*100,2).' %<br>'.$totuser.' of '.$totalall." Li";?></td> 
+                                                                            // echo round(($totuser/$totalall)*100,2).' %<br>'.$totuser.' of '.$totalall." Li";
+                                                                            echo $totuser.' of '.$totalall." Li";
+                                                                            ?></td> 
                                                                             <?php
                                                                             }
                                                                             ?>

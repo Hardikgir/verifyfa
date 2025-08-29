@@ -111,7 +111,7 @@ Need To fix
 1. Label Should be proper in Line Graph
 2. Resoounce Tab in Graph that should be proper Details
 3. Show/Hide Detail of page
-4. And Today's Points
+4. User Dashboard Graph Related Point
 
 
 4. Project Details page Should be Proper.

@@ -278,14 +278,14 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
 
 
     <!-- <div class="col-md-12 mt-5"> -->
-        <!-- <div style="display: none;"> -->
-			<div  style="background: #fff;height: 150px;padding: 15px;" >
-				<h2 class="text-center">Applicable to Open Project</h2>
-				
-			</div>
-           
-			<div id="TypeSubscriptionActiveChart" style="height: 370px; width: 100%;" ></div>
-            <!-- </div> -->
+            <div id="TypeSubscriptionActiveChart_section" style="display: none;">
+                <div  style="background: #fff;height: 150px;padding: 15px;" >
+                    <h2 class="text-center">Applicable to Open Project</h2>
+                    
+                </div>
+            
+                <div id="TypeSubscriptionActiveChart" style="height: 370px; width: 100%;" ></div>
+            </div>
         </div>
 
         <div class="col-md-12 mt-5" >
@@ -343,9 +343,11 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
                 <br>
         </form>
 
+        <div id="ApplicableOpenProjects_section" style="display: none;">
             <div style="background: #fff;padding: 15px;">
             <h2 class="text-center">Applicable to Open Projects only</h2>
             <div id="chartContainer" style="height: 400px; width: 100%;"></div>
+            </div>
             </div>
         </div> 
 
@@ -535,7 +537,7 @@ document.getElementById('application_open_project_company_location').onchange = 
 $(document).ready(function(){
     $('#userForm').on('submit', function(e){
         e.preventDefault();
-
+        $("#TypeSubscriptionActiveChart_section").show();
         $.ajax({
             url: "<?php echo base_url();?>index.php/Dashboard/ApplicableOpenProjectGraph",
             type: "POST",
@@ -555,7 +557,7 @@ $(document).ready(function(){
                     reversed: true
                 },
                 axisY: {
-                    title: "No. of Subscriptions",
+                    title: "No. of Active Projects",
                     suffix: "",
                     interval: 1,
                 },
@@ -590,7 +592,7 @@ $(document).ready(function(){
 
      $('#application_open_project_userForm').on('submit', function(e){
         e.preventDefault();
-
+     $("#ApplicableOpenProjects_section").show();
         $.ajax({
             url: "<?php echo base_url();?>index.php/Dashboard/ApplicableOpenProjectGraphProjectWise",
             type: "POST",
