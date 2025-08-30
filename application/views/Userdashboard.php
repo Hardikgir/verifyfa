@@ -1,4 +1,3 @@
-
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 $this->load->view('layouts/header');
@@ -201,7 +200,7 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
 
     <form id="user_select_role" method="post" class="bg-white">
        
-        <input type="hidden" name="user_select_role_val" id="user_select_role_val" value="">
+        <input type="hidden" name="user_select_role_val" id="user_select_role_val" value="<?php if(isset($_POST['user_select_role_val'])){ echo $_POST['user_select_role_val']; } ?>">
         <input type="submit" id="user_select_role_submit" style="display: none;">
     </form>
 
@@ -245,14 +244,14 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
         <form id="userForm" method="post" class="bg-white">
                 <br>
                 <div class="row">
-<div class="col-md-12 text-center" style="background: #fff;padding: 15px;" >
+<div class="col-md-12 text-center" style="padding: 15px;" >
                   <h2 class="text-center">Status of Open Projects</h2>
 </div>
                 <div class="col-md-2 form-row">
                 </div>
                 <div class="col-md-4 form-row">
                     <label class="form-label">Select Company</label>
-                    <select name="company_id" id="company_id" class="form-control" required>
+                    <select name="company_id" id="company_id" class="form-control" >
                         <option value="">All</option>
                         <?php foreach($company_data_list as $row_com_list){ 
                              $company_n=get_company_row($row_com_list['company_id']);
@@ -271,18 +270,22 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
                 <div class="col-md-2 form-row">
                 <button type="submit" class="btn btn-success">GO</button>
               </div>
-                </div><br>
+                </div>
                
                 
                 <br>
+            
         </form>
+       
     <!-- </div> -->
 
 
 
     <!-- <div class="col-md-12 mt-5"> -->
             <div id="TypeSubscriptionActiveChart_section" style="display: none;">
+                
                 <div  style="background: #fff;height: 150px;padding: 15px;" >
+                     <hr>
                     <!-- <h2 class="text-center">Applicable to Open Project</h2> -->
                     
                 </div>
@@ -301,10 +304,19 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
                   <h2 class="text-center">Status of Resource Allocation</h2>
 </div>
                 
-
                 <div class="col-md-3">
+                    <label class="form-label">Select Verifier</label>
+                    <select name="application_open_project_verifier" id="application_open_project_verifier" class="form-control">
+                        <option value="">All</option>
+                         <?php foreach($vrifier_users as $vrifier_users_value){ ?>
+                            <option value="<?php echo $vrifier_users_value->user_id;?>"><?php echo $vrifier_users_value->user_firstName;?></option> 
+                         <?php } ?>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    
                     <label class="form-label">Select Company</label>
-                    <select name="application_open_project_company_id" id="application_open_project_company_id" class="form-control" required>
+                    <select name="application_open_project_company_id" id="application_open_project_company_id" class="form-control" >
                         <option value="">All</option>
                         <?php foreach($company_data_list as $row_com_list){ 
                              $company_n=get_company_row($row_com_list['company_id']);
@@ -329,15 +341,7 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
                     </select>
                 </div>
 
-                <div class="col-md-3">
-                    <label class="form-label">Select Verifier</label>
-                    <select name="application_open_project_verifier" id="application_open_project_verifier" class="form-control">
-                        <option value="">All</option>
-                         <?php foreach($vrifier_users as $vrifier_users_value){ ?>
-                            <option value="<?php echo $vrifier_users_value->user_id;?>"><?php echo $vrifier_users_value->user_firstName;?></option> 
-                         <?php } ?>
-                    </select>
-                </div>
+                
 
 
 
@@ -347,11 +351,12 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
                 </div>
                
                 
-                <br>
+                <!-- <br> -->
         </form>
 
         <div id="ApplicableOpenProjects_section" style="display: none;">
             <div style="background: #fff;padding: 15px;">
+                <hr>
             <!-- <h2 class="text-center">Applicable to Open Projects only</h2> -->
             <div id="chartContainer" style="height: 400px; width: 100%;"></div>
             </div>
@@ -478,8 +483,13 @@ function toggleDataSeries(e) {
 
 document.getElementById('company_id').onchange = function() {
     var company_id = this.value;
+    var role_id = $("#user_select_role_val").val();
+    if (role_id == ''){
+        alert("Please Select Your Role");
+    }
     var fd = new FormData();
     fd.append('company_id',[company_id]);
+    fd.append('role_id',[role_id]);    
     $.ajax({
       url: "<?php echo base_url();?>index.php/plancycle/getlocationdata",
       type: 'POST',
@@ -495,8 +505,13 @@ document.getElementById('company_id').onchange = function() {
 
 document.getElementById('application_open_project_company_id').onchange = function() {
     var company_id = this.value;
+    var role_id = $("#user_select_role_val").val();
+    if (role_id == ''){
+        alert("Please Select Your Role");
+    }
     var fd = new FormData();
     fd.append('company_id',[company_id]);
+    fd.append('role_id',[role_id]);   
     $.ajax({
       url: "<?php echo base_url();?>index.php/plancycle/getlocationdata",
       type: 'POST',

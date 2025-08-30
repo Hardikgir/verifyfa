@@ -1185,8 +1185,30 @@ class Dashboard extends CI_Controller {
 
 		// $projects=$this->db->query('SELECT * from company_projects where status = 0 AND company_id = "'.$application_open_project_company_id.'" AND project_location = "'.$application_open_project_company_location.'" AND FIND_IN_SET("'.$application_open_project_verifier.'", company_projects.project_verifier)')->result();
 		
-		$projects=$this->db->query('SELECT * from company_projects where company_id = "'.$application_open_project_company_id.'" AND project_location = "'.$application_open_project_company_location.'" AND FIND_IN_SET("'.$application_open_project_verifier.'", company_projects.project_verifier)')->result();
-		
+		//$projects=$this->db->query('SELECT * from company_projects where company_id = "'.$application_open_project_company_id.'" AND project_location = "'.$application_open_project_company_location.'" AND FIND_IN_SET("'.$application_open_project_verifier.'", company_projects.project_verifier)')->result();
+		// 29-08-2025	
+		$fetch_query = "";
+
+		$fetch_query .= "SELECT * from company_projects where id is not null";
+
+		if(!empty($application_open_project_company_id)){
+			$fetch_query .= " AND company_id = '".$application_open_project_company_id."'";
+		}
+
+		if(!empty($application_open_project_company_location)){
+			$fetch_query .= " AND project_location = '".$application_open_project_company_location."'";
+		}
+
+		if(!empty($application_open_project_project_id)){
+			$fetch_query .= " AND id = '".$application_open_project_project_id."'";
+		}
+
+		if(!empty($application_open_project_verifier)){
+			$fetch_query .= " AND FIND_IN_SET('".$application_open_project_verifier."', company_projects.project_verifier)";
+		}
+
+
+		$projects=$this->db->query($fetch_query)->result();
 	
 		$stackedBarchartContainer_array = array();
 		
