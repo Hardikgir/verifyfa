@@ -93,7 +93,7 @@ class Login extends CI_Controller {
 				redirect(base_url()."index.php/dashboard/user");
 			}
 
-			redirect(base_url()."index.php/dashboard");
+			redirect(base_url()."index.php/dashboard/admin");
 		} 
 		else {
 		

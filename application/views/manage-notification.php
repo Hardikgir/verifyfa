@@ -15,7 +15,7 @@ $this->load->view('layouts/sidebar');
         <div class="col-lg-12 mt-4 mb-4" style="border-bottom:1px solid #6e50505e;">
             <h4 class="page-title">Manage Notification</h4>            
             <a href="<?php echo base_url();?>index.php/brodcast-notification">
-             <button class="btn btn-primary" style="float:right">Brodcast New Notification</button>
+             <button class="btn btn-primary" style="float:right">Broadcast New Notification</button>
             </a>
        </div>     
 
@@ -31,7 +31,7 @@ $this->load->view('layouts/sidebar');
             <th>Notification Title</th>
             <th>Created By</th>
             <th>Status</th>
-            <th>Change Staus</th>
+            <th>Change Status</th>
             <th>Action </th>
             </tr>
         </thead>

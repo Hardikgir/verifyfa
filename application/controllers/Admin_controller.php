@@ -624,7 +624,17 @@ $role=implode(',',$this->input->post('user_role'));
     public function manage_notification(){
         $data['page_title']="Manage Notification";
         $entity_code=$this->admin_registered_entity_code;
-        $data["notification"]=$this->Admin_model->get_all_notification($entity_code);
+
+        
+        $user_id=$this->user_id;
+
+        $this->db->select('notification_user.*,notification.*');
+        $this->db->from('notification');
+        $this->db->join('notification_user','notification_user.notification_id=notification.id');
+        $this->db->where('notification_user.user_id',$user_id);
+        $this->db->group_by('notification_user.notification_id'); 
+        $getnotifications=$this->db->get();
+        $data["notification"] =  $getnotifications->result();
         $this->load->view('manage-notification',$data);
     }
     /*
@@ -1035,10 +1045,6 @@ $role=implode(',',$this->input->post('user_role'));
         $data['page_title']="Manage Issue";
         $entity_code=$this->admin_registered_entity_code;
         $data["issue"]=$this->Admin_model->get_all_my_issue($_SESSION['logged_in']['id']);
-        // echo '<pre>last_query ';
-        // print_r($this->db->last_query());
-        // echo '</pre>';
-        // exit();
         $this->load->view('issue-list',$data);
     }
 

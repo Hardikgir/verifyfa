@@ -440,6 +440,8 @@ class Plancycle extends CI_Controller {
 		$data['company_location']=$this->input->post('company_location');
 		$data['table_name']=$this->input->post('table_name');
 		$getColumns=$this->plancycle->get_schema($data['table_name']);
+
+		
 		$getMandatoryColumns=array();
 		foreach($getColumns as $gc)
 		{
@@ -449,7 +451,14 @@ class Plancycle extends CI_Controller {
 		// echo '<pre>getMandatoryColumns ';
 		// print_r($getMandatoryColumns);
 		// echo '</pre>';
+
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
 		// exit();
+		// exit();
+
+		
 
 		$data['mandatory_cols']=$getMandatoryColumns;
 		
@@ -488,7 +497,7 @@ class Plancycle extends CI_Controller {
 		// echo '<pre>getNonMandatory ';
 		// print_r($getNonMandatory);
 		// echo '</pre>';
-		// exit();
+		// // exit();
 		$data['nonmandatory_cols']=$getNonMandatory;
 		$this->load->view('markheaders',$data);
 	}
