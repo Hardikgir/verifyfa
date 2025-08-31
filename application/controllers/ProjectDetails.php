@@ -102,6 +102,7 @@ class ProjectDetails extends CI_Controller {
 			}
 			$condition2=array('id'=>$project->company_id);
 			$company=$this->tasks->get_data('company',$condition2);
+
 			$companylocation=$this->tasks->get_data('company_locations',array('id'=>$project->project_location));
 			$project->company_name=$company[0]->company_name;
 			$project->project_location=$companylocation[0]->location_name;
@@ -260,6 +261,10 @@ class ProjectDetails extends CI_Controller {
 
 		
 
+		// echo '<pre>';
+		// print_r($allcategories['categories']);
+		// echo '</pre>';
+		// exit();
 
 
 		$ttv=0;
@@ -390,8 +395,11 @@ class ProjectDetails extends CI_Controller {
 			if($projects[0]->project_type=='CD' )
 			{
 				$my_array1[$alcat->item_category]['percentage'] = getmoney_format(round((($overallverified/$overalltotal)*100),2));
-				$my_array1[$alcat->item_category]['overallverified'] = getmoney_format(round(($overallverified/100000),2));
-				$my_array1[$alcat->item_category]['overalltotal'] = getmoney_format(round(($overalltotal/100000),2));
+				// $my_array1[$alcat->item_category]['overallverified'] = getmoney_format(round(($overallverified/100000),2));
+				// $my_array1[$alcat->item_category]['overalltotal'] = getmoney_format(round(($overalltotal/100000),2));
+
+				$my_array1[$alcat->item_category]['overallverified'] = round(($overallverified/100000));//getmoney_format(round(($overallverified/100000),2));
+				$my_array1[$alcat->item_category]['overalltotal'] = round(($overalltotal/100000)); //getmoney_format(round(($overalltotal/100000),2));
 			}
 		}
 
@@ -439,10 +447,17 @@ class ProjectDetails extends CI_Controller {
             $verified_amount = (float) str_replace(',', '', $my_array1_value['overallverified']);
             $total_amount = (float) str_replace(',', '', $my_array1_value['overalltotal']);
 
+			$calculation = $my_array1_value['overalltotal']-$my_array1_value['overallverified'];
+			// echo '<pre>calculation ';
+			// print_r($calculation);
+			// echo '</pre>';
+			// exit();
             $AmountwiseBreakupChart_dataPoints1[] = array("label"=> $my_array1_key, "y"=> $verified_amount,"customText" => round($my_array1_value['overallverified'],2));
 
-            $AmountwiseBreakupChart_dataPoints2[] = array("label"=> $my_array1_key, "y"=> ($total_amount - $verified_amount), "customText" => round($my_array1_value['overalltotal']-$my_array1_value['overallverified'],2));
+            $AmountwiseBreakupChart_dataPoints2[] = array("label"=> $my_array1_key, "y"=> ($total_amount - $verified_amount), "customText" => round($calculation,2));
         }
+
+		// exit();
    
         $data['AmountwiseBreakupChart_dataPoints1']=$AmountwiseBreakupChart_dataPoints1;
         $data['AmountwiseBreakupChart_dataPoints2']=$AmountwiseBreakupChart_dataPoints2;
