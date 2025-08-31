@@ -227,23 +227,31 @@ class ProjectDetails extends CI_Controller {
             $my_array[$alcat->item_category]['overalltotal'] = $overalltotal;
 		}
 
+
+		
 		$LineItemBreakupChart_Verified_dataPoints1 = array();
 		$LineItemBreakupChart_NotVerified_dataPoints2 = array();
+		$array = array("1","2","3");
+		$array1 = array("10","20","30");
+		$count = 0;
 		foreach($my_array as $my_array_key=>$my_array_value){		
-			/*	
-			$LineItemBreakupChart_Verified_dataPoints1[] = array("label"=> $my_array_key, "y"=> $my_array_value['percentage'],"customText" => "50");
-			$LineItemBreakupChart_NotVerified_dataPoints2[] = array("label"=> $my_array_key, "y"=> 100-(int)$my_array_value['percentage'],"customText" => "150"); */
+			
+		$LineItemBreakupChart_Verified_dataPoints1[] = array("label"=> $my_array_key, "y"=> $my_array_value['percentage'],"customText" => $my_array_value['overallverified']);
 
+		$LineItemBreakupChart_NotVerified_dataPoints2[] = array("label"=> $my_array_key, "y"=> 100-(int)$my_array_value['percentage'],"customText" => $my_array_value['overalltotal']-$my_array_value['overallverified']); 
+			/*
 			$LineItemBreakupChart_Verified_dataPoints1[] = array("label"=> $my_array_key, "y"=> $my_array_value['percentage']);
-			$LineItemBreakupChart_NotVerified_dataPoints2[] = array("label"=> $my_array_key, "y"=> 100-(int)$my_array_value['percentage']);
+			$LineItemBreakupChart_NotVerified_dataPoints2[] = array("label"=> $my_array_key, "y"=> 100-(int)$my_array_value['percentage']); */
+			$count++; 
 		}
 
 		
 		$data['LineItemBreakupChart_Verified_dataPoints1']=$LineItemBreakupChart_Verified_dataPoints1;
 		$data['LineItemBreakupChart_NotVerified_dataPoints2']=$LineItemBreakupChart_NotVerified_dataPoints2;
 		
+		$filled = ($ttt+$tntt+$tutt) > 0 ? round((($ttv+$tntv+$tutv)/($ttt+$tntt+$tutt))*100,2).'':'0';
 
-		$filled = ($ttt+$tntt+$tutt) > 0 ? round((($ttv+$tntv+$tutv)/($ttt+$tntt+$tutt))*100,2).'0':'0';
+		
 		$LineItemBreakup_DonutChart_dataPoints = array( 
 			array("label"=>"Verified", "symbol" => "Verified","y"=>$filled),
 			array("label"=>"Not Verified", "symbol" => "Not-Verified","y"=>100-$filled),
@@ -416,7 +424,13 @@ class ProjectDetails extends CI_Controller {
 		// 	$data['AmountwiseBreakup_DonutChart_dataPoints']=$AmountwiseBreakup_DonutChart_dataPoints;
 
 
-		// amount wise breakup chart code end here
+		// amount wise breakup chart code end here4
+
+
+		// echo '<pre>my_array1 ';
+		// print_r($my_array1);
+		// echo '</pre>';
+		// exit();
 
 	    $AmountwiseBreakupChart_dataPoints1 = array();
         $AmountwiseBreakupChart_dataPoints2 = array();
@@ -425,8 +439,9 @@ class ProjectDetails extends CI_Controller {
             $verified_amount = (float) str_replace(',', '', $my_array1_value['overallverified']);
             $total_amount = (float) str_replace(',', '', $my_array1_value['overalltotal']);
 
-            $AmountwiseBreakupChart_dataPoints1[] = array("label"=> $my_array1_key, "y"=> $verified_amount);
-            $AmountwiseBreakupChart_dataPoints2[] = array("label"=> $my_array1_key, "y"=> ($total_amount - $verified_amount));
+            $AmountwiseBreakupChart_dataPoints1[] = array("label"=> $my_array1_key, "y"=> $verified_amount,"customText" => round($my_array1_value['overallverified'],2));
+
+            $AmountwiseBreakupChart_dataPoints2[] = array("label"=> $my_array1_key, "y"=> ($total_amount - $verified_amount), "customText" => round($my_array1_value['overalltotal']-$my_array1_value['overallverified'],2));
         }
    
         $data['AmountwiseBreakupChart_dataPoints1']=$AmountwiseBreakupChart_dataPoints1;

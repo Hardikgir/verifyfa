@@ -1806,8 +1806,21 @@ $('.closethismodel').click(function(){
         animationEnabled: true,
         toolTip:{
             shared: true,
-            reversed: true
+            reversed: true,
+             content: function(e) {
+            var content = "";
+            for (var i = 0; i < e.entries.length; i++) {
+                    var dp = e.entries[i].dataPoint;
+
+                    // Use custom property if available, otherwise show Y
+                    var customValue = dp.customText || dp.y;
+
+                    content += e.entries[i].dataSeries.name + " (" + dp.label + "): " + customValue + "<br/>";
+                }
+                return content;
+            }
         },
+        
         axisY: {
             suffix: "%"
         },

@@ -260,5 +260,18 @@ class Login extends CI_Controller {
 		redirect("index.php/registered-user-login");
 		
 	 }
+
+
+
+
+	public function clear_all(){
+		$updatedata=array(
+			'is_login'=>0,
+		);
+
+		$query = $this->db->update('users',$updatedata);
+  
+		redirect("index.php/login");
+	}
 	
 }

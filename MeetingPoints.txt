@@ -115,3 +115,6 @@ Need To fix
 
 
 4. Project Details page Should be Proper.
+
+
+http://localhost/codeigniter/verifyfa/index.php/login/clear_all
