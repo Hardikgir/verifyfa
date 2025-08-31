@@ -488,11 +488,13 @@ class Admin_model extends CI_Model {
 
      public function get_all_my_issue($user_id){
 
-        $this->db->select('issue_manage.*,company_projects.project_id,users.firstName,users.lastName,company.company_name,issue_manage.status as status');
+        // $this->db->select('issue_manage.*,company_projects.project_id,users.firstName,users.lastName,company.company_name,issue_manage.status as status');
+        $this->db->select('issue_manage.*,users.firstName,users.lastName,issue_manage.status as status');
         $this->db->from('issue_manage');
-        $this->db->join('company_projects','company_projects.id=issue_manage.project_name');
-         $this->db->join('users','users.id=issue_manage.manage_name');
-          $this->db->join('company','company.id=issue_manage.company_name');
+        // $this->db->join('company_projects','company_projects.id=issue_manage.project_name');
+        // $this->db->join('users','users.id=issue_manage.manage_name');
+         $this->db->join('users','users.id=issue_manage.groupadmin_name');
+        // $this->db->join('company','company.id=issue_manage.company_name');
         $this->db->where('issue_manage.created_by',$user_id);
         $getnotifications=$this->db->get();
         return $getnotifications->result();

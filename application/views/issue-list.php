@@ -47,7 +47,13 @@ $this->load->view('layouts/sidebar');
                 <td ><?php echo $row->tracking_id;?></td>
                 <td ><?php echo $row->issue_title;?></td>
                 <td ><?php echo 'Project based'; //$row->issue_type;?></td>
-                <td ><?php echo $row->project_id;?></td>
+                <td >
+                    <?php 
+                    if(!empty($row->project_id)){
+                        echo $row->project_id;
+                    }
+                    ?>
+                </td>
                 <td ><?php 
                 if($row->status =='1'){echo "Open";}
                 if($row->status =='0'){echo "Closed";}
