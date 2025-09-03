@@ -1132,14 +1132,49 @@ class Dashboard extends CI_Controller {
 		$user_id=$this->user_id;
 
 
-		$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.status = 0')->result();
 
-		$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.status = 0')->result();
+		$user_id = $this->user_id;
+		$user_role = $this->session->userdata('role'); // Adjust if your role is stored differently
+
+		$user_id = $this->user_id;
+			$user_role = $this->session->userdata('role'); // Adjust if your role is stored differently
+			$role_field_map = array(
+				'project_verifier' => 'project_verifier',
+				'process_owner'    => 'process_owner',
+				'item_owner'       => 'item_owner',
+				'manager'          => 'manager',
+				'assigned_by'      => 'assigned_by',
+			);
+
+			$role_where = '';
+			if (isset($role_field_map[$user_role])) {
+				$field = $role_field_map[$user_role];
+				$role_where .= "FIND_IN_SET($user_id, $field)";
+			} else {
+				// If user has multiple roles or fallback, show all relevant projects
+				$role_where .=
+					"FIND_IN_SET($user_id, project_verifier) OR " .
+					"FIND_IN_SET($user_id, process_owner) OR " .
+					"FIND_IN_SET($user_id, item_owner) OR " .
+					"FIND_IN_SET($user_id, manager) OR " .
+					"FIND_IN_SET($user_id, assigned_by)";
+			}
+
+
+
+		$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.status = 0 AND ('.$role_where.')')->result();
+
+		$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.status = 0 AND ('.$role_where.')')->result();
 			
 		if(!empty($location_datas)){
-			$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location = '.$location_datas.' AND company_projects.status = 0')->result();
+			$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location = '.$location_datas.' AND company_projects.status = 0 AND ('.$role_where.')')->result();
 		}
 
+
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
 	
 		
 		$project_base_count = array();
