@@ -1605,18 +1605,51 @@ class Dashboard extends CI_Controller {
 	public function exceptions()
 	{
 
+		$user_id = $this->user_id;
+		$user_role = $this->session->userdata('role'); // Adjust if your role is stored differently
+
+		$user_id = $this->user_id;
+		$user_role = $this->session->userdata('role'); // Adjust if your role is stored differently
+		$role_field_map = array(
+			'project_verifier' => 'project_verifier',
+			'process_owner'    => 'process_owner',
+			'item_owner'       => 'item_owner',
+			'manager'          => 'manager',
+			'assigned_by'      => 'assigned_by',
+		);
+
+		$role_where = '';
+		if (isset($role_field_map[$user_role])) {
+			$field = $role_field_map[$user_role];
+			$role_where .= "FIND_IN_SET($user_id, $field)";
+		} else {
+			// If user has multiple roles or fallback, show all relevant projects
+			$role_where .=
+				"FIND_IN_SET($user_id, project_verifier) OR " .
+				"FIND_IN_SET($user_id, process_owner) OR " .
+				"FIND_IN_SET($user_id, item_owner) OR " .
+				"FIND_IN_SET($user_id, manager) OR " .
+				"FIND_IN_SET($user_id, assigned_by)";
+		}
+
+
 		if($this->input->post('company_id') && $this->input->post('location_id') ){
 			$lastProj=$this->db->query('Select * from company_projects where company_id='.$this->input->post('company_id').' and  project_location='.$this->input->post('location_id').'  and  entity_code="'.$this->admin_registered_entity_code.'"   order by id desc limit 1')->result();
 			
 		if(count($lastProj)>0)
 		{
+			/*
 			$condition=array(
 				// 'company_id'=>$this->input->post('company_id') ,
 				// 'project_location'=>$this->input->post('location_id') ,
 				'original_table_name'=>$lastProj[0]->original_table_name,
 				// 'entity_code'=>$this->admin_registered_entity_code
+			); */ 
 
-			);
+			$condition='company_id = '.$this->input->post('company_id').' AND project_location = '.$this->input->post('location_id').' AND original_table_name = "'.$lastProj[0]->original_table_name.'" AND entity_code = "'.$this->admin_registered_entity_code.'" AND ('.$role_where.')';
+
+
+
 			$projects=$this->tasks->get_data('company_projects',$condition);
 			if(count($projects)>0)
 			{
@@ -1655,6 +1688,14 @@ class Dashboard extends CI_Controller {
 		{
 			$projects=array();
 		}	
+
+		$data['location_data_list'] = array();
+		if(isset($_POST['company_id'])){
+			$company_id = $_POST['company_id'];
+			$user_id=$this->user_id;
+			$data['location_data_list']=$this->plancycle->get_allroles($company_id,$user_id);
+		}
+
 		$data['company_data_list']=$this->company_data_list_new();
 		$data['projects']=$projects;
 		$data['page_title']="Excpetions";
