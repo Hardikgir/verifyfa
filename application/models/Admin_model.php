@@ -334,9 +334,10 @@ class Admin_model extends CI_Model {
     }
 
     public function get_single_notification($id){
-        $this->db->select('*');
+        $this->db->select('notification.*,users.firstName,users.lastName');
         $this->db->from('notification');
-        $this->db->where('id',$id);
+         $this->db->join('users','users.id=notification.created_by');
+        $this->db->where('notification.id',$id);
         $query=$this->db->get();
         return $query->row();
     }
@@ -476,11 +477,12 @@ class Admin_model extends CI_Model {
         // return $query->result();
 
         
-        $this->db->select('issue_manage.*,company_projects.project_id,users.firstName,users.lastName,company.company_name,issue_manage.status as status');
+        // $this->db->select('issue_manage.*,company_projects.project_id,users.firstName,users.lastName,company.company_name,issue_manage.status as status');
+        $this->db->select('issue_manage.*,users.firstName,users.lastName,issue_manage.status as status');
         $this->db->from('issue_manage');
-        $this->db->join('company_projects','company_projects.id=issue_manage.project_name');
-         $this->db->join('users','users.id=issue_manage.manage_name');
-        $this->db->join('company','company.id=issue_manage.company_name');
+        // $this->db->join('company_projects','company_projects.id=issue_manage.project_name');
+         $this->db->join('users','users.id=issue_manage.groupadmin_name');
+        // $this->db->join('company','company.id=issue_manage.company_name');
         $this->db->where('issue_manage.resolved_by',$user_id);
         $getnotifications=$this->db->get();
         return $getnotifications->result();

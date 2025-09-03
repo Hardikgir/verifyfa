@@ -27,11 +27,12 @@ $this->load->view('layouts/sidebar');
  <table id="example" class="display" style="width:100%">
         <thead>
             <tr>
-            <th>Notification Type</th>
+            <!-- <th>Notification Type</th> -->
             <th>Notification Title</th>
             <th>Created By</th>
-            <th>Status</th>
-            <th>Change Status</th>
+            <th>Date</th>
+            <!-- <th>Status</th> -->
+            <!-- <th>Change Status</th> -->
             <th>Action </th>
             </tr>
         </thead>
@@ -40,27 +41,24 @@ $this->load->view('layouts/sidebar');
                 $user_row=get_user_row($row->created_by);
                 ?>
             <tr>
-                <td ><?php echo $row->type;?></td>
-                <td ><?php echo $row->title;?></td>
-                <td ><?php echo $user_row->firstName.' '.$user_row->lastName;?></td>
-                <td ><?php 
+                <?php /* <td><?php echo $row->type;?></td> */ ?>
+                <td><?php echo $row->title;?></td>
+                <td><?php echo $user_row->firstName.' '.$user_row->lastName;?></td>
+                <td><?php echo $row->created_at;?></td>
+                <?php /*
+                <td><?php 
                 if($row->staus =='0'){echo "Progress";}
                 if($row->staus =='1'){echo "Resolve & Closed";}
                 ?></td>
-                <td >
+                <td>
                 <select name="change_staus" id="change_status" class="form-control" style="border: 1px solid #cfcaca;padding: 4px;background: aliceblue;font-weight: bold;border-radius: 5px;">
                  <option value="0" <?php if($row->staus =='0'){echo "selected";} ?>>Progress</option>
                  <option value="1" <?php if($row->staus =='1'){echo "selected";} ?>>Resolve & Closed</option>
-                </select>    
-               
+                </select> */ ?>
                 <td>
                     <a href="<?php echo base_url();?>index.php/view-reply-notofication/<?php echo $row->id;?>">
                      <i class="fa fa-eye"></i>view
                     </a>
-                    <!-- ||
-                    <a href="#">
-                     <i class="fa fa-trash"></i>Delete
-                    </a> -->
                 </td>
             </tr>
             <?php } ?>

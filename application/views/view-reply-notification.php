@@ -63,6 +63,7 @@ chat-offline {
 <main class="content">
     <div class="container p-0">
 
+	
 		<h1 class="h3 mb-3">Notification Type: <?php echo $notification_data->type;?> </h1>
 
 		<div class="card">
@@ -74,8 +75,10 @@ chat-offline {
 							<div class="flex-grow-1 pl-3">
 								<strong>Title:</strong> <?php echo $notification_data->title;?> 
 								<div class="text-muted small">
-                                <strong>Description:</strong> <?php echo $notification_data->description;?>
-
+                                	<strong>Description:</strong> <?php echo $notification_data->description;?>
+                                </div>
+								<div class="text-muted small">
+                                	<strong>Sender:</strong> <?php echo $notification_data->firstName.' '.$notification_data->lastName;?>
                                 </div>
 							</div>
 							<div>
@@ -88,16 +91,6 @@ chat-offline {
 					<div class="position-relative">
 						<div class="chat-messages p-4">
 
-							<!-- <div class="chat-message-right pb-4">
-								 <div>
-									<img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="rounded-circle mr-1" alt="Chris Wood" width="40" height="40">
-									<div class="text-muted small text-nowrap mt-2">2:33 am</div>
-								</div>
-								<div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3">
-									<div class="font-weight-bold mb-1">You</div>
-									Lorem ipsum dolor sit amet, vis erat denique in, dicunt prodesset te vix.
-								</div>
-							</div> -->
                         <?php foreach($reply_data as $row){ 
                              $user_row=get_user_row($row->reply_from);
                             ?>
@@ -156,6 +149,10 @@ chat-offline {
 
 					<!-- <hr> -->
 
+					
+					
+
+					<?php if($notification_data->created_by == $_SESSION['logged_in']['id']){ ?>
 					<div class="notification_users">
 						<h3 class="text-center mb-3 mt-5">SEND NOTIFICATION TO USERS</h3>
 						<table class="table table-border">
@@ -180,6 +177,7 @@ chat-offline {
 							
 						</table>
 					</div>
+					<?php } ?>
 
 				</div>
 			</div>

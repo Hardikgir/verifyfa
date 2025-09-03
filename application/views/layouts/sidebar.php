@@ -255,7 +255,7 @@ $get_user_all_roles = get_user_all_roles($user_id,$entity_code); // get all user
 			
 			//if(($user_role_addmin_cnt > 0) || ($user_role_manager_cnt > 0) ){ ?>
 				<li class="nav-item <?php echo $page_title=='Manage Issue For Me'?'active':'';?>  ">
-				<a class="nav-link" href="<?php echo base_url();?>index.php/manage-issue-for-me"><i class="fa fa-bug"></i>
+				<a class="nav-link" href="<?php echo base_url();?>index.php/manage-issue-for-me"><i class="fa fa-tasks"></i>
 					<p>Issue For Me</p>
 				</a>
 			</li>
