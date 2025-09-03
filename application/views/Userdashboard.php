@@ -558,12 +558,21 @@ document.getElementById('application_open_project_company_location').onchange = 
     }
 $(document).ready(function(){
     $('#userForm').on('submit', function(e){
+
+        var role_id = $("#user_select_role_val").val();
+        if (role_id == ''){
+            alert("Please Select Your Role");
+        }
+    
+        var data = $(this).serializeArray(); // convert form to array
+        data.push({name: "role_id", value: role_id});
+
         e.preventDefault();
         $("#TypeSubscriptionActiveChart_section").show();
         $.ajax({
             url: "<?php echo base_url();?>index.php/Dashboard/ApplicableOpenProjectGraph",
             type: "POST",
-            data: $(this).serialize(),
+            data: $.param(data),
             dataType: "json",
             success: function(res){
 

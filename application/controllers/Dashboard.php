@@ -1129,6 +1129,7 @@ class Dashboard extends CI_Controller {
 		
 		$company_datas = $_POST['company_id'];
 		$location_datas = $_POST['location_id'];
+		$role_id_datas = $_POST['role_id'];
 		$user_id=$this->user_id;
 
 
@@ -1138,26 +1139,57 @@ class Dashboard extends CI_Controller {
 
 		$user_id = $this->user_id;
 			$user_role = $this->session->userdata('role'); // Adjust if your role is stored differently
+			/*
 			$role_field_map = array(
 				'project_verifier' => 'project_verifier',
 				'process_owner'    => 'process_owner',
 				'item_owner'       => 'item_owner',
 				'manager'          => 'manager',
 				'assigned_by'      => 'assigned_by',
-			);
+			); */ 
 
+			// $role_field_map[] = array('process_owner'    => 'process_owner');
+			// $role_field_map[] = array('item_owner'       => 'item_owner');
+			// $role_field_map[] = array('manager'          => 'manager');
+			//  $role_field_map[] = array('assigned_by'          => 'assigned_by');
+
+
+			
+
+			if($role_id_datas == '0'){
+				$role_field_map[] = array('project_verifier' => 'manager');
+			}
+			if($role_id_datas == '1'){
+				$role_field_map[] = array('project_verifier' => 'project_verifier');
+			}
+			if($role_id_datas == '2'){
+				$role_field_map[] = array('project_verifier' => 'process_owner');
+			}
+			if($role_id_datas == '3'){
+				$role_field_map[] = array('project_verifier' => 'item_owner');
+			}
+			if($role_id_datas == '1'){
+				$role_field_map[] = array('project_verifier' => 'project_verifier');
+			}
+			
 			$role_where = '';
 			if (isset($role_field_map[$user_role])) {
 				$field = $role_field_map[$user_role];
 				$role_where .= "FIND_IN_SET($user_id, $field)";
 			} else {
 				// If user has multiple roles or fallback, show all relevant projects
-				$role_where .=
-					"FIND_IN_SET($user_id, project_verifier) OR " .
-					"FIND_IN_SET($user_id, process_owner) OR " .
-					"FIND_IN_SET($user_id, item_owner) OR " .
-					"FIND_IN_SET($user_id, manager) OR " .
-					"FIND_IN_SET($user_id, assigned_by)";
+				if($role_id_datas == '0'){
+					$role_where .= "FIND_IN_SET($user_id, manager)";
+				}
+				if($role_id_datas == '1'){
+					$role_where .= "FIND_IN_SET($user_id, project_verifier)";
+				}
+				if($role_id_datas == '2'){
+					$role_where .= "FIND_IN_SET($user_id, process_owner)";
+				}
+				if($role_id_datas == '3'){
+					$role_where .= "FIND_IN_SET($user_id, item_owner)";
+				}
 			}
 
 
