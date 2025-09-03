@@ -601,13 +601,21 @@ class Plancycle extends CI_Controller {
 	public function getlocationdata(){
 		
 		$company_id = $_POST['company_id'];
-		$role_id = $_POST['role_id'];
+		$role_id = 0;
+		if(isset($_POST['role_id']) && $_POST['role_id'] !='')
+		{
+			$role_id = $_POST['role_id'];
+		}
+		
+		
 		$this->db->select('*');
         $this->db->from('user_role');
         $this->db->join('company_locations','company_locations.id=user_role.location_id');
 		$this->db->where('user_role.company_id',$company_id);
 		// $this->db->where('user_role.company_id',$company_id);
-		$this->db->where('FIND_IN_SET('.$role_id.', user_role.user_role)');
+		// if(isset($_POST['role_id']) && $_POST['role_id'] !='')
+			$this->db->where('FIND_IN_SET('.$role_id.', user_role.user_role)');
+		// }
 		$this->db->group_by("user_role.location_id");
         $getnotifications=$this->db->get();
         $resulttttt =  $getnotifications->result();

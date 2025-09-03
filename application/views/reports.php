@@ -15,19 +15,43 @@ $this->load->view('layouts/sidebar');
                     <label class="form-label">Select Company</label>
                     <select name="company_id" id="company_id" class="form-control" required>
                         <option value="">Select Company</option>
-                        <?php foreach($company_data_list as $row_com_list){ 
+
+                        <?php foreach($company_data_list as $row_com_list){
+							$selected = ''; 
+								if(isset($_POST['company_id']) && $_POST['company_id'] == $row_com_list->company_id){
+									$selected = 'selected';
+								}
                              $company_n=get_company_row($row_com_list->company_id);
                             ?>
-                        <option value="<?php echo $company_n->id;?>"> <?php echo $company_n->company_name.'('. $company_n->short_code.')';?></option>
+                        <option value="<?php echo $company_n->id;?>" <?php echo $selected; ?>><?php echo $company_n->company_name.'('. $company_n->short_code.')';?></option>
+						
 
-                        <?php }?>
+                        <?php } ?>
                     </select>
                 </div>
                 <div class="col-md-4 form-row">
                     <label class="form-label">Select Location</label>
                     <select name="location_id" id="company_location" class="form-control">
                         <option value="">Select Location</option>
+						<?php
+						if(!empty($location_data_list)){
+							foreach($location_data_list as $row_loc_list){
+
+							$locrow=$this->plancycle->get_locrow($row_loc_list->location_id);
+							$check_location_assigned=check_location_assigned($company_id,$row_loc_list->location_id,$user_id);
+								
+							$selected = ''; 
+								if(isset($_POST['location_id']) && $_POST['location_id'] == $row_loc_list->location_id){
+									$selected = 'selected';
+								}
+							 $company_n=get_company_row($row_loc_list->company_id);
+							?>
+						<option value="<?php echo $locrow->id;?>" <?php echo $selected; ?>><?php echo $locrow->location_name;?></option>	
+						<?php } 
+						}
+						?>
                     </select>
+					 
                 </div>
                 <div class="col-md-2 form-row">
                 <button type="submit" class="btn btn-success">GO</button>
@@ -232,6 +256,7 @@ $this->load->view('layouts/footer');
 ?>
 
 <script>
+
 document.getElementById('company_id').onchange = function() {
     var company_id = this.value;
     var fd = new FormData();
