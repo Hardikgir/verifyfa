@@ -1,6 +1,11 @@
 SELECT * FROM v74_ci_verifyfa_live_server_db.users where entity_code = 'PROBUDS';
 SELECT * FROM v74_ci_verifyfa_live_server_db.user_role where entity_code = 'PROBUDS';
-SELECT * FROM v74_ci_verifyfa_live_server_db.company_projects where id in (10,11,12);
+
+SELECT *,c.company_name FROM v74_ci_verifyfa_live_server_db.company_projects cp
+LEFT JOIN company c 
+       ON cp.company_id = c.id
+where cp.id in (10,11,12);
+
 SELECT * FROM v74_ci_verifyfa_live_server_db.03sep_tg1;
 SELECT * FROM v74_ci_verifyfa_live_server_db.03sep_nt;
 SELECT * FROM v74_ci_verifyfa_live_server_db.03sep_tg2;
@@ -26,4 +31,3 @@ LEFT JOIN company_locations cl
 LEFT JOIN users u 
        ON ur.user_id = u.id       
 where ur.entity_code = 'PROBUDS';
-;

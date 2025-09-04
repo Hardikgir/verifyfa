@@ -277,7 +277,9 @@ $this->load->view('layouts/footer');
                                                                             {
                                                                                 "<tr><td colspan='6'><strong>Projects are not available.</strong></td></tr>";
                                                                             }                                                                        
-                                                                        }                                                                    
+                                                                        }else{
+                                                                            echo "<tr><td colspan='8'><strong>Projects are not available.</strong></td></tr>";
+                                                                        }
                                                                         ?>
                                                                     </tbody>
                                                                 </table>

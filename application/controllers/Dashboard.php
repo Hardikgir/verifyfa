@@ -333,12 +333,17 @@ class Dashboard extends CI_Controller {
 			$role_where = "FIND_IN_SET('$user_id', $field)";
 		} else {
 			// If user has multiple roles or fallback, show all relevant projects
+			/*
 			$role_where =
 				"FIND_IN_SET('$user_id', project_verifier) OR " .
 				"FIND_IN_SET('$user_id', process_owner) OR " .
 				"FIND_IN_SET('$user_id', item_owner) OR " .
 				"FIND_IN_SET('$user_id', manager) OR " .
 				"FIND_IN_SET('$user_id', assigned_by)";
+			*/
+
+			$role_where =
+				"FIND_IN_SET('$user_id', manager)";
 		}
 
 		$query = "SELECT * FROM company_projects WHERE status IN (0,1,2) AND ($role_where) ORDER BY id DESC";
@@ -1293,9 +1298,11 @@ class Dashboard extends CI_Controller {
 		
 		//$projects=$this->db->query('SELECT * from company_projects where company_id = "'.$application_open_project_company_id.'" AND project_location = "'.$application_open_project_company_location.'" AND FIND_IN_SET("'.$application_open_project_verifier.'", company_projects.project_verifier)')->result();
 		// 29-08-2025	
+
+		$entity_code_value = $this->admin_registered_entity_code;
 		$fetch_query = "";
 
-		$fetch_query .= "SELECT * from company_projects where id is not null";
+		$fetch_query .= "SELECT * from company_projects WHERE entity_code = '".$entity_code_value."'";
 
 		if(!empty($application_open_project_company_id)){
 			$fetch_query .= " AND company_id = '".$application_open_project_company_id."'";
@@ -1313,9 +1320,10 @@ class Dashboard extends CI_Controller {
 			$fetch_query .= " AND FIND_IN_SET('".$application_open_project_verifier."', company_projects.project_verifier)";
 		}
 
+		
+
 
 		$projects=$this->db->query($fetch_query)->result();
-	
 		$stackedBarchartContainer_array = array();
 		
 		$count = 0;
