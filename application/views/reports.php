@@ -232,7 +232,7 @@ $this->load->view('layouts/sidebar');
 									}
 									
 									?>
-                                    ?>
+                                
 									<div class="clearfix"></div>
 								</form>
 							</div>
