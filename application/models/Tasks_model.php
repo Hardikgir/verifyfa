@@ -913,23 +913,34 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
     {
         if($verificationstatus==1)
         {
-            $data['manual']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE mode_of_verification='Manual' group by item_category")->result();
+            $data['manual']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE mode_of_verification='Search' group by item_category")->result();
             $data['scan']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE mode_of_verification='Scan' group by item_category")->result();
             
         }
         else if($verificationstatus=='Verified')
         {
-            $data['manual']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE mode_of_verification='Manual' and verification_status='Verified' group by item_category")->result();
+            $data['manual']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE mode_of_verification='Search' and verification_status='Verified' group by item_category")->result();
             $data['scan']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE mode_of_verification='Scan' and verification_status='Verified' group by item_category")->result();
             
         }
         else
         {
-            $data['manual']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE mode_of_verification='Manual' and verification_status='Not-Verified' group by item_category")->result();
+            $data['manual']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE mode_of_verification='Search' and verification_status='Not-Verified' group by item_category")->result();
             $data['scan']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE mode_of_verification='Scan' and verification_status='Not-Verified' group by item_category")->result();
         }
+
+        // echo '<pre>data 1 ::';
+        // print_r($data);
+        // echo '</pre>';
+        // // exit();
+        
         
         $data['all']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE mode_of_verification!='Not Verified' group by item_category")->result();
+
+        // echo '<pre>';
+        // print_r($data);
+        // echo '</pre>';
+        // exit();
         return $data;
     }
     public function getDetailedReportFAR($tablename,$verificationstatus,$reportHeaders)
@@ -1298,7 +1309,7 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
         if($verificationstatus==1)
         {
             if($mode=='manual')
-                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE mode_of_verification='Manual'")->result_array();
+                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE mode_of_verification='Search'")->result_array();
             else
                 $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE mode_of_verification='Scan'")->result_array();
             
@@ -1306,7 +1317,7 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
         else if($verificationstatus=='Verified')
         {
             if($mode=='manual')
-                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE mode_of_verification='Manual' and verification_status='Verified'")->result_array();
+                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE mode_of_verification='Search' and verification_status='Verified'")->result_array();
             else
                 $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE mode_of_verification='Scan' and verification_status='Verified'")->result_array();
             
@@ -1314,7 +1325,7 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
         else
         {
             if($mode=='manual')
-                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE mode_of_verification='Manual' and verification_status='Not-Verified' ")->result_array();
+                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE mode_of_verification='Search' and verification_status='Not-Verified' ")->result_array();
             else
                 $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE mode_of_verification='Scan' and verification_status='Not-Verified'")->result_array();
         }
@@ -1884,7 +1895,7 @@ function get_product_search($sort_by,$order_by,$table_name)
 
     function getExceptionNineReport($tablename,$verificationstatus,$reportHeaders)
     {
-        $tablename = 'dljm_d_55_fa_verification_tagging';
+        // $tablename = 'dljm_d_55_fa_verification_tagging';
        
         $result_list = $this->db->query("SELECT COUNT(`item_unique_code`) AS uniqu_record_cout, item_unique_code,item_category FROM  $tablename GROUP BY item_unique_code,item_category ORDER BY uniqu_record_cout DESC")->result();
 

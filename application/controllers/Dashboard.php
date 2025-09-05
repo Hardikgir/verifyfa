@@ -1844,6 +1844,10 @@ class Dashboard extends CI_Controller {
 				if($exceptioncategory==1)	//Condition of Item
 				{
 					$getreport=$this->tasks->getExceptionOneReport($project_name,$verificationstatus,$reportHeaders);
+					// echo '<pre>getreport ';
+					// print_r($getreport);
+					// echo '</pre>';
+					// exit();
 					$reportView="conditionReport";
 				}
 				else if($exceptioncategory==2)	//Changes/ Updations of Items
@@ -1881,6 +1885,10 @@ class Dashboard extends CI_Controller {
 				else if($exceptioncategory==8)	//Mode of Verification
 				{
 					$getreport=$this->tasks->getExceptionEightReport($project_name,$verificationstatus,$reportHeaders);
+					// echo '<pre>getreport ';
+					// print_r($getreport);
+					// echo '</pre>';
+					// exit();
 					$reportView="modeReport";
 				}
 
@@ -3517,6 +3525,7 @@ class Dashboard extends CI_Controller {
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Verified Qty");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+		
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Verified Amount");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);

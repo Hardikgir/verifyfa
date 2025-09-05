@@ -293,6 +293,8 @@ table th,table td{
 												{
 													$remainitem= $remainingdata->items;
 												}
+												$remainitem = $allcat->total_qty-($goodItems+$damagedItems+$scrappedItems+$missingItems+$shiftedItems+$notinuseItems);
+
 												
 											}
 											$remainitemstotal +=$remainitem;
@@ -308,7 +310,7 @@ table th,table td{
 											<td><?php echo $allcat->total_amount!=0?getmoney_format(round(($allcat->total_amount/100000),2)):$allcat->total_amount; ?></td>
 											<td><?php echo $allcat->total_qty; ?></td>
 											<td><?php echo $goodAmount!=0?getmoney_format(round(($goodAmount/100000),2)):$goodAmount; ?></td>
-											<td><?php echo $goodItems; ?></td>
+											<td><?php echo $goodItems; ?> </td>
 											<td><?php echo $damagedAmount!=0?getmoney_format(round(($damagedAmount/100000),2)):$damagedAmount;?></td>
 											<td><?php echo $damagedItems; ?></td>
 											<td><?php echo $scrappedAmount!=0?getmoney_format(round(($scrappedAmount/100000),2)):$scrappedAmount; ?></td>

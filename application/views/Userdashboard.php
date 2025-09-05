@@ -53,6 +53,11 @@ $user_role_admin_cnt=get_user_role_cnt_admin($user_id,$entity_code);
 	min-height: 200px !important;
 }
 
+
+.canvasjs-chart-toolbar button{
+    display: none;
+}
+
 	</style>
 
 
