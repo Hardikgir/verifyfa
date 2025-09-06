@@ -17,13 +17,7 @@ class Tasks extends CI_Controller {
 
 	}
 
-	public function test()
-	{
-		header('Content-Type: application/json');
-		echo json_encode(array("success" => 200, "message" => "API is working"));
-		exit;
-	}
-
+	
 	public function getprojects()
 	{
 		$userid=$this->input->post('user_id');
@@ -4002,9 +3996,9 @@ $this->email->attach($file_path);
     public function instance_rollback()
     {
 
-        $item_id = $_POST['item_id'];
-        $project_id = $_POST['project_id'];
-        $instance_id = $_POST['instance_id'];
+        $item_id = $this->input->post('item_id');
+        $project_id = $this->input->post('project_id');
+        $instance_id = $this->input->post('instance_id');
 
         $this->db->select("*");   
         $this->db->from("company_projects");   
@@ -4206,7 +4200,7 @@ $this->email->attach($file_path);
     public function issue_list()
     {
         // Get user_id from POST input
-        $user_id = $_POST['user_id'];
+        $user_id = $this->input->post('user_id');
         
         // Validate if user_id is provided
         if(empty($user_id)) {
@@ -4288,7 +4282,7 @@ $this->email->attach($file_path);
     {
         // Get issue_id from POST input
         $issue_id = $this->input->post('issue_id');
-        // $issue_id = $_POST['issue_id'];
+        
 
         
         // Validate if issue_id is provided

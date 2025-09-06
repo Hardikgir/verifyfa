@@ -1,4 +1,433 @@
 
+1. {{url}}/index.php/api/login/login :- POST {Get Login}
+    {
+        userEmail:jasmeet@probuds.co.in
+        userPassword:12345
+        entity:{{entity_code}}
+    }
+
+2. {{url}}index.php/api/tasks/getprojects :- :- POST {Get Project Details}
+    {
+        user_id:{{user_id}}
+        company_id:{{company_id}}
+        location_id:{{location_id}}
+    }
+
+3. {{url}}index.php/api/tasks/getDashboard :- POST {Get Dashboard Details}
+    {
+        user_id:{{user_id}}
+        entity_code:{{entity_code}}
+        location_id:{{location_id}}
+    }
+
+4. {{url}}index.php/api/tasks/getsearchprojects :- POST {Get Project Search Assign Project}
+    {
+        user_id:{{user_id}}
+        location_id:{{location_id}}
+    }
+
+5. {{url}}index.php/api/tasks/scanitem :- POST
+    {
+        user_id:{{user_id}}
+        company_id:{{company_id}}
+        project_id:{{project_id}}
+        project_name:{{project_name}}
+        scan_code:SWH-P&M-0003-PRO      //Need to understand
+    }
+6. {{url}}index.php/api/tasks/EditVerificationNew :- POST (Get Details of Instance of Verified Product)
+    {
+        user_id:{{user_id}}
+        company_id:{{company_id}}
+        project_id:{{project_id}}
+        project_name:{{project_name}}
+        instance_id:1
+    }
+7. {{url}}index.php/api/tasks/manualscanitem :- POST {Manual Search Process}
+    {
+        project_id:{{project_id}}
+        user_id:{{user_id}}
+        verification_status:All
+        tag_status_y_n_na:Y
+        item_category:RAW MATERIAL
+        item_sub_category:PL-MCH
+        project_name:KML - MAHAG - STOCK/ RM/ FG
+        search_text:a
+        search_fields[]:item_unique_code
+        order_by:ASC
+    }
+8. {{url}}index.php/api/tasks/projectstart :- POST {Project Start}
+    {
+        user_id:{{user_id}}
+        project_id:{{project_id}}
+        company_id:{{company_id}}
+    }
+9. {{url}}index.php/api/tasks/projectfinish :- POST {Project Finished}
+    {
+        user_id:{{user_id}}
+        project_id:{{project_id}}
+        company_id:{{company_id}}
+    }
+10. {{url}}index.php/api/tasks/finalizeverifiedproject
+    {
+        project_finished_by:{{user_id}}
+        project_id:{{project_id}}
+        remarks:asdsa
+        status:1
+    }
+11. {{url}}index.php/api/tasks/savenote
+    {
+        user_id:{{user_id}}
+        item_id:1
+        project_name:{{project_table_name}}
+        item_note:asdasd
+    }
+12. {{url}}index.php/api/tasks/getcategories
+    {
+        project_name:{{project_table_name}}
+    }
+13. {{url}}index.php/api/tasks/getsubcategories :- POST {Get Sub Category From Iten Category}
+    {
+        project_name:{{project_table_name}}
+        item_category:VEH
+    }
+14. {{url}}index.php/api/tasks/get_company :- POST {Get Company Details by User ID}
+    {
+        user_id:{{user_id}}
+    }
+15. {{url}}index.php/api/tasks/get_company_location :- POST {Get Location Details by user ID & Company ID}
+    {
+        user_id:{{user_id}}
+        company_id:{{company_id}}
+    }
+16. {{url}}index.php/api/tasks/get_company_location_project :- POST {Get Project By Company Location}
+    {
+        user_id:{{user_id}}
+        company_id:{{company_id}}
+        location_id:{{location_id}}
+    }
+17. {{url}}index.php/api/tasks/get_graph_data :- POST {Get Graph Data}
+    {
+        project_id:{{project_id}}
+    }   
+18. {{url}}index.php/api/tasks/get_project_contact_info :- POST {Get Project Contact Information}
+    {
+        project_id:{{project_id}}
+    }
+19. {{url}}index.php/api/tasks/get_project_contact_info :- POST {Save Project Contact Information}
+    {
+        project_id:{{project_id}}
+        name:Seer222
+        email:seerit22@gmail.com
+        phone:999999
+        designation:IT
+        user_id:{{user_id}}
+    }
+20. {{url}}index.php/api/tasks/update_project_contact_info :- POST {Update Project Conatct Information}
+    {
+        id:40
+        project_id:{{project_id}}
+        name:harDIK
+        email:HARDIK@GMAIL.COM
+        phone:787899999
+        designation:ASDSA
+        user_id:{{user_id}}
+    }
+21. {{url}}index.php/api/tasks/get_graph_datastatus :- POST {Get Graph Data Status}
+    {
+        entity_code:{{entity_code}}
+    }
+13. {{url}}index.php/api/tasks/project_completion_by_location :- POST {Get Information of Completion by Location id}
+    {
+        entity_code:{{entity_code}}
+        project_location:{{location_id}}
+    }
+14. {{url}}index.php/api/tasks/additional_data :- POST {Store Additional Information by Prject id}
+    {
+        asset_category:asset_category
+        asset_classification:asset_classification
+        description_of_asset:description_of_asset
+        qty_verified:1
+        current_location:ward 2A
+        condition_of_assets:Good Condition
+        make:godrej
+        model:2023
+        serial_no:88821212
+        temp_verifiction_id_ref:test temp_verifiction_id_ref
+        expected_unit_cost:250
+        any_other_details_unit_cost:150
+        verified_name:Hardikgiri Meghnathi
+        project_id:{{project_id}}
+    }
+15. {{url}}index.php/api/tasks/get_project_additionaldata :- POST {Get Project Additional Information}
+    {
+        project_id:{{project_id}}
+    }
+16. {{url}}index.php/api/tasks/update_additional_data :- POST {Update Additional Information}
+    {
+        asset_category:asset_category UPDATE
+        asset_classification:asset_classification UPDATE
+        description_of_asset:description_of_asset UPDATE
+        qty_verified:1
+        current_location:ward 2A  UPDATE
+        condition_of_assets:Good Condition
+        make:godrej  UPDATE
+        model:2023  UPDATE
+        serial_no:88821212  UPDATE
+        temp_verifiction_id_ref:test temp_verifiction_id_ref  UPDATE
+        expected_unit_cost:250
+        any_other_details_unit_cost:150
+        verified_name:Hardikgiri Meghnathi  UPDATE
+        project_id:{{project_id}}
+        id:19
+    }
+17. {{url}}index.php/api/tasks/itemnewall :- POST {NOT UNDERSTAND USE OF THIS}
+    {
+        project_id:{{project_id}}
+        user_id:{{user_id}}
+        verification_status:Not-Verified
+        tag_status_y_n_na:Y
+        item_category:P&M
+        item_sub_category:PL-MCH
+        project_name:{{project_name}}
+        search_text:003
+        search_fields[]:item_unique_code
+    }
+18. {{url}}index.php/api/tasks/getprojectsreports :- POST {Get Project Report by Userid}
+    {
+        user_id:{{user_id}}
+    }
+19. {{url}}index.php/api/tasks/generateReport :- POST {Generate Report And Email}
+    {
+        optradio:project    [Project based | Consolidated]
+        projectSelect:{{project_id}}
+        reporttype:1
+        projectstatus:0     [0 :- In Process | 3 :- Finished Verification | 1 :- Completed | 2 :- Cancelled]
+        verificationstatus:Verified [1 | Verified | Not-Verified]
+        reportHeaders[]:total_item_amount_capitalized
+        original_table_name:{{project_table_name}}
+        company_id:{{company_id}}
+        location_id:{{location_id}}
+        user_id:{{user_id}}
+    }
+20. {{url}}index.php/api/tasks/get_project_header :- POST {Get Project Header}
+    {
+        entity_code:{{entity_code}}
+    }
+21. {{url}}index.php/api/tasks/get_overdue_projects :- POST {Get OverDue Projects}
+    {
+        user_id:{{user_id}}
+    }
+22. {{url}}index.php/api/tasks/get_notifications :- POST {Get Notifications}
+    {
+        user_id:{{user_id}}
+    }
+23. {{url}}index.php/api/tasks/notification_read :- POST {Update Notifiaction Read Status}
+    {
+        user_id:{{user_id}}
+        notification_id:1
+    }
+24. {{url}}index.php/api/tasks/search :- POST {Search Result}
+    {
+        sort_by:ByDept
+        order_by:asc
+        project_id:10
+        search_fields[]:
+        search_text:
+    }
+25. {{url}}index.php/api/tasks/editverified :- POST [NOTE :- NOT IN USE AS THEIR HEADING]
+    {
+        item_id:3
+        project_name:test_demo_01
+        project_id:{{project_id}}
+        update_details:{"item_scrap_condition":"qty_ok","qty_ok":1,"quantity_as_per_invoice":1,"quantity_verified":1,"verification_status":"","verification_remarks":"","verified_datetime":"","updatedat":"a","mode_of_verification":"Scan","new_location_verified":"ASDASDASDSD"}
+        update_qty:2
+        edit_opration:qty & details update
+    }
+26. {{url}}index.php/api/tasks/verifybylist :- POST {}      || Similar Function (verifybylist212121)
+    {
+        project_id:{{project_id}}
+        user_id:{{user_id}}
+        verification_status:All
+        project_name:{{project_name}}
+        item_classification:All
+        user_department:All
+        order_by:ASC
+        search_text:P
+        search_fields:item_unique_code,item_description,location_of_the_item_last_verified,quantity_as_per_invoice
+        item_category:P&M
+        item_sub_category:PL-MCH
+    }
+27. {{url}}index.php/api/tasks/downloadExceptionFiveConsolidatedReport :- POST {NOTE :- I THINK NOT IN USE}(WITHOUT ANY PARAMS DATA)
+28. {{url}}index.php/api/tasks/generateExcel :- POST {NOTE :- I THINK NOT IN USE}(WITHOUT ANY PARAMS DATA)
+29.{{url}}index.php/api/tasks/getassets :- POST {Get Assets Value}
+    {
+        verification_status:Verified
+        tag_status_y_n_na:Y
+        item_category:OFFEQP
+        item_sub_category:OFFEQP
+        user_department:PRODUCTION
+        project_name:{{project_name}}
+    }
+30. {{url}}index.php/api/tasks/getdepartments :- POST {Get Departments Value}
+    {
+        verification_status:All
+        tag_status_y_n_na:Y
+        item_category:OFFICE EQUIPMENTS
+        item_sub_category:OFFEQP
+        project_name:DLJM D-55 FA Verification & Tagging
+    }
+31. {{url}}/index.php/api/tasks/create_issue :-POST {Create New Issue}
+    {
+        type_of_issue:General
+        company_name:{{company_id}}
+        location:{{location_id}}
+        project:1
+        manager_id:1
+        groupadmin_id:2
+        issue_title:q
+        issue_description:wdsa
+        user_id:1
+    }
+32. {{url}}/index.php/api/tasks/issue_list :- POST {List of issue}
+    {
+        issue_id:{{user_id}}
+    }
+33. {{url}}/index.php/api/tasks/view_issue :- POST {View Issue}
+    {
+        issue_id:1
+    }
+34. {{url}}/index.php/api/tasks/generateExceptionReportDev :- POST {Generate Exception Report}
+    {
+        optradio:Project Based
+        projectSelect:10
+        exception_category:1
+        projectstatus:0
+        verificationstatus:1
+        reportHeaders[]:total_item_amount_capitalized
+        original_table_name:project_1756634941
+        company_id:{{company_id}}
+        location_id:{{location_id}}
+        user_id:{{user_id}}
+    }
+--------------------------------- Edit Verification Reated ---------------------------------
+35. {{url}}/index.php/api/tasks/saveverified :- POST {Save Verification}
+    {
+        item_id:23
+        project_name:{{project_name}}
+        scanned_data:{
+            "item_scrap_condition":"qty_ok",
+            "qty_ok":10,
+            "quantity_as_per_invoice":26,
+            "verification_status":"Verified",
+            "quantity_verified":10,
+            "new_location_verified":"VALUE1,VALUE2,VALUE3",
+            "verified_by":28,
+            "verified_by_username":"Hardik",
+            "verification_remarks":"Remark2",
+            "mode_of_verification":"Search"↵}
+        project_id:{{project_id}}
+        verify_by:25
+    }   
+36. {{url}}/index.php/api/tasks/EditVerifyoption :- POST {Get Option for Verification}
+    {
+        item_id:133
+        operation_type:Update Qty & Details
+        project_name:{{project_name}}
+    }
+37. {{url}}/index.php/api/tasks/get_verifiedprojects_instance :- POST {Get Verification Instance}
+    {
+        item_id:2
+        project_id:{{project_id}}
+    }
+38. {{url}}/index.php/api/tasks/editverified
+    {
+        item_id:1
+        project_name:{{project_name}}
+        scanned_data:{
+            "item_scrap_condition":"qty_ok",
+            "qty_ok":30,
+            "quantity_as_per_invoice":34,
+            "verification_status":"Verified",
+            "quantity_verified":30,
+            "new_location_verified":"VALUE1,VALUE2,VALUE3",
+            "verified_by":28,
+            "verified_by_username":"Hardik Verifier Verifier",
+            "verification_remarks":"Remark1,Remark2,Remark3,",
+            "mode_of_verification":"Search"
+            }
+        project_id:{{project_id}}
+        verify_by:26
+        edit_opration:Qty & Details
+        instance:1
+    }
+39. {{url}}/index.php/api/tasks/instance_rollback :- POST {Get RollBack}
+    {
+        item_id:2
+        project_id:{{project_id}}
+        instance_id:2
+    }
+
+
+API :- 
+
+Controller : Task
+{
+    -> getprojects :- 
+    -> get_all_company_user_role :- 
+    -> get_all_company_user_role_by_location_id :- 
+    -> getDashboard :- 
+    -> getsearchprojects :- 
+    -> scanitem :- 
+    -> manualscanitem :- 
+    -> saveverified :- 
+    -> projectstart :- 
+    -> projectfinish :- 
+    -> finalizeverifiedproject :- 
+    -> savenote :- 
+    -> getcategories :- 
+    -> getsubcategories :- 
+    -> get_company :- 
+    -> get_company_location :- 
+    -> get_company_location_project :- 
+    -> get_graph_data :- 
+    -> get_project_contact_info :- 
+    -> save_project_contact_info :- 
+    -> get_graph_datastatus :- 
+    -> project_completion_by_location :- 
+    -> additional_data :- 
+    -> get_project_additionaldata :- 
+    -> update_additional_data :- 
+    -> update_project_contact_info :- 
+    -> itemnewall :- 
+    -> getprojectsreports :- 
+    -> generateReport :- 
+    -> get_project_header :- 
+    -> get_overdue_projects :- 
+    -> get_notifications :- 
+    -> notification_read :- 
+    -> search :- 
+    -> get_verifiedprojects_instance :- 
+    -> EditVerifyoption :- 
+    -> editverified :- 
+    -> getdepartments :- 
+    -> getassets :- 
+    -> verifybylist :- 
+    -> downloadExceptionFiveConsolidatedReport :- 
+    -> generateExcel :- 
+    -> emailsending :- 
+    -> setemail :- 
+    -> sendEmail :- 
+    -> EditVerificationNew :- 
+}
+
+Controller :- Login
+{
+    -> login :- 
+}
+
+
+
+
 
 -> http://verifyfa.com/Dev/index.php/api/tasks/get_verifiedprojects_instance  (Showing all Instance)
 -> http://verifyfa.com/Dev/index.php/api/tasks/editverified  (Edit Verification & RollBack)
