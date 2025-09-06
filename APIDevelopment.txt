@@ -26,7 +26,7 @@
         location_id:{{location_id}}
     }
 
-5. {{url}}index.php/api/tasks/scanitem :- POST
+5. {{url}}index.php/api/tasks/scanitem :- POST {Manual Search Process Only Search Base on ScanCode}
     {
         user_id:{{user_id}}
         company_id:{{company_id}}
@@ -42,7 +42,7 @@
         project_name:{{project_name}}
         instance_id:1
     }
-7. {{url}}index.php/api/tasks/manualscanitem :- POST {Manual Search Process}
+7. {{url}}index.php/api/tasks/manualscanitem :- POST {Manual Search Process Only Search Base on SearchText}
     {
         project_id:{{project_id}}
         user_id:{{user_id}}
@@ -310,7 +310,7 @@
         user_id:{{user_id}}
     }
 --------------------------------- Edit Verification Reated ---------------------------------
-35. {{url}}/index.php/api/tasks/saveverified :- POST {Save Verification}
+35. {{url}}/index.php/api/tasks/saveverified :- POST {Save Verification as per This Parameter}
     {
         item_id:23
         project_name:{{project_name}}
@@ -328,13 +328,13 @@
         project_id:{{project_id}}
         verify_by:25
     }   
-36. {{url}}/index.php/api/tasks/EditVerifyoption :- POST {Get Option for Verification}
+36. {{url}}/index.php/api/tasks/EditVerifyoption :- POST {Get Instance Option From your Verified Record}
     {
         item_id:133
         operation_type:Update Qty & Details
         project_name:{{project_name}}
     }
-37. {{url}}/index.php/api/tasks/get_verifiedprojects_instance :- POST {Get Verification Instance}
+37. {{url}}/index.php/api/tasks/get_verifiedprojects_instance :- POST {Get Verification Instance from you saved Instance}
     {
         item_id:2
         project_id:{{project_id}}

@@ -1,0 +1,49 @@
+Some of Important WorkFlow :-
+
+Verify Save Process :- 
+
+API :- {{url}}index.php/api/tasks/saveverified
+Parameter :- 
+    {
+        item_id:1
+        project_name:{{project_name}}
+        scanned_data:{↵    "item_scrap_condition":"qty_ok",↵    "qty_ok":1,↵    "quantity_as_per_invoice":1,↵    "verification_status":"Verified",↵    "quantity_verified":1,↵    "new_location_verified":"TestNewLocation",↵    "verified_by":27,↵    "verified_by_username":"Jasmeet",↵    "verification_remarks":"TestRemark",↵    "mode_of_verification":"Search"↵}
+        project_id:{{project_id}}
+        verify_by:27
+    }
+Operation :- 
+    {
+        -> Once Verify This Column will be update Below
+            {
+                -> verification_status
+                -> quantity_verified
+                -> new_location_verified
+                -> verified_by
+                -> verified_by_username
+                -> verified_datetime
+                -> verification_remarks
+                -> qty_ok
+                -> instance_count
+                -> mode_of_verification
+            }
+        -> Add New Record in Table (verifiedproducts)
+        -> 
+    }
+
+Update Verification Process :- 
+API :- {{url}}index.php/api/tasks/editverified
+Parameter :- 
+    {
+        item_id:1
+        project_name:{{project_name}}
+        scanned_data:{"item_scrap_condition":"qty_ok","qty_ok":1,"quantity_as_per_invoice":1,"verification_status":"Verified","quantity_verified":1,"new_location_verified":"TestNewLocation2","verified_by":27,"verified_by_username":"Jasmeet","verification_remarks":"Remark1,Remark2,Remark3,","mode_of_verification":"Scan"}
+        project_id:{{project_id}}
+        verify_by:27
+        edit_opration:Qty & Details
+        instance:1
+    }
+Operation :- 
+    {
+        -> Wrong Data update :- quantity_verified,qty_ok
+        -> Add New Record in Table (verifiedproducts_log)
+    }
