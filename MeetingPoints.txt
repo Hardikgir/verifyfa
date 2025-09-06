@@ -1,3 +1,15 @@
+Date :- 06/09/2025
+
+Exception Report :- 
+-> Remove Amount column from Consolidate Report
+-> Mode Of Verification (Issue Fixing)
+-> Duplicate Item Code Identified (Issue Fixing)
+-> Duplicate Item Code Identified Report Generating Button
+-> Change Updates of Items
+-> Change Updates of Items Report Generating Button
+
+
+
 Date :- 14/08/2025
 
 -> Register user if Expired then Group admin Button(Continue as GroupAdmin) should be Disbled in Register user.
