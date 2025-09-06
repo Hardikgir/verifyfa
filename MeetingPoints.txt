@@ -9,6 +9,8 @@ Exception Report :-
 -> Change Updates of Items Report Generating Button
 
 
+Update it by postman and Duplicate table create before update any thing so you get which data is updating.
+
 
 Date :- 14/08/2025
 
