@@ -3211,6 +3211,7 @@ class Dashboard extends CI_Controller {
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "To be Verified Amount");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
 		array_push($colsArray,'verification_status');
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Verification Status");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
@@ -3373,11 +3374,6 @@ class Dashboard extends CI_Controller {
 				$projectStatus='Finished Verification';
 			}
 
-			// echo '<pre>';
-			// print_r($gr);
-			// echo '</pre>';
-			// exit(); 
-
 			$verifier_by_name = get_UserName($gr['verified_by']);
 
 
@@ -3392,6 +3388,11 @@ class Dashboard extends CI_Controller {
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $getProject[0]->period_of_verification);
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $verifier_name);
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $projectStatus);
+
+			$Remaing_qty = $gr['quantity_as_per_invoice']-$gr['quantity_verified'];
+			$Remaing_qty_amount = $gr['total_item_amount_capitalized']-($remainingAmount*$gr['quantity_verified']);
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $Remaing_qty);
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $Remaing_qty_amount);
 			
 			$rowCount++;
 		}
@@ -3405,6 +3406,8 @@ class Dashboard extends CI_Controller {
 		
 		$writer->save('php://output');
 	}
+
+
 	public function downloadExceptionOneAllocatedReport($projectid,$reportOneType)
 	{
 		require 'vendor/autoload.php';
