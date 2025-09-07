@@ -4099,13 +4099,24 @@ $this->email->attach($file_path);
         if(!empty($verifiedproducts_data->qty_shifted)){
              $data['qty_shifted'] = $company_projects_product_details->qty_shifted-$verifiedproducts_data->qty_shifted;
         }
-       
-        
         $insert=$this->db->where('id',$item_id);
         $insert=$this->db->update($table_name,$data);
 
 
-        
+
+
+        $data=array(
+            "type_of_operation"=>'rollback',
+        );
+         $insert=$this->db->where('company_id',$verifiedproducts_data->company_id);
+         $insert=$this->db->where('location_id',$verifiedproducts_data->location_id);
+         $insert=$this->db->where('entity_code',$verifiedproducts_data->entity_code);
+         $insert=$this->db->where('project_id',$verifiedproducts_data->project_id);
+         $insert=$this->db->where('project_name',$verifiedproducts_data->project_name);
+         $insert=$this->db->where('item_id',$verifiedproducts_data->item_id);
+        $insert=$this->db->update('verifiedproducts',$data);
+
+      
         // if(!empty($project_id) && count($project_id) > 0)
         if(!empty($project_id))
 		{
@@ -5142,6 +5153,471 @@ public function generateExceptionReportDev() {
     }
 }
 
+
+
+public function get_role_by_user_id(){
+
+    $user_id = $this->input->post('user_id');
+    $entity_code = $this->input->post('entity_code');
+    $get_user_all_roles = get_user_all_roles($user_id,$entity_code); // get all user role company wise
+
+
+    $User_role_array = array();
+    foreach($get_user_all_roles as $get_user_all_roles_value){
+     
+
+       switch ($get_user_all_roles_value) {
+        case 0:
+            $User_role_array[$get_user_all_roles_value] = 'Manager';
+            break;
+        case 1:
+            $User_role_array[$get_user_all_roles_value] = 'Verifier';
+            break;
+        case 2:
+            $User_role_array[$get_user_all_roles_value] = 'Process Owner';
+            break;
+        case 3:
+            $User_role_array[$get_user_all_roles_value] = 'Entity Owner';
+            break;
+        case 4:
+            $User_role_array[$get_user_all_roles_value] = 'Sub Admin';
+            break;
+        case 5:
+            $User_role_array[$get_user_all_roles_value] = 'Group Admin';
+            break;
+        }
+    }
+    
+        if($User_role_array)
+		{
+            header('Content-Type: application/json');
+            echo json_encode(array("success"=>200,"message"=>"User Roles.","data"=>$User_role_array));
+            exit;
+
+		} 
+		else {
+			header('Content-Type: application/json');
+			echo json_encode(array("success"=>401,"message"=>"Not Found Data"));
+			exit;
+		}
+}
+
+public function get_company_by_user_id_role(){
+    $user_id = $this->input->post('user_id');
+    $role_id = $_REQUEST['role_id'];
+    $entity_code = $this->input->post('entity_code');
+    $company_data_query=$this->db->query("select * from user_role where user_id = '".$user_id."' AND company_id != 0 AND FIND_IN_SET(".$role_id.",user_role) AND entity_code = '".$entity_code."' GROUP BY company_id");
+
+    $company_data_list = $company_data_query->result();
+    $company_dropdown_array = array();
+    $company_array = array();
+    foreach($company_data_list as $company_data_list){
+        if(!in_array($company_data_list->company_id, $company_array)){
+            $company_dropdown_array[$company_data_list->company_id] = get_company_row($company_data_list->company_id)->company_name;
+        }
+        $company_array[] = $company_data_list->company_id;
+    }
+	
+    if($company_dropdown_array)
+    {
+        header('Content-Type: application/json');
+        echo json_encode(array("success"=>200,"message"=>"User Roles.","data"=>$company_dropdown_array));
+        exit;
+
+    } 
+    else {
+        header('Content-Type: application/json');
+        echo json_encode(array("success"=>401,"message"=>"Not Found Data"));
+        exit;
+    }
+}
+
+public function get_location_by_user_id_role_company(){
+        $role_id = $this->input->post('role_id');
+        $company_id = $this->input->post('company_id');
+        $user_id = $this->input->post('user_id');
+        $entity_code = $this->input->post('entity_code');
+       
+		$this->db->select('company_locations.id,location_name');
+        $this->db->from('user_role');
+        $this->db->join('company_locations','company_locations.id=user_role.location_id');
+		$this->db->where('user_role.company_id',$company_id);
+        $this->db->where('FIND_IN_SET('.$role_id.', user_role.user_role)');
+		$this->db->group_by("user_role.location_id");
+        $company_locations=$this->db->get();
+        $company_result =  $company_locations->result();
+
+        $company_array = array();
+        foreach($company_result as $company_result_value){
+            $company_array[$company_result_value->id] = $company_result_value->location_name; 
+        }
+       
+        if($company_array)
+        {
+            header('Content-Type: application/json');
+            echo json_encode(array("success"=>200,"message"=>"User Roles.","data"=>$company_array));
+            exit;
+
+        } 
+        else {
+            header('Content-Type: application/json');
+            echo json_encode(array("success"=>401,"message"=>"Not Found Data"));
+            exit;
+        }
+
+
+}
+
+
+public function get_projects_by_user_details(){
+    
+
+        $user_id = $this->input->post('user_id');
+        $role_id = $this->input->post('role_id');
+        $company_id = $this->input->post('company_id');
+        $location_id = $this->input->post('location_id');
+
+        $role_where = '';
+        if($role_id == '0'){
+            $role_where .= "FIND_IN_SET($user_id, manager)";
+        }
+        if($role_id == '1'){
+            $role_where .= "FIND_IN_SET($user_id, project_verifier)";
+        }
+        if($role_id == '2'){
+            $role_where .= "FIND_IN_SET($user_id, process_owner)";
+        }
+        if($role_id == '3'){
+            $role_where .= "FIND_IN_SET($user_id, item_owner)";
+        }
+
+		$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_id.') AND company_projects.status = 0 AND ('.$role_where.')')->result();
+
+		$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_id.') AND company_projects.status = 0 AND ('.$role_where.')')->result();
+			
+		if(!empty($location_id)){
+			$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_id.') AND company_projects.project_location = '.$location_id.' AND company_projects.status = 0 AND ('.$role_where.')')->result();
+		}
+
+
+        if($company_projects)
+        {
+            header('Content-Type: application/json');
+            echo json_encode(array("success"=>200,"message"=>"User Roles.","data"=>$company_projects));
+            exit;
+
+        } 
+        else {
+            header('Content-Type: application/json');
+            echo json_encode(array("success"=>401,"message"=>"Not Found Data"));
+            exit;
+        }
+
+}
+
+public function resolve_issue(){
+
+        $issue_id = $this->input->post("issue_id");
+
+        $created_by=$this->input->post("user_id");
+        $random_number = rand(10000,99999);
+        $tracking_id_value = date('ymd').$random_number;
+        
+
+        $config['upload_path'] = './issueattachment/';
+        $config['allowed_types'] = '*';
+		$config['encrypt_name']=true;
+
+        $this->load->library('upload', $config);
+		$issue_resolve_attachment='';
+        if (!$this->upload->do_upload('issue_resolve_attachment')) {
+            $error = array('error' => $this->upload->display_errors());
+			print_r($error);
+			exit;
+        } else {
+            $data = $this->upload->data();
+			$issue_resolve_attachment="response_".$data['file_name'];
+		}
+
+
+        $status_value = $this->input->post("issue_status");
+        $status_remark_value = $this->input->post("issue_resolve_remark");
+        $status_type = $this->input->post("status_type");
+        $status_type_remark_value = $this->input->post("status_type_remark");
+       
+        $condition=array(
+            "id"=>$issue_id
+        );
+
+        $data=array(
+            "status"=>$status_value,
+            "status_type"=>$status_type,
+            "remark_content"=>$status_remark_value,
+            "remark_content" => $this->input->post("Remark"),
+            "updated_at"=>date("Y-m-d H:i:s")
+        );
+       
+        $verify=$this->tasks->update_data('issue_manage',$data,$condition);
+
+        $data=array(
+            "issue_id"=>$issue_id,
+            "user_id"=>$created_by,
+            "status"=>$status_value,
+            "status_remark"=>$status_remark_value,
+            "status_type"=>$status_type,
+            "status_type_remark"=>$status_type_remark_value,
+            "created_at" => date("Y-m-d H:i:s"),
+            "updated_at"=>date("Y-m-d H:i:s")
+        );
+
+        $insert=$this->db->insert('issue_log_manage',$data);
+        $insert_id = $this->db->insert_id();
+        
+            
+        if($insert_id)
+        {
+            header('Content-Type: application/json');
+            echo json_encode(array("success"=>200,"message"=>"User Roles.","data"=>$data));
+            exit;
+
+        } 
+        else {
+            header('Content-Type: application/json');
+            echo json_encode(array("success"=>401,"message"=>"Not Found Data"));
+            exit;
+        }
+}
+
+
+
+   public function report_exception() {
+        header('Content-Type: application/json');
+        
+        try {
+            // 1. Get and validate input parameters
+            $type = $this->input->post('optradio');
+            $projectSelect = $this->input->post('projectSelect');
+            $reporttype = $this->input->post('reporttype');         //Optional
+            $exception_category = $this->input->post('exception_category'); //Optional
+            $projectstatus = $this->input->post('projectstatus');
+            $verificationstatus = $this->input->post('verificationstatus');
+            $reportHeaders = $this->input->post('reportHeaders');
+            $original_table_name = $this->input->post('original_table_name');
+            $company_id = $this->input->post('company_id');
+            $location_id = $this->input->post('location_id');
+            $user_id = $this->input->post('user_id');
+            $entity_code = $this->input->post('entity_code');
+
+            // 2. Validate required parameters
+            if (empty($user_id)) {
+                echo json_encode(array(
+                    "success" => false,
+                    "status_code" => 400,
+                    "message" => "User ID is required"
+                ));
+                return;
+            }
+
+            // 3. Get user information
+            $this->db->where('id', $user_id);
+            $user = $this->db->get('users')->row();
+            
+            if (!$user) {
+                echo json_encode(array(
+                    "success" => false,
+                    "status_code" => 404,
+                    "message" => "User not found"
+                ));
+                return;
+            }
+
+            $user_email = !empty($user->userEmail) ? $user->userEmail : $user->email;
+            
+            if (empty($user_email)) {
+                echo json_encode(array(
+                    "success" => false,
+                    "status_code" => 400,
+                    "message" => "User email not found"
+                ));
+                return;
+            }
+
+            // 4. Generate report data based on type
+            $report_data = null;
+            $project_data = null;
+            
+            // Ensure tasks model is loaded
+            if (!isset($this->tasks)) {
+                $this->load->model('Tasks_model', 'tasks');
+            }
+            
+            if ($type == 'project') {
+                // Project-specific report
+                $condition = array();
+                
+                if (!empty($projectSelect)) {
+                    $projectSelect = trim($projectSelect);
+                    if (is_numeric($projectSelect)) {
+                        $condition["id"] = $projectSelect;
+                    }
+                }
+                if (!empty($projectstatus)) {
+                    $condition["status"] = $projectstatus;
+                }
+                if (!empty($company_id)) {
+                    $condition['company_id'] = $company_id;
+                }
+                if (!empty($location_id)) {
+                    $condition['project_location'] = $location_id;
+                }
+                
+                $getProject = $this->tasks->get_data('company_projects', $condition);
+                
+                if (count($getProject) > 0) {
+                    // Use the original_table_name from the project data for accurate data retrieval
+                    $table_name = isset($getProject[0]->original_table_name) ? $getProject[0]->original_table_name : '';
+                    
+                    if (empty($table_name)) {
+                        // Fallback to project name if original_table_name is not available
+                        $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+                        $new_pattern = array("_", "_", "");
+                        $table_name = strtolower(preg_replace($old_pattern, $new_pattern, trim($getProject[0]->project_name)));
+                    }
+                    
+                    // Get report data based on type - using direct query to avoid column issues
+                    try {
+                        $report_data = $this->_getReportDataDirect($table_name, $verificationstatus, $reportHeaders, $reporttype);
+                    } catch (Exception $e) {
+                        echo json_encode(array(
+                            'success' => false,
+                            'status_code' => 500,
+                            'message' => 'Error getting report data: ' . $e->getMessage()
+                        ));
+                        return;
+                    }
+                    
+                    $project_data = $getProject[0];
+                } else {
+                    // Get sample projects for debugging
+                    $this->db->select('id, project_name, status, company_id, project_location');
+                    $this->db->limit(5);
+                    $sample_projects = $this->db->get('company_projects')->result();
+                    
+                    echo json_encode(array(
+                        "success" => false,
+                        "status_code" => 404,
+                        "message" => "No project found with the specified criteria",
+                        "debug_info" => array(
+                            "search_criteria" => $condition,
+                            "projectSelect" => $projectSelect,
+                            "projectstatus" => $projectstatus,
+                            "company_id" => $company_id,
+                            "location_id" => $location_id,
+                            "sample_projects" => $sample_projects
+                        )
+                    ));
+                    return;
+                }
+            } else {
+                // Other type report (all projects)
+                $condition = array(
+                    "status" => $projectstatus,
+                    'company_id' => $company_id,
+                    // 'original_table_name' => $original_table_name,
+                    'project_table_name' => $original_table_name,
+                    'entity_code' => $entity_code
+                );
+                
+                $getProjects = $this->tasks->get_data('company_projects', $condition);
+
+             
+                
+                if (count($getProjects) > 0) {
+                    $all_report_data = array();
+                    $project_data = array();
+                    
+                    foreach ($getProjects as $project) {
+                        $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+                        $new_pattern = array("_", "_", "");
+                        $project_name = strtolower(preg_replace($old_pattern, $new_pattern, trim($project->project_name)));
+                        
+                        // Get report data based on type - using direct query
+                        $project_report = $this->_getReportDataDirect($project_name, $verificationstatus, $reportHeaders, $reporttype);
+                        
+                        if (is_array($project_report)) {
+                            $all_report_data = array_merge($all_report_data, $project_report);
+                        }
+                        $project_data[] = $project;
+                    }
+                    
+                    $report_data = $all_report_data;
+                } else {
+                    echo json_encode(array(
+                        "success" => false,
+                        "status_code" => 404,
+                        "message" => "No projects found with the specified criteria"
+                    ));
+                    return;
+                }
+            }
+            
+            // 5. Generate CSV file
+            $filename = 'report_' . date('Y-m-d_H-i-s') . '_' . uniqid() . '.csv';
+            $filepath = FCPATH . 'attachment/' . $filename;
+            
+            // Ensure attachment directory exists
+            if (!is_dir(FCPATH . 'attachment/')) {
+                mkdir(FCPATH . 'attachment/', 0777, true);
+            }
+            
+            // Generate CSV content
+            $csv_result = $this->_generateCSVFile($report_data, $project_data, $filepath, $reporttype);
+            
+            if (!$csv_result['success']) {
+                echo json_encode($csv_result);
+                return;
+            }
+            
+            // 6. Send email
+            $email_result = $this->_sendEmailWithAttachment($filename, $user_email);
+            
+            // Fallback to direct method if cURL fails
+            if (!$email_result['success']) {
+                $email_result = $this->_sendEmailDirect($filename, $user_email);
+            }
+            
+            // 7. Return success response
+            $response = array(
+                'success' => true,
+                'status_code' => 200,
+                'message' => 'Report generated and sent successfully',
+                'data' => array(
+                    'filename' => $filename,
+                    'email_sent' => $email_result['success'],
+                    'user_email' => $user_email,
+                    'record_count' => count($report_data),
+                    'generated_at' => date('Y-m-d H:i:s')
+                )
+            );
+            
+            if (!$email_result['success']) {
+                $response['message'] = 'Report generated but email sending failed';
+                $response['email_error'] = $email_result['message'];
+            }
+            
+            echo json_encode($response);
+            
+        } catch (Exception $e) {
+            log_message('error', 'GenerateReport Error: ' . $e->getMessage());
+            
+            echo json_encode(array(
+                'success' => false,
+                'status_code' => 500,
+                'message' => 'Internal server error occurred',
+                'error' => $e->getMessage()
+            ));
+        }
+    }
 
 
 

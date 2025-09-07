@@ -598,6 +598,7 @@ class Dashboard extends CI_Controller {
 
 	public function User()
 	{   
+		
 
 		$admin_registered_user_id = $_SESSION['logged_in']['admin_registered_user_id'];
 		$user_id=$this->user_id;

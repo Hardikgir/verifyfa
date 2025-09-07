@@ -397,20 +397,24 @@
         issue_status:1
         issue_resolve_remark:asadsad
         issue_resolve_attachment:{{FILE-DATA}}
+        status_type:1
+        status_type_remark:asdsadsad
+        user_id:{{user_id}}
     }   
 6. {{url}}index.php/api/tasks/report_exception
     {
         optradio:Project Based
         projectSelect:10
-        reporttype:1                    //OPTIONAL
-        exception_category:2            //OPTIONAL
+        reporttype:1
+        exception_category:2
         projectstatus:0
         verificationstatus:1
         reportHeaders[]:total_item_amount_capitalized
-        original_table_name:project_1756634941
+        original_table_name:{{project_table_name}}
         company_id:{{company_id}}
         location_id:{{location_id}}
         user_id:{{user_id}}
+        entity_code:{{entity_code}}
     }
 
 API :- 
