@@ -1819,35 +1819,13 @@ class Dashboard extends CI_Controller {
 			{
 				$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 				$new_pattern = array("_", "_", "");
-				$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
-				// echo '<pre>project_name :: ';
-				// print_r($project_name);
-				// echo '</pre>';
-				// exit();
-
+				$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));				
 				$categories=$this->tasks->getdistinct_data($project_name,'item_category');
-				// echo '<pre>last_query ';
-				// print_r($this->db->last_query());
-				// echo '</pre>';
-				// echo '<pre>exceptioncategory ';
-				// print_r($exceptioncategory);
-				// echo '</pre>';
-				// exit();
-				// exit();
-
-				// echo '<pre>exceptioncategory ::';
-				// print_r($exceptioncategory);
-				// echo '</pre>';
-				// exit();
-				
+			
 				
 				if($exceptioncategory==1)	//Condition of Item
 				{
-					$getreport=$this->tasks->getExceptionOneReport($project_name,$verificationstatus,$reportHeaders);
-					// echo '<pre>getreport ';
-					// print_r($getreport);
-					// echo '</pre>';
-					// exit();
+					$getreport=$this->tasks->getExceptionOneReport($project_name,$verificationstatus,$reportHeaders);					
 					$reportView="conditionReport";
 				}
 				else if($exceptioncategory==2)	//Changes/ Updations of Items
@@ -1885,10 +1863,6 @@ class Dashboard extends CI_Controller {
 				else if($exceptioncategory==8)	//Mode of Verification
 				{
 					$getreport=$this->tasks->getExceptionEightReport($project_name,$verificationstatus,$reportHeaders);
-					// echo '<pre>getreport ';
-					// print_r($getreport);
-					// echo '</pre>';
-					// exit();
 					$reportView="modeReport";
 				}
 
@@ -6707,7 +6681,7 @@ public function downloadExceptionChangesUpdationsofItems()
 	public function downloadExceptionChangesUpdationsofItems11()
 	{
 
-		$projectid = 26;
+		$projectid = 1;
 		$reportOneType = 'qty_ok';
 		$ReportTitle = 'ChangesUpdationsofItems';
 		require 'vendor/autoload.php';
@@ -6760,28 +6734,10 @@ public function downloadExceptionChangesUpdationsofItems()
 			foreach($project_header_column as $project_header_column_new_value)
 			{
 				if($original_table_result[$project_table_key]->$project_header_column_new_value != $project_table_result[$project_table_key]->$project_header_column_new_value){
-					// $Updated_value_array[$project_header_column_new_value]['New'][] = $original_table_result[$project_table_key]->$project_header_column_new_value;
-					// $Updated_value_array[$project_header_column_new_value]['Old'][] = $project_table_result[$project_table_key]->$project_header_column_new_value;
 					$Updated_value_array[$project_header_column_new_value][$original_table_result[$project_table_key]->item_sub_category][$original_table_result[$project_table_key]->id] = $original_table_result[$project_table_key]->$project_header_column_new_value." | ".$project_table_result[$project_table_key]->$project_header_column_new_value;
 				}
 			}
 		}
-
-
-
-
-		// echo '<pre>Updated_value_array ';
-		// print_r($Updated_value_array);
-		// echo '</pre>';
-		// exit(); 
-
-
-
-
-
-
-
-
 		
 		
 		$project_headers=$this->tasks->get_data('project_headers',$headerCondition);
@@ -6892,18 +6848,7 @@ public function downloadExceptionChangesUpdationsofItems()
 		}
 		$columns.="quantity_as_per_invoice";
 		
-		// echo '<pre>colsArray ';
-		// print_r($colsArray);
-		// echo '</pre>';
-		// exit(); 
-
-		// echo '<pre>Updated_value_array 111';
-		// print_r($Updated_value_array);
-		// echo '</pre>';
-		// exit(); 
-
-		// $Updated_value_array[$project_header_column_new_value]['MixValue'][] = $original_table_result[$project_table_key]->$project_header_column_new_value." | ".$project_table_result[$project_table_key]->$project_header_column_new_value;
-		
+	
 
 		$projCondition=array('id'=>$projectid);
 		$getProject=$this->tasks->get_data('company_projects',$projCondition);
@@ -6914,43 +6859,16 @@ public function downloadExceptionChangesUpdationsofItems()
 
 		$getreport=$this->tasks->getDetailedExceptionOneReport($project_name,$verification_status,$columns,$reportOneType);
 	
-		// echo '<pre>project_header_column_base ';
-		// print_r($project_header_column_base);
-		// echo '</pre>';
-
-
-		// echo '<pre>Updated_value_array ';
-		// print_r($Updated_value_array);
-		// echo '</pre>';
-		// exit(); 
-
-
-
-	
-		
 		
 		foreach($getreport as $gr)
 		{
 			$cnt=0;
 			for($rh=0;$rh<count($colsArray);$rh++)
 			{
-				// echo '<pre>rowCount ';
-				// print_r($rowHeads[$cnt].$rowCount);
-				// echo '</pre>';
-				// echo '<pre>colsArray ';
-				// print_r($gr[$colsArray[$rh]]);
-				// echo '</pre>';
-				// exit(); 
-				// exit(); 
 				$sheet->setCellValue($rowHeads[$cnt].$rowCount,$gr[$colsArray[$rh]] );
 				$cnt++;
 			}
-			// echo '<pre>rowCount ';
-			// print_r($rowHeads[$cnt++].$rowCount);
-			// echo '</pre>';
-			// exit(); 
-			// $sheet->setCellValue($rowHeads[$cnt++].$rowCount, "Hardik Development Test");
-
+	
 			$rowCount++;
 		}
 
@@ -6959,10 +6877,6 @@ public function downloadExceptionChangesUpdationsofItems()
 
 
 		$company_projects = $this->db->query("SELECT *  FROM company_projects WHERE project_table_name='".$tablename."'")->row();
-		// echo '<pre>last_query 1';
-		// print_r($this->db->last_query());
-		// echo '</pre>';
-		// exit();
 		$project_id = $company_projects->id;
 		$company_id = $company_projects->company_id;
 		$original_table_name = $company_projects->original_table_name;
@@ -7020,11 +6934,7 @@ public function downloadExceptionChangesUpdationsofItems()
 		unset($project_header_column_value[0]);
 		unset($project_header_column_value[1]);
 
-		// echo '<pre>project_header_column_value ';
-		// print_r($project_header_column_value);
-		// echo '</pre>';
-		// exit(); 
-
+	
 		$spreadsheet1= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 		$sheet1 = $spreadsheet1->getActiveSheet();
 		// $sheet1->setCellValue("A1", "Hardik Development Test");
@@ -7033,82 +6943,13 @@ public function downloadExceptionChangesUpdationsofItems()
 		// foreach($data['different'] as $key=>$value){ 
 			foreach($project_header_column_value as $project_header_column_value_value){
 
-				// echo '<pre> ';
-				// print_r($project_header_column_value_value);
-				// echo '</pre>';
-				// // exit(); 
-
-				// echo '<pre>cnt ';
-				// print_r($cnt);
-				// echo '</pre>';
-
-				// echo '<pre>rowHeads ';
-				// print_r($rowHeads);
-				// echo '</pre>';
-
-				// echo '<pre>rowCount ';
-				// print_r($rowCount);
-				// echo '</pre>';
-
-				// echo '<pre>rowCount ';
-				// print_r($rowHeads[$cnt].$rowCount);
-				// echo '</pre>';
-				// exit(); 
-
-				// exit(); 
-				// exit(); 
-				// exit(); 
-
+			
 				$sheet1->setCellValue($rowHeads[$cnt].$rowCount,ucfirst(str_replace('_',' ',$project_header_column_value_value)) );
 				
 				$cnt++;
 
 			}
-
-
-			// exit();
-		// }
-
-
-			/*
-		$project_header_column_value = explode(",",$data['project_header_column_value']);
-		unset($project_header_column_value[0]);
-		unset($project_header_column_value[1]);
-		echo '<tr>';
-		echo '<th>Allocated Item Category</th>';
-		foreach($project_header_column_value as $project_header_column_value_value){
-			echo '<th>';
-			echo ucfirst(str_replace('_',' ',$project_header_column_value_value));
-			echo '</th>';
-		}
-		echo '</tr>';
-
-
-		foreach($data['different'] as $key=>$value){ 
-			foreach($project_header_column_value as $project_header_column_value_value){
-				echo '<td>';
-				if(isset($data['different'][$key][$project_header_column_value_value])){
-					echo count($data['different'][$key][$project_header_column_value_value]);
-				}else{
-					echo "0";
-				}
-				echo '</td>';
-			}
-		}
-
-		
-
-		echo '<pre>different_array ';
-		print_r($different_array);
-		echo '</pre>';
-		exit(); 
-		*/
-
-		// exit();
-
-		// $spreadsheet1= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-		// $sheet1 = $spreadsheet1->getActiveSheet();
-		// $sheet1->setCellValue("A1", "Hardik Development Test");
+			
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet1, "Xlsx");
 		$writer->setPreCalculateFormulas(false);
 		$filename = $ReportTitle;
@@ -7133,7 +6974,7 @@ public function downloadExceptionChangesUpdationsofItems()
 
 
 
-	public function downloadExceptionChangesUpdationsofItems()
+	public function downloadExceptionChangesUpdationsofItems($project_id)
 	{
 		require 'vendor/autoload.php';
 		$spreadsheet1= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
@@ -7145,13 +6986,9 @@ public function downloadExceptionChangesUpdationsofItems()
 
 		$rowHeads=array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ','BA','BB','BC','BD','BE','BF','BG','BH','BI','BJ','BK','BL','BM','BN','BO','BP','BQ','BR','BS','BT','BU','BV','BW','BX','BY','BZ','CA','CB','CC','CD','CE','CF','CG','CH','CI','CJ','CK','CL','CM','CN','CO','CP','CQ','CR','CS','CT','CU','CV','CW','CX','CY','CZ');
 
-		$tablename = 'tenmaytwentyone';
-		$company_projects = $this->db->query("SELECT *  FROM company_projects WHERE project_table_name='".$tablename."'")->row();
-		// echo '<pre>last_query ';
-		// print_r($this->db->last_query());
-		// echo '</pre>';
-		// exit();
-		$project_id = $company_projects->id;
+		// $tablename = 'hardiktestone';
+		// $company_projects = $this->db->query("SELECT *  FROM company_projects WHERE project_table_name='".$tablename."'")->row();
+		$company_projects = $this->db->query("SELECT *  FROM company_projects WHERE id='".$project_id."'")->row();
 		$company_id = $company_projects->company_id;
 		$original_table_name = $company_projects->original_table_name;
 		$project_table_name = $company_projects->project_table_name;
@@ -7160,7 +6997,7 @@ public function downloadExceptionChangesUpdationsofItems()
 		$project_headers = $this->db->query("SELECT *  FROM project_headers WHERE project_id='".$project_id."' AND is_editable = 1")->result();
 		
 
-		$project_header_column = array('id','item_sub_category','location_of_the_item_last_verified');
+		$project_header_column = array('id','item_sub_category','location_of_the_item_last_verified','new_location_verified');
 		foreach($project_headers as $project_headers_value){
 			$project_header_column[] = $project_headers_value->keyname;
 		}

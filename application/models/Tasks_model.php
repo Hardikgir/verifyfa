@@ -440,34 +440,17 @@ class Tasks_model extends CI_Model {
     function getExceptionTwoReport($tablename,$verificationstatus,$reportHeaders)
     {
 
-        // echo '<pre>tablename ::';
-        // print_r($tablename);
-        // echo '</pre>';
-
-        // echo '<pre>verificationstatus ::';
-        // print_r($verificationstatus);
-        // echo '</pre>';
-
-        // echo '<pre>reportHeaders ::';
-        // print_r($reportHeaders);
-        // echo '</pre>';
-        // exit(); 
-        // exit(); 
-        // exit(); 
-
         $company_projects = $this->db->query("SELECT *  FROM company_projects WHERE project_table_name='".$tablename."'")->row();
-        // echo '<pre>last_query 1';
-        // print_r($this->db->last_query());
-        // echo '</pre>';
-        // exit();
         $project_id = $company_projects->id;
         $company_id = $company_projects->company_id;
         $original_table_name = $company_projects->original_table_name;
         $project_table_name = $company_projects->project_table_name;
-
+ 
 
         $project_headers = $this->db->query("SELECT *  FROM project_headers WHERE project_id='".$project_id."' AND is_editable = 1")->result();
-        $project_header_column = array('id','item_sub_category','location_of_the_item_last_verified');
+        $project_header_column = array('id','item_sub_category','new_location_verified');
+
+
         foreach($project_headers as $project_headers_value){
             $project_header_column[] = $project_headers_value->keyname;
         }
@@ -476,10 +459,7 @@ class Tasks_model extends CI_Model {
 
 
         $project_table_result = $this->db->query("SELECT ".$project_header_column_value." FROM ".$project_table_name)->result();
-        // echo '<pre>last_query ';
-        // print_r($this->db->last_query());
-        // echo '</pre>';
-        // exit();
+       
         $existing_id_array = array();
         foreach($project_table_result as $project_table_value){
             $existing_id_array[] = $project_table_value->id;
@@ -491,13 +471,13 @@ class Tasks_model extends CI_Model {
         foreach($project_headers as $project_headers_value){
             $project_header_column_base[] = $project_headers_value->keyname;
         }
+
+
+    
+
         $project_header_column_base_value = implode(',', $project_header_column_base);
         $original_table_result = $this->db->query("SELECT ".$project_header_column_base_value." FROM ".$original_table_name." WHERE id in (".$existing_id_value.") ")->result();
-        // echo '<pre>last_query 3:';
-        // print_r($this->db->last_query());
-        // echo '</pre>';
-        // exit();
-
+      
         $different_array = array();
         foreach($project_table_result as $project_table_key=>$project_table_value){
 
@@ -507,7 +487,9 @@ class Tasks_model extends CI_Model {
                 if($project_header_column_new_value == 'location_of_the_item_last_verified'){
 
                     if($original_table_result[$project_table_key]->new_location_verified != $project_table_result[$project_table_key]->$project_header_column_new_value){
-                        $different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value][] = 1;
+                        // if(!empty($project_table_result[$project_table_key]->new_location_verified)){
+                            $different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value][] = 1;
+                        // }
                     }
 
                 }else{
@@ -519,13 +501,8 @@ class Tasks_model extends CI_Model {
                
             }
         }
-        $different_array['project_header_column_value'] = $project_header_column_value; 
 
-
-        // echo '<pre>different_array ';
-        // print_r($different_array);
-        // echo '</pre>';
-        // exit();
+        $different_array['project_header_column_value'] = $project_header_column_value;
         
         return $different_array;
     }

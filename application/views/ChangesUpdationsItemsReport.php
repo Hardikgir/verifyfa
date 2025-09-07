@@ -156,8 +156,8 @@ table th,table td{
 									<div class="clearfix"></div>
 								</form>
 								<div class="col-md-12" style="overflow-x:scroll;">
-
-                                    
+								
+								    
                                     <table class="table table-bordered">
                                         <?php 
                                         $project_header_column_value = explode(",",$data['project_header_column_value']);
@@ -165,13 +165,16 @@ table th,table td{
                                         unset($project_header_column_value[1]);
                                         echo '<tr>';
                                         echo '<th>Allocated Item Category</th>';
+										$count2 = 1;
                                         foreach($project_header_column_value as $project_header_column_value_value){
                                             echo '<th>';
                                             echo ucfirst(str_replace('_',' ',$project_header_column_value_value));
                                             echo '</th>';
+											$count2++;
                                         }
                                         echo '</tr>';
 
+										$count = 1;
                                         foreach($data['different'] as $key=>$value){ ?>
                                         <tr>
                                             <td>
@@ -189,9 +192,16 @@ table th,table td{
                                                 echo '</td>';
                                             } ?>
                                         </tr>
-                                        <?php } ?>
+                                        <?php
+										$count++; 
+										} ?>
+										<tr>
+											<td colspan="<?php echo $count2; ?>">
+												<a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionChangesUpdationsofItems/<?php echo $data['project'][0]->id;?>">Download as Annexure</a>
+											</td>
+										</tr>
                                     </table>											
-									<a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionChangesUpdationsofItems">Download as Annexure</a>
+									
 								</div>
 								<?php
 								}
