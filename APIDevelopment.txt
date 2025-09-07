@@ -286,6 +286,7 @@
         groupadmin_id:2
         issue_title:q
         issue_description:wdsa
+        issue_attachment:{{FILE-DATA}}
         user_id:1
     }
 32. {{url}}/index.php/api/tasks/issue_list :- POST {List of issue}
@@ -367,6 +368,50 @@
         instance_id:2
     }
 
+===================================================================================================================
+1. {{url}}index.php/api/tasks/get_role_by_user_id
+    {
+        user_id:{{user_id}}
+    }
+2. {{url}}index.php/api/tasks/get_company_by_user_id_role
+    {
+        user_id:{{user_id}}
+        role_id:1
+    }
+3. {{url}}index.php/api/tasks/get_location_by_user_id_role_company
+    {
+        user_id:{{user_id}}
+        role_id:1
+        company_id:{{company_id}}
+    }
+4. {{url}}index.php/api/tasks/get_projects_by_user_details
+    {
+        user_id:{{user_id}}
+        role_id:1
+        company_id:{{company_id}}
+        location_id:{{location_id}}
+    }
+5. {{url}}index.php/api/tasks/resolve_issue
+    {
+        issue_id:1
+        issue_status:1
+        issue_resolve_remark:asadsad
+        issue_resolve_attachment:{{FILE-DATA}}
+    }   
+6. {{url}}index.php/api/tasks/report_exception
+    {
+        optradio:Project Based
+        projectSelect:10
+        reporttype:1                    //OPTIONAL
+        exception_category:2            //OPTIONAL
+        projectstatus:0
+        verificationstatus:1
+        reportHeaders[]:total_item_amount_capitalized
+        original_table_name:project_1756634941
+        company_id:{{company_id}}
+        location_id:{{location_id}}
+        user_id:{{user_id}}
+    }
 
 API :- 
 
