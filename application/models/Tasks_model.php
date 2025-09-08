@@ -1872,16 +1872,9 @@ function get_product_search($sort_by,$order_by,$table_name)
 
     function getExceptionNineReport($tablename,$verificationstatus,$reportHeaders)
     {
-        $result_list = $this->db->query("SELECT COUNT(`item_unique_code`) AS uniqu_record_cout, item_unique_code,item_category,verification_status,mode_of_verification FROM  $tablename GROUP BY item_unique_code,item_category ORDER BY uniqu_record_cout DESC")->result();
+        // $result_list = $this->db->query("SELECT COUNT(`item_unique_code`) AS uniqu_record_cout, item_unique_code,item_category,verification_status,mode_of_verification FROM  $tablename GROUP BY item_unique_code,item_category ORDER BY uniqu_record_cout DESC")->result();
 
-        // echo '<pre>result_list ';
-        // print_r($result_list);
-        // echo '</pre>';
-        // exit();
-
-        $scan_wise_result_list = $this->db->query("SELECT COUNT(`item_unique_code`) AS uniqu_record_cout, item_unique_code,item_category FROM  $tablename WHERE verification_status = 'Verified' AND mode_of_verification = 'Scan'  GROUP BY item_unique_code,item_category ORDER BY uniqu_record_cout DESC")->result();
-
-        $search_wise_result_list = $this->db->query("SELECT COUNT(`item_unique_code`) AS uniqu_record_cout, item_unique_code,item_category FROM  $tablename WHERE verification_status = 'Verified' AND mode_of_verification = 'Search'  GROUP BY item_unique_code,item_category ORDER BY uniqu_record_cout DESC")->result();
+        $result_list = $this->db->query("SELECT COUNT(`item_unique_code`) AS uniqu_record_cout, item_unique_code,item_category,verification_status,mode_of_verification FROM  $tablename GROUP BY item_unique_code ORDER BY uniqu_record_cout DESC")->result();
 
         
         $Duplicate_Array = array();
@@ -1889,9 +1882,9 @@ function get_product_search($sort_by,$order_by,$table_name)
         foreach($result_list as $result_key=>$result_value){
             if($result_value->uniqu_record_cout > 1){
 
-                $Verified_scan_query = $this->db->query("SELECT * FROM ".$tablename." where item_unique_code = '".$result_value->item_unique_code."' AND verification_status = 'Verified' AND mode_of_verification = 'Scan'")->num_rows();
-
                 $not_Verified_search_query = $this->db->query("SELECT * FROM ".$tablename." where item_unique_code = '".$result_value->item_unique_code."' AND verification_status = '' AND mode_of_verification = 'Not Verified'")->num_rows();
+
+                 $Verified_scan_query = $this->db->query("SELECT * FROM ".$tablename." where item_unique_code = '".$result_value->item_unique_code."' AND verification_status = 'Verified' AND mode_of_verification = 'Scan'")->num_rows();
                 
                 $Verified_search_query = $this->db->query("SELECT * FROM ".$tablename." where item_unique_code = '".$result_value->item_unique_code."' AND verification_status = 'Verified' AND mode_of_verification = 'Search'")->num_rows();
                 

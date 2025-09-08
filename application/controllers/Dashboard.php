@@ -7012,18 +7012,20 @@ public function downloadExceptionChangesUpdationsofItems()
 		$existing_id_value = implode(',', $existing_id_array);
 	  
 
-		$project_header_column_base = array('id','item_sub_category','new_location_verified');
-		foreach($project_headers as $project_headers_value){
-			$project_header_column_base[] = $project_headers_value->keyname;
-		}
-		$project_header_column_base_value = implode(',', $project_header_column_base);
-		$original_table_result = $this->db->query("SELECT ".$project_header_column_base_value." FROM ".$original_table_name." WHERE id in (".$existing_id_value.") ")->result();
-	
+		// $project_header_column_base = array('id','item_sub_category','new_location_verified');
+		// foreach($project_headers as $project_headers_value){
+		// 	$project_header_column_base[] = $project_headers_value->keyname;
+		// }
+		// $project_header_column_base_value = implode(',', $project_header_column_base);
+
+
+		$original_table_result = $this->db->query("SELECT ".$project_header_column_value." FROM ".$original_table_name." WHERE id in (".$existing_id_value.") ")->result();
+		
 		$different_array = array();
 		foreach($project_table_result as $project_table_key=>$project_table_value){
 			foreach($project_header_column as $project_header_column_new_value)
 			{
-				if($project_header_column_new_value == 'location_of_the_item_last_verified'){
+				if($project_header_column_new_value == 'location_of_the_item_last_verified' || $project_header_column_new_value == 'new_location_verified'){
 					if($original_table_result[$project_table_key]->new_location_verified != $project_table_result[$project_table_key]->$project_header_column_new_value){
 						$different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value]['old_value'][] = $original_table_result[$project_table_key]->new_location_verified;
 						$different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value]['new_value'][] = $project_table_result[$project_table_key]->$project_header_column_new_value;
@@ -7037,6 +7039,11 @@ public function downloadExceptionChangesUpdationsofItems()
 			}
 		}
 
+
+		// echo '<pre>different_array ';
+		// print_r($different_array);
+		// echo '</pre>';
+		// exit();
 		
 		$different_array['project_header_column_value'] = $project_header_column_value; 
 
@@ -7057,16 +7064,21 @@ public function downloadExceptionChangesUpdationsofItems()
 			$cnt++;
 		}
 
+
 		$rowCount = 2;
 		$cnt = 0;
 		$all_value = array();
 		foreach($different_array['different'] as $differentkey=>$differentvalue){
 			$old_value = '';
 			$new_value = '';
-			foreach($differentvalue['location_of_the_item_last_verified']['old_value'] as $location_of_the_item_last_verified_key=>$location_of_the_item_last_verified_value_old){
-					$all_value[] = "Old :- ".$location_of_the_item_last_verified_value_old." || New :- ".$differentvalue['location_of_the_item_last_verified']['new_value'][$location_of_the_item_last_verified_key];
+
+
+			foreach($differentvalue['new_location_verified']['old_value'] as $location_of_the_item_last_verified_key=>$location_of_the_item_last_verified_value_old){
+					$all_value[] = "Old :- ".$location_of_the_item_last_verified_value_old." || New :- ".$differentvalue['new_location_verified']['new_value'][$location_of_the_item_last_verified_key];
 			}
 		}
+
+
 		$rowCount = 2;
 		$cnt1 = 0;
 		foreach($all_value as $all_value_value){

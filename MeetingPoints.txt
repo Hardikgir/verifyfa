@@ -23,12 +23,14 @@ Exception Report :-
 -> Remove Amount column from Consolidate Report :- Done
 -> Mode Of Verification (Issue Fixing) :- I think this is working fine (As my data that is working fine but sir's data their is some issue need to check in that) :- Done
 -> Change Updates of Items :- Done
+-> Duplicate Item Code Identified (Issue Fixing) :- Done
+-> Change Updates of Items Report Generating Button :- (Not Getting Proper Data) :- Done
 
 
-
--> Duplicate Item Code Identified (Issue Fixing) :- Pending
 -> Duplicate Item Code Identified Report Generating Button :- Pending
--> Change Updates of Items Report Generating Button :- (Not Getting Proper Data) :- Pending
+
+
+
 
 
 Update it by postman and Duplicate table create before update any thing so you get which data is updating.
