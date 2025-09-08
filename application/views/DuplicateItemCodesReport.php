@@ -158,58 +158,67 @@ table th,table td{
 
                               
 								<div class="col-md-12" style="overflow-x:scroll;">
-
-									<?php 
-
-									// echo '<pre>data';
-									// print_r($data['common_array']);
-									// echo '</pre>';
-									// exit();
-
-									?>
-
-									<table border="1">
+								
+									<table border="1" width="100%">
+										<tr>
+											<th>Category</th>
+											<th>Total Line Item</th>
+											<th>Not Verified Line Item</th>
+											<th colspan="2">Verified Line Item</th>
+										</tr>
 										<tr>
 											<th>Allocated Item Category</th>
 											<th>No Of Line Item</th>
+											<th>Not Verified</th>
 											<th>SCAN</th>
 											<th>SEARCH</th>
 
 										</tr>
 										
 										<?php
-
+ 
+										if(!empty($data['Duplicate_Array'])){
+											foreach($data['Duplicate_Array'] as $key=>$allcat)
+											{
+												echo '<tr>';
+												echo '<th>';
+												echo $allcat['item_category'];
+												echo '</th>';
+												echo '<td>';
+												if($allcat['total_uniqu_record_cout']){
+													echo $allcat['total_uniqu_record_cout'];
+												}else{
+													echo "0";
+												}
+												echo '</td>';
+												echo '<td>';
+												if($allcat['total_not_verified_uniqu_record_cout']){
+													echo $allcat['total_not_verified_uniqu_record_cout'];
+												}else{
+													echo "0";
+												}
+												echo '</td>';
+												echo '<td>';
+												if($allcat['total_scan_uniqu_record_cout']){
+													echo $allcat['total_scan_uniqu_record_cout'];
+												}else{
+													echo "0";
+												}
+												echo '</td>';
+												echo '<td>';
+												if($allcat['total_search_uniqu_record_cout']){
+													echo $allcat['total_search_uniqu_record_cout'];
+												}else{
+													echo "0";
+												}
+												echo '</td>';
+												echo '</tr>';
+											}
+											echo '<tr><td colspan="5"><b><a href="javascript:void(0)">Download as Annexure</b></a></td></tr>';
+										}else{
+											echo '<tr><td colspan="5">No Record Found</td></tr>';
+										}
 										
-										foreach($data['common_array'] as $key=>$allcat)
-										{
-                                            echo '<tr>';
-                                            echo '<td>';
-                                            echo $key;
-                                            echo '</td>';
-                                            echo '<td>';
-											if($allcat['category_wise']){
-												echo $allcat['category_wise'];
-											}else{
-												echo "0";
-											}
-											echo '</td>';
-											 echo '<td>';
-											if($allcat['scan_wise']){
-												echo $allcat['scan_wise'];
-											}else{
-												echo "0";
-											}
-											echo '</td>';
-											 echo '<td>';
-											if($allcat['search_wise']){
-												echo $allcat['search_wise'];
-											}else{
-												echo "0";
-											}
-											echo '</td>';
-                                            echo '</tr>';
-                                        }
-
 										?>
 									</table>
 								</div>

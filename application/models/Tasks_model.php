@@ -1872,17 +1872,51 @@ function get_product_search($sort_by,$order_by,$table_name)
 
     function getExceptionNineReport($tablename,$verificationstatus,$reportHeaders)
     {
-        // $tablename = 'dljm_d_55_fa_verification_tagging';
-       
-        $result_list = $this->db->query("SELECT COUNT(`item_unique_code`) AS uniqu_record_cout, item_unique_code,item_category FROM  $tablename GROUP BY item_unique_code,item_category ORDER BY uniqu_record_cout DESC")->result();
+        $result_list = $this->db->query("SELECT COUNT(`item_unique_code`) AS uniqu_record_cout, item_unique_code,item_category,verification_status,mode_of_verification FROM  $tablename GROUP BY item_unique_code,item_category ORDER BY uniqu_record_cout DESC")->result();
+
+        // echo '<pre>result_list ';
+        // print_r($result_list);
+        // echo '</pre>';
+        // exit();
 
         $scan_wise_result_list = $this->db->query("SELECT COUNT(`item_unique_code`) AS uniqu_record_cout, item_unique_code,item_category FROM  $tablename WHERE verification_status = 'Verified' AND mode_of_verification = 'Scan'  GROUP BY item_unique_code,item_category ORDER BY uniqu_record_cout DESC")->result();
 
         $search_wise_result_list = $this->db->query("SELECT COUNT(`item_unique_code`) AS uniqu_record_cout, item_unique_code,item_category FROM  $tablename WHERE verification_status = 'Verified' AND mode_of_verification = 'Search'  GROUP BY item_unique_code,item_category ORDER BY uniqu_record_cout DESC")->result();
 
-        // $search_wise_result_list = $this->db->query("SELECT COUNT(`item_unique_code`) AS uniqu_record_cout, item_unique_code,item_category FROM  $tablename WHERE verification_status = 'Not-Verified' GROUP BY item_unique_code,item_category ORDER BY uniqu_record_cout DESC")->result();
+        
+        $Duplicate_Array = array();
+        $count = 1;
+        foreach($result_list as $result_key=>$result_value){
+            if($result_value->uniqu_record_cout > 1){
 
+                $Verified_scan_query = $this->db->query("SELECT * FROM ".$tablename." where item_unique_code = '".$result_value->item_unique_code."' AND verification_status = 'Verified' AND mode_of_verification = 'Scan'")->num_rows();
 
+                $not_Verified_search_query = $this->db->query("SELECT * FROM ".$tablename." where item_unique_code = '".$result_value->item_unique_code."' AND verification_status = '' AND mode_of_verification = 'Not Verified'")->num_rows();
+                
+                $Verified_search_query = $this->db->query("SELECT * FROM ".$tablename." where item_unique_code = '".$result_value->item_unique_code."' AND verification_status = 'Verified' AND mode_of_verification = 'Search'")->num_rows();
+                
+                $Duplicate_Array[$count]['item_category'] = $result_value->item_category;
+                $Duplicate_Array[$count]['total_uniqu_record_cout'] = $result_value->uniqu_record_cout;
+                $Duplicate_Array[$count]['total_not_verified_uniqu_record_cout'] = $not_Verified_search_query;
+                $Duplicate_Array[$count]['total_scan_uniqu_record_cout'] = $Verified_scan_query;
+                $Duplicate_Array[$count]['total_search_uniqu_record_cout'] = $Verified_search_query;
+
+               
+
+            $count++;
+            }
+           
+        }
+        $data['Duplicate_Array'] = $Duplicate_Array;
+        return $data;
+        /*
+        echo '<pre>Duplicate_Array ';
+        print_r($Duplicate_Array);
+        echo '</pre>';
+        exit();
+        
+
+        
         $common_array = array();
 
         $category_wise_count_array = array();
@@ -1913,19 +1947,9 @@ function get_product_search($sort_by,$order_by,$table_name)
         }
 
 
-        // echo '<pre>common_array ';
-        // print_r($common_array);
-        // echo '</pre>';
-        // exit();
         $data['common_array'] = $common_array;
-        // $data['Categorywise_count'] = $category_wise_count_array;
-        // $data['scan_wise_count_array'] = $scan_wise_count_array;
-        // $data['search_wise_count_array'] = $search_wise_count_array;
-        // echo '<pre>data :: ';
-        // print_r($data);
-        // echo '</pre>';
-        // exit();
         return $data;
+        */
       
     }
 

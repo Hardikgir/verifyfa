@@ -158,7 +158,7 @@ table th,table td{
 								<div class="col-md-12" style="overflow-x:scroll;">
 								
 								    
-                                    <table class="table table-bordered">
+                                    <table border="1" width="100%">
                                         <?php 
                                         $project_header_column_value = explode(",",$data['project_header_column_value']);
                                         unset($project_header_column_value[0]);
@@ -177,9 +177,9 @@ table th,table td{
 										$count = 1;
                                         foreach($data['different'] as $key=>$value){ ?>
                                         <tr>
-                                            <td>
+                                            <th>
                                                 <?php echo $key; ?>
-                                            </td>
+                                            </th>
 
                                             <?php 
                                             foreach($project_header_column_value as $project_header_column_value_value){
@@ -197,7 +197,9 @@ table th,table td{
 										} ?>
 										<tr>
 											<td colspan="<?php echo $count2; ?>">
-												<a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionChangesUpdationsofItems/<?php echo $data['project'][0]->id;?>">Download as Annexure</a>
+												<b>
+													<a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionChangesUpdationsofItems/<?php echo $data['project'][0]->id;?>">Download as Annexure</a>
+												</b>
 											</td>
 										</tr>
                                     </table>											
