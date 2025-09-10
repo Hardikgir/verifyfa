@@ -177,12 +177,19 @@ $route['reset-user-login/(:num)'] = 'Admin_controller/reset_user_login/$1';
 $route['generate-active-register-user/(:num)'] = 'login/generate_active_register_user/$1';
 $route['request-for-delete'] = 'Admin_controller/request_for_delete';
 
-$route['manage-issue-for-me'] = 'Admin_controller/manage_issue_for_me';
+// $route['manage-issue-for-me'] = 'Admin_controller/manage_issue_for_me';
 $route['manage-my-issue'] = 'Admin_controller/manage_my_issue';
 $route['add-issue'] = 'Admin_controller/add_issue';
 $route['view-issue/(:num)'] = 'Admin_controller/view_issue/$1';
 $route['save-issue'] = 'Admin_controller/save_issue';
 $route['update-issue'] = 'Admin_controller/update_issue';
+
+//tushar
+// Route for manager issues
+$route['manage-issue/manager'] = 'Admin_controller/manage_issue_for_me/manager';
+
+// Route for group admin issues
+$route['manage-issue/groupadmin'] = 'Admin_controller/manage_issue_for_me/groupadmin';
 
 
 

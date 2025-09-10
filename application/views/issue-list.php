@@ -17,10 +17,33 @@ $this->load->view('layouts/sidebar');
             <a href="<?php echo base_url();?>index.php/add-issue">
              <button class="btn btn-primary" style="float:right">New Issue</button>
             </a>
-       </div>     
+       </div>    
+       <!-- section vise   -->
+        <!-- tushar -->
+       <div class="btn-group mb-3">
+        <?php 
+        $slugs = explode("/", parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH));
+        
+        if(isset($slugs[3])){
+        // exit();
+        ?>
+    <a href="<?php echo base_url('index.php/manage-issue/groupadmin'); ?>" 
+       class="btn btn-primary <?php echo ((isset($slugs[3]) && $slugs[3] == 'groupadmin')) ? 'active' : ''; ?>">
+        Group Admin
+    </a>
+    <a href="<?php echo base_url('index.php/manage-issue/manager'); ?>" 
+       class="btn btn-secondary <?php echo ((isset($slugs[3]) && $slugs[3] == 'manager')) ? 'active' : ''; ?>">
+        Manager
+    </a>
+    <?php } ?>
+</div>
+
+
 
 			<div class="col-lg-12">
 				<section class="text-center">
+
+
 					<!-- Section heading -->
  <div class="wrapper-carousel-fix">
 						<!-- Carousel Wrapper -->
@@ -46,13 +69,9 @@ $this->load->view('layouts/sidebar');
             <tr>
                 <td ><?php echo $row->tracking_id;?></td>
                 <td ><?php echo $row->issue_title;?></td>
-                <td ><?php echo 'Project based'; //$row->issue_type;?></td>
+                <td ><?php echo $row->issue_type;?></td>
                 <td >
-                    <?php 
-                    if(!empty($row->project_id)){
-                        echo $row->project_id;
-                    }
-                    ?>
+                    <?php echo $row->project_code; ?>
                 </td>
                 <td ><?php 
                 if($row->status =='1'){echo "Open";}

@@ -1032,19 +1032,23 @@ $role=implode(',',$this->input->post('user_role'));
     }
 
 
-    public function manage_issue_for_me(){
-        $data['page_title']="Manage Issue";
-        $entity_code=$this->admin_registered_entity_code;
-        $data["issue"]=$this->Admin_model->get_all_issue_for_me($_SESSION['logged_in']['id']);
-        $this->load->view('issue-list',$data);
-    }
+    public function manage_issue_for_me($role = 'groupadmin') {
+	    $user_id = $_SESSION['logged_in']['id']; // Get logged-in user ID
+	    $data['page_title'] = "Manage Issue";
 
+	    // Fetch issues based on role
+	    $data['issue'] = $this->Admin_model->get_issues_by_role($user_id, $role);
+
+	    $data['selected_role'] = $role; // Pass role to view for highlighting button
+
+	    $this->load->view('issue-list', $data);
+	}
     public function manage_my_issue(){
 
        
         $data['page_title']="Manage Issue";
         $entity_code=$this->admin_registered_entity_code;
-        $data["issue"]=$this->Admin_model->get_all_my_issue($_SESSION['logged_in']['id']);
+        $data["issue"]=$this->Admin_model->get_all_my_issue2($_SESSION['logged_in']['id']);
         $this->load->view('issue-list',$data);
     }
 
