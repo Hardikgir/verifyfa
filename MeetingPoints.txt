@@ -12,13 +12,11 @@ Date :- 07/09/2025
     -> Rollback List Date Format Should be Chanegs (Update)
     -> Rollback List also give data with specific status so According that RollBack Button Should be invisible OR Not Showing That Data
     
-    
 -> Other You have To Listen Recordnig of Whole Meeting.
 
 
 
-Date :- 06/09/2025
-
+Date :- 06/09/2025 :-
 Exception Report :- 
 -> Remove Amount column from Consolidate Report :- Done
 -> Mode Of Verification (Issue Fixing) :- I think this is working fine (As my data that is working fine but sir's data their is some issue need to check in that) :- Done
