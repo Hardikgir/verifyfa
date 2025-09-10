@@ -215,7 +215,7 @@ table th,table td{
 												echo '</tr>';
 											}
 											$downloadAnnexure_url = base_url().'index.php/dashboard/downloadDuplicateItemCodeIdentified';
-											echo '<tr><td colspan="5"><b><a href="'.$downloadAnnexure_url.'">Download as Annexure</b></a></td></tr>';
+											// echo '<tr><td colspan="5"><b><a href="'.$downloadAnnexure_url.'">Download as Annexure</b></a></td></tr>';
 										}else{
 											echo '<tr><td colspan="5">No Record Found</td></tr>';
 										}
