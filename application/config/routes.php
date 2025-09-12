@@ -196,6 +196,10 @@ $route['manage-issue/groupadmin'] = 'Admin_controller/manage_issue_for_me/groupa
 
 
 
+//routes for Registered User//
+$route['forget-password-register-user'] = 'login/registered_user_forget_password/';
+$route['forget-password-verifyfa-user'] = 'login/verifyfa_user_forget_password/';
+
 // API ROUTES//
 
 // $route['verify-dashboard-company-data'] = 'Admin_controller/save_notification_reply';

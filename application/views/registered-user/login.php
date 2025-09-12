@@ -74,6 +74,13 @@
 									<div class="col-6 text-right"> <a href="#" class="text-color"><small>Create new account</small></a>
 									</div>
 								</div> -->
+
+								<div class="row mt-3">
+									<div class="col-6"><a href="<?php echo base_url();?>index.php/forget-password-register-user" class="text-color"><small>Forgot password?</small></a>
+									</div>
+									<div class="col-6 text-right"> <a href="<?php echo base_url();?>" class="text-color"><small>Verifyfa User Login</small></a>
+									</div>
+								</div>
 								<div class="custom-control custom-control-alternative custom-checkbox">
 									<input class="custom-control-input" id="customCheckLogin" type="checkbox">
 								</div>

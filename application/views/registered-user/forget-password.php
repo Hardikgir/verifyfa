@@ -8,7 +8,7 @@
 	<meta name="description" content="Start your development with a Dashboard for Bootstrap 4.">
 	<meta name="author" content="Creative Tim">
 	<link rel="icon" type="image/png" href="assets/img/favicon.png">
-	<title>ADMIN SIGN IN</title>
+	<title><?php echo $title;?></title>
 	<meta property="og:site_name" content="Creative Tim" />
 	<!-- Favicon -->
 	<link rel="icon" href="<?php echo base_url();?>assets/img/brand/favicon.png" type="image/png">
@@ -20,22 +20,6 @@
 	<!-- Argon CSS -->
 	<link rel="stylesheet" href="<?php echo base_url();?>assets/css/argon.min9f1e.css?v=1.1.0" type="text/css">
 	<!-- Google Tag Manager -->
-	<script>
-		(function(w, d, s, l, i) {
-		      w[l] = w[l] || [];
-		      w[l].push({
-		        'gtm.start': new Date().getTime(),
-		        event: 'gtm.js'
-		      });
-		      var f = d.getElementsByTagName(s)[0],
-		        j = d.createElement(s),
-		        dl = l != 'dataLayer' ? '&l=' + l : '';
-		      j.async = true;
-		      j.src =
-		        '../../../../www.googletagmanager.com/gtm5445.html?id=' + i + dl;
-		      f.parentNode.insertBefore(j, f);
-		    })(window, document, 'script', 'dataLayer', 'GTM-NKDMSK6');
-	</script>
 </head>
 
 <body class="bg-default">
@@ -48,58 +32,58 @@
 		<!-- Page content -->
 		<div class="container form-top">
 			<div class="row justify-content-center">
-				<div class="col-lg-5 col-md-7">
+				<div class="col-lg-7 col-md-7">
 					<div class="card bg-secondary border-0 mb-0 check-use">
 						<div class="card-header bg-transparent pb-5">
 							<div class="text-muted text-center mt-2 mb-3">
-								<h2>Sign in</h2>
+								<h2>Register User Forget Password </h2>
 							</div>
 							<div class="btn-wrapper text-center">
 								<img src="<?php echo base_url();?>assets/img/logo.png" alt="Verify fa logo">
 							</div>
 						</div>
 						<div class="card-body px-lg-5 py-lg-5">
-							<?php 
-							
-							?>
 							<div class="alert alert-danger" style="<?php echo $this->session->flashdata('error_message')!=''?'':'display:none;'; ?>" role="alert">
 								<?php echo $this->session->flashdata('error_message'); ?>
 							</div>
-							<form role="form" method="post" action="<?php echo base_url();?>index.php/Login/login">
+							<?php if($this->session->flashdata('transfermsg') && $this->session->flashdata('transfermsg')!=''){?> 
+							<div class="alert alert-sucess" style="<?php echo $this->session->flashdata('transfermsg')!=''?'':'display:none;'; ?>" role="alert">
+								<?php echo $this->session->flashdata('transfermsg'); ?>
+							</div>
+							<?php  
+						    } 
+							?>
+							<form role="form" method="post" action="<?php echo base_url();?>index.php/VerifyForForgetPasswordRegistered">
 								<div class="form-group mb-3">
 									<div class="input-group input-group-merge input-group-alternative">
 										<div class="input-group-prepend"> <span class="input-group-text"><i class="ni ni-email-83"></i></span>
 										</div>
-										<input class="form-control" placeholder="Entity Code" name="entity_code"  type="text" required> 
+										<input class="form-control" placeholder="Email" name="email"  type="email" required> 
 									</div>
 								</div>
-
-								<div class="form-group mb-3">
-									<div class="input-group input-group-merge input-group-alternative">
-										<div class="input-group-prepend"> <span class="input-group-text"><i class="ni ni-email-83"></i></span>
-										</div>
-										<input class="form-control" placeholder="Email" name="userEmail"  type="email" required> 
-									</div>
-								</div>
-
 								<div class="form-group">
 									<div class="input-group input-group-merge input-group-alternative">
 										<div class="input-group-prepend"> <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
 										</div>
-										<input class="form-control" placeholder="Password" name="userPassword" type="password" required>
+										<input class="form-control" placeholder="Password" name="password" type="password" required>
 									</div>
 								</div>
-								<div class="row mt-3">
-									<div class="col-6"><a href="<?php echo base_url();?>index.php/forget-password-verifyfa-user" class="text-color"><small>Forgot password?</small></a>
+								<!-- <div class="row mt-3">
+									<div class="col-6">	<a href="#" class="text-color"><small>Forgot password?</small></a>
 									</div>
-									<div class="col-6 text-right"> <a href="<?php echo base_url();?>index.php/registered-user-login" class="text-color"><small>Register User Login</small></a>
+									<div class="col-6 text-right"> <a href="#" class="text-color"><small>Create new account</small></a>
+									</div>
+								</div> -->
+
+								<div class="row mt-3">
+									<div class="col-6"><a href="<?php echo base_url();?>index.php/registered-user-login" class="text-color"><small>Login</small></a>
 									</div>
 								</div>
 								<div class="custom-control custom-control-alternative custom-checkbox">
 									<input class="custom-control-input" id="customCheckLogin" type="checkbox">
 								</div>
 								<div class="text-center">
-									<button type="submit" class="btn btn-primary ">LOGIN</button>
+									<button type="submit" class="btn btn-primary ">Verify</button>
 								</div>
 							</form>
 							

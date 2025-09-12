@@ -48,11 +48,11 @@
 		<!-- Page content -->
 		<div class="container form-top">
 			<div class="row justify-content-center">
-				<div class="col-lg-5 col-md-7">
+				<div class="col-lg-7 col-md-7">
 					<div class="card bg-secondary border-0 mb-0 check-use">
 						<div class="card-header bg-transparent pb-5">
 							<div class="text-muted text-center mt-2 mb-3">
-								<h2>Sign in</h2>
+								<h2>Register User Change Password</h2>
 							</div>
 							<div class="btn-wrapper text-center">
 								<img src="<?php echo base_url();?>assets/img/logo.png" alt="Verify fa logo">
@@ -65,12 +65,12 @@
 							<div class="alert alert-danger" style="<?php echo $this->session->flashdata('error_message')!=''?'':'display:none;'; ?>" role="alert">
 								<?php echo $this->session->flashdata('error_message'); ?>
 							</div>
-							<form role="form" method="post" action="<?php echo base_url();?>index.php/Login/login">
+							<form role="form" method="post" action="<?php echo base_url();?>index.php/Login/VerifyForForgetPassword">
 								<div class="form-group mb-3">
 									<div class="input-group input-group-merge input-group-alternative">
 										<div class="input-group-prepend"> <span class="input-group-text"><i class="ni ni-email-83"></i></span>
 										</div>
-										<input class="form-control" placeholder="Entity Code" name="entity_code"  type="text" required> 
+										<input class="form-control" placeholder="New Passowrd" name="new_passowrd"  type="text" required> 
 									</div>
 								</div>
 
@@ -78,28 +78,20 @@
 									<div class="input-group input-group-merge input-group-alternative">
 										<div class="input-group-prepend"> <span class="input-group-text"><i class="ni ni-email-83"></i></span>
 										</div>
-										<input class="form-control" placeholder="Email" name="userEmail"  type="email" required> 
-									</div>
-								</div>
-
-								<div class="form-group">
-									<div class="input-group input-group-merge input-group-alternative">
-										<div class="input-group-prepend"> <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
-										</div>
-										<input class="form-control" placeholder="Password" name="userPassword" type="password" required>
+										<input class="form-control" placeholder="Conform Passowrd" name="conform_passowrd"  type="text" required> 
 									</div>
 								</div>
 								<div class="row mt-3">
-									<div class="col-6"><a href="<?php echo base_url();?>index.php/forget-password-verifyfa-user" class="text-color"><small>Forgot password?</small></a>
+									<div class="col-6"><a href="<?php echo base_url();?>" class="text-color"><small>Login</small></a>
 									</div>
-									<div class="col-6 text-right"> <a href="<?php echo base_url();?>index.php/registered-user-login" class="text-color"><small>Register User Login</small></a>
-									</div>
+									
 								</div>
-								<div class="custom-control custom-control-alternative custom-checkbox">
-									<input class="custom-control-input" id="customCheckLogin" type="checkbox">
-								</div>
-								<div class="text-center">
-									<button type="submit" class="btn btn-primary ">LOGIN</button>
+
+                                <div class="form-group mt-3">
+								<b class="text-danger">Password must contain at least one number, one uppercase and a lowercase letter and a special character and at least 8 characters</b>
+                                </div>
+                                <div class="text-center">
+									<button type="submit" class="btn btn-primary ">Update Password</button>
 								</div>
 							</form>
 							

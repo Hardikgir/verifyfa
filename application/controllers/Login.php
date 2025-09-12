@@ -273,5 +273,37 @@ class Login extends CI_Controller {
   
 		redirect("index.php/login");
 	}
+
+
+	public function registered_user_forget_password()
+	{
+		$this->data['title']="VerifyFa Registered User Login";		
+		$this->load->view('registered-user/forget-password',$this->data);
+	}
+	public function verifyfa_user_forget_password()
+	{
+		$this->data['title']="VerifyFa Registered User Login";		
+		$this->load->view('forget-password',$this->data);
+	}
+	public function VerifyForForgetPassword(){
+		// $this->data['title']="VerifyFa Registered User Login";		
+		// $this->load->view('password-change',$this->data);
+		redirect("index.php/login/VerifyForChangePassword");
+	}
+	public function VerifyForChangePassword(){
+		$this->data['title']="VerifyFa Registered User Login";		
+		$this->load->view('password-change',$this->data);
+	}
+	public function VerifyForForgetPasswordRegistered(){
+		// $this->data['title']="VerifyFa Registered User Login";		
+		// $this->load->view('password-change',$this->data);
+		redirect("index.php/login/VerifyForChangePasswordRegistered");
+	}
+	public function VerifyForChangePasswordRegistered(){
+		$this->data['title']="VerifyFa Registered User Login";		
+		$this->load->view('registered-user/password-change',$this->data);
+	}
+
+	
 	
 }
