@@ -137,7 +137,7 @@ $this->load->view('layouts/sidebar');
                         <option value="">Select Notification Type</option>
                         <option value="Notification">Notification</option>
                         <option value="Message">Message</option>
-                        <option value="Issue">Issue</option>
+                        <!-- <option value="Issue">Issue</option> -->
                     </select>
                 </div>
 

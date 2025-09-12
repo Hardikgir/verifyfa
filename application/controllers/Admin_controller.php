@@ -631,9 +631,30 @@ $role=implode(',',$this->input->post('user_role'));
         $this->db->select('notification_user.*,notification.*');
         $this->db->from('notification');
         $this->db->join('notification_user','notification_user.notification_id=notification.id');
-        $this->db->where('notification_user.user_id',$user_id);
+        // $this->db->where('notification_user.user_id',$user_id);
+        $this->db->where('notification.created_by',$user_id);
         $this->db->group_by('notification_user.notification_id'); 
         $getnotifications=$this->db->get();
+       
+        $data["notification"] =  $getnotifications->result();
+        $this->load->view('manage-notification',$data);
+    }
+
+    public function manage_notification2(){
+        $data['page_title']="Manage Notification";
+        $entity_code=$this->admin_registered_entity_code;
+
+        
+        $user_id=$this->user_id;
+
+        $this->db->select('notification_user.*,notification.*');
+        $this->db->from('notification');
+        $this->db->join('notification_user','notification_user.notification_id=notification.id');
+        $this->db->where('notification_user.user_id',$user_id);
+        // $this->db->where('notification.created_by',$user_id);
+        $this->db->group_by('notification_user.notification_id'); 
+        $getnotifications=$this->db->get();
+       
         $data["notification"] =  $getnotifications->result();
         $this->load->view('manage-notification',$data);
     }
@@ -650,6 +671,7 @@ $role=implode(',',$this->input->post('user_role'));
         $company_id = $_SESSION['logged_in']['company_id'];
         $admin_registered_user_id = $_SESSION['logged_in']['admin_registered_user_id'];
         $admin_registered_entity_code = $_SESSION['logged_in']['admin_registered_entity_code'];
+        
 
         $all_users_roles = $this->Admin_model->get_all_user_role_company_registerid_entity($company_id,$admin_registered_user_id,$admin_registered_entity_code);
         $user_roles = array();
@@ -669,7 +691,7 @@ $role=implode(',',$this->input->post('user_role'));
        $all_Verify = array();
 
        $entity_code = $_SESSION['logged_in']['admin_registered_entity_code'];
-       
+    
         if(!empty($user_roles)){
             foreach(array_unique($user_roles) as $user_role_key=>$user_role_value){
                 if($user_role_value == '5'){
@@ -1046,7 +1068,7 @@ $role=implode(',',$this->input->post('user_role'));
     public function manage_my_issue(){
 
        
-        $data['page_title']="Manage Issue";
+        $data['page_title']="Manage Issue 2";
         $entity_code=$this->admin_registered_entity_code;
         $data["issue"]=$this->Admin_model->get_all_my_issue2($_SESSION['logged_in']['id']);
         $this->load->view('issue-list',$data);

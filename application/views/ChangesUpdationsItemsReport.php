@@ -192,6 +192,8 @@ table th,table td{
                                                 echo '</td>';
                                             } ?>
                                         </tr>
+
+									
                                         <?php
 										$count++; 
 										} ?>

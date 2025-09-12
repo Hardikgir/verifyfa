@@ -213,14 +213,17 @@ table th,table td{
 												}
 												echo '</td>';
 												echo '</tr>';
-											}
-											$downloadAnnexure_url = base_url().'index.php/dashboard/downloadDuplicateItemCodeIdentified';
-											// echo '<tr><td colspan="5"><b><a href="'.$downloadAnnexure_url.'">Download as Annexure</b></a></td></tr>';
-										}else{
-											echo '<tr><td colspan="5">No Record Found</td></tr>';
-										}
-										
-										?>
+											}?>
+											<?php
+										$count++; 
+										} ?>
+											<tr>
+											<td colspan="<?php echo $count2; ?>">
+												<b>
+													<a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionDuplicateItemCodeIdentified/<?php echo $data['project'][0]->id;?>">Download as Annexure</a>
+												</b>
+											</td>
+										</tr>
 									</table>
 								</div>
 

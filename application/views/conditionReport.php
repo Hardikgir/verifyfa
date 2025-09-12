@@ -172,22 +172,22 @@ table th,table td{
 										</tr>
 										<tr>
 											
-											<th>Amount(in Lacs)1</th>
-											<th>Number of Qty2</th>
-											<!-- <th>Amount(in Lacs)3</th> -->
-											<th>Number of Qty4</th>
-											<!-- <th>Amount(in Lacs)5</th> -->
-											<th>Number of Qty6</th>
-											<!-- <th>Amount(in Lacs)7</th> -->
-											<th>Number of Qty8</th>
-											<!-- <th>Amount(in Lacs)9</th> -->
-											<th>Number of Qty10</th>
-											<!-- <th>Amount(in Lacs)11</th> -->
-											<th>Number of Qty12</th>
-											<!-- <th>Amount(in Lacs)13</th> -->
-											<th>Number of Qty14</th>
-											<th>Amount(in Lacs)15</th>
-											<th>Number of Qty16</th>
+											<th>Amount(in Lacs)</th>
+											<th>Number of Qty</th>
+											<!-- <th>Amount(in Lacs)</th> -->
+											<th>Number of Qty</th>
+											<!-- <th>Amount(in Lacs)</th> -->
+											<th>Number of Qty</th>
+											<!-- <th>Amount(in Lacs)</th> -->
+											<th>Number of Qty</th>
+											<!-- <th>Amount(in Lacs)</th> -->
+											<th>Number of Qty</th>
+											<!-- <th>Amount(in Lacs)</th> -->
+											<th>Number of Qty</th>
+											<!-- <th>Amount(in Lacs)</th> -->
+											<th>Number of Qty</th>
+											<th>Amount(in Lacs)</th>
+											<th>Number of Qty</th>
 											
 										</tr>
 										<?php

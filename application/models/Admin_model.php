@@ -431,7 +431,7 @@ class Admin_model extends CI_Model {
     }
 
     public function get_all_user_of_role_by_entity($user_role,$entity_code){
-        $query=$this->db->query("select * from user_role where  entity_code=''".$entity_code."''  AND FIND_IN_SET(".$user_role.",user_role)");
+        $query=$this->db->query("select * from user_role where  entity_code='".$entity_code."'  AND FIND_IN_SET(".$user_role.",user_role)");
         return $query->result();
     }
 
@@ -605,8 +605,10 @@ public function get_issues_by_role($user_id, $role) {
 
     if ($role === 'manager') {
         $this->db->where('issue_manage.manage_name', $user_id);
+         $this->db->where('issue_manage.issue_type', 'Project based');
     } elseif ($role === 'groupadmin') {
         $this->db->where('issue_manage.groupadmin_name', $user_id);
+         $this->db->where('issue_manage.issue_type', 'General');
     }
 
     $this->db->order_by('issue_manage.id', 'DESC');

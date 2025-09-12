@@ -6,6 +6,12 @@ $this->load->view('layouts/sidebar');
 <style>
     .tooltip-arrow,
 .red-tooltip + .tooltip > .tooltip-inner {background-color: #f00;}
+
+
+
+.btn-group .active{
+    background: #2196f3;
+}
 </style>
 <!-- Section: Testimonials v.2 -->
 	<div class="content">
@@ -13,7 +19,7 @@ $this->load->view('layouts/sidebar');
 	
 		<div class="row">
         <div class="col-lg-12 mt-4 mb-4" style="border-bottom:1px solid #6e50505e;">
-            <h4 class="page-title">Manage Issue</h4>
+            <h4 class="page-title">Issue For Me</h4>
             <a href="<?php echo base_url();?>index.php/add-issue">
              <button class="btn btn-primary" style="float:right">New Issue</button>
             </a>
@@ -23,16 +29,16 @@ $this->load->view('layouts/sidebar');
        <div class="btn-group mb-3">
         <?php 
         $slugs = explode("/", parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH));
-        
-        if(isset($slugs[3])){
+            
+        if(isset($slugs[5])){
         // exit();
         ?>
     <a href="<?php echo base_url('index.php/manage-issue/groupadmin'); ?>" 
-       class="btn btn-primary <?php echo ((isset($slugs[3]) && $slugs[3] == 'groupadmin')) ? 'active' : ''; ?>">
+       class="btn  <?php echo ((isset($slugs[5]) && $slugs[5] == 'groupadmin')) ? 'active' : ''; ?>">
         Group Admin
     </a>
     <a href="<?php echo base_url('index.php/manage-issue/manager'); ?>" 
-       class="btn btn-secondary <?php echo ((isset($slugs[3]) && $slugs[3] == 'manager')) ? 'active' : ''; ?>">
+       class="btn  <?php echo ((isset($slugs[5]) && $slugs[5] == 'manager')) ? 'active' : ''; ?>">
         Manager
     </a>
     <?php } ?>
@@ -59,6 +65,7 @@ $this->load->view('layouts/sidebar');
             <th>Project Id</th>
             <th>Status</th>
             <th>Status Type</th>
+            <th>Date</th>
             <th>Action </th>
             </tr>
         </thead>
@@ -82,6 +89,9 @@ $this->load->view('layouts/sidebar');
                 if($row->status_type =='1'){echo "New";}
                 if($row->status_type =='2'){echo "Escalted";}
                 ?>  
+               </td>
+               <td>
+                <?php echo $row->updated_at;?>
                </td>
                 <td>
                     <a href="<?php echo base_url();?>index.php/view-issue/<?php echo $row->id;?>">
