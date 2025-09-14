@@ -214,7 +214,8 @@ table th,table td{
 												echo '</td>';
 												echo '</tr>';
 											}
-											$downloadAnnexure_url = base_url().'index.php/dashboard/downloadDuplicateItemCodeIdentified';
+											$project_id = $data['project'][0]->id;
+											$downloadAnnexure_url = base_url().'index.php/dashboard/downloadDuplicateItemCodeIdentified/'.$project_id;
 											echo '<tr><td colspan="5"><b><a href="'.$downloadAnnexure_url.'">Download as Annexure</b></a></td></tr>';
 										}else{
 											echo '<tr><td colspan="5">No Record Found</td></tr>';

@@ -454,6 +454,9 @@ class Tasks_model extends CI_Model {
         foreach($project_headers as $project_headers_value){
             $project_header_column[] = $project_headers_value->keyname;
         }
+
+        $project_header_column = array_unique($project_header_column);
+
         $project_header_column_value = implode(',', $project_header_column);
      
 
@@ -501,7 +504,8 @@ class Tasks_model extends CI_Model {
                
             }
         }
-
+        
+       
         $different_array['project_header_column_value'] = $project_header_column_value;
         
         return $different_array;
