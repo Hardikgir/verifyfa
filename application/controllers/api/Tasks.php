@@ -4192,8 +4192,12 @@ $this->email->attach($file_path);
         
         try {
             // Prepare data based on type_of_issue
+
+            $random_number = rand(10000,99999);
+            $tracking_id_value = date('ymd').$random_number;
+
             $insert_data = array(
-                'tracking_id' => 'ISSUE-' . time(),
+                'tracking_id' => $tracking_id_value,
                 'issue_type' => $type_of_issue,
                 'company_name' => ($type_of_issue === 'General') ? '0' : $company_name,
                 'location_name' => ($type_of_issue === 'General') ? '0' : $location,
@@ -4209,12 +4213,15 @@ $this->email->attach($file_path);
                 'created_by' => $user_id,
                 'resolved_by' => '',
                 'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => ''
+                'updated_at' => date('Y-m-d H:i:s'),
             );
             
             // Insert into database
             $this->db->insert('issue_manage', $insert_data);
             $issue_id = $this->db->insert_id();
+
+            $insert_data['id'] = $issue_id; 
+
             
             if($issue_id) {
                header('Content-Type: application/json');
@@ -4263,7 +4270,7 @@ $this->email->attach($file_path);
         
         try {
             // Query to get issues where user is either creator or handler
-            $this->db->select('issue_manage.tracking_id, issue_manage.issue_title as subject, issue_manage.issue_type, company_projects.project_id, issue_manage.status, issue_manage.status_type');
+            $this->db->select('issue_manage.id,issue_manage.tracking_id, issue_manage.issue_title as subject, issue_manage.issue_type, company_projects.project_id, issue_manage.status, issue_manage.status_type');
             $this->db->from('issue_manage');
             $this->db->join('company_projects', 'company_projects.id = issue_manage.project_name', 'left');
             $this->db->where('(issue_manage.created_by = ' . $user_id . ' OR issue_manage.resolved_by = ' . $user_id . ')', NULL, FALSE);
@@ -4289,6 +4296,7 @@ $this->email->attach($file_path);
                   
                     
                     $response_data[] = array(
+                        "id" => $issue->id,
                         "tracking_id" => $issue->tracking_id,
                         "subject" => $issue->subject,
                         "issue_type" => $issue->issue_type,
@@ -5390,418 +5398,234 @@ public function resolve_issue(){
 
 
 
-//    public function report_exception()
-//     {
-//         header('Content-Type: application/json');
+   public function report_exception() {
+        header('Content-Type: application/json');
         
-//         try {
-//             // 1. Get and validate input parameters
-//             $type = $this->input->post('optradio');
-//             $projectSelect = $this->input->post('projectSelect');
-//             $reporttype = $this->input->post('reporttype');         //Optional
-//             $exception_category = $this->input->post('exception_category'); //Optional
-//             $projectstatus = $this->input->post('projectstatus');
-//             $verificationstatus = $this->input->post('verificationstatus');
-//             $reportHeaders = $this->input->post('reportHeaders');
-//             $original_table_name = $this->input->post('original_table_name');
-//             $company_id = $this->input->post('company_id');
-//             $location_id = $this->input->post('location_id');
-//             $user_id = $this->input->post('user_id');
-//             $entity_code = $this->input->post('entity_code');
+        try {
+            // 1. Get and validate input parameters
+            $type = $this->input->post('optradio');
+            $projectSelect = $this->input->post('projectSelect');
+            $reporttype = $this->input->post('reporttype');         //Optional
+            $exception_category = $this->input->post('exception_category'); //Optional
+            $projectstatus = $this->input->post('projectstatus');
+            $verificationstatus = $this->input->post('verificationstatus');
+            $reportHeaders = $this->input->post('reportHeaders');
+            $original_table_name = $this->input->post('original_table_name');
+            $company_id = $this->input->post('company_id');
+            $location_id = $this->input->post('location_id');
+            $user_id = $this->input->post('user_id');
+            $entity_code = $this->input->post('entity_code');
 
-//             // 2. Validate required parameters
-//             if (empty($user_id)) {
-//                 echo json_encode(array(
-//                     "success" => false,
-//                     "status_code" => 400,
-//                     "message" => "User ID is required"
-//                 ));
-//                 return;
-//             }
+            // 2. Validate required parameters
+            if (empty($user_id)) {
+                echo json_encode(array(
+                    "success" => false,
+                    "status_code" => 400,
+                    "message" => "User ID is required"
+                ));
+                return;
+            }
 
-//             // 3. Get user information
-//             $this->db->where('id', $user_id);
-//             $user = $this->db->get('users')->row();
+            // 3. Get user information
+            $this->db->where('id', $user_id);
+            $user = $this->db->get('users')->row();
             
-//             if (!$user) {
-//                 echo json_encode(array(
-//                     "success" => false,
-//                     "status_code" => 404,
-//                     "message" => "User not found"
-//                 ));
-//                 return;
-//             }
+            if (!$user) {
+                echo json_encode(array(
+                    "success" => false,
+                    "status_code" => 404,
+                    "message" => "User not found"
+                ));
+                return;
+            }
 
-//             $user_email = !empty($user->userEmail) ? $user->userEmail : $user->email;
+            $user_email = !empty($user->userEmail) ? $user->userEmail : $user->email;
             
-//             if (empty($user_email)) {
-//                 echo json_encode(array(
-//                     "success" => false,
-//                     "status_code" => 400,
-//                     "message" => "User email not found"
-//                 ));
-//                 return;
-//             }
+            if (empty($user_email)) {
+                echo json_encode(array(
+                    "success" => false,
+                    "status_code" => 400,
+                    "message" => "User email not found"
+                ));
+                return;
+            }
 
-//             // 4. Generate report data based on type
-//             $report_data = null;
-//             $project_data = null;
+            // 4. Generate report data based on type
+            $report_data = null;
+            $project_data = null;
             
-//             // Ensure tasks model is loaded
-//             if (!isset($this->tasks)) {
-//                 $this->load->model('Tasks_model', 'tasks');
-//             }
+            // Ensure tasks model is loaded
+            if (!isset($this->tasks)) {
+                $this->load->model('Tasks_model', 'tasks');
+            }
             
-//             if ($type == 'project') {
-//                 // Project-specific report
-//                 $condition = array();
+            if ($type == 'project') {
+                // Project-specific report
+                $condition = array();
                 
-//                 if (!empty($projectSelect)) {
-//                     $projectSelect = trim($projectSelect);
-//                     if (is_numeric($projectSelect)) {
-//                         $condition["id"] = $projectSelect;
-//                     }
-//                 }
-//                 if (!empty($projectstatus)) {
-//                     $condition["status"] = $projectstatus;
-//                 }
-//                 if (!empty($company_id)) {
-//                     $condition['company_id'] = $company_id;
-//                 }
-//                 if (!empty($location_id)) {
-//                     $condition['project_location'] = $location_id;
-//                 }
+                if (!empty($projectSelect)) {
+                    $projectSelect = trim($projectSelect);
+                    if (is_numeric($projectSelect)) {
+                        $condition["id"] = $projectSelect;
+                    }
+                }
+                if (!empty($projectstatus)) {
+                    $condition["status"] = $projectstatus;
+                }
+                if (!empty($company_id)) {
+                    $condition['company_id'] = $company_id;
+                }
+                if (!empty($location_id)) {
+                    $condition['project_location'] = $location_id;
+                }
                 
-//                 $getProject = $this->tasks->get_data('company_projects', $condition);
+                $getProject = $this->tasks->get_data('company_projects', $condition);
                 
-//                 if (count($getProject) > 0) {
-//                     // Use the original_table_name from the project data for accurate data retrieval
-//                     $table_name = isset($getProject[0]->original_table_name) ? $getProject[0]->original_table_name : '';
+                if (count($getProject) > 0) {
+                    // Use the original_table_name from the project data for accurate data retrieval
+                    $table_name = isset($getProject[0]->original_table_name) ? $getProject[0]->original_table_name : '';
                     
-//                     if (empty($table_name)) {
-//                         // Fallback to project name if original_table_name is not available
-//                         $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
-//                         $new_pattern = array("_", "_", "");
-//                         $table_name = strtolower(preg_replace($old_pattern, $new_pattern, trim($getProject[0]->project_name)));
-//                     }
+                    if (empty($table_name)) {
+                        // Fallback to project name if original_table_name is not available
+                        $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+                        $new_pattern = array("_", "_", "");
+                        $table_name = strtolower(preg_replace($old_pattern, $new_pattern, trim($getProject[0]->project_name)));
+                    }
                     
-//                     // Get report data based on type - using direct query to avoid column issues
-//                     try {
-//                         $report_data = $this->_getReportDataDirect($table_name, $verificationstatus, $reportHeaders, $reporttype);
-//                     } catch (Exception $e) {
-//                         echo json_encode(array(
-//                             'success' => false,
-//                             'status_code' => 500,
-//                             'message' => 'Error getting report data: ' . $e->getMessage()
-//                         ));
-//                         return;
-//                     }
+                    // Get report data based on type - using direct query to avoid column issues
+                    try {
+                        $report_data = $this->_getReportDataDirect($table_name, $verificationstatus, $reportHeaders, $reporttype);
+                    } catch (Exception $e) {
+                        echo json_encode(array(
+                            'success' => false,
+                            'status_code' => 500,
+                            'message' => 'Error getting report data: ' . $e->getMessage()
+                        ));
+                        return;
+                    }
                     
-//                     $project_data = $getProject[0];
-//                 } else {
-//                     // Get sample projects for debugging
-//                     $this->db->select('id, project_name, status, company_id, project_location');
-//                     $this->db->limit(5);
-//                     $sample_projects = $this->db->get('company_projects')->result();
+                    $project_data = $getProject[0];
+                } else {
+                    // Get sample projects for debugging
+                    $this->db->select('id, project_name, status, company_id, project_location');
+                    $this->db->limit(5);
+                    $sample_projects = $this->db->get('company_projects')->result();
                     
-//                     echo json_encode(array(
-//                         "success" => false,
-//                         "status_code" => 404,
-//                         "message" => "No project found with the specified criteria",
-//                         "debug_info" => array(
-//                             "search_criteria" => $condition,
-//                             "projectSelect" => $projectSelect,
-//                             "projectstatus" => $projectstatus,
-//                             "company_id" => $company_id,
-//                             "location_id" => $location_id,
-//                             "sample_projects" => $sample_projects
-//                         )
-//                     ));
-//                     return;
-//                 }
-//             } else {
-//                 // Other type report (all projects)
-//                 $condition = array(
-//                     "status" => $projectstatus,
-//                     'company_id' => $company_id,
-//                     // 'original_table_name' => $original_table_name,
-//                     'project_table_name' => $original_table_name,
-//                     'entity_code' => $entity_code
-//                 );
+                    echo json_encode(array(
+                        "success" => false,
+                        "status_code" => 404,
+                        "message" => "No project found with the specified criteria",
+                        "debug_info" => array(
+                            "search_criteria" => $condition,
+                            "projectSelect" => $projectSelect,
+                            "projectstatus" => $projectstatus,
+                            "company_id" => $company_id,
+                            "location_id" => $location_id,
+                            "sample_projects" => $sample_projects
+                        )
+                    ));
+                    return;
+                }
+            } else {
+                // Other type report (all projects)
+                $condition = array(
+                    "status" => $projectstatus,
+                    'company_id' => $company_id,
+                    // 'original_table_name' => $original_table_name,
+                    'project_table_name' => $original_table_name,
+                    'entity_code' => $entity_code
+                );
                 
-//                 $getProjects = $this->tasks->get_data('company_projects', $condition);
+                $getProjects = $this->tasks->get_data('company_projects', $condition);
 
              
                 
-//                 if (count($getProjects) > 0) {
-//                     $all_report_data = array();
-//                     $project_data = array();
+                if (count($getProjects) > 0) {
+                    $all_report_data = array();
+                    $project_data = array();
                     
-//                     foreach ($getProjects as $project) {
-//                         $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
-//                         $new_pattern = array("_", "_", "");
-//                         $project_name = strtolower(preg_replace($old_pattern, $new_pattern, trim($project->project_name)));
+                    foreach ($getProjects as $project) {
+                        $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+                        $new_pattern = array("_", "_", "");
+                        $project_name = strtolower(preg_replace($old_pattern, $new_pattern, trim($project->project_name)));
                         
-//                         // Get report data based on type - using direct query
-//                         $project_report = $this->_getReportDataDirect($project_name, $verificationstatus, $reportHeaders, $reporttype);
+                        // Get report data based on type - using direct query
+                        $project_report = $this->_getReportDataDirect($project_name, $verificationstatus, $reportHeaders, $reporttype);
                         
-//                         if (is_array($project_report)) {
-//                             $all_report_data = array_merge($all_report_data, $project_report);
-//                         }
-//                         $project_data[] = $project;
-//                     }
+                        if (is_array($project_report)) {
+                            $all_report_data = array_merge($all_report_data, $project_report);
+                        }
+                        $project_data[] = $project;
+                    }
                     
-//                     $report_data = $all_report_data;
-//                 } else {
-//                     echo json_encode(array(
-//                         "success" => false,
-//                         "status_code" => 404,
-//                         "message" => "No projects found with the specified criteria"
-//                     ));
-//                     return;
-//                 }
-//             }
-            
-//             // 5. Generate CSV file
-//             $filename = 'report_' . date('Y-m-d_H-i-s') . '_' . uniqid() . '.csv';
-//             $filepath = FCPATH . 'attachment/' . $filename;
-            
-//             // Ensure attachment directory exists
-//             if (!is_dir(FCPATH . 'attachment/')) {
-//                 mkdir(FCPATH . 'attachment/', 0777, true);
-//             }
-            
-//             // Generate CSV content
-//             $csv_result = $this->_generateCSVFile($report_data, $project_data, $filepath, $reporttype);
-            
-//             if (!$csv_result['success']) {
-//                 echo json_encode($csv_result);
-//                 return;
-//             }
-            
-//             // 6. Send email
-//             $email_result = $this->_sendEmailWithAttachment($filename, $user_email);
-            
-//             // Fallback to direct method if cURL fails
-//             if (!$email_result['success']) {
-//                 $email_result = $this->_sendEmailDirect($filename, $user_email);
-//             }
-            
-//             // 7. Return success response
-//             $response = array(
-//                 'success' => true,
-//                 'status_code' => 200,
-//                 'message' => 'Report generated and sent successfully',
-//                 'data' => array(
-//                     'filename' => $filename,
-//                     'email_sent' => $email_result['success'],
-//                     'user_email' => $user_email,
-//                     'record_count' => count($report_data),
-//                     'generated_at' => date('Y-m-d H:i:s')
-//                 )
-//             );
-            
-//             if (!$email_result['success']) {
-//                 $response['message'] = 'Report generated but email sending failed';
-//                 $response['email_error'] = $email_result['message'];
-//             }
-            
-//             echo json_encode($response);
-            
-//         } catch (Exception $e) {
-//             log_message('error', 'GenerateReport Error: ' . $e->getMessage());
-            
-//             echo json_encode(array(
-//                 'success' => false,
-//                 'status_code' => 500,
-//                 'message' => 'Internal server error occurred',
-//                 'error' => $e->getMessage()
-//             ));
-//         }
-//     }
-
-// tushar 
-
-public function report_exception()
-{
-    header('Content-Type: application/json');
-
-    try {
-        // 1. Get and validate input parameters
-        $type               = $this->input->post('optradio');
-        $projectSelect      = $this->input->post('projectSelect');
-        $reporttype         = $this->input->post('reporttype');          // normal reports
-        $exception_category = $this->input->post('exception_category');  // exception reports
-        $projectstatus      = $this->input->post('projectstatus');
-        $verificationstatus = $this->input->post('verificationstatus');
-        $reportHeaders      = $this->input->post('reportHeaders');
-        $original_table_name= $this->input->post('original_table_name');
-        $company_id         = $this->input->post('company_id');
-        $location_id        = $this->input->post('location_id');
-        $user_id            = $this->input->post('user_id');
-        $entity_code        = $this->input->post('entity_code');
-
-        // 2. Validate required parameters
-        if (empty($user_id)) {
-            echo json_encode(["success" => false, "status_code" => 400, "message" => "User ID is required"]);
-            return;
-        }
-
-        // 3. Get user information
-        $this->db->where('id', $user_id);
-        $user = $this->db->get('users')->row();
-
-        if (!$user) {
-            echo json_encode(["success" => false, "status_code" => 404, "message" => "User not found"]);
-            return;
-        }
-
-        $user_email = !empty($user->userEmail) ? $user->userEmail : $user->email;
-        if (empty($user_email)) {
-            echo json_encode(["success" => false, "status_code" => 400, "message" => "User email not found"]);
-            return;
-        }
-
-        // 4. Validate report mode (only one should be present)
-        if (!empty($reporttype) && !empty($exception_category)) {
-            echo json_encode(["success" => false, "status_code" => 400, "message" => "Provide either reporttype OR exception_category, not both"]);
-            return;
-        }
-
-        // 5. Load tasks model
-        if (!isset($this->tasks)) {
-            $this->load->model('Tasks_model', 'tasks');
-        }
-
-        $report_data  = null;
-        $project_data = null;
-
-        // ----------------- Report Data Fetch -----------------
-        if ($type == 'project') {
-            // Project-specific
-            $condition = [];
-            if (!empty($projectSelect) && is_numeric($projectSelect)) {
-                $condition["id"] = trim($projectSelect);
-            }
-            if (!empty($projectstatus)) $condition["status"] = $projectstatus;
-            if (!empty($company_id))    $condition["company_id"] = $company_id;
-            if (!empty($location_id))   $condition["project_location"] = $location_id;
-
-            $getProject = $this->tasks->get_data('company_projects', $condition);
-
-            if (count($getProject) > 0) {
-                $table_name = !empty($getProject[0]->original_table_name)
-                    ? $getProject[0]->original_table_name
-                    : strtolower(preg_replace(
-                        ["/[^a-zA-Z0-9]/", "/_+/", "/_$/"],
-                        ["_", "_", ""],
-                        trim($getProject[0]->project_name)
-                    ));
-
-                if (!empty($exception_category)) {
-                    // Exception report
-                    $report_data = $this->_getExceptionCategoryReport($table_name, $exception_category, $verificationstatus, $reportHeaders);
+                    $report_data = $all_report_data;
                 } else {
-                    // Normal report
-                    $report_data = $this->_getReportDataDirect($table_name, $verificationstatus, $reportHeaders, $reporttype);
-                }
-
-                $project_data = $getProject[0];
-            } else {
-                echo json_encode(["success" => false, "status_code" => 404, "message" => "No project found", "criteria" => $condition]);
-                return;
-            }
-        } else {
-            // Consolidated across multiple projects
-            $condition = [
-                "status"       => $projectstatus,
-                "company_id"   => $company_id,
-                "entity_code"  => $entity_code,
-                "original_table_name" => $original_table_name
-            ];
-            $getProjects = $this->tasks->get_data('company_projects', $condition);
-           
-            if (count($getProjects) > 0) {
-                $all_report_data = [];
-                foreach ($getProjects as $project) {
-                    $table_name = strtolower(preg_replace(
-                        ["/[^a-zA-Z0-9]/", "/_+/", "/_$/"],
-                        ["_", "_", ""],
-                        trim($project->project_name)
+                    echo json_encode(array(
+                        "success" => false,
+                        "status_code" => 404,
+                        "message" => "No projects found with the specified criteria"
                     ));
-
-                    if (!empty($exception_category)) {
-                        $project_report = $this->_getExceptionCategoryReport($table_name, $exception_category, $verificationstatus, $reportHeaders);
-                    } else {
-                        $project_report = $this->_getReportDataDirect($table_name, $verificationstatus, $reportHeaders, $reporttype);
-                    }
-
-                    if (is_array($project_report)) {
-                        $all_report_data = array_merge($all_report_data, $project_report);
-                    }
+                    return;
                 }
-                $report_data = $all_report_data;
-                $project_data = $getProjects;
-            } else {
-                echo json_encode(["success" => false, "status_code" => 404, "message" => "No projects found", "criteria" => $condition]);
+            }
+            
+            // 5. Generate CSV file
+            $filename = 'report_' . date('Y-m-d_H-i-s') . '_' . uniqid() . '.csv';
+            $filepath = FCPATH . 'attachment/' . $filename;
+            
+            // Ensure attachment directory exists
+            if (!is_dir(FCPATH . 'attachment/')) {
+                mkdir(FCPATH . 'attachment/', 0777, true);
+            }
+            
+            // Generate CSV content
+            $csv_result = $this->_generateCSVFile($report_data, $project_data, $filepath, $reporttype);
+            
+            if (!$csv_result['success']) {
+                echo json_encode($csv_result);
                 return;
             }
+            
+            // 6. Send email
+            $email_result = $this->_sendEmailWithAttachment($filename, $user_email);
+            
+            // Fallback to direct method if cURL fails
+            if (!$email_result['success']) {
+                $email_result = $this->_sendEmailDirect($filename, $user_email);
+            }
+            
+            // 7. Return success response
+            $response = array(
+                'success' => true,
+                'status_code' => 200,
+                'message' => 'Report generated and sent successfully',
+                'data' => array(
+                    'filename' => $filename,
+                    'email_sent' => $email_result['success'],
+                    'user_email' => $user_email,
+                    'record_count' => count($report_data),
+                    'generated_at' => date('Y-m-d H:i:s')
+                )
+            );
+            
+            if (!$email_result['success']) {
+                $response['message'] = 'Report generated but email sending failed';
+                $response['email_error'] = $email_result['message'];
+            }
+            
+            echo json_encode($response);
+            
+        } catch (Exception $e) {
+            log_message('error', 'GenerateReport Error: ' . $e->getMessage());
+            
+            echo json_encode(array(
+                'success' => false,
+                'status_code' => 500,
+                'message' => 'Internal server error occurred',
+                'error' => $e->getMessage()
+            ));
         }
-        
-
-        // 6. Generate CSV file
-        $filename = (!empty($exception_category) ? 'exception_' : 'report_') . date('Y-m-d_H-i-s') . '_' . uniqid() . '.csv';
-        $filepath = FCPATH . 'attachment/' . $filename;
-
-        $csv_result = $this->_generateCSVFile($report_data, $project_data, $filepath, $reporttype, $exception_category);
-
-        if (!$csv_result['success']) {
-            echo json_encode($csv_result);
-            return;
-        }
-        
-
-        // 7. Send email
-        $email_result = $this->_sendEmailWithAttachment($filename, $user_email);
-        $filepath = FCPATH . 'attachment/' . $filename;
-        $this->email->attach($filepath);
-
-        if (!$email_result['success']) {
-            $email_result = $this->_sendEmailDirect($filename, $user_email);
-        }
-
-        // 8. Response
-        $response = [
-            "success" => true,
-            "status_code" => 200,
-            "message" => $email_result['success'] ? "Report generated and emailed successfully" : "Report generated but email sending failed",
-            "data" => [
-                "filename" => $filename,
-                "email_sent" => $email_result['success'],
-                "user_email" => $user_email,
-                "record_count" => is_array($report_data) ? count($report_data) : 0,
-                "generated_at" => date('Y-m-d H:i:s')
-            ]
-        ];
-        if (!$email_result['success']) {
-            $response['email_error'] = $email_result['message'];
-        }
-
-        echo json_encode($response);
-
-    } catch (Exception $e) {
-        log_message('error', 'ReportException Error: ' . $e->getMessage());
-        echo json_encode([
-            "success" => false,
-            "status_code" => 500,
-            "message" => "Internal server error occurred",
-            "error" => $e->getMessage()
-        ]);
     }
-    
-    
-
-}
 
 
 

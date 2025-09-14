@@ -245,8 +245,8 @@ $get_user_all_roles = get_user_all_roles($user_id,$entity_code); // get all user
 			// } 
 			
 			// if(($user_role_addmin_cnt > 0) || ($user_role_manager_cnt > 0) ){ ?>
-				<li class="nav-item <?php echo $page_title=='Manage Issue'?'active':'';?>  ">
-				<a class="nav-link" href="<?php echo base_url();?>index.php/manage-issue/groupadmin"><i class="fa fa-bug"></i>
+				<li class="nav-item <?php echo $page_title=='Manage My Issue'?'active':'';?>  ">
+				<a class="nav-link" href="<?php echo base_url();?>index.php/manage-my-issue"><i class="fa fa-bug"></i>
 					<p>Manage My Issue</p>
 				</a>
 			</li>
@@ -254,8 +254,8 @@ $get_user_all_roles = get_user_all_roles($user_id,$entity_code); // get all user
 			// }
 			
 			//if(($user_role_addmin_cnt > 0) || ($user_role_manager_cnt > 0) ){ ?>
-				<li class="nav-item <?php echo $page_title=='Manage Issue 2'?'active':'';?>  ">
-				<a class="nav-link" href="<?php echo base_url();?>index.php/manage-my-issue"><i class="fa fa-tasks"></i>
+				<li class="nav-item <?php echo $page_title=='Issue For Me'?'active':'';?>  ">
+				<a class="nav-link" href="<?php echo base_url();?>index.php/issue-for-me/groupadmin"><i class="fa fa-tasks"></i>
 					<p>Issue For Me</p>
 				</a>
 			</li>
