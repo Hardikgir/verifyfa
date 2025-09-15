@@ -11,7 +11,7 @@ $this->load->view('layouts/sidebar');
                 <div class="card-header card-header-primary">
                     <div class="row">
                         <div class="col-md-6">
-                            <h4 class="card-title">Verify fa</h4>
+                            <h4 class="card-title">VerifyFa</h4>
                             <p class="card-category">‘Mark’ headers for verification and editing</p>
                         </div>
                         <div class="col-md-6">
@@ -22,7 +22,7 @@ $this->load->view('layouts/sidebar');
                                     <li class="active"></li>
                                     <li class=""></li>
                                     <li class=""></li>
-                                    <p class="text-center" style="font-weight:bold; margin:0;padding: 10px;"> Entity Name: <?php echo get_CompanyName($company_name);?> Location Name: <?php $comloc= get_location_row($company_location); echo $comloc->location_name?> </p>
+                                    <p class="text-center" style="font-weight:bold; margin:0;padding: 10px;"> Entity Name: <?php echo get_CompanyName($company_name);?> <br>Location Name: <?php $comloc= get_location_row($company_location); echo $comloc->location_name?> </p>
                                 </ul>
                             </form>
                         </div>
