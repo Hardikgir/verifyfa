@@ -1205,14 +1205,24 @@ $role=implode(',',$this->input->post('user_role'));
         $issue_result = $issue_row->row();
             */ 
 
-        $this->db->select('issue_manage.*,users.firstName,users.lastName');
+        $this->db->select('issue_manage.*,usr.firstName as resolver_firstName,usr.lastName as resolver_lastName,uss.firstName as solver_firstName,uss.lastName as solver_lastName');
         $this->db->from('issue_manage');
-        $this->db->join('users','users.id=issue_manage.resolved_by');
+        $this->db->join('users usr','usr.id=issue_manage.resolved_by');
+        $this->db->join('users uss','uss.id=issue_manage.created_by');
         $this->db->where('issue_manage.id',$issue_id);
         $issue_row=$this->db->get();
         $issue_result = $issue_row->row();
 
+
+        $this->db->select('*');
+        $this->db->from('issue_log_manage');
+        $this->db->where('issue_log_manage.issue_id',$issue_id);
+        $issue_resolve_row=$this->db->get();
+        $issue_resolve_result = $issue_resolve_row->row();
+
         $data['issue_result'] = $issue_result;
+        $data['issue_resolve_result'] = $issue_resolve_result;
+        
         // $this->load->view('issue-view',$data);
         $this->load->view('general-issue-view',$data);
     }
@@ -1242,6 +1252,8 @@ $role=implode(',',$this->input->post('user_role'));
 			$issue_attachment="response_".$data['file_name'];
 		}
 
+        
+
 
         $status_value = $this->input->post("status");
         $status_remark_value = $this->input->post("Remstatus_remarkark");
@@ -1259,14 +1271,14 @@ $role=implode(',',$this->input->post('user_role'));
        
         $data["notification"]=$this->Admin_model->update_issue_details($data,$hdn_issue_id);
 
-
         $data=array(
             "issue_id"=>$hdn_issue_id,
             "user_id"=>$created_by,
             "status"=>$status_value,
-            "status_remark"=>$status_remark_value,
+            "status_remark"=>$status_type_remark_value,
             "status_type"=>$hdn_status_type_value,
             "status_type_remark"=>$status_type_remark_value,
+            "attachments"=>$issue_attachment,
             "created_at" => date("Y-m-d H:i:s"),
             "updated_at"=>date("Y-m-d H:i:s")
         );
