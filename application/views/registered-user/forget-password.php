@@ -53,7 +53,7 @@
 							<?php  
 						    } 
 							?>
-							<form role="form" method="post" action="<?php echo base_url();?>index.php/VerifyForForgetPasswordRegistered">
+							<form role="form" method="post" action="<?php echo base_url();?>index.php/Login/VerifyForForgetPasswordRegistered">
 								<div class="form-group mb-3">
 									<div class="input-group input-group-merge input-group-alternative">
 										<div class="input-group-prepend"> <span class="input-group-text"><i class="ni ni-email-83"></i></span>
@@ -65,7 +65,7 @@
 									<div class="input-group input-group-merge input-group-alternative">
 										<div class="input-group-prepend"> <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
 										</div>
-										<input class="form-control" placeholder="Password" name="password" type="password" required>
+										<input class="form-control" placeholder="Entity" name="entity" type="text" required>
 									</div>
 								</div>
 								<!-- <div class="row mt-3">
