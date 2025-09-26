@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -50,6 +50,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
 */
+
+/*hhhhhhhhhh
 $route['default_controller'] = 'login';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
@@ -192,7 +194,8 @@ $route['update-issue'] = 'Admin_controller/update_issue';
 // API ROUTES//
 
 // $route['verify-dashboard-company-data'] = 'Admin_controller/save_notification_reply';
-=======
+*/ ?>
+
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -399,4 +402,4 @@ $route['forget-password-verifyfa-user'] = 'login/verifyfa_user_forget_password/'
 // API ROUTES//
 
 // $route['verify-dashboard-company-data'] = 'Admin_controller/save_notification_reply';
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
+
