@@ -93,13 +93,13 @@ table th,table td{
                                             <div class="col-md-6">
 												<div class="form-group">
                                                     <label>Start Date:</label>
-                                                    <input type="text" class="form-control" value="<?php echo date('d/m/yy',strtotime($data['project'][0]->start_date));?>">
+                                                    <input type="text" class="form-control" value="<?php echo date('d/m/Y',strtotime($data['project'][0]->start_date));?>">
 												</div>
 											</div>
 											<div class="col-md-6">
 												<div class="form-group">
                                                     <label>Due Date:</label>
-                                                    <input type="text" class="form-control" value="<?php echo date('d/m/yy',strtotime($data['project'][0]->due_date));?>">
+                                                    <input type="text" class="form-control" value="<?php echo date('d/m/Y',strtotime($data['project'][0]->due_date));?>">
 												</div>
 											</div>
 											
@@ -161,11 +161,88 @@ table th,table td{
 								// print_r($data['all']);
 								// echo '</pre>';
 								// exit();
+
+								// Prepare table data
+$table = [];
+$grandScan = $grandManual = 0;
+
+foreach ($data['all'] as $row) {
+    $category = $row->item_category;
+
+    // find scan items
+    $scan = 0;
+    foreach ($data['scan'] as $s) {
+        if ($s->item_category === $category) {
+            $scan = $s->items;
+            break;
+        }
+    }
+
+    // find manual items
+    $manual = 0;
+    foreach ($data['manual'] as $m) {
+        if ($m->item_category === $category) {
+            $manual = $m->items;
+            break;
+        }
+    }
+
+    $table[] = [
+        "category" => $category,
+        "scan" => $scan,
+        "manual" => $manual
+    ];
+
+    $grandScan += $scan;
+    $grandManual += $manual;
+}
 														
 								?>
 
 								<div class="col-md-12" style="overflow-x:scroll;">
-									<table border="1">
+
+								<table  border="1">
+        <tr>
+            <th>Allocated Item Category</th>
+            <th>Verified by Scan</th>
+            <th>Verified by Manual Search</th>
+        </tr>
+        <?php foreach ($table as $row): ?>
+        <tr>
+            <td><?= $row['category'] ?></td>
+            <td><?= $row['scan'] ?></td>
+            <td><?= $row['manual'] ?></td>
+        </tr>
+        <?php endforeach; ?>
+			<tr>
+											<td></td>
+											<td></td>
+											<td></td>
+											
+										</tr>
+										<tr>
+											<td></td>
+											<td></td>
+											<td></td>
+											
+										</tr>
+
+        <tr>
+            <td><b>Grand Total</b></td>
+            <td><b><?= $grandScan ?></b></td>
+            <td><b><?= $grandManual ?></b></td>
+        </tr>
+
+		<tr>
+											<td></td>
+											<td><?php if($grandScan>0){ ?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionEightReport/scan">Download to View Details</a><?php } ?></td>
+											<td><?php if($grandManual>0){ ?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionEightReport/manual">Download to View Details</a><?php } ?></td>
+											
+										</tr>
+    </table>
+
+
+									<table border="1" style="display:none">
 										<tr>
 											<th>Allocated Item Category</th>
 											<th>Verified by Scan</th>

@@ -1,0 +1,4 @@
+"Allocated Item Category","To be Verified (Amount in Lacs)","To be Verified (Number of Qty)","Good Condition (Amount in Lacs)","Good Condition (Number of Qty)","Damaged (Amount in Lacs)","Damaged (Number of Qty)","Scrapped (Amount in Lacs)","Scrapped (Number of Qty)","Missing (Amount in Lacs)","Missing (Number of Qty)","Shifted (Amount in Lacs)","Shifted (Number of Qty)","Not in Use (Amount in Lacs)","Not in Use (Number of Qty)","Remaining to be Verified (Amount in Lacs)","Remaining to be Verified (Number of Qty)"
+COMP,0.15,35,0.15,0,0,0,0,0,0,0,0,0,0,0,0,35
+F&F,110.64,138,0,0,0.61,0,0,0,0,0,0,0,0,0,110.03,138
+"Grand Total",110.79,173,0.15,0,0.61,0,0,0,0,0,0,0,0,0,110.03,173

@@ -56,7 +56,13 @@ select option:disabled {
 							{
 							?>
 							<div class="alert alert-danger">
-								<?php echo $_SESSION['error_message']['message']; ?>
+								<?php 
+if (isset($_SESSION['error_message']) && is_array($_SESSION['error_message']) && isset($_SESSION['error_message']['message'])) {
+    echo $_SESSION['error_message']['message'];
+} else {
+    echo $_SESSION['error_message']; // Fallback if it's a string
+}
+?>
 							</div>
 							<?php 
 							}

@@ -133,12 +133,27 @@
 					<div class="collapse navbar-collapse justify-content-end">
 						<form class="navbar-form">							
 						</form>
+						<?php
+						$user_id = $this->session->userdata('registered_user_id');
+						$this->db->select('plan_end_date');
+						$this->db->from('registered_user_plan');
+						$this->db->where('regiistered_user_id', $user_id); // ✅ fixed column name
+						$this->db->order_by('plan_end_date', 'DESC');
+						$this->db->limit(1);
+						$query = $this->db->get();
+						$result = $query->row();
+						?>
+
 						<ul class="navbar-nav">
-							<li>   
-							<a class="nav-link" href="<?php echo base_url();?>index.php/registered-user-as-admin/<?php echo $this->session->userdata('registered_user_id');?>">  
-								 <button type="button" class="button">Continue as Group  Admin</button>
-                              </a>
-                          </li>
+							<?php if ($result && $result->plan_end_date >= date('Y-m-d')): ?>
+								<li>
+									<a class="nav-link" href="<?php echo base_url();?>index.php/registered-user-as-admin/<?php echo $this->session->userdata('registered_user_id');?>">
+										<button type="button" class="button">Continue as Group Admin</button>
+									</a>
+								</li>
+							<?php endif; ?>
+						</ul>
+
 							<li class="nav-item">								
 								<li class="nav-item dropdown">
 									<a class="nav-link" href="#pablo" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="material-icons text-white">person</i>

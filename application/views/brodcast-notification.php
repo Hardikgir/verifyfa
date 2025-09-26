@@ -46,7 +46,7 @@ $this->load->view('layouts/sidebar');
 
 		<div class="row">
         <div class="col-lg-12 mt-4 mb-4" style="border-bottom:1px solid #6e50505e;">
-            <h4 class="page-title">Brodcast New Notification</h4>
+            <h4 class="page-title">Broadcast New Notification</h4>
        </div>
 
 			<div class="col-lg-12">
@@ -61,18 +61,18 @@ $this->load->view('layouts/sidebar');
                     <div class="col-md-12 form-row SectionUserType usertypeselection" id="SectionUserType" class="">
                         <label class="form-label">UserType</label>
                         <select name="selectUserType[]" id="selectUserType" class="form-control" multiple>
-                            <option value="GropAdmin">GropAdmin</option>
+                            <option value="GropAdmin">GroupAdmin</option>
                             <option value="SubAdmin">SubAdmin</option>
                             <option value="EntityOwner">EntityOwner</option>
                             <option value="ProcessOwner">ProcessOwner</option>
                             <option value="Manager">Manager</option>
-                            <option value="Verify">Verify</option>
+                            <option value="Verify">Verifier</option>
                             
                         </select>
                     </div>
 
                     <div class="col-md-6 form-row SectionGropAdmin usertypeselection" id="SectionGropAdmin">
-                        <label class="form-label">GropAdmin</label>
+                        <label class="form-label">GroupAdmin</label>
                         <select name="selectGropAdmin[]" id="selectGropAdmin" class="form-control" multiple>
                             <?php foreach($all_GroupAdmin as $GroupAdminkey=>$GroupAdminvalue){
                                 echo '<option value="'.$GroupAdminvalue->id.'">'.$GroupAdminvalue->firstName.' '.$GroupAdminvalue->lastName.'</option>';    
@@ -117,7 +117,7 @@ $this->load->view('layouts/sidebar');
                     </div>
 
                     <div class="col-md-6 form-row SectionVerify usertypeselection" id="SectionVerify">
-                        <label class="form-label">Verify</label>
+                        <label class="form-label">Verifier</label>
                         <select name="selectVerify[]" id="selectVerify" class="form-control" multiple>
                             <?php foreach($all_Verify as $Verifykey=>$Verifyvalue){
                                 echo '<option value="'.$Verifyvalue->id.'">'.$Verifyvalue->firstName.' '.$Verifyvalue->lastName.'</option>';    
@@ -137,7 +137,7 @@ $this->load->view('layouts/sidebar');
                         <option value="">Select Notification Type</option>
                         <option value="Notification">Notification</option>
                         <option value="Message">Message</option>
-                        <option value="Issue">Issue</option>
+                        <!-- <option value="Issue">Issue</option> -->
                     </select>
                 </div>
 

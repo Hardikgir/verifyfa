@@ -8,6 +8,9 @@ class Login extends CI_Controller {
 		parent::__construct();
 		$this->load->model('login_model','login');	
 		$this->load->model('Super_admin_model');
+		$this->load->model('Admin_model');
+		$this->load->model('Registered_user_model');
+		
 	}
 	public function index()
 	{
@@ -37,8 +40,29 @@ class Login extends CI_Controller {
 		);
 		
 		$login=$this->login->get_data('users',$condition);
+
+	
 		if(!empty($login) && count($login) > 0)
 		{
+			$this->db->select('*');
+            $this->db->from('registered_user_plan');
+            $this->db->where('id',$login[0]->registered_user_id);
+            $query = $this->db->get();
+            $registered_user_plan_result= $query->row();
+		
+			$today = date("Y-m-d"); // current date
+			if ($today > $registered_user_plan_result->plan_end_date) {
+				$this->session->set_flashdata('error_message', 'This user subscription plan has been expired.');
+				redirect(base_url());
+				exit();
+			}
+			
+
+			if($login[0]->registered_user_id == '1'){
+				$this->session->set_flashdata('error_message', 'This User is already logged in. Contact your Group Admin to Reset the session, if required.');
+				redirect(base_url(),$condition);
+			}
+
 
 			if($login[0]->is_login == '1'){
 				$this->session->set_flashdata('error_message', 'This User is already logged in. Contact your Group Admin to Reset the session, if required.');
@@ -72,7 +96,11 @@ class Login extends CI_Controller {
 				redirect(base_url()."index.php/dashboard/user");
 			}
 
+<<<<<<< HEAD
 			redirect(base_url()."index.php/dashboard");
+=======
+			redirect(base_url()."index.php/dashboard/admin");
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
 		} 
 		else {
 		
@@ -134,7 +162,7 @@ class Login extends CI_Controller {
 	{
 		$this->data['title']="VerifyFa Registered User Login";
 		
-			$this->load->view('registered-user/login',$this->data);
+		$this->load->view('registered-user/login',$this->data);
 		
 	}
 
@@ -239,5 +267,137 @@ class Login extends CI_Controller {
 		redirect("index.php/registered-user-login");
 		
 	 }
+
+
+
+
+	public function clear_all(){
+		$updatedata=array(
+			'is_login'=>0,
+		);
+
+		$query = $this->db->update('users',$updatedata);
+  
+		redirect("index.php/login");
+	}
+
+
+	public function registered_user_forget_password()
+	{
+		$this->data['title']="VerifyFa Registered User Login";		
+		$this->load->view('registered-user/forget-password',$this->data);
+	}
+	public function verifyfa_user_forget_password()
+	{
+		$this->data['title']="VerifyFa Registered User Login";		
+		$this->load->view('forget-password',$this->data);
+	}
+	public function VerifyForForgetPassword(){
+		// $this->data['title']="VerifyFa Registered User Login";		
+		// $this->load->view('password-change',$this->data);
+
+		$email=$this->input->post('userEmail');
+		$password=$this->input->post('userPassword');
+		$remember = $this->input->post('remember_me');
+		$entity_code = $this->input->post('entity_code');
+		
+		$condition=array(
+			"userEmail"=>$email,
+			"entity_code"=>$entity_code
+		);
+		
+		$login=$this->login->get_data('users',$condition);
+		if(!empty($login) && count($login) > 0)
+		{
+			$sess_data = array(
+			'email' => $login[0]->userEmail,
+			'name' => $login[0]->firstName.' '.$login[0]->lastName,
+			'id' => $login[0]->id
+			);
+			$this->session->set_userdata('logged_in', $sess_data);
+		}
+
+		redirect("index.php/login/VerifyForChangePassword");
+	}
+	public function VerifyForChangePassword(){
+		$this->data['title']="VerifyFa Registered User Login";		
+		$this->load->view('password-change',$this->data);
+	}
+	public function updatePasswordFromForget(){
+		$user_id=$_SESSION['logged_in']['id'];
+        $data=array( 
+            "password"=>md5($this->input->post('password')),
+            "password_view"=>$this->input->post('password'),
+        );
+        $this->Admin_model->update_password($user_id,$data);
+
+		$updatedata=array(
+			'is_login'=>0,
+		);
+		$condition=array(
+			'id'=>$_SESSION['logged_in']['id']
+		);
+		$update=$this->login->update_data('users ',$updatedata,$condition);	
+
+		$this->session->unset_userdata('logged_in');
+		$this->session->sess_destroy();
+		redirect(base_url()."index.php/login",'refresh');
+
+	}
+	
+	public function VerifyForForgetPasswordRegistered(){
+		// $this->data['title']="VerifyFa Registered User Login";		
+		// $this->load->view('password-change',$this->data);
+
+		$email=$this->input->post('email');
+		$entity=$this->input->post('entity');
+
+		$this->db->select('*');
+		$this->db->from('registred_users');
+		$this->db->where('email_id',$email);
+		$this->db->where('entity_code',$entity);
+		$query = $this->db->get();
+		$result= $query->row();
+		$num = $query->num_rows();
+
+	
+
+		if($num !='0'){
+			$sess_data = array(
+			'email' => $result->email_id,
+			'name' => $result->first_name.' '.$result->last_name,
+			'id' => $result->id
+			);
+			$this->session->set_userdata('logged_in', $sess_data);
+		}
+
+
+
+
+
+		redirect("index.php/login/VerifyForChangePasswordRegistered");
+	}
+	public function VerifyForChangePasswordRegistered(){
+		$this->data['title']="VerifyFa Registered User Login";		
+		$this->load->view('registered-user/password-change',$this->data);
+	}
+
+
+	public function updateRegisterUserPasswordFromForget(){
+		
+
+		$user_id=$_SESSION['logged_in']['id'];
+        $data=array( 
+            "password"=>md5($this->input->post('password')),
+            "password_view"=>$this->input->post('password'),
+        );
+     	$this->Registered_user_model->update_password($user_id,$data);
+
+		$this->session->unset_userdata('logged_in');
+		$this->session->sess_destroy();
+		redirect('index.php/transfer-logout-confirmation');
+
+	}
+	
 	
 }

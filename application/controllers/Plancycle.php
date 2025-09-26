@@ -440,6 +440,8 @@ class Plancycle extends CI_Controller {
 		$data['company_location']=$this->input->post('company_location');
 		$data['table_name']=$this->input->post('table_name');
 		$getColumns=$this->plancycle->get_schema($data['table_name']);
+
+		
 		$getMandatoryColumns=array();
 		foreach($getColumns as $gc)
 		{
@@ -449,7 +451,14 @@ class Plancycle extends CI_Controller {
 		// echo '<pre>getMandatoryColumns ';
 		// print_r($getMandatoryColumns);
 		// echo '</pre>';
+
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
 		// exit();
+		// exit();
+
+		
 
 		$data['mandatory_cols']=$getMandatoryColumns;
 		
@@ -488,7 +497,7 @@ class Plancycle extends CI_Controller {
 		// echo '<pre>getNonMandatory ';
 		// print_r($getNonMandatory);
 		// echo '</pre>';
-		// exit();
+		// // exit();
 		$data['nonmandatory_cols']=$getNonMandatory;
 		$this->load->view('markheaders',$data);
 	}
@@ -590,8 +599,29 @@ class Plancycle extends CI_Controller {
 	}
 
 	public function getlocationdata(){
+		
 		$company_id = $_POST['company_id'];
-		$resulttttt = $this->plancycle->GetLocationdatabyid($company_id);
+		$role_id = 0;
+		if(isset($_POST['role_id']) && $_POST['role_id'] !='')
+		{
+			$role_id = $_POST['role_id'];
+		}
+		
+		
+		$this->db->select('*');
+        $this->db->from('user_role');
+        $this->db->join('company_locations','company_locations.id=user_role.location_id');
+		$this->db->where('user_role.company_id',$company_id);
+		// $this->db->where('user_role.company_id',$company_id);
+		// if(isset($_POST['role_id']) && $_POST['role_id'] !='')
+			$this->db->where('FIND_IN_SET('.$role_id.', user_role.user_role)');
+		// }
+		$this->db->group_by("user_role.location_id");
+        $getnotifications=$this->db->get();
+        $resulttttt =  $getnotifications->result();
+
+		
+
 		?>
 				<option value="">Select Unit Location</option>
 		<?php
@@ -712,17 +742,10 @@ class Plancycle extends CI_Controller {
 					foreach($projects as $pro)
 					{ 
 						$masterTotal=$this->db->query("SELECT count(*) as total from ".$pro->original_table_name)->result();
-						// echo '<pre>last_query ';
-						// print_r($this->db->last_query());
-						// echo '</pre>';
-						// exit();
+					
 						$pro->masterTotal=$masterTotal[0]->total;
 						$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($pro->project_name)));
 						$getprojectdetails=$this->tasks->projectdetail($project_name);
-						// echo '<pre>last_query ';
-						// print_r($this->db->last_query());
-						// echo '</pre>';
-						// exit();
 						
 						if(!empty($getprojectdetails))
 						{
@@ -749,7 +772,7 @@ class Plancycle extends CI_Controller {
 								foreach($expverifier as $ver)
 								{
 									if($k==0)
-										echo get_UserName($ver);
+										echo get_UserName($ver).", ";
 									else
 										echo ', '.get_UserName($ver);
 								}

@@ -53,9 +53,9 @@ $this->load->view('layouts/sidebar');
                        <div class="col-md-3">                          
                         </div>
                       <div class="col-md-6 text-center">
-                      You have successfully creating Verification Cycle for specified period and respective User(s) have been informed on their email. 
+                      You have successfully created Verification Cycle for specified period and respective User(s) have been informed on their email. 
                       <br/>
-                      Your verification project has been allotted below project ID: <?php echo $project_detail[0]->project_id; ?>
+                      Your verification project has been allotted project ID: <?php echo $project_detail[0]->project_id; ?>
                       </div>
                       <div class="col-md-3">                          
                         </div>

@@ -53,6 +53,7 @@ option {
 
                           <div class="col-md-3">
                               <div class="form-group">
+                                  <label class="bmd-label-floating">To Select multiple Item Categories, hold Ctrl button and then multi select</label>
                                   <select class="browser-default custom-select multiple" name="verifier[]" multiple required>
                                       <option value="">Allocated to Verifier(s)<span id="mandatory_star">*</span></option>
                                       <?php
@@ -77,6 +78,7 @@ option {
                         
                             <div class="col-md-3">
                                 <div class="form-group">
+                                    <label class="bmd-label-floating">To Select multiple Item Categories, hold Ctrl button and then multi select</label>
                                     <select class="browser-default custom-select multiple" multiple name="process_owner[]" required>
                                         <option value="">Process Owner(s)</span></option>
                                       <?php
@@ -100,6 +102,7 @@ option {
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
+                                    <label class="bmd-label-floating">To Select multiple Item Categories, hold Ctrl button and then multi select</label>
                                     <select class="browser-default custom-select multiple" multiple name="item_owner[]" required>
                                         <option value="">Entity Owner(s)</option>
                                       <?php
@@ -125,6 +128,7 @@ option {
                           
                               <div class="col-md-3">
                                   <div class="form-group">
+                                      <label class="bmd-label-floating">To Select multiple Item Categories, hold Ctrl button and then multi select</label>
                                       <select class="browser-default custom-select multiple" multiple name="project_manager[]" required>
                                           <option value="">Manager(s)</span></option>
                                       <?php

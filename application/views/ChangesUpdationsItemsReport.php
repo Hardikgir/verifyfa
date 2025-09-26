@@ -156,19 +156,30 @@ table th,table td{
 									<div class="clearfix"></div>
 								</form>
 								<div class="col-md-12" style="overflow-x:scroll;">
+<<<<<<< HEAD
 
                                     
                                     <table class="table table-bordered">
+=======
+								
+								    
+                                    <table border="1" width="100%">
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
                                         <?php 
                                         $project_header_column_value = explode(",",$data['project_header_column_value']);
                                         unset($project_header_column_value[0]);
                                         unset($project_header_column_value[1]);
                                         echo '<tr>';
                                         echo '<th>Allocated Item Category</th>';
+<<<<<<< HEAD
+=======
+										$count2 = 1;
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
                                         foreach($project_header_column_value as $project_header_column_value_value){
                                             echo '<th>';
                                             echo ucfirst(str_replace('_',' ',$project_header_column_value_value));
                                             echo '</th>';
+<<<<<<< HEAD
                                         }
                                         echo '</tr>';
 
@@ -177,6 +188,18 @@ table th,table td{
                                             <td>
                                                 <?php echo $key; ?>
                                             </td>
+=======
+											$count2++;
+                                        }
+                                        echo '</tr>';
+
+										$count = 1;
+                                        foreach($data['different'] as $key=>$value){ ?>
+                                        <tr>
+                                            <th>
+                                                <?php echo $key; ?>
+                                            </th>
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
 
                                             <?php 
                                             foreach($project_header_column_value as $project_header_column_value_value){
@@ -189,9 +212,26 @@ table th,table td{
                                                 echo '</td>';
                                             } ?>
                                         </tr>
+<<<<<<< HEAD
                                         <?php } ?>
                                     </table>											
 									<a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionChangesUpdationsofItems">Download as Annexure</a>
+=======
+
+									
+                                        <?php
+										$count++; 
+										} ?>
+										<tr>
+											<td colspan="<?php echo $count2; ?>">
+												<b>
+													<a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionChangesUpdationsofItems/<?php echo $data['project'][0]->id;?>">Download as Annexure</a>
+												</b>
+											</td>
+										</tr>
+                                    </table>											
+									
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
 								</div>
 								<?php
 								}

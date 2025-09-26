@@ -115,7 +115,8 @@ $this->load->view('layouts/sidebar');
                       
                         <div class="col-md-6">
                                 <div class="form-group">
-                                    <select class="browser-default custom-select" name="item_category[]" id="item_category" multiple required>
+                                    <label class="bmd-label-floating">To Select multiple Item Categories, hold Ctrl button and then multi select</label>
+                                    <select class="browser-default custom-select multiple_selection" name="item_category[]" id="item_category" multiple required>
                                         <option selected>Item Category<span id="mandatory_star">*</span></option>
                                         <?php
                                         foreach($categories as $cat)

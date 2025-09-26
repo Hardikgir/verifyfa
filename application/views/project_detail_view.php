@@ -291,7 +291,11 @@ $allcategories=getCategories($projects[0]->project_name);
                                 <div class="row">
                                     <div class="col-md-1"></div>
                                     <div class="col-md-10">
+<<<<<<< HEAD
                                         <h3 class="boder-bottom">Overall Project Status</h3>
+=======
+                                        <!-- <h3 class="boder-bottom">Overall Project Status</h3> -->
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
                                         <div class="row my-5">
 
                                             <div class="col-md-12">
@@ -326,12 +330,20 @@ $allcategories=getCategories($projects[0]->project_name);
                                                         <div class="tab-pane fade show active" id="nav-chart" role="tabpanel" aria-labelledby="nav-chart-tab">
                                                             <div class="row m-5">
 
+<<<<<<< HEAD
                                                                 <div class="col-md-12">
+=======
+                                                                <div class="col-md-6">
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
                                                                    
                                                                     <div id="LineItemBreakupChart" style="height: 420px; width: 100%;"></div>
                                                                 </div>
 
+<<<<<<< HEAD
                                                                 <div class="col-md-12">
+=======
+                                                                <div class="col-md-6">
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
                                                                    
                                                                     <div id="LineItemBreakup_DonutChart" style="height: 420px; width: 100%;"></div>
                                                                 </div>
@@ -628,11 +640,19 @@ $allcategories=getCategories($projects[0]->project_name);
 
 
                                                             
+<<<<<<< HEAD
                                                                 <div class="col-md-12">
                                                                     <div id="AmountwiseBreakupChart" style="height: 420px; width: 100%;"></div>
                                                                 </div>
 
                                                                 <div class="col-md-12">
+=======
+                                                                <div class="col-md-6">
+                                                                    <div id="AmountwiseBreakupChart" style="height: 420px; width: 100%;"></div>
+                                                                </div>
+
+                                                                <div class="col-md-6">
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
                                                                     <div id="AmountwiseBreakup_DonutChart" style="height: 420px; width: 100%;"></div>
                                                                 </div>
 
@@ -979,11 +999,19 @@ $allcategories=getCategories($projects[0]->project_name);
                                                             <div class="row my-5">
 
 
+<<<<<<< HEAD
                                                                <div class="col-md-12">
                                                                     <div id="ResourcewiseUtilizationChart" style="height: 420px; width: 100%;"></div>
                                                                 </div>
 
                                                                 <div class="col-md-12">
+=======
+                                                               <div class="col-md-6">
+                                                                    <div id="ResourcewiseUtilizationChart" style="height: 420px; width: 100%;"></div>
+                                                                </div>
+
+                                                                <div class="col-md-6">
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
                                                                     <div id="ResourcewiseUtilization_DonutChart" style="height: 420px; width: 100%;"></div>
                                                                 </div>
 

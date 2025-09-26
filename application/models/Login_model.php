@@ -128,11 +128,11 @@ class Login_model extends CI_Model {
   	}
 	function get_schema($table)
 	{
-		return $this->db->query("SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS`  WHERE `TABLE_SCHEMA`='u337050398_verifyfadatabs'  AND `TABLE_NAME`='".$table."' AND `IS_NULLABLE`='No' AND `COLUMN_NAME`!='verification_status' AND `COLUMN_NAME`!='item_scrap' AND `COLUMN_NAME`!='quantity_verified' AND `COLUMN_NAME`!='createdat'  AND `COLUMN_NAME`!='updatedat' AND `COLUMN_NAME`!='id' AND `COLUMN_NAME` != 'qty_ok' AND `COLUMN_NAME` != 'qty_damaged' AND `COLUMN_NAME` != 'qty_scrapped' AND `COLUMN_NAME` != 'qty_not_in_use' AND `COLUMN_NAME` != 'qty_missing' AND `COLUMN_NAME` != 'qty_shifted'")->result();
+		return $this->db->query("SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS`  WHERE `TABLE_SCHEMA`='v74_ci_verifyfa_live_server_db'  AND `TABLE_NAME`='".$table."' AND `IS_NULLABLE`='No' AND `COLUMN_NAME`!='verification_status' AND `COLUMN_NAME`!='item_scrap' AND `COLUMN_NAME`!='quantity_verified' AND `COLUMN_NAME`!='createdat'  AND `COLUMN_NAME`!='updatedat' AND `COLUMN_NAME`!='id' AND `COLUMN_NAME` != 'qty_ok' AND `COLUMN_NAME` != 'qty_damaged' AND `COLUMN_NAME` != 'qty_scrapped' AND `COLUMN_NAME` != 'qty_not_in_use' AND `COLUMN_NAME` != 'qty_missing' AND `COLUMN_NAME` != 'qty_shifted'")->result();
 	}
 	function getcompleteschema($table)
 	{
-		return $this->db->query("SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS`  WHERE `TABLE_SCHEMA`='u337050398_verifyfadatabs'  AND `TABLE_NAME`='".$table."'")->result();
+		return $this->db->query("SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS`  WHERE `TABLE_SCHEMA`='v74_ci_verifyfa_live_server_db'  AND `TABLE_NAME`='".$table."'")->result();
 	}
 	function insert_data($table,$data)
 	{

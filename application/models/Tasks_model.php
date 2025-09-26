@@ -68,11 +68,25 @@ class Tasks_model extends CI_Model {
 
 
 
-    function getProjectsdashboard($table,$userid,$entity_code,$company_id_imp,$location_id) { 
+    function getProjectsdashboard($table,$userid,$entity_code,$company_id_imp,$location_id,$role_id) { 
 
-          $condition=array('company_projects.company_id IN ('.$company_id_imp.') AND company_projects.project_location IN ('.$location_id.')',"company_projects.entity_code"=>$entity_code);
+        $role_where = '';
+        if($role_id == '0'){
+            $role_where .= " AND FIND_IN_SET($userid, manager)";
+        }
+        if($role_id == '1'){
+            $role_where .= " AND FIND_IN_SET($userid, project_verifier)";
+        }
+        if($role_id == '2'){
+            $role_where .= " AND FIND_IN_SET($userid, process_owner)";
+        }
+        if($role_id == '3'){
+            $role_where .= " AND FIND_IN_SET($userid, item_owner)";
+        }
 
-          $condition1=array('company_projects.project_verifier IN ('.$userid.') || company_projects.manager IN ('.$userid.') || company_projects.process_owner IN ('.$userid.') || company_projects.item_owner IN ('.$userid.')');
+        $condition=array('company_projects.company_id IN ('.$company_id_imp.') AND company_projects.project_location IN ('.$location_id.') '.$role_where,"company_projects.entity_code"=>$entity_code);
+
+        $condition1=array('company_projects.project_verifier IN ('.$userid.') || company_projects.manager IN ('.$userid.') || company_projects.process_owner IN ('.$userid.') || company_projects.item_owner IN ('.$userid.')');
 
 
         $this->db->select('company_projects.*,company_locations.location_name,user_role.id as role_id,company.company_name');
@@ -440,6 +454,7 @@ class Tasks_model extends CI_Model {
     function getExceptionTwoReport($tablename,$verificationstatus,$reportHeaders)
     {
 
+<<<<<<< HEAD
         // echo '<pre>tablename ::';
         // print_r($tablename);
         // echo '</pre>';
@@ -455,6 +470,8 @@ class Tasks_model extends CI_Model {
         // exit(); 
         // exit(); 
 
+=======
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
         $company_projects = $this->db->query("SELECT *  FROM company_projects WHERE project_table_name='".$tablename."'")->row();
         // echo '<pre>last_query 1';
         // print_r($this->db->last_query());
@@ -464,22 +481,31 @@ class Tasks_model extends CI_Model {
         $company_id = $company_projects->company_id;
         $original_table_name = $company_projects->original_table_name;
         $project_table_name = $company_projects->project_table_name;
-
+ 
 
         $project_headers = $this->db->query("SELECT *  FROM project_headers WHERE project_id='".$project_id."' AND is_editable = 1")->result();
-        $project_header_column = array('id','item_sub_category','location_of_the_item_last_verified');
+        $project_header_column = array('id','item_sub_category','new_location_verified');
+
+
         foreach($project_headers as $project_headers_value){
             $project_header_column[] = $project_headers_value->keyname;
         }
+
+        $project_header_column = array_unique($project_header_column);
+
         $project_header_column_value = implode(',', $project_header_column);
      
 
 
         $project_table_result = $this->db->query("SELECT ".$project_header_column_value." FROM ".$project_table_name)->result();
+<<<<<<< HEAD
         // echo '<pre>last_query ';
         // print_r($this->db->last_query());
         // echo '</pre>';
         // exit();
+=======
+       
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
         $existing_id_array = array();
         foreach($project_table_result as $project_table_value){
             $existing_id_array[] = $project_table_value->id;
@@ -491,13 +517,21 @@ class Tasks_model extends CI_Model {
         foreach($project_headers as $project_headers_value){
             $project_header_column_base[] = $project_headers_value->keyname;
         }
+
+
+    
+
         $project_header_column_base_value = implode(',', $project_header_column_base);
         $original_table_result = $this->db->query("SELECT ".$project_header_column_base_value." FROM ".$original_table_name." WHERE id in (".$existing_id_value.") ")->result();
+<<<<<<< HEAD
         // echo '<pre>last_query 3:';
         // print_r($this->db->last_query());
         // echo '</pre>';
         // exit();
 
+=======
+      
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
         $different_array = array();
         foreach($project_table_result as $project_table_key=>$project_table_value){
 
@@ -507,7 +541,9 @@ class Tasks_model extends CI_Model {
                 if($project_header_column_new_value == 'location_of_the_item_last_verified'){
 
                     if($original_table_result[$project_table_key]->new_location_verified != $project_table_result[$project_table_key]->$project_header_column_new_value){
-                        $different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value][] = 1;
+                        // if(!empty($project_table_result[$project_table_key]->new_location_verified)){
+                            $different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value][] = 1;
+                        // }
                     }
 
                 }else{
@@ -519,6 +555,7 @@ class Tasks_model extends CI_Model {
                
             }
         }
+<<<<<<< HEAD
         $different_array['project_header_column_value'] = $project_header_column_value; 
 
 
@@ -526,6 +563,11 @@ class Tasks_model extends CI_Model {
         // print_r($different_array);
         // echo '</pre>';
         // exit();
+=======
+        
+       
+        $different_array['project_header_column_value'] = $project_header_column_value;
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
         
         return $different_array;
     }
@@ -913,23 +955,34 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
     {
         if($verificationstatus==1)
         {
-            $data['manual']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE mode_of_verification='Manual' group by item_category")->result();
+            $data['manual']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE mode_of_verification='Search' group by item_category")->result();
             $data['scan']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE mode_of_verification='Scan' group by item_category")->result();
             
         }
         else if($verificationstatus=='Verified')
         {
-            $data['manual']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE mode_of_verification='Manual' and verification_status='Verified' group by item_category")->result();
+            $data['manual']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE mode_of_verification='Search' and verification_status='Verified' group by item_category")->result();
             $data['scan']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE mode_of_verification='Scan' and verification_status='Verified' group by item_category")->result();
             
         }
         else
         {
-            $data['manual']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE mode_of_verification='Manual' and verification_status='Not-Verified' group by item_category")->result();
+            $data['manual']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE mode_of_verification='Search' and verification_status='Not-Verified' group by item_category")->result();
             $data['scan']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE mode_of_verification='Scan' and verification_status='Not-Verified' group by item_category")->result();
         }
+
+        // echo '<pre>data 1 ::';
+        // print_r($data);
+        // echo '</pre>';
+        // // exit();
+        
         
         $data['all']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE mode_of_verification!='Not Verified' group by item_category")->result();
+
+        // echo '<pre>';
+        // print_r($data);
+        // echo '</pre>';
+        // exit();
         return $data;
     }
     public function getDetailedReportFAR($tablename,$verificationstatus,$reportHeaders)
@@ -1298,7 +1351,7 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
         if($verificationstatus==1)
         {
             if($mode=='manual')
-                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE mode_of_verification='Manual'")->result_array();
+                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE mode_of_verification='Search'")->result_array();
             else
                 $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE mode_of_verification='Scan'")->result_array();
             
@@ -1306,7 +1359,7 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
         else if($verificationstatus=='Verified')
         {
             if($mode=='manual')
-                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE mode_of_verification='Manual' and verification_status='Verified'")->result_array();
+                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE mode_of_verification='Search' and verification_status='Verified'")->result_array();
             else
                 $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE mode_of_verification='Scan' and verification_status='Verified'")->result_array();
             
@@ -1314,7 +1367,7 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
         else
         {
             if($mode=='manual')
-                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE mode_of_verification='Manual' and verification_status='Not-Verified' ")->result_array();
+                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE mode_of_verification='Search' and verification_status='Not-Verified' ")->result_array();
             else
                 $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE mode_of_verification='Scan' and verification_status='Not-Verified'")->result_array();
         }
@@ -1884,17 +1937,44 @@ function get_product_search($sort_by,$order_by,$table_name)
 
     function getExceptionNineReport($tablename,$verificationstatus,$reportHeaders)
     {
-        $tablename = 'dljm_d_55_fa_verification_tagging';
-       
-        $result_list = $this->db->query("SELECT COUNT(`item_unique_code`) AS uniqu_record_cout, item_unique_code,item_category FROM  $tablename GROUP BY item_unique_code,item_category ORDER BY uniqu_record_cout DESC")->result();
+        // $result_list = $this->db->query("SELECT COUNT(`item_unique_code`) AS uniqu_record_cout, item_unique_code,item_category,verification_status,mode_of_verification FROM  $tablename GROUP BY item_unique_code,item_category ORDER BY uniqu_record_cout DESC")->result();
 
-        $scan_wise_result_list = $this->db->query("SELECT COUNT(`item_unique_code`) AS uniqu_record_cout, item_unique_code,item_category FROM  $tablename WHERE verification_status = 'Verified' AND mode_of_verification = 'Scan'  GROUP BY item_unique_code,item_category ORDER BY uniqu_record_cout DESC")->result();
+        $result_list = $this->db->query("SELECT COUNT(`item_unique_code`) AS uniqu_record_cout, item_unique_code,item_category,verification_status,mode_of_verification FROM  $tablename GROUP BY item_unique_code ORDER BY uniqu_record_cout DESC")->result();
 
-        $search_wise_result_list = $this->db->query("SELECT COUNT(`item_unique_code`) AS uniqu_record_cout, item_unique_code,item_category FROM  $tablename WHERE verification_status = 'Verified' AND mode_of_verification = 'Search'  GROUP BY item_unique_code,item_category ORDER BY uniqu_record_cout DESC")->result();
+        
+        $Duplicate_Array = array();
+        $count = 1;
+        foreach($result_list as $result_key=>$result_value){
+            if($result_value->uniqu_record_cout > 1){
 
-        // $search_wise_result_list = $this->db->query("SELECT COUNT(`item_unique_code`) AS uniqu_record_cout, item_unique_code,item_category FROM  $tablename WHERE verification_status = 'Not-Verified' GROUP BY item_unique_code,item_category ORDER BY uniqu_record_cout DESC")->result();
+                $not_Verified_search_query = $this->db->query("SELECT * FROM ".$tablename." where item_unique_code = '".$result_value->item_unique_code."' AND verification_status = '' AND mode_of_verification = 'Not Verified'")->num_rows();
 
+                 $Verified_scan_query = $this->db->query("SELECT * FROM ".$tablename." where item_unique_code = '".$result_value->item_unique_code."' AND verification_status = 'Verified' AND mode_of_verification = 'Scan'")->num_rows();
+                
+                $Verified_search_query = $this->db->query("SELECT * FROM ".$tablename." where item_unique_code = '".$result_value->item_unique_code."' AND verification_status = 'Verified' AND mode_of_verification = 'Search'")->num_rows();
+                
+                $Duplicate_Array[$count]['item_category'] = $result_value->item_category;
+                $Duplicate_Array[$count]['total_uniqu_record_cout'] = $result_value->uniqu_record_cout;
+                $Duplicate_Array[$count]['total_not_verified_uniqu_record_cout'] = $not_Verified_search_query;
+                $Duplicate_Array[$count]['total_scan_uniqu_record_cout'] = $Verified_scan_query;
+                $Duplicate_Array[$count]['total_search_uniqu_record_cout'] = $Verified_search_query;
 
+               
+
+            $count++;
+            }
+           
+        }
+        $data['Duplicate_Array'] = $Duplicate_Array;
+        return $data;
+        /*
+        echo '<pre>Duplicate_Array ';
+        print_r($Duplicate_Array);
+        echo '</pre>';
+        exit();
+        
+
+        
         $common_array = array();
 
         $category_wise_count_array = array();
@@ -1925,19 +2005,9 @@ function get_product_search($sort_by,$order_by,$table_name)
         }
 
 
-        // echo '<pre>common_array ';
-        // print_r($common_array);
-        // echo '</pre>';
-        // exit();
         $data['common_array'] = $common_array;
-        // $data['Categorywise_count'] = $category_wise_count_array;
-        // $data['scan_wise_count_array'] = $scan_wise_count_array;
-        // $data['search_wise_count_array'] = $search_wise_count_array;
-        // echo '<pre>data :: ';
-        // print_r($data);
-        // echo '</pre>';
-        // exit();
         return $data;
+        */
       
     }
 

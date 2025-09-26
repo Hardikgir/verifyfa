@@ -1,0 +1,159 @@
+Date :- 07/09/2025 
+
+-> API Add/Update
+    -> Get Roles base on user_id  [New api Create only]
+    -> Get Company list base on user_id & role_id [New api Create only]
+    -> Get Location base on user_id & role_id & company_id [New api Create only]
+    -> Get All Information base on above selection (For Graph) [New api Create only]
+    -> Issue resolved API [New api Create only]
+    -> Both API of Report & Exception Should be Single api [New api Create only]
+    
+    -> Issue Createing Tracking Number Should be proper. (Update)
+    -> Rollback List Date Format Should be Chanegs (Update)
+    -> Rollback List also give data with specific status so According that RollBack Button Should be invisible OR Not Showing That Data
+    
+-> Other You have To Listen Recordnig of Whole Meeting.
+
+Date :- 12/09/2025 :- 
+-> Changes/ Updations of Items
+
+
+
+Date :- 06/09/2025 :-
+Exception Report :- 
+-> Remove Amount column from Consolidate Report :- Done
+-> Mode Of Verification (Issue Fixing) :- I think this is working fine (As my data that is working fine but sir's data their is some issue need to check in that) :- Done
+-> Change Updates of Items :- Done
+-> Duplicate Item Code Identified (Issue Fixing) :- Done
+-> Change Updates of Items Report Generating Button :- (Not Getting Proper Data) :- Done
+
+
+-> Duplicate Item Code Identified Report Generating Button :- Pending
+
+
+
+
+
+Update it by postman and Duplicate table create before update any thing so you get which data is updating.
+
+
+Date :- 14/08/2025
+
+-> Register user if Expired then Group admin Button(Continue as GroupAdmin) should be Disbled in Register user.
+-> If Expired (Group Admin) then user not be able to login :- This is Working perfect
+-> Dashboard Should be 2 Type
+    -> Admin Dashboard
+        -> Only Block Card Should be their (Group admin ko leke h) abhi admin page h vo sahi h
+        -> Niche vala Dashboard board that both Dashboard showing in same page (Block Card & Graph)
+        -> Graph Section only for Functional User(Entity own,Process owner, Verify)  ye unke liye Graph h hi nai
+    -> User Dashboard
+
+
+Dahboard Should be Another way as showing in Document (Only for Function user Thier is only 4)
+-> User Dashboard
+-> Project Dashboard (Only Manage k liye hi h )
+-> Plan Cycle (Only Manage k liye hi h )
+-> 
+
+-> In Table for Manager (Project Dahboard) in that table you have to add 2 column (Company,Location)
+-> Filter should be work as currently working in report Section
+-> 
+
+11:56 to Whole Flow Discussio Regarding Inner Graph.
+
+
+
+For User Login
+
+Entity :- PROBUDS
+Role :- Group Admin
+User :- jasmeet@probuds.co.in
+Pass :- 123456
+
+Role :- Entity Owner
+User :- rajiv@test
+Pass :- 123456
+
+Role :- Manager
+User :- shubh@probuds.co.in
+Pass :- 123456
+
+
+Role :- Verifier
+User :- sangeet123dhn@gmail.com [OR] pradeep@probuds.co.in
+Pass :- 123456
+
+
+
+
+Previous Project Details Pages Link
+-> http://localhost/codeigniter/verifyfa/index.php/dashboard/projectdetail/1
+-> http://localhost/codeigniter/verifyfa/index.php/dashboard/projectdetail_Previous1/1
+-> http://localhost/codeigniter/verifyfa/index.php/dashboard/projectdetail_Previous2/1
+
+-> http://localhost/codeigniter/verifyfa/index.php/ProjectDetails/one/1
+-> http://localhost/codeigniter/verifyfa/index.php/ProjectDetails/two/1 (PREVIOUS CODE WORKING PERFECT)
+-> http://localhost/codeigniter/verifyfa/index.php/ProjectDetails/three/1
+
+
+
+
+Project id :- 
+SELECT * FROM v74_ci_verifyfa_live_server_db.testing1;
+SELECT id,item_category,item_sub_category,item_unique_code,item_sub_code,item_classification,verifiable_status_y_n_na,tag_status_y_n_na,date_of_item_capitalization,total_item_amount_capitalized,verified_by,mode_of_verification  FROM v74_ci_verifyfa_live_server_db.testing1;
+
+
+
+
+Line Item (Li) Breakup :- 
+
+
+Amount wise Breakup :- 
+
+
+Resource wise Utilization :- 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Query :- 
+SELECT * FROM v74_ci_verifyfa_live_server_db.testing1;
+SELECT id,item_category,item_sub_category,item_unique_code,item_sub_code,item_classification,verifiable_status_y_n_na,tag_status_y_n_na,date_of_item_capitalization,total_item_amount_capitalized,verified_by,mode_of_verification  FROM v74_ci_verifyfa_live_server_db.testing1;
+
+SELECT id,item_category,item_sub_category,item_unique_code,item_sub_code,item_classification,verifiable_status_y_n_na,tag_status_y_n_na,date_of_item_capitalization,total_item_amount_capitalized,verified_by,mode_of_verification  FROM v74_ci_verifyfa_live_server_db.testing1 where item_category = 'COM';
+SELECT id,item_category,item_sub_category,item_unique_code,item_sub_code,item_classification,verifiable_status_y_n_na,tag_status_y_n_na,date_of_item_capitalization,total_item_amount_capitalized,verified_by,mode_of_verification  FROM v74_ci_verifyfa_live_server_db.testing1 where item_category = 'TJ';
+SELECT id,item_category,item_sub_category,item_unique_code,item_sub_code,item_classification,verifiable_status_y_n_na,tag_status_y_n_na,date_of_item_capitalization,total_item_amount_capitalized,verified_by,mode_of_verification  FROM v74_ci_verifyfa_live_server_db.testing1 where item_category = 'OE';
+
+
+Need To fix
+-> While Verify By Application Below column need to update
+    -> 
+
+
+
+
+-> 3 Point is pending from Yesterday's Point
+1. Label Should be proper in Line Graph
+2. Resoounce Tab in Graph that should be proper Details :- Dobe 
+3. Show/Hide Detail of page :- Done
+4. User Dashboard Graph Related Point :- Done
+
+
+4. Project Details page Should be Proper.
+
+
+http://localhost/codeigniter/verifyfa/index.php/login/clear_all

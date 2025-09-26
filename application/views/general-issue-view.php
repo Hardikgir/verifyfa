@@ -59,7 +59,7 @@
                             <table class="table table-bordered">
                                 <tr>
                                     <th>Created By</th>
-                                    <td><?php echo "Jasmeet Singh | ".$issue_result->created_at;?></td>
+                                    <td><?php echo $issue_result->solver_firstName.$issue_result->solver_lastName." | ".$issue_result->updated_at;?></td>
                                 </tr>
                               
 
@@ -92,7 +92,7 @@
 
                                 <tr>
                                     <th>Issue Handled By</th>
-                                    <td><?php echo $issue_result->firstName." - ".$issue_result->lastName." | ".$issue_result->created_at; ?></td>
+                                    <td><?php echo $issue_result->resolver_firstName." - ".$issue_result->resolver_lastName." | ".$issue_result->updated_at; ?></td>
                                 </tr>
                                 <?php 
                                 if(!empty($issue_result->issue_attachment)){ ?>
@@ -109,10 +109,30 @@
                                     if($issue_result->status =='0'){echo "Closed";}
                                     ?></td>
                                 </tr>
-                                 
+
+
+                                <?php if(!empty($issue_resolve_result)){ ?> 
+                                <tr>
+                                    <th>Resolve Remark</th>
+                                    <td>
+                                    <?php 
+                                        echo $issue_resolve_result->status_type_remark;
+                                    ?></td>
+                                </tr>
+
+
+                                 <tr>
+                                     <th>Resolved Attachment</th>
+                                    <td><a href="<?php echo base_url().'issueattachment/'.$issue_resolve_result->attachments; ?>" target="_blank" class="view_attachment_cls">View Attachment</a></td>
+                                </tr>
+                                <?php } ?>
+
+
+                              
 
                             </table>
-                             
+
+                                
 
                                     <?php
                                     $user_id = $_SESSION['logged_in']['id'];

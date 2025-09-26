@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 $this->load->view('layouts/header');
@@ -54,6 +57,14 @@ $user_role_admin_cnt=get_user_role_cnt_admin($user_id,$entity_code);
 	min-height: 200px !important;
 }
 
+<<<<<<< HEAD
+=======
+
+.canvasjs-chart-toolbar button{
+    display: none;
+}
+
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
 	</style>
 
 
@@ -94,6 +105,13 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
 
 
 <div class="container-fluid">
+<<<<<<< HEAD
+=======
+
+
+
+
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
     <div class="row">
     <div class="col-md-4">
         <div class="card">
@@ -191,18 +209,77 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
 
 
     <div class="container-fluid">
+<<<<<<< HEAD
  <div class="row">
 
 
+=======
+
+      <div class="row">
+    <div class="col-md-12 mt-5">
+
+    <form id="user_select_role" method="post" class="bg-white">
+       
+        <input type="hidden" name="user_select_role_val" id="user_select_role_val" value="<?php if(isset($_POST['user_select_role_val'])){ echo $_POST['user_select_role_val']; } ?>">
+        <input type="submit" id="user_select_role_submit" style="display: none;">
+    </form>
+
+    <div class="text-center">
+
+                      <?php
+                    $user_id=$this->user_id;
+                    $entity_code=$this->admin_registered_entity_code;
+                    $get_user_all_roles = get_user_all_roles($user_id,$entity_code); // get all user role company wise
+
+                    $key = array_search(5, $get_user_all_roles);
+                    if (false !== $key) {
+                        unset($get_user_all_roles[$key]);
+                    }
+
+                    foreach($get_user_all_roles as $role){
+                        $active_role = '';
+                            if(isset($_REQUEST['user_select_role_val'])){
+                                if($_REQUEST['user_select_role_val'] == $role){
+                                $active_role = 'active';
+                            }
+                        }
+                        echo '<a href="javascript:void(0)" onclick="user_select('.$role.')" class="btn btn-primary mx-3 '.$active_role.'">'.get_role_name($role).'</a> ';                       
+                    }
+
+                    ?>
+                    </div>
+
+    </div>
+    </div>
+    
+
+
+ <div class="row">
+
+
+ 
+
+
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
     <div class="col-md-12 mt-5">
         <form id="userForm" method="post" class="bg-white">
                 <br>
                 <div class="row">
+<<<<<<< HEAD
+=======
+<div class="col-md-12 text-center" style="padding: 15px;" >
+                  <h2 class="text-center">Status of Open Projects</h2>
+</div>
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
                 <div class="col-md-2 form-row">
                 </div>
                 <div class="col-md-4 form-row">
                     <label class="form-label">Select Company</label>
+<<<<<<< HEAD
                     <select name="company_id" id="company_id" class="form-control" required>
+=======
+                    <select name="company_id" id="company_id" class="form-control" >
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
                         <option value="">All</option>
                         <?php foreach($company_data_list as $row_com_list){ 
                              $company_n=get_company_row($row_com_list['company_id']);
@@ -221,21 +298,44 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
                 <div class="col-md-2 form-row">
                 <button type="submit" class="btn btn-success">GO</button>
               </div>
+<<<<<<< HEAD
                 </div><br>
                
                 
                 <br>
         </form>
+=======
+                </div>
+               
+                
+                <br>
+            
+        </form>
+       
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
     <!-- </div> -->
 
 
 
     <!-- <div class="col-md-12 mt-5"> -->
+<<<<<<< HEAD
 			<div  style="background: #fff;height: 150px;padding: 15px;">
 				<h2 class="text-center">Applicable to Open Project</h2>
 				
 			</div>
 			<div id="TypeSubscriptionActiveChart" style="height: 370px; width: 100%;"></div>
+=======
+            <div id="TypeSubscriptionActiveChart_section" style="display: none;">
+                
+                <div  style="background: #fff;height: 150px;padding: 15px;" >
+                     <hr>
+                    <!-- <h2 class="text-center">Applicable to Open Project</h2> -->
+                    
+                </div>
+            
+                <div id="TypeSubscriptionActiveChart" style="height: 370px; width: 100%;" ></div>
+            </div>
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
         </div>
 
         <div class="col-md-12 mt-5" >
@@ -243,11 +343,32 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
           <form id="application_open_project_userForm" method="post" class="bg-white">
                 <br>
                 <div class="row p-3">
+<<<<<<< HEAD
                 
 
                 <div class="col-md-3">
                     <label class="form-label">Select Company</label>
                     <select name="application_open_project_company_id" id="application_open_project_company_id" class="form-control" required>
+=======
+
+                <div class="col-md-12 text-center" style="background: #fff;padding: 15px;" >
+                  <h2 class="text-center">Status of Resource Allocation</h2>
+</div>
+                
+                <div class="col-md-3">
+                    <label class="form-label">Select Verifier</label>
+                    <select name="application_open_project_verifier" id="application_open_project_verifier" class="form-control">
+                        <option value="">All</option>
+                         <?php foreach($vrifier_users as $vrifier_users_value){ ?>
+                            <option value="<?php echo $vrifier_users_value->user_id;?>"><?php echo $vrifier_users_value->user_firstName;?></option> 
+                         <?php } ?>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    
+                    <label class="form-label">Select Company</label>
+                    <select name="application_open_project_company_id" id="application_open_project_company_id" class="form-control" >
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
                         <option value="">All</option>
                         <?php foreach($company_data_list as $row_com_list){ 
                              $company_n=get_company_row($row_com_list['company_id']);
@@ -272,6 +393,7 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
                     </select>
                 </div>
 
+<<<<<<< HEAD
                 <div class="col-md-3">
                     <label class="form-label">Select Verifier</label>
                     <select name="application_open_project_verifier" id="application_open_project_verifier" class="form-control">
@@ -281,6 +403,9 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
                          <?php } ?>
                     </select>
                 </div>
+=======
+                
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
 
 
 
@@ -290,6 +415,7 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
                 </div>
                
                 
+<<<<<<< HEAD
                 <br>
         </form>
 
@@ -297,6 +423,18 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
             <h2 class="text-center">Applicable to Open Projects only</h2>
             <div id="chartContainer" style="height: 400px; width: 100%;"></div>
             </div>
+=======
+                <!-- <br> -->
+        </form>
+
+        <div id="ApplicableOpenProjects_section" style="display: none;">
+            <div style="background: #fff;padding: 15px;">
+                <hr>
+            <!-- <h2 class="text-center">Applicable to Open Projects only</h2> -->
+            <div id="chartContainer" style="height: 400px; width: 100%;"></div>
+            </div>
+            </div>
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
         </div> 
 
         </div>  
@@ -419,8 +557,18 @@ function toggleDataSeries(e) {
 
 document.getElementById('company_id').onchange = function() {
     var company_id = this.value;
+<<<<<<< HEAD
     var fd = new FormData();
     fd.append('company_id',[company_id]);
+=======
+    var role_id = $("#user_select_role_val").val();
+    if (role_id == ''){
+        alert("Please Select Your Role");
+    }
+    var fd = new FormData();
+    fd.append('company_id',[company_id]);
+    fd.append('role_id',[role_id]);    
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
     $.ajax({
       url: "<?php echo base_url();?>index.php/plancycle/getlocationdata",
       type: 'POST',
@@ -436,8 +584,18 @@ document.getElementById('company_id').onchange = function() {
 
 document.getElementById('application_open_project_company_id').onchange = function() {
     var company_id = this.value;
+<<<<<<< HEAD
     var fd = new FormData();
     fd.append('company_id',[company_id]);
+=======
+    var role_id = $("#user_select_role_val").val();
+    if (role_id == ''){
+        alert("Please Select Your Role");
+    }
+    var fd = new FormData();
+    fd.append('company_id',[company_id]);
+    fd.append('role_id',[role_id]);   
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
     $.ajax({
       url: "<?php echo base_url();?>index.php/plancycle/getlocationdata",
       type: 'POST',
@@ -484,12 +642,30 @@ document.getElementById('application_open_project_company_location').onchange = 
     }
 $(document).ready(function(){
     $('#userForm').on('submit', function(e){
+<<<<<<< HEAD
         e.preventDefault();
 
         $.ajax({
             url: "<?php echo base_url();?>index.php/Dashboard/ApplicableOpenProjectGraph",
             type: "POST",
             data: $(this).serialize(),
+=======
+
+        var role_id = $("#user_select_role_val").val();
+        if (role_id == ''){
+            alert("Please Select Your Role");
+        }
+    
+        var data = $(this).serializeArray(); // convert form to array
+        data.push({name: "role_id", value: role_id});
+
+        e.preventDefault();
+        $("#TypeSubscriptionActiveChart_section").show();
+        $.ajax({
+            url: "<?php echo base_url();?>index.php/Dashboard/ApplicableOpenProjectGraph",
+            type: "POST",
+            data: $.param(data),
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
             dataType: "json",
             success: function(res){
 
@@ -505,7 +681,11 @@ $(document).ready(function(){
                     reversed: true
                 },
                 axisY: {
+<<<<<<< HEAD
                     title: "No. of Subscriptions",
+=======
+                    title: "No. of Active Projects",
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
                     suffix: "",
                     interval: 1,
                 },
@@ -540,7 +720,11 @@ $(document).ready(function(){
 
      $('#application_open_project_userForm').on('submit', function(e){
         e.preventDefault();
+<<<<<<< HEAD
 
+=======
+     $("#ApplicableOpenProjects_section").show();
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
         $.ajax({
             url: "<?php echo base_url();?>index.php/Dashboard/ApplicableOpenProjectGraphProjectWise",
             type: "POST",
@@ -596,4 +780,14 @@ $(document).ready(function(){
 
 
 });
+<<<<<<< HEAD
+=======
+
+
+
+function user_select(active_role){
+    $('#user_select_role_val').val(active_role);
+    $('#user_select_role_submit').click();
+}
+>>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
 </script>

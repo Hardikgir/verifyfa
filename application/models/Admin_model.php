@@ -334,9 +334,10 @@ class Admin_model extends CI_Model {
     }
 
     public function get_single_notification($id){
-        $this->db->select('*');
+        $this->db->select('notification.*,users.firstName,users.lastName');
         $this->db->from('notification');
-        $this->db->where('id',$id);
+         $this->db->join('users','users.id=notification.created_by');
+        $this->db->where('notification.id',$id);
         $query=$this->db->get();
         return $query->row();
     }
@@ -419,7 +420,7 @@ class Admin_model extends CI_Model {
         $this->db->where('userRole',$user_role);
         $query=$this->db->get();
 
-        // $query=$this->db->query("select * from user_role where  entity_code='".$entity_code."'  AND FIND_IN_SET(0,user_role) GROUP BY company_id");
+        // $query=$this->db->query("select * from user_role where  entity_code=''".$entity_code."''  AND FIND_IN_SET(0,user_role) GROUP BY company_id");
 
         return $query->result();
     }
@@ -468,43 +469,151 @@ class Admin_model extends CI_Model {
   
 
 
-    public function get_all_issue_for_me($user_id){
-        // $this->db->select('*');
-        // $this->db->from('issue_manage');
-        // $this->db->where('resolved_by',$user_id);
-        // $query=$this->db->get();
-        // return $query->result();
+    // public function get_all_issue_for_me($user_id){
+    //     $this->db->select('issue_manage.*,users.firstName,users.lastName,issue_manage.status as status');
+    //     $this->db->from('issue_manage');
+    //     $this->db->join('users','users.id=issue_manage.resolved_by');
+    //     $this->db->where('issue_manage.resolved_by', $user_id);
+    //     $getnotifications = $this->db->get();
+    //     return $getnotifications->result();
+    // }
 
-        
-        $this->db->select('issue_manage.*,company_projects.project_id,users.firstName,users.lastName,company.company_name,issue_manage.status as status');
-        $this->db->from('issue_manage');
-        $this->db->join('company_projects','company_projects.id=issue_manage.project_name');
-         $this->db->join('users','users.id=issue_manage.manage_name');
-        $this->db->join('company','company.id=issue_manage.company_name');
-        $this->db->where('issue_manage.resolved_by',$user_id);
-        $getnotifications=$this->db->get();
-        return $getnotifications->result();
+    // tushar
+//     public function get_all_issue_for_me($user_id) {
+//     $this->db->select(
+//         issue_manage.*,
+//         company_projects.project_id AS project_code,
+//         company_projects.project_name AS project_real_name,
+//         users.firstName,
+//         users.lastName,
+//         issue_manage.status as status
+//     );
+//     $this->db->from('issue_manage');
+//     $this->db->join('company_projects', 'company_projects.id = issue_manage.project_name', 'left');
+//     $this->db->join('users', 'users.id = issue_manage.resolved_by', 'left');
+//     $this->db->where('issue_manage.resolved_by', $user_id);
+//     $this->db->order_by('issue_manage.id', 'DESC');
+
+//     $query = $this->db->get();
+//     return $query->result();
+// }
+
+public function get_all_issue_for_me($user_id) {
+    $this->db->select('
+        issue_manage.*,
+        company_projects.project_id AS project_code,
+        company_projects.project_name AS project_real_name,
+        users.firstName AS resolver_first_name,
+        users.lastName AS resolver_last_name,
+        issue_manage.status AS status
+    ');
+    $this->db->from('issue_manage');
+    $this->db->join('company_projects', 'company_projects.id = issue_manage.project_name', 'left');
+    $this->db->join('users', 'users.id = issue_manage.resolved_by', 'left');
+    $this->db->where('issue_manage.resolved_by', $user_id);
+    $this->db->order_by('issue_manage.id', 'DESC');
+
+    $query = $this->db->get();
+    return $query->result();
+}
+
+
+
+    //  public function get_all_my_issue($user_id){
+
+    //     // $this->db->select('issue_manage.*,company_projects.project_id,users.firstName,users.lastName,company.company_name,issue_manage.status as status');
+    //     $this->db->select('issue_manage.*,users.firstName,users.lastName,issue_manage.status as status');
+    //     $this->db->from('issue_manage');
+    //     $this->db->join('company_projects','company_projects.id=issue_manage.project_name');
+    //     // $this->db->join('users','users.id=issue_manage.manage_name');
+    //     $this->db->join('users','users.id=issue_manage.created_by');
+    //     // $this->db->join('company','company.id=issue_manage.company_name');
+    //     $this->db->where('issue_manage.created_by', $user_id);
+    //     $getnotifications=$this->db->get();
+    //     return $getnotifications->result();
+
+    //     // $this->db->select('*');
+    //     // $this->db->from('issue_manage');
+    //     // $this->db->where('created_by',$user_id);
+    //     // $query=$this->db->get();
+    //     // return $query->result();
+    // }
+
+    // tushar
+       public function get_all_my_issue2($user_id) {
+    $this->db->select('
+        issue_manage.*,
+        company_projects.project_id AS project_code,
+        users.firstName,
+        users.lastName,
+        issue_manage.status as status
+    ');
+    $this->db->from('issue_manage');
+    $this->db->join('company_projects', 'company_projects.id = issue_manage.project_name', 'left');
+    $this->db->join('users', 'users.id = issue_manage.created_by', 'left');
+    $this->db->where('issue_manage.created_by', $user_id);
+    $this->db->order_by('issue_manage.id', 'DESC');
+
+    $query = $this->db->get();
+    return $query->result();
+}
+   public function get_all_issue_for_groupadmin($user_id) {
+    $this->db->select('
+        issue_manage.*,
+        company_projects.project_id AS project_code,
+        company_projects.project_name AS project_real_name,
+        users.firstName,
+        users.lastName,
+        issue_manage.status as status
+    ');
+    $this->db->from('issue_manage');
+    $this->db->join('company_projects', 'company_projects.id = issue_manage.project_name', 'left');
+    $this->db->join('users', 'users.id = issue_manage.created_by', 'left'); // Group Admin is creator
+    $this->db->where('issue_manage.created_by', $user_id);
+    $this->db->order_by('issue_manage.id', 'DESC');
+
+    $query = $this->db->get();
+    return $query->result();
+}
+public function get_all_issue_for_manager($user_id) {
+    $this->db->select('
+        issue_manage.*,
+        company_projects.project_id AS project_code,
+        company_projects.project_name AS project_real_name,
+        users.firstName,
+        users.lastName,
+        issue_manage.status as status
+    ');
+    $this->db->from('issue_manage');
+    $this->db->join('company_projects', 'company_projects.id = issue_manage.project_name', 'left');
+    $this->db->join('users', 'users.id = issue_manage.created_by', 'left');
+    $this->db->where('issue_manage.manager_id', $user_id); // use correct column
+    $this->db->order_by('issue_manage.id', 'DESC');
+
+    $query = $this->db->get();
+    return $query->result();
+}
+
+public function get_issues_by_role($user_id, $role) {
+    $this->db->select('
+        issue_manage.*,
+        company_projects.project_id AS project_code,
+        company_projects.project_name AS project_real_name
+    ');
+    $this->db->from('issue_manage');
+    $this->db->join('company_projects', 'company_projects.id = issue_manage.project_name', 'left');
+
+    if ($role === 'manager') {
+        $this->db->where('issue_manage.manage_name', $user_id);
+         $this->db->where('issue_manage.issue_type', 'Project based');
+    } elseif ($role === 'groupadmin') {
+        $this->db->where('issue_manage.groupadmin_name', $user_id);
+         $this->db->where('issue_manage.issue_type', 'General');
     }
 
-     public function get_all_my_issue($user_id){
-
-        $this->db->select('issue_manage.*,company_projects.project_id,users.firstName,users.lastName,company.company_name,issue_manage.status as status');
-        $this->db->from('issue_manage');
-        $this->db->join('company_projects','company_projects.id=issue_manage.project_name');
-         $this->db->join('users','users.id=issue_manage.manage_name');
-          $this->db->join('company','company.id=issue_manage.company_name');
-        $this->db->where('issue_manage.created_by',$user_id);
-        $getnotifications=$this->db->get();
-        return $getnotifications->result();
-
-        // $this->db->select('*');
-        // $this->db->from('issue_manage');
-        // $this->db->where('created_by',$user_id);
-        // $query=$this->db->get();
-        // return $query->result();
-    }
-
-
+    $this->db->order_by('issue_manage.id', 'DESC');
+    return $this->db->get()->result();
+}
     
     
     
