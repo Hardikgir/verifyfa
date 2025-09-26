@@ -138,8 +138,10 @@ class Tasks extends CI_Controller {
         $entity_code=$this->input->post('entity_code');
         $location_id=$this->input->post('location_id');
 
-        $company_id_imp='';
+        // $company_id_imp='';
         
+        
+
         $role_result_com = $this->get_all_company_user_role($entity_code,$userid);
         // $role_result_com = $this->get_all_company_user_role_by_location_id($entity_code,$userid,$location_id);
         $location_id='';
@@ -159,10 +161,14 @@ class Tasks extends CI_Controller {
 			"id"=>$userid
 		);
 
-        
+        $company_id = $this->input->post('company_id');
+        $role_id = $this->input->post('role_id');
         $location_id=$this->input->post('location_id');
         
-        $projects=$this->tasks->getProjectsdashboard('users',$userid,$entity_code,$company_id_imp,$location_id);
+        $projects=$this->tasks->getProjectsdashboard('users',$userid,$entity_code,$company_id,$location_id,$role_id);
+       
+
+        
         $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
         foreach($projects as $project)
@@ -4958,10 +4964,7 @@ public function generateExceptionReportDev() {
             ];
             $getProject = $this->tasks->get_data('company_projects', $condition);
 
-            // echo '<pre>last_query ';
-            // print_r($this->db->last_query());
-            // echo '</pre>';
-            // exit();
+          
 
             // echo '<pre>getProject ';
             // print_r($getProject);
@@ -5625,6 +5628,62 @@ public function resolve_issue(){
                 'error' => $e->getMessage()
             ));
         }
+    }
+
+
+    public function getReportType(){        
+        $report_type = array(
+            '1' => 'Scope Summary & Detailed Report',
+        );
+        $response['message'] = 'Get Report Type';
+        $response['status'] = 1;
+        $response['data'] = $report_type;
+        echo json_encode($response);
+    }
+
+     public function getExceptionCategory(){       
+        $ExceptionCategory = array(
+            '1' => 'Condition of Item',
+            '2' => 'Changes/ Updations of Items (New)',
+            '3' => 'Qty Validation Status',
+            '4' => 'Updated with Verification Remarks',
+            '5' => 'Updated with Item Notes',
+            '6' => 'Calculate Risk Exposure (New)',
+            '8' => 'Mode of Verification',
+        //  '9' => 'Duplicate Item Codes verified<',
+            '10' => 'Duplicate Item Codes Identified (New)',
+        );
+        $response['message'] = 'Get Exception Category';
+        $response['status'] = 1;
+        $response['data'] = $ExceptionCategory;
+        echo json_encode($response);
+    }
+
+
+    public function GetReportinguserManager(){
+        $project_id=$this->input->post('project_id');
+        $location_id=$this->input->post('location_id');
+        $entity_code=$this->input->post('entity_code');
+		
+		$user_role = 0;
+		$resulttttt=$this->db->query('SELECT user_role.*,users.* from user_role INNER JOIN users ON users.id=user_role.user_id where FIND_IN_SET('.$user_role.',user_role) AND user_role.location_id='.$location_id.' AND user_role.entity_code="'.$entity_code.'"')->result();
+        $response['message'] = 'Get Manager';
+        $response['status'] = 1;
+        $response['data'] = $resulttttt;
+        echo json_encode($response);
+    }
+
+
+
+     public function GetReportinguserGroupAdmin(){
+        $entity_code=$this->input->post('entity_code');
+		$user_role = 5;
+		$group_admin = $this->db->query('SELECT user_role.*,users.* from user_role INNER JOIN users ON users.id=user_role.user_id where FIND_IN_SET('.$user_role.',user_role) AND user_role.entity_code="'.$entity_code.'"')->result();
+        $response['message'] = 'Get Group Admin';
+        $response['status'] = 1;
+        $response['data'] = $group_admin;
+        echo json_encode($response);
+
     }
 
 

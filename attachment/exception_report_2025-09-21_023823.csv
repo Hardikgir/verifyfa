@@ -1,0 +1,8 @@
+"Allocated Item Category","To be Verified (Amount in Lacs)","To be Verified (Number of Qty)","Good Condition (Amount in Lacs)","Good Condition (Number of Qty)","Damaged (Amount in Lacs)","Damaged (Number of Qty)","Scrapped (Amount in Lacs)","Scrapped (Number of Qty)","Missing (Amount in Lacs)","Missing (Number of Qty)","Shifted (Amount in Lacs)","Shifted (Number of Qty)","Not in Use (Amount in Lacs)","Not in Use (Number of Qty)","Remaining to be Verified (Amount in Lacs)","Remaining to be Verified (Number of Qty)"
+OE,3.4,4,0,0,0,0,0,0,0,0,0,0,0,0,3.4,4
+PM,26717,1980,0,0,0,0,0,0,0,0,0,0,0,0,26717,1980
+PM-1000,13.5,1,0,0,0,0,0,0,0,0,0,0,0,0,13.5,1
+PM-999,13.5,1,0,0,0,0,0,0,0,0,0,0,0,0,13.5,1
+TJ,41,4,0,0,0,0,0,0,0,0,0,0,0,0,41,4
+VEH,11.2,1,0,0,0,0,0,0,0,0,0,0,0,0,11.2,1
+"Grand Total",26799.6,1991,0,0,0,0,0,0,0,0,0,0,0,0,26799.6,1991

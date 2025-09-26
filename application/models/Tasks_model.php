@@ -68,11 +68,25 @@ class Tasks_model extends CI_Model {
 
 
 
-    function getProjectsdashboard($table,$userid,$entity_code,$company_id_imp,$location_id) { 
+    function getProjectsdashboard($table,$userid,$entity_code,$company_id_imp,$location_id,$role_id) { 
 
-          $condition=array('company_projects.company_id IN ('.$company_id_imp.') AND company_projects.project_location IN ('.$location_id.')',"company_projects.entity_code"=>$entity_code);
+        $role_where = '';
+        if($role_id == '0'){
+            $role_where .= " AND FIND_IN_SET($userid, manager)";
+        }
+        if($role_id == '1'){
+            $role_where .= " AND FIND_IN_SET($userid, project_verifier)";
+        }
+        if($role_id == '2'){
+            $role_where .= " AND FIND_IN_SET($userid, process_owner)";
+        }
+        if($role_id == '3'){
+            $role_where .= " AND FIND_IN_SET($userid, item_owner)";
+        }
 
-          $condition1=array('company_projects.project_verifier IN ('.$userid.') || company_projects.manager IN ('.$userid.') || company_projects.process_owner IN ('.$userid.') || company_projects.item_owner IN ('.$userid.')');
+        $condition=array('company_projects.company_id IN ('.$company_id_imp.') AND company_projects.project_location IN ('.$location_id.') '.$role_where,"company_projects.entity_code"=>$entity_code);
+
+        $condition1=array('company_projects.project_verifier IN ('.$userid.') || company_projects.manager IN ('.$userid.') || company_projects.process_owner IN ('.$userid.') || company_projects.item_owner IN ('.$userid.')');
 
 
         $this->db->select('company_projects.*,company_locations.location_name,user_role.id as role_id,company.company_name');
