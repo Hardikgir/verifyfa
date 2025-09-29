@@ -139,7 +139,7 @@ document.getElementById('company_id').onchange = function() {
     var fd = new FormData();
     fd.append('company_id',[company_id]);
     $.ajax({
-      url: "<?php echo base_url();?>index.php/plancycle/getlocationdata",
+      url: "<?php echo base_url();?>index.php/plancycle/getlocationdatanew1",
       type: 'POST',
       cache: false,
       contentType: false,

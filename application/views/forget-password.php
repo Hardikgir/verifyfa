@@ -52,7 +52,7 @@
 					<div class="card bg-secondary border-0 mb-0 check-use">
 						<div class="card-header bg-transparent pb-5">
 							<div class="text-muted text-center mt-2 mb-3">
-								<h2>Verifyfa User Forget Password</h2>
+								<h2>VerifyFA User Forget Password</h2>
 							</div>
 							<div class="btn-wrapper text-center">
 								<img src="<?php echo base_url();?>assets/img/logo.png" alt="Verify fa logo">
@@ -90,7 +90,7 @@
 									<input class="custom-control-input" id="customCheckLogin" type="checkbox">
 								</div>
 								<div class="text-center">
-									<button type="submit" class="btn btn-primary ">Verify</button>
+									<button type="submit" class="btn btn-primary ">Validate</button>
 								</div>
 							</form>
 							

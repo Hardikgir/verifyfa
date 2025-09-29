@@ -198,11 +198,13 @@ $get_user_all_roles = get_user_all_roles($user_id,$entity_code); // get all user
 			<?php 
 			}
 			?>
+			<?php if((in_array("0", $get_user_all_roles)) || (in_array("1", $get_user_all_roles)) || (in_array("2", $get_user_all_roles)) || (in_array("3", $get_user_all_roles))){  ?>
 			<li class="nav-item <?php if(($page_title=='User Dashboard')){ echo 'active'; } ?>">
 				<a class="nav-link" href="<?php echo base_url().'index.php/dashboard/User'; ?>"> <i class="material-icons">dashboard</i>
 					<p>User Dashboard</p>
 				</a>
-			</li>		
+			</li>	
+			<?php } ?>	
 			<?php 
 			if($user_role_manager_cnt > 0){ ?>
 				<li class="nav-item <?php if(($page_title=='Project Dashboard') || ($page_title=='Project Detail')){echo 'active';}?><?php if(($page_title=='')){ echo 'active'; } ?>">
@@ -218,6 +220,7 @@ $get_user_all_roles = get_user_all_roles($user_id,$entity_code); // get all user
 			<?php 
 			} 
 			?>
+			<?php if((in_array("0", $get_user_all_roles)) || (in_array("1", $get_user_all_roles)) || (in_array("2", $get_user_all_roles)) || (in_array("3", $get_user_all_roles))){  ?>
 			<li class="nav-item <?php echo $page_title=='Reports'?'active':'';?>">
 				<a class="nav-link" href="<?php echo base_url();?>index.php/dashboard/reports"> <i class="far fa-file"></i>
 					<p>Report</p>
@@ -228,6 +231,7 @@ $get_user_all_roles = get_user_all_roles($user_id,$entity_code); // get all user
 					<p>Exceptions</p>
 				</a>
 			</li>
+			<?php } ?>
 			<li class="nav-item ">
 				<a class="nav-link" href="#"> <i class="fas fa-hands-helping"></i>
 					<p>Helpdesk</p>
