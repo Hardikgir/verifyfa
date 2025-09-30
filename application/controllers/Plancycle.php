@@ -676,6 +676,10 @@ class Plancycle extends CI_Controller {
 		$company_id = $_POST['company_id'];
 		$user_id=$this->user_id;
 		$resulttttt = $this->plancycle->get_allroles($company_id,$user_id);
+		echo '<pre>last_query ';
+		print_r($this->db->last_query());
+		echo '</pre>';
+		exit();
 		?>
 				<option value="">Select Unit Location</option>
 		<?php

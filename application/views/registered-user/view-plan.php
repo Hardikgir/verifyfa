@@ -212,9 +212,10 @@ border: none;
 
                 <div class="col-md-6 form-row">
  <?php if($user_data->is_active != '6'){ ?>
+  <?php /*
   <a href="<?php echo base_url();?>index.php/unsubscribe-account/<?php echo $user_data->id;?>">
    <button class="btn btn-success">Unsubscribe Account</button>
- </a>
+ </a> */ ?>
    <?php }else{ ?>
        <button class="btn btn-warning"> Account Unsubscribed</button>
        <label class="form-label">Date of Unsubscribed:</label>

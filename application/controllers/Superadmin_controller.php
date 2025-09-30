@@ -806,6 +806,7 @@ class Superadmin_controller extends CI_Controller {
         $this->load->view("super-admin/test",$data);
 	}
 	public function confirmation_userdetail($id){
+		date_default_timezone_set("Asia/Calcutta"); 
 		$data['page_title']="Manage User";
 		$data['user']=$this->Super_admin_model->get_registerd_user($id);
 
@@ -819,7 +820,7 @@ class Superadmin_controller extends CI_Controller {
 
 		$APPLICATIONNAME = 'VerifyFA';
 		$RECEIVERNAME = $data['user']->first_name;		
-		$subject = $APPLICATIONNAME.' Activate Your Account and Setup New';
+		$subject = $APPLICATIONNAME.' Activate Your Account and Setup';
 
 		$digits = 5;
 		$TEMPORARYPASSWORD = rand(pow(10, $digits-1), pow(10, $digits)-1);
@@ -930,6 +931,7 @@ class Superadmin_controller extends CI_Controller {
 		}
 		$digits = 5;
 		$TEMPORARYPASSWORD = rand(pow(10, $digits-1), pow(10, $digits)-1);
+		
 		
 		$urer_registration_no=date("Ym")."VFA".rand(0,9).rand(0,9).rand(0,9).rand(0,9).rand(0,9);
 		$data_user= array(
