@@ -911,6 +911,12 @@ class Superadmin_controller extends CI_Controller {
 			}
 		}
 
+		$data=array(
+        "password"=>md5($TEMPORARYPASSWORD),
+		"password_view"=>$TEMPORARYPASSWORD,
+	 	);
+	 	$this->Super_admin_model->update_confirmation_data_user($id,$data);
+
 		
 		$plan_data_details = $this->Super_admin_model->get_registered_user_plan($id);
 		$data['plan_data'] = $plan_data_details;

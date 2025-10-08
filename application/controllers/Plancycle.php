@@ -676,10 +676,6 @@ class Plancycle extends CI_Controller {
 		$company_id = $_POST['company_id'];
 		$user_id=$this->user_id;
 		$resulttttt = $this->plancycle->get_allroles($company_id,$user_id);
-		echo '<pre>last_query ';
-		print_r($this->db->last_query());
-		echo '</pre>';
-		exit();
 		?>
 				<option value="">Select Unit Location</option>
 		<?php
@@ -746,10 +742,17 @@ class Plancycle extends CI_Controller {
 					foreach($projects as $pro)
 					{ 
 						$masterTotal=$this->db->query("SELECT count(*) as total from ".$pro->original_table_name)->result();
-					
+						// echo '<pre>last_query ';
+						// print_r($this->db->last_query());
+						// echo '</pre>';
+						// exit();
 						$pro->masterTotal=$masterTotal[0]->total;
 						$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($pro->project_name)));
 						$getprojectdetails=$this->tasks->projectdetail($project_name);
+						// echo '<pre>last_query ';
+						// print_r($this->db->last_query());
+						// echo '</pre>';
+						// exit();
 						
 						if(!empty($getprojectdetails))
 						{
@@ -776,7 +779,7 @@ class Plancycle extends CI_Controller {
 								foreach($expverifier as $ver)
 								{
 									if($k==0)
-										echo get_UserName($ver).", ";
+										echo get_UserName($ver);
 									else
 										echo ', '.get_UserName($ver);
 								}
