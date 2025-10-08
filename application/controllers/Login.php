@@ -314,7 +314,7 @@ class Login extends CI_Controller {
 			);
 			$this->session->set_userdata('temp_logged_in', $sess_data);
 		}else{
-			$this->session->set_flashdata('error_message', 'Invlid Email or Entity Code');
+			$this->session->set_flashdata('error_message', 'Invalid Email or Entity Code');
 			redirect("index.php/forget-password-verifyfa-user");
 		}
 
@@ -371,7 +371,7 @@ class Login extends CI_Controller {
 			);
 			$this->session->set_userdata('temp_logged_in', $sess_data);
 		}else{
-			$this->session->set_flashdata('error_message', 'Invlid Email or Entity Code');
+			$this->session->set_flashdata('error_message', 'Invalid Email or Entity Code');
 			redirect("index.php/forget-password-register-user");
 		}
 
@@ -398,7 +398,7 @@ class Login extends CI_Controller {
 		$this->session->unset_userdata('temp_logged_in');
 		$this->session->sess_destroy();
 		$this->session->set_flashdata('success', "Password Update Successful.");
-		redirect('index.php/forget-password-register-user');
+		redirect('index.php/registered-user-login');
 
 	}
 	
