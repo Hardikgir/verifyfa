@@ -248,7 +248,7 @@ class Registeredusercontroller extends CI_Controller {
             $login_cnt=$this->Registered_user_model->login_as_admin($register_usr_email_id,$register_usr_entity_code);
             if($login_cnt >0){
                
-                redirect(base_url()."index.php/dashboard", 'refresh');
+                redirect(base_url()."index.php/dashboard/admin", 'refresh');
             }else{
                 $this->session->set_flashdata("success","Something Went Wrong Please Try Again");
                 redirect(base_url()."index.php/registered-user-dashboard", 'refresh');
