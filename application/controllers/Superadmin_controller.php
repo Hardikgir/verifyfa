@@ -810,6 +810,11 @@ class Superadmin_controller extends CI_Controller {
 		$data['page_title']="Manage User";
 		$data['user']=$this->Super_admin_model->get_registerd_user($id);
 
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
+
 		$to = $data['user']->email_id;
 		// $to = 'hardik.meghnathi12@gmail.com';
 		
@@ -920,7 +925,9 @@ class Superadmin_controller extends CI_Controller {
 		
 		$plan_data_details = $this->Super_admin_model->get_registered_user_plan($id);
 		$data['plan_data'] = $plan_data_details;
+		$data['page_title']="Manage User";
 		$data['plan_details'] = get_plan_row($plan_data_details->plan_id);
+		$data['user']=$this->Super_admin_model->get_registerd_user($id);
 		$this->load->view("super-admin/confirmation-user-detail",$data);
 	}
 
