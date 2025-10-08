@@ -173,6 +173,7 @@ class Login extends CI_Controller {
             $result= $query->row();
             $num = $query->num_rows();
 			
+			
   if($num !='0'){
 			$is_active= $result->is_active;
             // echo $this->db->last_query();die;
@@ -234,9 +235,11 @@ class Login extends CI_Controller {
 	
 		$expire_date= date('Y-m-d', strtotime($date. ' + 1 days'));
 		$data=array(
+			"is_activation_send" => "1",
 			"activation_generete_link"=>"1",
 			"activation_generete_link_date"=>$date,
 			"activation_link"=>$activation_link,
+			"activation_send_date"=>date('Y-m-d'),			
 		 );
 		 $this->Super_admin_model->update_confirmation_data_user($id,$data);
 

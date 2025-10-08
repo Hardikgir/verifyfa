@@ -808,8 +808,12 @@ class Superadmin_controller extends CI_Controller {
 	public function confirmation_userdetail($id){
 		date_default_timezone_set("Asia/Calcutta"); 
 		$data['page_title']="Manage User";
-		$data['user']=$this->Super_admin_model->get_registerd_user($id);
 
+		$user_details = $this->Super_admin_model->get_registerd_user($id);
+	
+		$data['user']=$user_details;
+
+	
 		// echo '<pre>last_query ';
 		// print_r($this->db->last_query());
 		// echo '</pre>';
@@ -909,12 +913,31 @@ class Superadmin_controller extends CI_Controller {
 		$CI->email->subject($subject);
 		$CI->email->message($email_updated_content);
 
-		$mailsend = 0;
-		if(server_check() == 'live'){
-			if($CI->email->send()){
-				$mailsend = 1;
+		
+
+		if($user_details->is_activation_send != '1'){				
+			$mailsend = 0;
+			if(server_check() == 'live'){
+				if($CI->email->send()){
+					$mailsend = 1;
+				}
 			}
 		}
+		// exit();
+
+
+		// if($user_details->is_activation_send != '1'){				
+		// 	echo "yes 1212";
+		// 	// exit();
+		// 	$mailsend = 0;
+		// 	if(server_check() == 'live'){
+		// 		if($CI->email->send()){
+		// 			$mailsend = 1;
+		// 		}
+		// 	}
+		// }
+
+		// exit();
 
 		$data=array(
         "password"=>md5($TEMPORARYPASSWORD),
