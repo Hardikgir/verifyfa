@@ -311,6 +311,9 @@ class Login extends CI_Controller {
 			'id' => $login[0]->id
 			);
 			$this->session->set_userdata('logged_in', $sess_data);
+		}else{
+			$this->session->set_flashdata('error_message', 'Invlid Email or Entity Code');
+			redirect("index.php/forget-password-verifyfa-user");
 		}
 
 		redirect("index.php/login/VerifyForChangePassword");
@@ -356,8 +359,6 @@ class Login extends CI_Controller {
 		$result= $query->row();
 		$num = $query->num_rows();
 
-	
-
 		if($num !='0'){
 			$sess_data = array(
 			'email' => $result->email_id,
@@ -365,9 +366,10 @@ class Login extends CI_Controller {
 			'id' => $result->id
 			);
 			$this->session->set_userdata('logged_in', $sess_data);
+		}else{
+			$this->session->set_flashdata('error_message', 'Invlid Email or Entity Code');
+			redirect("index.php/forget-password-register-user");
 		}
-
-
 
 
 

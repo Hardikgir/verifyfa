@@ -52,7 +52,7 @@
 					<div class="card bg-secondary border-0 mb-0 check-use">
 						<div class="card-header bg-transparent pb-5">
 							<div class="text-muted text-center mt-2 mb-3">
-								<h2>VerifyFA Sign in</h2>
+								<h2>VerifyFA User Sign in</h2>
 							</div>
 							<div class="btn-wrapper text-center">
 								<img src="<?php echo base_url();?>assets/img/logo.png" alt="Verify fa logo">
@@ -92,7 +92,7 @@
 								<div class="row mt-3">
 									<div class="col-6"><a href="<?php echo base_url();?>index.php/forget-password-verifyfa-user" class="text-color"><small>Forgot password?</small></a>
 									</div>
-									<div class="col-6 text-right"> <a href="<?php echo base_url();?>index.php/registered-user-login" class="text-color"><small>Register User Login</small></a>
+									<div class="col-6 text-right"> <a href="<?php echo base_url();?>index.php/registered-user-login" class="text-color"><small>Registered User Login</small></a>
 									</div>
 								</div>
 								<div class="custom-control custom-control-alternative custom-checkbox">

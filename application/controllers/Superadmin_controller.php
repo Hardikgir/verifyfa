@@ -816,11 +816,11 @@ class Superadmin_controller extends CI_Controller {
 		// $activation_link = '<a href="'.base_url().'index.php/registered-user-login/">Activate Your Account</a>';
 		// $activation_link = '<a href="'.base_url().'index.php/activation-registered-user/">Activate Your Account</a>';
 		$activation_link = '<a href="'.base_url().'index.php/generate-active-register-user/'.$id.'">Activate Your Account</a>';
-		$TRANSACTIONRECORDDATETIME = date('d-m-Y h:i:s');
+		$TRANSACTIONRECORDDATETIME = date('d-m-Y h:i:s A');
 
 		$APPLICATIONNAME = 'VerifyFA';
 		$RECEIVERNAME = $data['user']->first_name;		
-		$subject = $APPLICATIONNAME.' Activate Your Account and Setup';
+		$subject = $APPLICATIONNAME.' Activate Your Account and Setup New Password';
 
 		$digits = 5;
 		$TEMPORARYPASSWORD = rand(pow(10, $digits-1), pow(10, $digits)-1);
@@ -995,10 +995,30 @@ class Superadmin_controller extends CI_Controller {
 		"created_at"=>date("Y-m-d H:i:s")
 	);
 	$this->Super_admin_model->save_registered_user_payment($data_payment);
+	// ??step 3 data save//
+
+
+	// ??step 4 data save//
+	$data_array=array(
+	"plan_id"=>$this->input->post('plan'),
+	"upgrated_plan_id"=>$this->input->post('plan'),
+	"register_user_id"=>$registered_user_id,
+	"created_at"=>date("Y-m-d H:i:s"),
+	);
+	$this->Super_admin_model->save_upgradePlan($data_array);
+	// ??step 4 data save//
+
+
+
 	$this->session->set_flashdata('success', 'User Created Successfully Now you Are In Confirmation Page');
 	redirect("index.php/confirmation-user-detail/".$registered_user_id);
 	}
- 	// ??step 3 data save//
+ 	
+
+
+
+	
+
 
 
 
