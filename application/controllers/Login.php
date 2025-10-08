@@ -309,7 +309,7 @@ class Login extends CI_Controller {
 			'name' => $login[0]->firstName.' '.$login[0]->lastName,
 			'id' => $login[0]->id
 			);
-			// $this->session->set_userdata('logged_in', $sess_data);
+			$this->session->set_userdata('temp_logged_in', $sess_data);
 		}else{
 			$this->session->set_flashdata('error_message', 'Invlid Email or Entity Code');
 			redirect("index.php/forget-password-verifyfa-user");
@@ -322,7 +322,7 @@ class Login extends CI_Controller {
 		$this->load->view('password-change',$this->data);
 	}
 	public function updatePasswordFromForget(){
-		$user_id=$_SESSION['logged_in']['id'];
+		$user_id=$_SESSION['temp_logged_in']['id'];
         $data=array( 
             "password"=>md5($this->input->post('password')),
             "password_view"=>$this->input->post('password'),
@@ -333,13 +333,15 @@ class Login extends CI_Controller {
 			'is_login'=>0,
 		);
 		$condition=array(
-			'id'=>$_SESSION['logged_in']['id']
+			'id'=>$_SESSION['temp_logged_in']['id']
 		);
 		$update=$this->login->update_data('users ',$updatedata,$condition);	
 
-		$this->session->unset_userdata('logged_in');
+		$this->session->unset_userdata('temp_logged_in');
 		$this->session->sess_destroy();
-		redirect(base_url()."index.php/login",'refresh');
+		$this->session->set_flashdata('success', "Password Update Successful.");
+		// redirect(base_url()."index.php/login",'refresh');
+		redirect('index.php/login');
 
 	}
 	
@@ -364,7 +366,7 @@ class Login extends CI_Controller {
 			'name' => $result->first_name.' '.$result->last_name,
 			'id' => $result->id
 			);
-			// $this->session->set_userdata('logged_in', $sess_data);
+			$this->session->set_userdata('temp_logged_in', $sess_data);
 		}else{
 			$this->session->set_flashdata('error_message', 'Invlid Email or Entity Code');
 			redirect("index.php/forget-password-register-user");
@@ -383,16 +385,17 @@ class Login extends CI_Controller {
 	public function updateRegisterUserPasswordFromForget(){
 		
 
-		$user_id=$_SESSION['logged_in']['id'];
+		$user_id=$_SESSION['temp_logged_in']['id'];
         $data=array( 
             "password"=>md5($this->input->post('password')),
             "password_view"=>$this->input->post('password'),
         );
      	$this->Registered_user_model->update_password($user_id,$data);
 
-		$this->session->unset_userdata('logged_in');
+		$this->session->unset_userdata('temp_logged_in');
 		$this->session->sess_destroy();
-		redirect('index.php/transfer-logout-confirmation');
+		$this->session->set_flashdata('success', "Password Update Successful.");
+		redirect('index.php/forget-password-register-user');
 
 	}
 	

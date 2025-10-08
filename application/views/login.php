@@ -65,6 +65,10 @@
 							<div class="alert alert-danger" style="<?php echo $this->session->flashdata('error_message')!=''?'':'display:none;'; ?>" role="alert">
 								<?php echo $this->session->flashdata('error_message'); ?>
 							</div>
+
+							<div class="alert alert-success" style="<?php echo $this->session->flashdata('success')!=''?'':'display:none;'; ?>" role="alert">
+								<?php echo $this->session->flashdata('success'); ?>
+							</div>
 							<form role="form" method="post" action="<?php echo base_url();?>index.php/Login/login">
 								<div class="form-group mb-3">
 									<div class="input-group input-group-merge input-group-alternative">
