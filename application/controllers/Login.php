@@ -18,7 +18,6 @@ class Login extends CI_Controller {
 		if ($this->session->userdata('logged_in')!='') {
 			$session=$this->session->userdata('logged_in');
 			redirect(base_url()."index.php/dashboard", 'refresh');
-						
 		}
 		else
 		{
@@ -310,7 +309,7 @@ class Login extends CI_Controller {
 			'name' => $login[0]->firstName.' '.$login[0]->lastName,
 			'id' => $login[0]->id
 			);
-			$this->session->set_userdata('logged_in', $sess_data);
+			// $this->session->set_userdata('logged_in', $sess_data);
 		}else{
 			$this->session->set_flashdata('error_message', 'Invlid Email or Entity Code');
 			redirect("index.php/forget-password-verifyfa-user");
@@ -365,7 +364,7 @@ class Login extends CI_Controller {
 			'name' => $result->first_name.' '.$result->last_name,
 			'id' => $result->id
 			);
-			$this->session->set_userdata('logged_in', $sess_data);
+			// $this->session->set_userdata('logged_in', $sess_data);
 		}else{
 			$this->session->set_flashdata('error_message', 'Invlid Email or Entity Code');
 			redirect("index.php/forget-password-register-user");
