@@ -18,7 +18,6 @@ class Login extends CI_Controller {
 		if ($this->session->userdata('logged_in')!='') {
 			$session=$this->session->userdata('logged_in');
 			redirect(base_url()."index.php/dashboard", 'refresh');
-						
 		}
 		else
 		{
@@ -174,6 +173,7 @@ class Login extends CI_Controller {
             $result= $query->row();
             $num = $query->num_rows();
 			
+			
   if($num !='0'){
 			$is_active= $result->is_active;
             // echo $this->db->last_query();die;
@@ -235,9 +235,11 @@ class Login extends CI_Controller {
 	
 		$expire_date= date('Y-m-d', strtotime($date. ' + 1 days'));
 		$data=array(
+			"is_activation_send" => "1",
 			"activation_generete_link"=>"1",
 			"activation_generete_link_date"=>$date,
 			"activation_link"=>$activation_link,
+			"activation_send_date"=>date('Y-m-d'),			
 		 );
 		 $this->Super_admin_model->update_confirmation_data_user($id,$data);
 
@@ -293,87 +295,35 @@ class Login extends CI_Controller {
 	// 	// $this->data['title']="VerifyFa Registered User Login";		
 	// 	// $this->load->view('password-change',$this->data);
 
-	// 	$email=$this->input->post('userEmail');
-	// 	$password=$this->input->post('userPassword');
-	// 	$remember = $this->input->post('remember_me');
-	// 	$entity_code = $this->input->post('entity_code');
+		$email=$this->input->post('userEmail');
+		$password=$this->input->post('userPassword');
+		$remember = $this->input->post('remember_me');
+		$entity_code = $this->input->post('entity_code');
 		
-	// 	$condition=array(
-	// 		"userEmail"=>$email,
-	// 		"entity_code"=>$entity_code
-	// 	);
+		$condition=array(
+			"userEmail"=>$email,
+			"entity_code"=>$entity_code
+		);
 		
-	// 	$login=$this->login->get_data('users',$condition);
-	// 	if(!empty($login) && count($login) > 0)
-	// 	{
-	// 		$sess_data = array(
-	// 		'email' => $login[0]->userEmail,
-	// 		'name' => $login[0]->firstName.' '.$login[0]->lastName,
-	// 		'id' => $login[0]->id
-	// 		);
-	// 		$this->session->set_userdata('logged_in', $sess_data);
-	// 	}
+		$login=$this->login->get_data('users',$condition);
+		if(!empty($login) && count($login) > 0)
+		{
+			$sess_data = array(
+			'email' => $login[0]->userEmail,
+			'name' => $login[0]->firstName.' '.$login[0]->lastName,
+			'id' => $login[0]->id
+			);
+			$this->session->set_userdata('logged_in', $sess_data);
+		}
 
-	// 	redirect("index.php/login/VerifyForChangePassword");
-	// }
-
-
-//try new
-
-public function verifyForForgetPassword()
-{
-    $email = $this->input->post('userEmail');
-    $entity_code = $this->input->post('entity_code');
-
-    // 1. First, check for a match on both (combined condition)
-    $condition_combined = array(
-        "userEmail" => $email,
-        "entity_code" => $entity_code
-    );
-
-    $login = $this->login->get_data('users', $condition_combined);
-
-    if (!empty($login)) {
-        // SUCCESS: Both email and entity code matched a user
-        $sess_data = array(
-            'email' => $login[0]->userEmail,
-            'name'  => $login[0]->firstName.' '.$login[0]->lastName,
-            'id'    => $login[0]->id
-        );
-        $this->session->set_userdata('logged_in', $sess_data);
-        
-        redirect("index.php/verifyfa-change-password");
-    } else {
-        // FAILURE: Check if the email exists alone to determine the specific error.
-
-        // 2. Second, check ONLY the email address
-        $condition_email_only = array("userEmail" => $email);
-        $email_check = $this->login->get_data('users', $condition_email_only); 
-        
-        $error_message = '';
-
-        if (empty($email_check)) {
-            // Email is completely wrong (0 users found with this email)
-            $error_message = 'The Email ID you entered is not registered.';
-        } else {
-            // Email is right, but the entity code must be wrong (since the combined check failed)
-            $error_message = 'The Entity Code is incorrect for this user.';
-        }
-
-        // Set the appropriate flash message and redirect back to the form
-        $this->session->set_flashdata('error_message', $error_message);
-        redirect("index.php/forget-password-verifyfa-user");
-    }
-}
-
-
-
+		redirect("index.php/login/VerifyForChangePassword");
+	}
 	public function VerifyForChangePassword(){
 		$this->data['title']="VerifyFa Registered User Login";		
 		$this->load->view('password-change',$this->data);
 	}
 	public function updatePasswordFromForget(){
-		$user_id=$_SESSION['logged_in']['id'];
+		$user_id=$_SESSION['temp_logged_in']['id'];
         $data=array( 
             "password"=>md5($this->input->post('password')),
             "password_view"=>$this->input->post('password'),
@@ -384,13 +334,15 @@ public function verifyForForgetPassword()
 			'is_login'=>0,
 		);
 		$condition=array(
-			'id'=>$_SESSION['logged_in']['id']
+			'id'=>$_SESSION['temp_logged_in']['id']
 		);
 		$update=$this->login->update_data('users ',$updatedata,$condition);	
 
-		$this->session->unset_userdata('logged_in');
+		$this->session->unset_userdata('temp_logged_in');
 		$this->session->sess_destroy();
-		redirect(base_url()."index.php/login",'refresh');
+		$this->session->set_flashdata('success', "Password Update Successful.");
+		// redirect(base_url()."index.php/login",'refresh');
+		redirect('index.php/login');
 
 	}
 	
@@ -402,79 +354,31 @@ public function verifyForForgetPassword()
 	// 	$email=$this->input->post('email');
 	// 	$entity=$this->input->post('entity');
 
-	// 	$this->db->select('*');
-	// 	$this->db->from('registred_users');
-	// 	$this->db->where('email_id',$email);
-	// 	$this->db->where('entity_code',$entity);
-	// 	$query = $this->db->get();
-	// 	$result= $query->row();
-	// 	$num = $query->num_rows();
+		$this->db->select('*');
+		$this->db->from('registred_users');
+		$this->db->where('email_id',$email);
+		$this->db->where('entity_code',$entity);
+		$query = $this->db->get();
+		$result= $query->row();
+		$num = $query->num_rows();
 
 	
 
-	// 	if($num !='0'){
-	// 		$sess_data = array(
-	// 		'email' => $result->email_id,
-	// 		'name' => $result->first_name.' '.$result->last_name,
-	// 		'id' => $result->id
-	// 		);
-	// 		$this->session->set_userdata('logged_in', $sess_data);
-	// 	}
+		if($num !='0'){
+			$sess_data = array(
+			'email' => $result->email_id,
+			'name' => $result->first_name.' '.$result->last_name,
+			'id' => $result->id
+			);
+			$this->session->set_userdata('logged_in', $sess_data);
+		}
 
 
 
 
 
-	// 	redirect("index.php/login/VerifyForChangePasswordRegistered");
-	// }
-
-
-	 //try new
-	 public function VerifyForForgetPasswordRegistered()
-{
-    $email = $this->input->post('email');
-    $entity = $this->input->post('entity');
-
-    // 1. Check for a match on both (secure/primary check)
-    $this->db->select('id, email_id, first_name, last_name');
-    $this->db->from('registred_users');
-    $this->db->where('email_id', $email);
-    $this->db->where('entity_code', $entity);
-    $query = $this->db->get();
-    $result = $query->row();
-    $num = $query->num_rows();
-
-    if ($num == 1) {
-        // SUCCESS: Both email and entity are correct
-        $sess_data = array(
-            'email' => $result->email_id,
-            'name' => $result->first_name . ' ' . $result->last_name,
-            'id' => $result->id
-        );
-        $this->session->set_userdata('logged_in', $sess_data);
-        redirect("index.php/login/VerifyForChangePasswordRegistered");
-
-    } else {
-        // FAILURE: Check if the email exists at all (for specific error message)
-        $this->db->where('email_id', $email);
-        $email_check = $this->db->get('registred_users');
-
-        if ($email_check->num_rows() == 0) {
-            // Email is completely wrong
-            $this->session->set_flashdata('error_message', 'The Email ID you entered is not registered.');
-        } else {
-            // Email is right, but the entity code is wrong
-            $this->session->set_flashdata('error_message', 'The Entity Code you entered is incorrect.');
-        }
-
-        // Redirect back to the forget password form
-               redirect("index.php/login/registered_user_forget_password");
-    }
-}
-
-
-
-
+		redirect("index.php/login/VerifyForChangePasswordRegistered");
+	}
 	public function VerifyForChangePasswordRegistered(){
 		$this->data['title']="VerifyFa Registered User Login";		
 		$this->load->view('registered-user/password-change',$this->data);
@@ -484,16 +388,17 @@ public function verifyForForgetPassword()
 	public function updateRegisterUserPasswordFromForget(){
 		
 
-		$user_id=$_SESSION['logged_in']['id'];
+		$user_id=$_SESSION['temp_logged_in']['id'];
         $data=array( 
             "password"=>md5($this->input->post('password')),
             "password_view"=>$this->input->post('password'),
         );
      	$this->Registered_user_model->update_password($user_id,$data);
 
-		$this->session->unset_userdata('logged_in');
+		$this->session->unset_userdata('temp_logged_in');
 		$this->session->sess_destroy();
-		redirect('index.php/transfer-logout-confirmation');
+		$this->session->set_flashdata('success', "Password Update Successful.");
+		redirect('index.php/registered-user-login');
 
 	}
 	

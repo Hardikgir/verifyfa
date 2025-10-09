@@ -41,7 +41,7 @@ $this->load->view('layouts/sidebar');
 
                 <div class="col-md-6 form-row">
                     <label class="form-label">Department Shortcode</label>
-                    <input type="text" name="department_shortcode" id="short_code" class="form-control" placeholder="Enter Department Shortcode" required="">
+                    <input type="text" name="department_shortcode" id="short_code" class="form-control" placeholder="Enter Department Name" required="">
                     <p id="shortcodealert" style="color:red;font-weight:bold;"></p>
 
                 </div>

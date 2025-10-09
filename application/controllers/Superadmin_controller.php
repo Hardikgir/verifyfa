@@ -808,7 +808,16 @@ class Superadmin_controller extends CI_Controller {
 	public function confirmation_userdetail($id){
 		date_default_timezone_set("Asia/Calcutta"); 
 		$data['page_title']="Manage User";
-		$data['user']=$this->Super_admin_model->get_registerd_user($id);
+
+		$user_details = $this->Super_admin_model->get_registerd_user($id);
+	
+		$data['user']=$user_details;
+
+	
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
 
 		$to = $data['user']->email_id;
 		// $to = 'hardik.meghnathi12@gmail.com';
@@ -816,11 +825,11 @@ class Superadmin_controller extends CI_Controller {
 		// $activation_link = '<a href="'.base_url().'index.php/registered-user-login/">Activate Your Account</a>';
 		// $activation_link = '<a href="'.base_url().'index.php/activation-registered-user/">Activate Your Account</a>';
 		$activation_link = '<a href="'.base_url().'index.php/generate-active-register-user/'.$id.'">Activate Your Account</a>';
-		$TRANSACTIONRECORDDATETIME = date('d-m-Y h:i:s');
+		$TRANSACTIONRECORDDATETIME = date('d-m-Y h:i:s A');
 
 		$APPLICATIONNAME = 'VerifyFA';
 		$RECEIVERNAME = $data['user']->first_name;		
-		$subject = $APPLICATIONNAME.' Activate Your Account and Setup';
+		$subject = $APPLICATIONNAME.' Activate Your Account and Setup New Password';
 
 		$digits = 5;
 		$TEMPORARYPASSWORD = rand(pow(10, $digits-1), pow(10, $digits)-1);
@@ -904,12 +913,43 @@ class Superadmin_controller extends CI_Controller {
 		$CI->email->subject($subject);
 		$CI->email->message($email_updated_content);
 
-		$mailsend = 0;
-		if(server_check() == 'live'){
-			if($CI->email->send()){
-				$mailsend = 1;
+		
+
+		if($user_details->is_activation_send != '1'){				
+			$mailsend = 0;
+			if(server_check() == 'live'){
+				if($CI->email->send()){
+					$mailsend = 1;
+				}
 			}
+
+			
+		$data=array(
+        "password"=>md5($TEMPORARYPASSWORD),
+		"password_view"=>$TEMPORARYPASSWORD,
+	 	);
+	 	$this->Super_admin_model->update_confirmation_data_user($id,$data);
+
 		}
+		// exit();
+
+
+		// if($user_details->is_activation_send != '1'){				
+		// 	echo "yes 1212";
+		// 	// exit();
+		// 	$mailsend = 0;
+		// 	if(server_check() == 'live'){
+		// 		if($CI->email->send()){
+		// 			$mailsend = 1;
+		// 		}
+		// 	}
+		// }
+
+		// exit();
+
+
+		
+
 
 		$data=array(
         "password"=>md5($TEMPORARYPASSWORD),
@@ -920,7 +960,9 @@ class Superadmin_controller extends CI_Controller {
 		
 		$plan_data_details = $this->Super_admin_model->get_registered_user_plan($id);
 		$data['plan_data'] = $plan_data_details;
+		$data['page_title']="Manage User";
 		$data['plan_details'] = get_plan_row($plan_data_details->plan_id);
+		$data['user']=$this->Super_admin_model->get_registerd_user($id);
 		$this->load->view("super-admin/confirmation-user-detail",$data);
 	}
 
@@ -995,10 +1037,30 @@ class Superadmin_controller extends CI_Controller {
 		"created_at"=>date("Y-m-d H:i:s")
 	);
 	$this->Super_admin_model->save_registered_user_payment($data_payment);
+	// ??step 3 data save//
+
+
+	// ??step 4 data save//
+	$data_array=array(
+	"plan_id"=>$this->input->post('plan'),
+	"upgrated_plan_id"=>$this->input->post('plan'),
+	"register_user_id"=>$registered_user_id,
+	"created_at"=>date("Y-m-d H:i:s"),
+	);
+	$this->Super_admin_model->save_upgradePlan($data_array);
+	// ??step 4 data save//
+
+
+
 	$this->session->set_flashdata('success', 'User Created Successfully Now you Are In Confirmation Page');
 	redirect("index.php/confirmation-user-detail/".$registered_user_id);
 	}
- 	// ??step 3 data save//
+ 	
+
+
+
+	
+
 
 
 
@@ -1131,6 +1193,139 @@ class Superadmin_controller extends CI_Controller {
 	 );
 	 $this->Super_admin_model->update_confirmation_data_user($id,$data);
 	 $this->session->set_flashdata('success', 'Activation Reactivate Successfully');
+
+
+
+
+		$user_details = $this->Super_admin_model->get_registerd_user($id);
+	
+		
+
+	
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
+
+		$to = $user_details->email_id;
+		// $to = 'hardik.meghnathi12@gmail.com';
+		
+		// $activation_link = '<a href="'.base_url().'index.php/registered-user-login/">Activate Your Account</a>';
+		// $activation_link = '<a href="'.base_url().'index.php/activation-registered-user/">Activate Your Account</a>';
+		date_default_timezone_set("Asia/Calcutta"); 
+		$activation_link = '<a href="'.base_url().'index.php/generate-active-register-user/'.$id.'">Activate Your Account</a>';
+		$TRANSACTIONRECORDDATETIME = date('d-m-Y h:i:s A');
+
+		$APPLICATIONNAME = 'VerifyFA';
+		$RECEIVERNAME = $user_details->first_name;		
+		$subject = $APPLICATIONNAME.' ReActivate Your Account';
+
+		$digits = 5;
+		$TEMPORARYPASSWORD = rand(pow(10, $digits-1), pow(10, $digits)-1);
+		$COMPANYNAME = $user_details->organisation_name;
+
+		$email_updated_content = '<body style="font-family: Helvetica, Arial, sans-serif; margin: 0px; padding: 0px; background-color: #ffffff;">
+            <table role="presentation"
+                style="width: 100%;border-collapse: collapse;border: 0px;border-spacing: 0px;font-family: Arial, Helvetica, sans-serif;background-color: rgb(250, 250, 250);">
+                <tbody>
+                <tr>
+                    <td align="center" style="padding: 1rem 2rem; vertical-align: top; width: 100%;">
+                    <table role="presentation" style="max-width: 600px; border-collapse: collapse; border: 0px; border-spacing: 0px; text-align: left;">
+                        <tbody>
+                        <tr>
+                            <td style="padding: 40px 0px 0px;">
+                            <div style="text-align: left;">
+                                <div style="padding-bottom: 20px;text-align: center;">
+                                    <img src="https://verifyfa.developmentdemo.co.in/assets/img/logo.png" alt="APPLICATIONLOGOCompany" style="width: 56px;">
+                                </div>
+                            </div>
+                            <div style="padding: 20px;background-color: rgb(255, 255, 255);border: 1px solid grey;">
+                                <div style="color: rgb(0, 0, 0); text-align: left;">
+
+                                    <p style="font-size: 14px;color: gray;text-align: center;">
+                                    ***** This is an auto generated NO REPLY communication and replies to this email id are
+                                    not attended to. (Business Hours from Mon To Sat : 10:00am to 6:00pm) *****
+                                    </p>
+
+                                    <p style="font-size: 18px;"> '.$TRANSACTIONRECORDDATETIME.' </p>
+                                    <p style="font-size: 18px;">Dear <b>'.$RECEIVERNAME.'</b>,</p>
+
+                                    <p style="font-size: 18px;line-height: 28px;">
+                                    Thanks for registering on <b>'.$APPLICATIONNAME.'</b>. It is important to activate your account in due time to continue further.
+                                    <br>
+									<br>
+                                    Your New Temporary Password for login is: <b>'.$TEMPORARYPASSWORD.'</b>.
+                                    <br>
+                                    </p>
+
+
+                                <p style="font-size: 18px;">Thanks for your support and understanding. <br>
+                                Regards, <br>
+                                <b>'.$COMPANYNAME.'</b></p>
+
+                                <p style="font-size: 14px;color: gray;text-align: center;">*****This is a system generated communication and does not require signature. *****</p>
+
+                                </div>
+                            </div>
+                            <div style="padding-top: 20px; color: rgb(153, 153, 153); text-align: justify;">
+                                Copyright <b>'.$COMPANYNAME.'</b>. All rights reserved. Terms & Conditions Please do not share your Login details, such as User ID / Password / OTP with anyone, either over phone or through email.
+                                Do not click on link from unknown/ unsecured sources that seek your confidential information. 
+                                This email is confidential. It may also be legally privileged. If you are not the addressee, you may not copy, forward, disclose or use any part of it. Internet communications cannot be guaranteed to be timely, secure, error or virus free. The sender does not accept liability for any errors or omissions. We maintain strict security standards and procedures to prevent unauthorised access to any personal information about you.
+                                Kindly read through the Privacy Policy on our website for use of Personal Information.
+                                </p>
+                            
+
+                            </div>
+                            <div style="padding-top: 20px; color: rgb(153, 153, 153); text-align: center;">
+                            <a href="javascript:void(0)">Home</a> | <a href="javascript:void(0)">Privacy Policy</a> | <a href="javascript:void(0)">Disclaimer</a>
+                            </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            </body>';
+
+		
+		$CI = setEmailProtocol();
+		$from_email = 'solutions@ethicalminds.in';
+		$CI->email->set_newline("\r\n");
+		$CI->email->set_mailtype("html");
+		$CI->email->set_header('Content-Type', 'text/html');
+		$CI->email->from($from_email);
+		$CI->email->to($to);
+		$CI->email->subject($subject);
+		$CI->email->message($email_updated_content);
+
+
+
+
+	 
+				
+			$mailsend = 0;
+			if(server_check() == 'live'){
+				if($CI->email->send()){
+					$mailsend = 1;
+				}
+			}
+		
+
+
+		$data=array(
+        "password"=>md5($TEMPORARYPASSWORD),
+		"password_view"=>$TEMPORARYPASSWORD,
+	 	);
+	 	$this->Super_admin_model->update_confirmation_data_user($id,$data);
+
+
+
+
+
+
+
 	 redirect("index.php/confirmation-user-detail/".$id);
  }
 

@@ -13,13 +13,10 @@ $this->load->view('layouts/sidebar');
 	
 		<div class="row">
         <div class="col-lg-12 mt-4 mb-4" style="border-bottom:1px solid #6e50505e;">
-            <h4 class="page-title">Manage Notification</h4>    
-            <?php 
-            if($_SESSION['logged_in']['main_role'] == '5'){ ?>
+            <h4 class="page-title">Manage Notification</h4>            
             <a href="<?php echo base_url();?>index.php/brodcast-notification">
              <button class="btn btn-primary" style="float:right">Broadcast New Notification</button>
             </a>
-            <?php } ?>
        </div>     
 
 			<div class="col-lg-12">

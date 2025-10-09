@@ -6019,11 +6019,16 @@ public function get_role_by_user_id(){
             break;
         }
     }
+
+        $role_array = array();
+        foreach($User_role_array as $key => $value) {
+            $role_array[] = array("id"=>$key,"role_name"=>$value);
+        }
     
-        if($User_role_array)
+        if($role_array)
 		{
             header('Content-Type: application/json');
-            echo json_encode(array("success"=>200,"message"=>"User Roles.","data"=>$User_role_array));
+            echo json_encode(array("success"=>200,"message"=>"User Roles.","data"=>$role_array));
             exit;
 
 		} 
@@ -6456,24 +6461,65 @@ public function resolve_issue(){
         $report_type = array(
             '1' => 'Scope Summary & Detailed Report',
         );
+
+        $report_type = array(
+            'id' => 1,
+            'name' => 'Scope Summary & Detailed Report',
+        );
+
         $response['message'] = 'Get Report Type';
         $response['status'] = 1;
-        $response['data'] = $report_type;
+        $response['data'] = array($report_type);
         echo json_encode($response);
     }
 
      public function getExceptionCategory(){       
+
+        $arExceptionCategoryray = array();
+        // $ExceptionCategory[1]['id'] = 1;
+        // $ExceptionCategory[1]['name'] = 'Condition of Item';
+
+        // $ExceptionCategory[2]['id'] = 2;
+        // $ExceptionCategory[2]['name'] = 'Changes/ Updations of Items (New)';
+        // $ExceptionCategory[3]['id'] = 3;
+        // $ExceptionCategory[3]['name'] = 'Qty Validation Status';
+        // $ExceptionCategory[4]['id'] = 4;
+        // $ExceptionCategory[4]['name'] = 'Updated with Verification Remarks';
+        // $ExceptionCategory[5]['id'] = 5;
+        // $ExceptionCategory[5]['name'] = 'Updated with Item Notes';
+
+        // $ExceptionCategory[6]['id'] = 6;
+        // $ExceptionCategory[6]['name'] = 'Calculate Risk Exposure (New)';
+        // $ExceptionCategory[7]['id'] = 7;
+        // $ExceptionCategory[7]['name'] = 'Mode of Verification';
+        // $ExceptionCategory[10]['id'] = 10;
+        // $ExceptionCategory[10]['name'] = 'Duplicate Item Codes Identified (New)';
+
+
+       
         $ExceptionCategory = array(
-            '1' => 'Condition of Item',
-            '2' => 'Changes/ Updations of Items (New)',
-            '3' => 'Qty Validation Status',
-            '4' => 'Updated with Verification Remarks',
-            '5' => 'Updated with Item Notes',
-            '6' => 'Calculate Risk Exposure (New)',
-            '8' => 'Mode of Verification',
-        //  '9' => 'Duplicate Item Codes verified<',
-            '10' => 'Duplicate Item Codes Identified (New)',
+            array('id' => 1,'name' => 'Scope Summary & Detailed Report'),
+            array('id' => 2,'name' => 'Changes/ Updations of Items (New)'),
+            array('id' => 3,'name' => 'Qty Validation Status'),
+            array('id' => 4,'name' => 'Updated with Verification Remarks'),
+            array('id' => 5,'name' => 'Updated with Item Notes'),
+            array('id' => 6,'name' => 'Calculate Risk Exposure (New)'),
+            array('id' => 7,'name' => 'Mode of Verification'),
+            array('id' => 10,'name' => 'Duplicate Item Codes Identified (New)'),
         );
+
+
+        // $ExceptionCategory = array(
+        //     '1' => 'Condition of Item',
+        //     '2' => 'Changes/ Updations of Items (New)',
+        //     '3' => 'Qty Validation Status',
+        //     '4' => 'Updated with Verification Remarks',
+        //     '5' => 'Updated with Item Notes',
+        //     '6' => 'Calculate Risk Exposure (New)',
+        //     '8' => 'Mode of Verification',
+        // //  '9' => 'Duplicate Item Codes verified<',
+        //     '10' => 'Duplicate Item Codes Identified (New)',
+        // );
         $response['message'] = 'Get Exception Category';
         $response['status'] = 1;
         $response['data'] = $ExceptionCategory;

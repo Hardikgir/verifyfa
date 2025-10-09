@@ -166,7 +166,8 @@ class Registeredusercontroller extends CI_Controller {
 
     public function unsubscribe_account($registereduserid){
         $data=array(
-            "is_active"=>"6",
+            "is_active"=>6,
+            "unsubscribe_date"=>date("Y-m-d"),
         );
         $this->Registered_user_model->request_renew_save($registereduserid,$data);
         $this->session->set_flashdata("success","Account Unsubscribed Successfully");

@@ -19,15 +19,13 @@ table th,table td{
 					<div class="row">
 						<div class="col-md-1"></div>
 						<div class="col-md-10">
-							<?php 
-							if(isset($_SESSION['error_message']))
+							<?php if(isset($_SESSION['error_message']))
 							{
 							?>
 							<div class="alert alert-danger">
 								<?php echo $_SESSION['error_message']['message']; ?>
 							</div>
 							<?php 
-							unset($_SESSION['error_message']);
 							}
 							?>
 							<div class="card">
@@ -96,13 +94,13 @@ table th,table td{
                                             <div class="col-md-6">
 												<div class="form-group">
                                                     <label>Start Date:</label>
-                                                    <input type="text" class="form-control" value="<?php echo date('d/m/Y',strtotime($data['project'][0]->start_date));?>">
+                                                    <input type="text" class="form-control" value="<?php echo date('d/m/yy',strtotime($data['project'][0]->start_date));?>">
 												</div>
 											</div>
 											<div class="col-md-6">
 												<div class="form-group">
                                                     <label>Due Date:</label>
-                                                    <input type="text" class="form-control" value="<?php echo date('d/m/Y',strtotime($data['project'][0]->due_date));?>">
+                                                    <input type="text" class="form-control" value="<?php echo date('d/m/yy',strtotime($data['project'][0]->due_date));?>">
 												</div>
 											</div>
 											
@@ -162,32 +160,32 @@ table th,table td{
 										<tr>
 											<th rowspan="2">Allocated Item Category</th>
 											<th colspan="2">To be Verified</th>
-											<th colspan="1" style="background-color:#FFF2CC;">Good Condition</th>
-											<th colspan="1" style="background-color:#FFF2CC;">Damaged</th>
-											<th colspan="1" style="background-color:#FFF2CC;">Scrapped</th>
-											<th colspan="1" style="background-color:#FFF2CC;">Missing</th>
-											<th colspan="1" style="background-color:#FFF2CC;">Shifted</th>
-											<th colspan="1" style="background-color:#FFF2CC;">Not in Use</th>
+											<th colspan="2" style="background-color:#FFF2CC;">Good Condition</th>
+											<th colspan="2" style="background-color:#FFF2CC;">Damaged</th>
+											<th colspan="2" style="background-color:#FFF2CC;">Scrapped</th>
+											<th colspan="2" style="background-color:#FFF2CC;">Missing</th>
+											<th colspan="2" style="background-color:#FFF2CC;">Shifted</th>
+											<th colspan="2" style="background-color:#FFF2CC;">Not in Use</th>
 											<th colspan="2">Remaining to be Verified</th>
 										</tr>
 										<tr>
 											
-											<th>Amount(in Lacs)1</th>
-											<th>Number of Qty2</th>
-											<!-- <th>Amount(in Lacs)3</th> -->
-											<th>Number of Qty4</th>
-											<!-- <th>Amount(in Lacs)5</th> -->
-											<th>Number of Qty6</th>
-											<!-- <th>Amount(in Lacs)7</th> -->
-											<th>Number of Qty8</th>
-											<!-- <th>Amount(in Lacs)9</th> -->
-											<th>Number of Qty10</th>
-											<!-- <th>Amount(in Lacs)11</th> -->
-											<th>Number of Qty12</th>
-											<!-- <th>Amount(in Lacs)13</th> -->
-											<th>Number of Qty14</th>
-											<th>Amount(in Lacs)15</th>
-											<th>Number of Qty16</th>
+											<th>Amount(in Lacs)</th>
+											<th>Number of Qty</th>
+											<th>Amount(in Lacs)</th>
+											<th>Number of Qty</th>
+											<th>Amount(in Lacs)</th>
+											<th>Number of Qty</th>
+											<th>Amount(in Lacs)</th>
+											<th>Number of Qty</th>
+											<th>Amount(in Lacs)</th>
+											<th>Number of Qty</th>
+											<th>Amount(in Lacs)</th>
+											<th>Number of Qty</th>
+											<th>Amount(in Lacs)</th>
+											<th>Number of Qty</th>
+											<th>Amount(in Lacs)</th>
+											<th>Number of Qty</th>
 											
 										</tr>
 										<?php
@@ -293,8 +291,6 @@ table th,table td{
 												{
 													$remainitem= $remainingdata->items;
 												}
-												$remainitem = $allcat->total_qty-($goodItems+$damagedItems+$scrappedItems+$missingItems+$shiftedItems+$notinuseItems);
-
 												
 											}
 											$remainitemstotal +=$remainitem;
@@ -309,17 +305,17 @@ table th,table td{
 											<td><?php echo $allcat->item_category; ?></td>
 											<td><?php echo $allcat->total_amount!=0?getmoney_format(round(($allcat->total_amount/100000),2)):$allcat->total_amount; ?></td>
 											<td><?php echo $allcat->total_qty; ?></td>
-											<?php /* <td><?php echo $goodAmount!=0?getmoney_format(round(($goodAmount/100000),2)):$goodAmount; ?></td> */ ?>
-											<td><?php echo $goodItems; ?> </td>
-											<?php /* <td><?php echo $damagedAmount!=0?getmoney_format(round(($damagedAmount/100000),2)):$damagedAmount;?></td> */ ?>
+											<td><?php echo $goodAmount!=0?getmoney_format(round(($goodAmount/100000),2)):$goodAmount; ?></td>
+											<td><?php echo $goodItems; ?></td>
+											<td><?php echo $damagedAmount!=0?getmoney_format(round(($damagedAmount/100000),2)):$damagedAmount;?></td>
 											<td><?php echo $damagedItems; ?></td>
-											<?php /* <td><?php echo $scrappedAmount!=0?getmoney_format(round(($scrappedAmount/100000),2)):$scrappedAmount; ?></td> */ ?>
+											<td><?php echo $scrappedAmount!=0?getmoney_format(round(($scrappedAmount/100000),2)):$scrappedAmount; ?></td>
 											<td><?php echo $scrappedItems; ?></td>
-											<?php /* <td><?php echo $missingAmount!=0?getmoney_format(round(($missingAmount/100000),2)):$missingAmount; ?></td> */ ?>
+											<td><?php echo $missingAmount!=0?getmoney_format(round(($missingAmount/100000),2)):$missingAmount; ?></td>
 											<td><?php echo $missingItems; ?></td>
-											<?php /* <td><?php echo $shiftedAmount!=0?getmoney_format(round(($shiftedAmount/100000),2)):$shiftedAmount; ?></td> */ ?>
+											<td><?php echo $shiftedAmount!=0?getmoney_format(round(($shiftedAmount/100000),2)):$shiftedAmount; ?></td>
 											<td><?php echo $shiftedItems; ?></td>
-											<?php /* <td><?php echo $notinuseAmount!=0?getmoney_format(round(($notinuseAmount/100000),2)):$notinuseAmount; ?></td> */ ?>
+											<td><?php echo $notinuseAmount!=0?getmoney_format(round(($notinuseAmount/100000),2)):$notinuseAmount; ?></td>
 											<td><?php echo $notinuseItems; ?></td>
 											<td><?php echo $remainingAmount!=0?getmoney_format(round(($remainingAmount/100000),2)):$remainingAmount; ?></td>
 											<td><?php echo $remainitem; ?></td>
@@ -331,17 +327,17 @@ table th,table td{
 											<td></td>
 											<td></td>
 											<td></td>
-											<!-- <td></td> -->
 											<td></td>
-											<!-- <td></td> -->
 											<td></td>
-											<!-- <td></td> -->
 											<td></td>
-											<!-- <td></td> -->
 											<td></td>
-											<!-- <td></td> -->
 											<td></td>
-											<!-- <td></td> -->
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
 											<td></td>
 											<td></td>
 											<td></td>
@@ -350,17 +346,17 @@ table th,table td{
 											<td></td>
 											<td></td>
 											<td></td>
-											<!-- <td></td> -->
 											<td></td>
-											<!-- <td></td> -->
 											<td></td>
-											<!-- <td></td> -->
 											<td></td>
-											<!-- <td></td> -->
 											<td></td>
-											<!-- <td></td> -->
 											<td></td>
-											<!-- <td></td> -->
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
 											<td></td>
 											<td></td>
 											<td></td>
@@ -369,17 +365,17 @@ table th,table td{
 											<th><?php echo "Grand Total"; ?></th>
 											<th><?php echo $totalAmount!=0?getmoney_format(round(($totalAmount/100000),2)):$totalAmount; ?></th>
 											<th><?php echo $totalItems; ?></th>
-											<?php /* <th><?php echo $goodTotalAmount!=0?getmoney_format(round(($goodTotalAmount/100000),2)):$goodTotalAmount; ?></th> */ ?>
+											<th><?php echo $goodTotalAmount!=0?getmoney_format(round(($goodTotalAmount/100000),2)):$goodTotalAmount; ?></th>
 											<th><?php echo $goodTotalItems; ?></th>
-											<?php /* <th><?php echo $damagedTotalAmount!=0?getmoney_format(round(($damagedTotalAmount/100000),2)):$damagedTotalAmount; ?></th> */ ?>
+											<th><?php echo $damagedTotalAmount!=0?getmoney_format(round(($damagedTotalAmount/100000),2)):$damagedTotalAmount; ?></th>
 											<th><?php echo $damagedTotalItems; ?></th>
-											<?php /* <th><?php echo $scrappedTotalAmount!=0?getmoney_format(round(($scrappedTotalAmount/100000),2)):$scrappedTotalAmount; ?></th> */ ?>
+											<th><?php echo $scrappedTotalAmount!=0?getmoney_format(round(($scrappedTotalAmount/100000),2)):$scrappedTotalAmount; ?></th>
 											<th><?php echo $scrappedTotalItems; ?></th>
-											<?php /* <th><?php echo $missingTotalAmount!=0?getmoney_format(round(($missingTotalAmount/100000),2)):$missingTotalAmount; ?></th> */ ?>
+											<th><?php echo $missingTotalAmount!=0?getmoney_format(round(($missingTotalAmount/100000),2)):$missingTotalAmount; ?></th>
 											<th><?php echo $missingTotalItems; ?></th>
-											<?php /* <th><?php echo $shiftedTotalAmount!=0?getmoney_format(round(($shiftedTotalAmount/100000),2)):$shiftedTotalAmount; ?></th> */ ?>
+											<th><?php echo $shiftedTotalAmount!=0?getmoney_format(round(($shiftedTotalAmount/100000),2)):$shiftedTotalAmount; ?></th>
 											<th><?php echo $shiftedTotalItems; ?></th>
-											<?php /* <th><?php echo $notinuseTotalAmount!=0?getmoney_format(round(($notinuseTotalAmount/100000),2)):$notinuseTotalAmount; ?></th> */ ?>
+											<th><?php echo $notinuseTotalAmount!=0?getmoney_format(round(($notinuseTotalAmount/100000),2)):$notinuseTotalAmount; ?></th>
 											<th><?php echo $notinuseTotalItems; ?></th>
 											<th><?php echo $remainingTotalAmount!=0?getmoney_format(round(($remainingTotalAmount/100000),2)):$remainingTotalAmount; ?></th>
 											<th><?php echo $remainingTotalItems; ?></th>
@@ -388,17 +384,17 @@ table th,table td{
 											<th><?php echo "% to Grand Total"; ?></th>
 											<th>100%</th>
 											<th>100%</th>
-											<?php /* <th><?php echo round(($goodTotalAmount/$totalAmount)*100,2); ?>%</th> */ ?>
+											<th><?php echo round(($goodTotalAmount/$totalAmount)*100,2); ?>%</th>
 											<th><?php echo round(($goodTotalItems/$totalItems)*100,2); ?>%</th>
-											<?php /* <th><?php echo round(($damagedTotalAmount/$totalAmount)*100,2); ?>%</th> */ ?>
+											<th><?php echo round(($damagedTotalAmount/$totalAmount)*100,2); ?>%</th>
 											<th><?php echo round(($damagedTotalItems/$totalItems)*100,2); ?>%</th>
-											<?php /* <th><?php echo round(($scrappedTotalAmount/$totalAmount)*100,2); ?>%</th> */ ?>
+											<th><?php echo round(($scrappedTotalAmount/$totalAmount)*100,2); ?>%</th>
 											<th><?php echo round(($scrappedTotalItems/$totalItems)*100,2); ?>%</th>
-											<?php /* <th><?php echo round(($missingTotalAmount/$totalAmount)*100,2); ?>%</th> */ ?>
+											<th><?php echo round(($missingTotalAmount/$totalAmount)*100,2); ?>%</th>
 											<th><?php echo round(($missingTotalItems/$totalItems)*100,2); ?>%</th>
-											<?php /* <th><?php echo round(($shiftedTotalAmount/$totalAmount)*100,2); ?>%</th> */ ?>
+											<th><?php echo round(($shiftedTotalAmount/$totalAmount)*100,2); ?>%</th>
 											<th><?php echo round(($shiftedTotalItems/$totalItems)*100,2); ?>%</th>
-											<?php /* <th><?php echo round(($notinuseTotalAmount/$totalAmount)*100,2); ?>%</th> */ ?>
+											<th><?php echo round(($notinuseTotalAmount/$totalAmount)*100,2); ?>%</th>
 											<th><?php echo round(($notinuseTotalItems/$totalItems)*100,2); ?>%</th>
 											<th><?php echo round(($remainingTotalAmount/$totalAmount)*100,2); ?>%</th>
 											<th><?php echo round(($remainingTotalItems/$totalItems)*100,2); ?>%</th>
@@ -407,17 +403,17 @@ table th,table td{
 											<td></td>
 											<td></td>
 											<td></td>
-											<!-- <td></td> -->
 											<td></td>
-											<!-- <td></td> -->
 											<td></td>
-											<!-- <td></td> -->
 											<td></td>
-											<!-- <td></td> -->
 											<td></td>
-											<!-- <td></td> -->
 											<td></td>
-											<!-- <td></td> -->
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
 											<td></td>
 											<td></td>
 											<td></td>
@@ -425,12 +421,12 @@ table th,table td{
 										<tr>
 											<th>Click for detailed report</th>
 											<th colspan="2"></th>
-											<th colspan="1"><?php if($goodTotalAmount!=0){?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionOneGoodReport">Download as Annexure</a><?php }?></th>
-											<th colspan="1"><?php if($damagedTotalAmount!=0){?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionOneDamagedReport">Download as Annexure</a><?php }?></th>
-											<th colspan="1"><?php if($scrappedTotalAmount!=0){?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionOneScrappedReport">Download as Annexure</a><?php }?></th>
-											<th colspan="1"><?php if($missingTotalAmount!=0){?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionOneMissingReport">Download as Annexure</a> <?php }?></td>
-											<th colspan="1"><?php if($shiftedTotalAmount!=0){?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionOneShiftedReport">Download as Annexure</a> <?php }?></td>
-											<th colspan="1"><?php if($notinuseTotalAmount!=0){?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionOneNotinuseReport">Download as Annexure</a> <?php }?></td>
+											<th colspan="2"><?php if($goodTotalAmount!=0){?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionOneGoodReport">Download as Annexure</a><?php }?></th>
+											<th colspan="2"><?php if($damagedTotalAmount!=0){?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionOneDamagedReport">Download as Annexure</a><?php }?></th>
+											<th colspan="2"><?php if($scrappedTotalAmount!=0){?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionOneScrappedReport">Download as Annexure</a><?php }?></th>
+											<th colspan="2"><?php if($missingTotalAmount!=0){?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionOneMissingReport">Download as Annexure</a> <?php }?></td>
+											<th colspan="2"><?php if($shiftedTotalAmount!=0){?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionOneShiftedReport">Download as Annexure</a> <?php }?></td>
+											<th colspan="2"><?php if($notinuseTotalAmount!=0){?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionOneNotinuseReport">Download as Annexure</a> <?php }?></td>
 											<th colspan="2"><?php if($remainingTotalAmount!=0){?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionOneRemainingReport">Download as Annexure</a> <?php }?></td>
 										</tr>
 										

@@ -35,15 +35,15 @@ $this->load->view('layouts/sidebar');
         <?php 
         $slugs = explode("/", parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH));
         
-        if(isset($slugs[5])){
+        if(isset($slugs[4])){
         // exit();
         ?>
     <a href="<?php echo base_url('index.php/issue-for-me/groupadmin'); ?>" 
-       class="btn <?php echo ((isset($slugs[5]) && $slugs[5] == 'groupadmin')) ? 'btn-primary' : ''; ?> mx-2">
+       class="btn <?php echo ((isset($slugs[4]) && $slugs[4] == 'groupadmin')) ? 'btn-primary' : ''; ?> mx-2">
         Group Admin
     </a>
     <a href="<?php echo base_url('index.php/issue-for-me/manager'); ?>" 
-       class="btn <?php echo ((isset($slugs[5]) && $slugs[5] == 'manager')) ? 'btn-primary' : ''; ?> mx-2">
+       class="btn <?php echo ((isset($slugs[4]) && $slugs[4] == 'manager')) ? 'btn-primary' : ''; ?> mx-2">
         Manager
     </a>
     <?php } ?>
