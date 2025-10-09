@@ -168,84 +168,6 @@ $get_user_all_roles = get_user_all_roles($user_id,$entity_code); // get all user
 				$update_pfcnt= check_proile_update($this->user_id);
 				if($update_pfcnt->profile_update =='0'){ ?>
 					<li class="nav-item <?php echo $page_title=='User Maping'?'active':'';?>  ">
-<<<<<<< HEAD
-						<a class="nav-link" href="<?php echo base_url();?>index.php/manage-user-role"><i class="fa fa-user-circle"></i>
-							<p>Manage User Role</p>
-						</a>
-					</li>
-
-					<li class="nav-item <?php echo $page_title=='Manage Notification'?'active':'';?>  ">
-						<a class="nav-link" href="<?php echo base_url();?>index.php/manage-notification"> <i class="fa fa-bell"></i>
-							<p>Manage Notification</p>
-						</a>
-					</li>
-					 -->
-
-				<?php 
-			// }else{ 
-				?>	
-<?php 
-$usercntrole=Count_user_role();
-$role_base_title = 'Admin';
-$dashboard_url = base_url().'index.php/dashboard';
-if($usercntrole == '3'){
-	$role_base_title = 'User';
-	$dashboard_url = base_url().'index.php/dashboard/User';
-}
-
-if($usercntrole > 0){ 
-	
-if($usercntrole != '3'){
-	?>	
-					<li class="nav-item <?php if(($page_title=='Dashboard') || ($page_title=='User Dashboard') || ($page_title=='Manage Notification')  || ($page_title =='Manage Entity') ||  ($page_title =='Manage Location')|| ($page_title =='Manage Department')  || ($page_title =='Manage User')  || ($page_title =='User Maping')){echo 'active';}?>">
-						<a class="nav-link"> 
-							<p><?php echo $role_base_title; ?> Function</p>
-						</a>
-					</li>
-					<hr class="hr" />
-					<li class="nav-item <?php if(($page_title=='Dashboard')){ echo 'active'; } ?>">
-						<a class="nav-link" href="#"> <i class="material-icons">dashboard</i>
-							<p><?php echo $role_base_title; ?> Dashboard</p>
-						</a>
-					</li>
-					<?php } ?>
-
-      <?php 
-		if(($user_role_addmin_cnt > 0)){ 
-		?>
-
-                   <li class="nav-item <?php echo $page_title=='Manage Entity'?'active':'';?>  ">
-						<a class="nav-link" href="<?php echo base_url();?>index.php/manage-entity"> <i class="fa fa-building"></i>
-							<p>Manage Company</p>
-						</a>
-					</li>
-
-					<li class="nav-item <?php echo $page_title=='Manage Location'?'active':'';?>  ">
-						<a class="nav-link" href="<?php echo base_url();?>index.php/manage-location"> <i class="fa fa-location-arrow"></i>
-							<p>Manage Location</p>
-						</a>
-					</li>
-
-					<li class="nav-item <?php echo $page_title=='Manage Department'?'active':'';?>  ">
-						<a class="nav-link" href="<?php echo base_url();?>index.php/manage-department"><i class="fa fa-road"></i>
-							<p>Manage Department</p>
-						</a>
-					</li>
-
-					<li class="nav-item <?php echo $page_title=='Manage User'?'active':'';?>  ">
-						<a class="nav-link" href="<?php echo base_url();?>index.php/manage-user-admin"> <i class="fa fa-users"></i>
-							<p>Manage User</p>
-						</a>
-					</li>
-					<?php } ?>
-		
-       <?php if(($user_role_addmin_cnt > 0) || ($user_role_subadmin_cnt > 0) ){ 
-		$update_pfcnt= check_proile_update($this->user_id);
-		if($update_pfcnt->profile_update =='0'){
-			?>
-			<li class="nav-item <?php echo $page_title=='User Maping'?'active':'';?>  ">
-=======
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
 						<a class="nav-link" href="#" onclick="profile_ntupdate('<?php echo $this->user_id;?>')"><i class="fa fa-user-circle"></i>
 							<p>Manage User Role</p>
 						</a>
@@ -348,88 +270,6 @@ if($usercntrole != '3'){
 	</div>
 </div>
 
-<<<<<<< HEAD
-					<?php if(($user_role_addmin_cnt > 0) || ($user_role_manager_cnt > 0) ){ ?>
-						<li class="nav-item <?php echo $page_title=='Manage Issue For Me'?'active':'';?>  ">
-						<a class="nav-link" href="<?php echo base_url();?>index.php/manage-issue-for-me"><i class="fa fa-bug"></i>
-							<p>Issue For Me</p>
-						</a>
-					</li>
-                    <?php } ?>
-					
-					<?php if($usercntrole != '3'){ ?>
-
-					<li class="nav-item  <?php if(($page_title=='Plan Cycle') || ($page_title =='Reports') ||  ($page_title =='Excpetions')){echo 'active';}?>">
-						<a class="nav-link"> 
-							<p>Activity Function</p>
-						</a>
-					</li>
-					<hr class="hr" />
-
-					<?php } ?>
-
-					<?php /*
-					<li class="nav-item <?php echo $page_title=='Activity Dashboard'?'active':'';?> ">
-						<a class="nav-link" href="<?php echo base_url();?>index.php/dashboard"> <i class="material-icons">dashboard</i>
-							<p>Dashboard</p>
-						</a>
-					</li>
-					
-					<li class="nav-item <?php echo $page_title=='User Dashboard'?'active':'';?> ">
-						<a class="nav-link" href="<?php echo base_url();?>index.php/dashboard/User"> <i class="material-icons">dashboard</i>
-							<p>Dashboard</p>
-						</a>
-					</li> */ ?>
-
-					<li class="nav-item <?php echo $page_title=='User Dashboard'?'active':'';?> ">
-						<a class="nav-link" href="<?php echo $dashboard_url;?>"> <i class="material-icons">dashboard</i>
-							<p>Dashboard</p>
-						</a>
-					</li>
-
-					
-          <?php 
-          //manager role Menu//
-			if($user_role_manager_cnt > 0){ 
- 	       ?>
-		
-					<li class="nav-item <?php echo $page_title=='Plan Cycle'?'active':'';?>">
-						<a class="nav-link" href="<?php echo base_url();?>index.php/plancycle"> <i class="fas fa-chart-pie"></i>
-							<p>Plan Cycle</p>
-						</a>
-					</li>
-		<?php } 
-         //manager role Menu//
-         ?>
-					<li class="nav-item <?php echo $page_title=='Reports'?'active':'';?>">
-						<a class="nav-link" href="<?php echo base_url();?>index.php/dashboard/reports"> <i class="far fa-file"></i>
-							<p>Report</p>
-						</a>
-					</li>
-					<li class="nav-item <?php echo $page_title=='Excpetions'?'active':'';?>"">
-						<a class="nav-link" href="<?php echo base_url();?>index.php/dashboard/exceptions"> <i class="material-icons">Exceptions</i>
-							<p>Exceptions</p>
-						</a>
-					</li>
-					<li class="nav-item ">
-						<a class="nav-link" href="#"> <i class="fas fa-hands-helping"></i>
-							<p>Helpdesk</p>
-						</a>
-					</li>
-					
-					<?php 
-				} ?>
-
-					
- <?php 
-// }
- ?>
-				</ul>
-			</div>
-		</div>
-=======
-
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
 		<div class="main-panel">
 			<!-- Navbar -->
 			<nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
@@ -535,3 +375,5 @@ if($usercntrole != '3'){
 								<?php echo $this->session->flashdata('success'); ?>
 				</div>
 			<!-- End Navbar -->
+
+			
