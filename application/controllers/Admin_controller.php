@@ -6,6 +6,7 @@ class Admin_controller extends CI_Controller {
 	public function __construct() {
 
 		parent::__construct();
+        date_default_timezone_set("Asia/Calcutta"); 
         $this->load->library('session');	
         $this->load->model('Admin_model');
         $this->load->model('Registered_user_model');
@@ -728,16 +729,16 @@ $role=implode(',',$this->input->post('user_role'));
     public function manage_notification(){
         $data['page_title']="Manage Notification";
         $entity_code=$this->admin_registered_entity_code;
-
-        
-        $user_id=$this->user_id;
-
-        $this->db->select('notification_user.*,notification.*');
+        $user_id=$this->user_id;      
+        $this->db->select('users.firstName,users.lastName,notification.*');
         $this->db->from('notification');
-        $this->db->join('notification_user','notification_user.notification_id=notification.id');
-        $this->db->where('notification_user.user_id',$user_id);
-        $this->db->group_by('notification_user.notification_id'); 
+        $this->db->join('users','users.id=notification.created_by');
+        $this->db->where('notification.created_by',$user_id);
+        // $this->db->or_where('notification.created_by',$user_id);
+        // $this->db->group_by('notification_user.notification_id'); 
         $getnotifications=$this->db->get();
+
+      
         $data["notification"] =  $getnotifications->result();
         $this->load->view('manage-notification',$data);
     }
@@ -870,7 +871,6 @@ $role=implode(',',$this->input->post('user_role'));
         $entity_code=$this->admin_registered_entity_code;
         $registered_user_id=$this->admin_registered_user_id;
         $created_by=$this->user_id;
-
         $data=array(
             "type"=>$this->input->post("type"),
             "title"=>$this->input->post("title"),
@@ -972,7 +972,7 @@ $role=implode(',',$this->input->post('user_role'));
             
         }
         // exit();
-        $this->session->set_flashdata("success","Notification Brodcast Successfully");
+        $this->session->set_flashdata("success","Notification Broadcast Successfully");
         redirect("index.php/manage-notification");
     }
 
@@ -1038,8 +1038,17 @@ $role=implode(',',$this->input->post('user_role'));
 
     public function view_all_notification(){
         $data['page_title']="Manage Notification";
+        $user_id=$this->user_id;
+        $this->db->select('notification_user.*,notification.*');
+        $this->db->from('notification');
+        $this->db->join('notification_user','notification_user.notification_id=notification.id');
+        $this->db->where('notification_user.user_id',$user_id);
+        $this->db->group_by('notification_user.notification_id'); 
+        $getnotifications=$this->db->get();
+        $data["notification"] =  $getnotifications->result();
+
         
-        $this->load->view('view-all-notification.php',$data);
+        $this->load->view('view-all-notification',$data);
     }
     
 
@@ -1353,14 +1362,14 @@ $role=implode(',',$this->input->post('user_role'));
 			exit;
         } else {
             $data = $this->upload->data();
-			$issue_attachment="response_".$data['file_name'];
+			$issue_attachment=$data['file_name'];
 		}
 
         
 
 
         $status_value = $this->input->post("status");
-        $status_remark_value = $this->input->post("Remstatus_remarkark");
+        $status_remark_value = $this->input->post("status_remark");
         $hdn_status_type_value = $this->input->post("hdn_status_type");
         $status_type_remark_value = $this->input->post("status_type_remark");
        
@@ -1369,7 +1378,7 @@ $role=implode(',',$this->input->post('user_role'));
             "status"=>$status_value,
             "status_type"=>$hdn_status_type_value,
             "remark_content"=>$status_remark_value,
-            "remark_content" => $this->input->post("Remark"),
+            "remark_content" => $status_remark_value,
             "updated_at"=>date("Y-m-d H:i:s")
         );
        
@@ -1379,11 +1388,10 @@ $role=implode(',',$this->input->post('user_role'));
             "issue_id"=>$hdn_issue_id,
             "user_id"=>$created_by,
             "status"=>$status_value,
-            "status_remark"=>$status_type_remark_value,
+            "status_remark"=>$status_remark_value,
             "status_type"=>$hdn_status_type_value,
-            "status_type_remark"=>$status_type_remark_value,
+            "status_type_remark"=>$status_remark_value,
             "attachments"=>$issue_attachment,
-            "created_at" => date("Y-m-d H:i:s"),
             "updated_at"=>date("Y-m-d H:i:s")
         );
        

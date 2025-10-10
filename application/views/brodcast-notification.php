@@ -58,18 +58,7 @@ $this->load->view('layouts/sidebar');
 
                 <div class="row">
 
-                    <div class="col-md-12 form-row SectionUserType usertypeselection" id="SectionUserType" class="">
-                        <label class="form-label">UserType</label>
-                        <select name="selectUserType[]" id="selectUserType" class="form-control" multiple>
-                            <option value="GropAdmin">GroupAdmin</option>
-                            <option value="SubAdmin">SubAdmin</option>
-                            <option value="EntityOwner">EntityOwner</option>
-                            <option value="ProcessOwner">ProcessOwner</option>
-                            <option value="Manager">Manager</option>
-                            <option value="Verify">Verifier</option>
-                            
-                        </select>
-                    </div>
+                  
 
                     <div class="col-md-6 form-row SectionGropAdmin usertypeselection" id="SectionGropAdmin">
                         <label class="form-label">GroupAdmin</label>
@@ -131,6 +120,7 @@ $this->load->view('layouts/sidebar');
                 <br>
 
               <div class="row">
+                <?php /*
                 <div class="col-md-6 form-row">
                     <label class="form-label">Notification Type</label>
                     <select name="type" id="type" class="form-control" required="">
@@ -139,9 +129,10 @@ $this->load->view('layouts/sidebar');
                         <option value="Message">Message</option>
                         <option value="Issue">Issue</option>
                     </select>
-                </div>
+                </div> */ ?>
+                <input type="hidden" name="type" value="Notification">
 
-                <div class="col-md-6 form-row">
+                <div class="col-md-12 form-row">
                     <label class="form-label">Notification Title</label>
                     <input type="text" name="title" id="title" class="form-control" placeholder="Enter Title" required="">
                 </div>
@@ -155,7 +146,7 @@ $this->load->view('layouts/sidebar');
                 </div><br>
 
                 <div class="row">
-                <div class="col-md-12 form-row">
+                <div class="col-md-12 form-row">                
                 <button type="reset" class="btn btn-danger">Cancel</button>
                 <button type="submit" class="btn btn-success">Save</button>
               </div>
@@ -215,21 +206,7 @@ $("#userEmail").change(function(){
 
 <script>
 
-	document.multiselect('#selectUserType')
-    .setCheckBoxClick("checkboxAll", function(target, args) {
-        console.log("target")
-        console.log(target)
-        console.log("args")
-        console.log(args)
-        console.log("Checkbox 'Select All 11' was 11 clicked and got value ", args.checked);
-    })
-    .setCheckBoxClick("1", function(target, args) {
-        console.log("target")
-        console.log(target)
-        console.log("args")
-        console.log(args)
-        console.log("Checkbox for item with value '1' 222 was clicked and got value ", args.checked);
-    });
+
 
 
 

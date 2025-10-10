@@ -59,7 +59,7 @@
                             <table class="table table-bordered">
                                 <tr>
                                     <th>Created By</th>
-                                    <td><?php echo $issue_result->solver_firstName.$issue_result->solver_lastName." | ".$issue_result->updated_at;?></td>
+                                    <td><?php echo $issue_result->solver_firstName.$issue_result->solver_lastName." | ".$issue_result->created_at;?></td>
                                 </tr>
                               
 
