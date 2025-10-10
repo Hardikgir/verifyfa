@@ -880,6 +880,7 @@ $role=implode(',',$this->input->post('user_role'));
             "created_by"=>$created_by,
             "created_at"=>date("Y-m-d H:i:s")
         );
+        
         $data["notification"]=$this->Admin_model->save_notification($data);
         $insert_id = $this->db->insert_id();
         
@@ -1372,6 +1373,8 @@ $role=implode(',',$this->input->post('user_role'));
         $status_remark_value = $this->input->post("status_remark");
         $hdn_status_type_value = $this->input->post("hdn_status_type");
         $status_type_remark_value = $this->input->post("status_type_remark");
+        $hdn_issue_type_value = $this->input->post("hdn_issue_type");
+        
        
 
         $data=array(
@@ -1399,7 +1402,11 @@ $role=implode(',',$this->input->post('user_role'));
         $insert_id = $this->db->insert_id();
         
         $this->session->set_flashdata("success","Issue Updated Successfully");
-        redirect("index.php/manage-my-issue");
+        if($hdn_issue_type_value == 'General'){
+            redirect("index.php/issue-for-me/groupadmin");
+        }else{
+            redirect("index.php/issue-for-me/manager");
+        }
     }
     
 }

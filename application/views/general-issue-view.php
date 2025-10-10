@@ -173,6 +173,8 @@
                                                 <!-- <a href="javascript:void" class="btn btn-primary" onclick="EscalteFun(this)">Escalte Issue</a> -->
                                                 <input type="hidden" name="hdn_status_type" id="hdn_status_type" value="<?php echo $issue_result->status_type; ?>">
                                                 <input type="hidden" name="hdn_issue_id" id="hdn_issue_id" value="<?php echo $issue_result->id; ?>">
+                                                <input type="hidden" name="hdn_issue_type" id="hdn_issue_type" value="<?php echo $issue_result->issue_type; ?>">
+                                                
                                                 <button type="reset" class="btn btn-danger">Cancel</button>
                                                 <button type="submit" class="btn btn-success">Save</button>
                                             </div>

@@ -83,7 +83,7 @@ foreach($main_notification as $main_notification_row){
 
 							<div class="flex-grow-1 pl-3">
 								<strong>Title:</strong> <?php echo $main_notification_row->title;?> 
-                                <?php echo ucfirst($userrownt->firstName).' '.ucfirst($userrownt->lastName);?> Brodcast a New <?php echo $main_notification_row->type;?><br>
+                                <?php echo ucfirst($userrownt->firstName).' '.ucfirst($userrownt->lastName);?> Broadcast a New <?php echo $main_notification_row->type;?><br>
                                     <p style="font-size: 15px;font-weight: normal;" class="pb-0 mb-0"> <?php echo $main_notification_row->title;?></p>
                                     <p style="margin: 0;padding: 0;font-size: 12px;"><b>At:</b> <?php echo date("d-M-Y g:i:a", strtotime($main_notification_row->created_at));?></p>
 							</div>
