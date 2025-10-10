@@ -3,27 +3,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Admin_controller extends CI_Controller {
 
-	/**
-	 * Index Page for this controller.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/welcome
-	 *	- or -
-	 * 		http://example.com/index.php/welcome/index
-	 *	- or -
-	 * Since this controller is set as the default controller in
-	 * config/routes.php, it's displayed at http://example.com/
-	 *
-	 * So any other public methods not prefixed with an underscore will
-	 * map to /index.php/welcome/<method_name>
-	 * @see https://codeigniter.com/user_guide/general/urls.html
-	 */
 	public function __construct() {
 
 		parent::__construct();
         $this->load->library('session');	
         $this->load->model('Admin_model');
         $this->load->model('Registered_user_model');
+        $this->load->model('Super_admin_model');
         if (!$this->session->userdata('logged_in')) {
             redirect(base_url()."index.php/login", 'refresh');
 		}
@@ -271,8 +257,9 @@ class Admin_controller extends CI_Controller {
         $user_id = $this->user_id;
 
         $digits = 5;
-        $temp_password = rand(pow(10, $digits-1), pow(10, $digits)-1);
+        // $temp_password = rand(pow(10, $digits-1), pow(10, $digits)-1);
         // exit();
+        $temp_password = '12345';
 
         $data=array(
             "created_by"=>$user_id,
@@ -292,6 +279,123 @@ class Admin_controller extends CI_Controller {
             "created_on"=>date("Y-m-d H:i:s")
         );
         $this->Admin_model->save_admin_user($data);
+
+
+
+
+        $user_details = $this->Super_admin_model->get_registerd_user($register_user_id);
+		$to = $this->input->post('userEmail');
+		
+		
+		$activation_link = '<a href="'.base_url().'index.php/login">Activate Your Account</a>';
+		date_default_timezone_set("Asia/Calcutta"); 
+		// $activation_link = '<a href="'.base_url().'index.php/generate-active-register-user/'.$id.'">Activate Your Account</a>';
+		$TRANSACTIONRECORDDATETIME = date('d-m-Y h:i:s A');
+
+		$APPLICATIONNAME = 'VerifyFA';
+		$RECEIVERNAME = $this->input->post('firstName');	
+		$subject = $APPLICATIONNAME.' ReActivate Your Account';
+
+		$digits = 5;
+		$TEMPORARYPASSWORD = $temp_password;
+		$COMPANYNAME = $user_details->organisation_name;
+
+		$email_updated_content = '<body style="font-family: Helvetica, Arial, sans-serif; margin: 0px; padding: 0px; background-color: #ffffff;">
+            <table role="presentation"
+                style="width: 100%;border-collapse: collapse;border: 0px;border-spacing: 0px;font-family: Arial, Helvetica, sans-serif;background-color: rgb(250, 250, 250);">
+                <tbody>
+                <tr>
+                    <td align="center" style="padding: 1rem 2rem; vertical-align: top; width: 100%;">
+                    <table role="presentation" style="max-width: 600px; border-collapse: collapse; border: 0px; border-spacing: 0px; text-align: left;">
+                        <tbody>
+                        <tr>
+                            <td style="padding: 40px 0px 0px;">
+                            <div style="text-align: left;">
+                                <div style="padding-bottom: 20px;text-align: center;">
+                                    <img src="https://verifyfa.developmentdemo.co.in/assets/img/logo.png" alt="APPLICATIONLOGOCompany" style="width: 56px;">
+                                </div>
+                            </div>
+                            <div style="padding: 20px;background-color: rgb(255, 255, 255);border: 1px solid grey;">
+                                <div style="color: rgb(0, 0, 0); text-align: left;">
+
+                                    <p style="font-size: 14px;color: gray;text-align: center;">
+                                    ***** This is an auto generated NO REPLY communication and replies to this email id are
+                                    not attended to. (Business Hours from Mon To Sat : 10:00am to 6:00pm) *****
+                                    </p>
+
+                                    <p style="font-size: 18px;"> '.$TRANSACTIONRECORDDATETIME.' </p>
+                                    <p style="font-size: 18px;">Dear <b>'.$RECEIVERNAME.'</b>,</p>
+
+                                    <p style="font-size: 18px;line-height: 28px;">
+                                    Thanks for registering on <b>'.$APPLICATIONNAME.'</b>. It is important to activate your account in due time to continue further.
+                                    <br>
+									<br>
+                                    Your New Temporary Password for login is: <b>'.$TEMPORARYPASSWORD.'</b>.
+                                    <br>
+                                    </p>
+
+
+                                <p style="font-size: 18px;">Thanks for your support and understanding. <br>
+                                Regards, <br>
+                                <b>'.$COMPANYNAME.'</b></p>
+
+                                <p style="font-size: 14px;color: gray;text-align: center;">*****This is a system generated communication and does not require signature. *****</p>
+
+                                </div>
+                            </div>
+                            <div style="padding-top: 20px; color: rgb(153, 153, 153); text-align: justify;">
+                                Copyright <b>'.$COMPANYNAME.'</b>. All rights reserved. Terms & Conditions Please do not share your Login details, such as User ID / Password / OTP with anyone, either over phone or through email.
+                                Do not click on link from unknown/ unsecured sources that seek your confidential information. 
+                                This email is confidential. It may also be legally privileged. If you are not the addressee, you may not copy, forward, disclose or use any part of it. Internet communications cannot be guaranteed to be timely, secure, error or virus free. The sender does not accept liability for any errors or omissions. We maintain strict security standards and procedures to prevent unauthorised access to any personal information about you.
+                                Kindly read through the Privacy Policy on our website for use of Personal Information.
+                                </p>
+                            
+
+                            </div>
+                            <div style="padding-top: 20px; color: rgb(153, 153, 153); text-align: center;">
+                            <a href="javascript:void(0)">Home</a> | <a href="javascript:void(0)">Privacy Policy</a> | <a href="javascript:void(0)">Disclaimer</a>
+                            </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            </body>';
+
+		/*
+		$CI = setEmailProtocol();
+		$from_email = 'solutions@ethicalminds.in';
+		$CI->email->set_newline("\r\n");
+		$CI->email->set_mailtype("html");
+		$CI->email->set_header('Content-Type', 'text/html');
+		$CI->email->from($from_email);
+		$CI->email->to($to);
+		$CI->email->subject($subject);
+		$CI->email->message($email_updated_content);
+
+        
+
+
+	 
+				
+        $mailsend = 0;
+        if(server_check() == 'live'){
+            if($CI->email->send()){
+                $mailsend = 1;
+            }
+        }
+        */
+
+
+
+
+
+
+
+
 
         $this->session->set_flashdata('success', "User Created Successfully");
         redirect("index.php/manage-user-admin/");
