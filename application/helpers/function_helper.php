@@ -9,30 +9,32 @@ if(!function_exists('setEmailProtocol'))
     {
         $CI = &get_instance();
         $CI->load->library('email');
-        // $config['protocol'] = "smtp";
-        // $config['smtp_host'] = 'smtp.office365.com';
         $config['smtp_host'] = 'smtp.gmail.com';
         $config['smtp_port'] = '587';
-        // $config['smtp_user'] = 'grievance_alert@ptcfinancial.com';
         $config['smtp_user'] = 'solutions@ethicalminds.in';
-        $config['_smtp_auth'] = TRUE;
-        // $config['smtp_pass'] = 'Pfs!Q1#789w2#E3$';
-        // $config['smtp_pass'] = 'Ethj@s123';
+        // $config['_smtp_auth'] = TRUE;
+        $config['smtp_auth'] = TRUE; // ✅ CORRECT KEY
         $config['smtp_pass'] = 'gtroozhuovdrgnob';
         $config['smtp_crypto'] = 'tls';
         $config['protocol'] = 'smtp';
         $config['mailtype'] = 'html';
-        // $config['crlf'] = '\r\n';
         $config['send_multipart'] = FALSE;
-        // $config['charset'] = 'utf-8';
         $config['charset'] = 'iso-8859-1';
         $config['wordwrap'] = TRUE;
         $config['crlf'] = "\r\n";
         $config['newline'] = "\r\n";
+        echo '<pre>config ';
+        print_r($config);
+        echo '</pre>';
+        
         $CI->email->initialize($config);
+        // $email = $CI->email; // assign reference
+        // $email->initialize($config);        
 
-       
-
+        echo '<pre>CI ';
+        print_r($CI);
+        echo '</pre>';
+        exit();
         return $CI;
     }
 }

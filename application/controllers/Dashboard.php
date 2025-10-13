@@ -769,10 +769,13 @@ class Dashboard extends CI_Controller {
 
 
 		$company_mapped_query = $this->db->query('SELECT count(company_id) as company_mapped FROM user_role where user_role.user_id = '.$user_id.' Group by company_id');
-		// echo '<pre>last_query ';
-		// print_r($this->db->last_query());
-		// echo '</pre>';
-		// exit();
+		if(empty($company_mapped_query->row())){
+			$data['Companies_Mapped'] = 0;
+			$this->load->view('NoUserMapped',$data);	
+			exit();
+			// $company_mapped_query_result = $company_mapped_query->row();
+			// $data['Companies_Mapped'] = $company_mapped_query_result->company_mapped;
+		}
 		$company_mapped_query_result = $company_mapped_query->row();
 		$data['Companies_Mapped'] = $company_mapped_query_result->company_mapped;
 

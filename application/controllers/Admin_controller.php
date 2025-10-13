@@ -260,6 +260,7 @@ class Admin_controller extends CI_Controller {
         $digits = 5;
         // $temp_password = rand(pow(10, $digits-1), pow(10, $digits)-1);
         // exit();
+        // $temp_password = rand(pow(10, $digits-1), pow(10, $digits)-1);
         $temp_password = '12345';
 
         $data=array(
@@ -366,37 +367,72 @@ class Admin_controller extends CI_Controller {
             </table>
             </body>';
 
-		/*
-		$CI = setEmailProtocol();
+         
+
+            $CI = &get_instance();
+
+            $config = [
+                'protocol'    => 'smtp',
+                'smtp_host'   => 'ssl://smtp.gmail.com',  // or 'tls://smtp.gmail.com'
+                'smtp_port'   => 465,                      // use 465 for SSL or 587 for TLS
+                'smtp_user'   => 'solutions@ethicalminds.in',
+                'smtp_pass'   => 'gtroozhuovdrgnob',      // must be Gmail App Password
+                'mailtype'    => 'html',
+                'charset'     => 'utf-8',
+                'wordwrap'    => TRUE,
+                'newline'     => "\r\n",
+                'crlf'        => "\r\n",
+            ];
+            $from_email = 'solutions@ethicalminds.in';
+            // ✅ Load the email library with an alias to avoid conflicts
+            $CI->load->library('email', $config, 'mailer');
+
+            // ✅ Always refer to it via the alias
+            $CI->mailer->from($from_email);
+            $CI->mailer->to($to);
+            $CI->mailer->subject($subject);
+            $CI->mailer->message($email_updated_content);
+
+              		
+            $mailsend = 0;
+            if(server_check() == 'live'){
+                if($CI->mailer->send()){
+                    $mailsend = 1;
+                }
+            }
+
+            /*
+            if ($CI->mailer->send()) {
+                echo '✅ Email sent successfully!';
+            } else {
+                echo $CI->mailer->print_debugger();
+            }
+
+            exit();
+
+
+		$CIM = setEmailProtocol();
+        echo '<pre>CIM ';
+        print_r($CIM);
+        echo '</pre>';
+        exit();
 		$from_email = 'solutions@ethicalminds.in';
-		$CI->email->set_newline("\r\n");
-		$CI->email->set_mailtype("html");
-		$CI->email->set_header('Content-Type', 'text/html');
-		$CI->email->from($from_email);
-		$CI->email->to($to);
-		$CI->email->subject($subject);
-		$CI->email->message($email_updated_content);
-
-        
-
-
-	 
-				
+		$CIM->email->set_newline("\r\n");
+		$CIM->email->set_mailtype("html");
+		$CIM->email->set_header('Content-Type', 'text/html');
+		$CIM->email->from($from_email);
+		$CIM->email->to($to);
+		$CIM->email->subject($subject);
+		$CIM->email->message($email_updated_content);
+        		
         $mailsend = 0;
         if(server_check() == 'live'){
-            if($CI->email->send()){
+            if($CIM->email->send()){
                 $mailsend = 1;
             }
         }
+        exit();
         */
-
-
-
-
-
-
-
-
 
         $this->session->set_flashdata('success', "User Created Successfully");
         redirect("index.php/manage-user-admin/");
