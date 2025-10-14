@@ -35,7 +35,7 @@ $allcategories=getCategories($projects[0]->project_name);
                     </div>  
                     <div class="row">
                         <div class="col-md-4">
-                            <td class="text-center"> <a href="<?php echo base_url();?>index.php/dashboard" class="btn btn-round pull-left">Back</a>
+                            <td class="text-center"> <a href="<?php echo base_url();?>index.php/dashboard/project" class="btn btn-round pull-left">Back</a>
                             </td>
                         </div>
 
@@ -62,7 +62,10 @@ $allcategories=getCategories($projects[0]->project_name);
                             <?php } ?>
                        
                         <div class="col-md-4">
-                            <td class="text-center"> <a href="<?php echo base_url();?>index.php/dashboard/projectprint/<?php echo $projects[0]->id;?>" class="btn btn-round btn-fill btn-info pull-right">Export</a>
+                            <td class="text-center"> <a href="<?php echo base_url();?>index.php/dashboard/projectprint/<?php echo $projects[0]->id;?>" class="btn btn-round btn-fill btn-info pull-right" style="display:none">Export</a>
+
+                            <td class="text-center"> <a href="<?php echo base_url();?>index.php/ProjectDetails/one/<?php echo $projects[0]->id;?>" class="btn btn-round btn-fill btn-info pull-right">Export</a>
+
                             </td>
                         </div>
                         

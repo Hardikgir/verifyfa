@@ -1143,6 +1143,7 @@ class Dashboard extends CI_Controller {
 		$location_datas = $_POST['location_id'];
 		$role_id_datas = $_POST['role_id'];
 		$user_id=$this->user_id;
+		$entity_code=$this->admin_registered_entity_code;
 
 
 
@@ -1206,12 +1207,12 @@ class Dashboard extends CI_Controller {
 
 
 
-		$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.status = 0 AND ('.$role_where.')')->result();
+		$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.status = 0 AND company_projects.entity_code = "'.$entity_code.'" AND ('.$role_where.')')->result();
 
-		$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.status = 0 AND ('.$role_where.')')->result();
+		$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.status = 0 AND company_projects.entity_code = "'.$entity_code.'" AND ('.$role_where.')')->result();
 			
 		if(!empty($location_datas)){
-			$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location = '.$location_datas.' AND company_projects.status = 0 AND ('.$role_where.')')->result();
+			$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location = '.$location_datas.' AND company_projects.status = 0 AND company_projects.entity_code = "'.$entity_code.'" AND ('.$role_where.')')->result();
 		}
 
 
@@ -1338,7 +1339,9 @@ class Dashboard extends CI_Controller {
 			$project_start_date = $projects_value->start_date;
 			$project_end_date = $projects_value->due_date;
 			$project_name_value = $projects_value->project_name;
-			$stackedBarchartContainer_array[$count]['y'] = [(strtotime($project_start_date. ' + 1 day')), (strtotime($project_end_date. ' + 1 day'))];
+			// $stackedBarchartContainer_array[$count]['y'] = [(strtotime($project_start_date. ' + 1 day')), (strtotime($project_end_date. ' + 1 day'))];
+			$stackedBarchartContainer_array[$count]['y'] = [(strtotime($project_start_date)), (strtotime($project_end_date))];
+			
 			// $stackedBarchartContainer_array[$count]['label'] = mb_strimwidth($project_name_value, 0, 10, "...");;
 			$stackedBarchartContainer_array[$count]['label'] = $project_name_value;
 			$count++;

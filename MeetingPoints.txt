@@ -1,3 +1,17 @@
+Date :- 14/10/2025 :- 
+
+-> Status of open Project issue Slider 5.
+-> Same Screen as above Status of Resouce allocation graph loading with wrong Date
+-> Issue Related (Slider 7,)
+-> Backbutton is not Working proper.
+-> Slider 13 now resolve their issue but after action is done page is redirect to here (http://localhost/codeigniter/verifyfa/index.php/dashboard/requestdeleteproject/16)
+
+
+-> Need To Discuss (Export Feature is not Working Perfect).
+
+
+================================================================================================
+
 Date :- 08/10/2025 :- 
 
 You have to find out Keyword (if($CI->email->send())) Thier is only one.
