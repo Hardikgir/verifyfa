@@ -4,6 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Registeredusercontroller extends CI_Controller {
 	public function __construct() {
 		parent::__construct();		
+        date_default_timezone_set("Asia/Calcutta"); 
 		$this->load->library('session');	
 		if (!$this->session->userdata('registered_user_logged')) {
             redirect(base_url()."index.php/registered-user-login", 'refresh');

@@ -272,6 +272,8 @@ class Dashboard extends CI_Controller {
 
 		
 		$projects=$this->tasks->get_data('company_projects',$condition);	
+
+		
 	
 		
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
@@ -697,9 +699,10 @@ class Dashboard extends CI_Controller {
 		$company_datas = implode(",", $company_array);
 		$location_datas = implode(",", $location_array);
 
-		
+		// "entity_code"=>$this->admin_registered_entity_code
 
-		$company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id')->result();
+		// $company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id')->result();
+		$company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.entity_code = "'.$this->admin_registered_entity_code.'"')->result();
 	
 		// echo '<pre>last_query ';
 		// print_r($this->db->last_query());

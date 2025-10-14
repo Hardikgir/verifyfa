@@ -15,6 +15,7 @@ class Tasks extends CI_Controller {
         // $this->load->library('Excel');
         // $this->load->library('PHPExcel');
         date_default_timezone_set('Asia/Calcutta'); 
+        date_default_timezone_set("Asia/Calcutta"); 
 
 	}
 

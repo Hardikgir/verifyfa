@@ -21,7 +21,7 @@ class Plancycle extends CI_Controller {
 	public function __construct() {
 
 		parent::__construct();		
-
+		date_default_timezone_set("Asia/Calcutta"); 
 		$this->load->model('Login_model','plancycle');
 		$this->load->model('Tasks_model','tasks');		
 		// Load form validation library

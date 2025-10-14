@@ -162,7 +162,8 @@ $this->load->view('layouts/footer');
                <?php echo $total_company_locations_count; ?>
             </h2>
             <?php 
-               $Location_count = (int)$subscription_plan_details->location_each_entity-(int)$total_company_locations_count;
+               $total_entity = (int)$subscription_plan_details->allowed_entities_no*(int)$subscription_plan_details->location_each_entity;
+               $Location_count = (int)$total_entity-(int)$total_company_locations_count;
                ?>
             <p class="txt-cardp" style="text-align: center;"><?php echo " (".$Location_count." remaining)"; ?></p>
          </div>

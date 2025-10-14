@@ -7,7 +7,7 @@ class ProjectDetails extends CI_Controller {
 		parent::__construct();		
         $this->load->model('Tasks_model','tasks');	
         $this->load->model('Login_model','plancycle');
-
+		date_default_timezone_set("Asia/Calcutta"); 
 		$this->load->library('form_validation');
 		$this->load->helper('function_helper','helper');
 		$this->load->library('session');	
