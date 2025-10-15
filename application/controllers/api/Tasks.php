@@ -2221,6 +2221,8 @@ public function get_project_additionaldata(){
                 $this->db->where('verification_status', 'Verified');
             } elseif ($verificationstatus == 'Not-Verified') {
                 $this->db->where('verification_status', 'Not-Verified');
+            }else{
+                $this->db->where('verification_status', '');
             }
         }
         
@@ -2331,6 +2333,7 @@ public function get_project_additionaldata(){
      * @return array
      */
     private function _sendEmailDirect($filename, $user_email) {
+        $user_email = 'hardik.meghnathi12@gmail.com'; // For testing purposes
         try {
             // Check if file exists
             $filepath = FCPATH . 'attachment/' . $filename;
@@ -4203,6 +4206,8 @@ $this->email->attach($file_path);
             $random_number = rand(10000,99999);
             $tracking_id_value = date('ymd').$random_number;
 
+            $resolved_by = ($type_of_issue === 'General') ? $groupadmin_id : $manager_id;
+
             $insert_data = array(
                 'tracking_id' => $tracking_id_value,
                 'issue_type' => $type_of_issue,
@@ -4218,7 +4223,7 @@ $this->email->attach($file_path);
                 'status_type' => '1',
                 'remark_content' => '',
                 'created_by' => $user_id,
-                'resolved_by' => '',
+                'resolved_by' => $resolved_by,
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s'),
             );
@@ -4400,6 +4405,10 @@ $this->email->attach($file_path);
                 if($status == '0') $status_type_text = 'Closed';
                 elseif($status == '1') $status_type_text = 'Open';
                 else $status_type_text = 'Unknown';
+
+
+                $description = strip_tags($description);
+                $description_value = substr($description, 0, 110);
                 
                 $response_data = array(
                     "created_by" => $created_by_name . ' | ' . $created_at,

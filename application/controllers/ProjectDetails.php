@@ -395,50 +395,24 @@ class ProjectDetails extends CI_Controller {
 			if($projects[0]->project_type=='CD' )
 			{
 				$my_array1[$alcat->item_category]['percentage'] = getmoney_format(round((($overallverified/$overalltotal)*100),2));
-				// $my_array1[$alcat->item_category]['overallverified'] = getmoney_format(round(($overallverified/100000),2));
-				// $my_array1[$alcat->item_category]['overalltotal'] = getmoney_format(round(($overalltotal/100000),2));
-
 				$my_array1[$alcat->item_category]['overallverified'] = round(($overallverified/100000));//getmoney_format(round(($overallverified/100000),2));
 				$my_array1[$alcat->item_category]['overalltotal'] = round(($overalltotal/100000)); //getmoney_format(round(($overalltotal/100000),2));
 			}
+
+			// This New Section Added By Hardik For TG Project Start Here
+			if($projects[0]->project_type=='TG' )
+			{
+				$my_array1[$alcat->item_category]['percentage'] = getmoney_format(round((($overallverified/$overalltotal)*100),2));
+				$my_array1[$alcat->item_category]['overallverified'] = round(($overallverified/100000));//getmoney_format(round(($overallverified/100000),2));
+				$my_array1[$alcat->item_category]['overalltotal'] = round(($overalltotal/100000)); //getmoney_format(round(($overalltotal/100000),2));
+			}
+			// This New Section Added By Hardik For TG Project End Here
 		}
 
+		
 	
 
 		$filled = ($ttt+$tntt+$tutt) > 0 ? round((($ttv+$tntv+$tutv)/($ttt+$tntt+$tutt))*100,2).' 0 ': '0 ';
-
-		// 	$AmountwiseBreakupChart_dataPoints1 = array();
-		// 	$AmountwiseBreakupChart_dataPoints2 = array();
-		// 	foreach($my_array1 as $my_array1_key=>$my_array1_value){			
-		// 		$AmountwiseBreakupChart_dataPoints1[] = array("label"=> $my_array1_key, "y"=> $my_array1_value['percentage']);
-		// 		$AmountwiseBreakupChart_dataPoints2[] = array("label"=> $my_array1_key, "y"=> 100-(int)$my_array1_value['percentage']);
-		// 	}
-		
-		// 	$data['AmountwiseBreakupChart_dataPoints1']=$AmountwiseBreakupChart_dataPoints1;
-		// 	$data['AmountwiseBreakupChart_dataPoints2']=$AmountwiseBreakupChart_dataPoints2;
-			
-
-			
-		// 	$calculation = 100-floatval($filled);
-		// 	$y_value = number_format((float)$calculation, 2, '.', '');
-			
-			
-		//    $AmountwiseBreakup_DonutChart_dataPoints = array( 
-		// 	   array("label"=>"Verified", "symbol" => "Verified","y"=>round((float)$filled)),
-		// 	   array("label"=>"Not Verified", "symbol" => "Not Verified","y"=>round((float)$y_value)),
-		//    );
-
-
-		// 	$data['AmountwiseBreakup_DonutChart_dataPoints']=$AmountwiseBreakup_DonutChart_dataPoints;
-
-
-		// amount wise breakup chart code end here4
-
-
-		// echo '<pre>my_array1 ';
-		// print_r($my_array1);
-		// echo '</pre>';
-		// exit();
 
 	    $AmountwiseBreakupChart_dataPoints1 = array();
         $AmountwiseBreakupChart_dataPoints2 = array();
@@ -448,15 +422,11 @@ class ProjectDetails extends CI_Controller {
             $total_amount = (float) str_replace(',', '', $my_array1_value['overalltotal']);
 
 			$calculation = $my_array1_value['overalltotal']-$my_array1_value['overallverified'];
-			// echo '<pre>calculation ';
-			// print_r($calculation);
-			// echo '</pre>';
-			// exit();
             $AmountwiseBreakupChart_dataPoints1[] = array("label"=> $my_array1_key, "y"=> $verified_amount,"customText" => round($my_array1_value['overallverified'],2)." Lac");
-
             $AmountwiseBreakupChart_dataPoints2[] = array("label"=> $my_array1_key, "y"=> ($total_amount - $verified_amount), "customText" => round($calculation,2)." Lac");
         }
 
+		
 		// exit();
    
         $data['AmountwiseBreakupChart_dataPoints1']=$AmountwiseBreakupChart_dataPoints1;
