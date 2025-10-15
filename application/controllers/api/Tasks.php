@@ -765,6 +765,32 @@ class Tasks extends CI_Controller {
 
         );
         $finish=$this->tasks->update_data('company_projects',$data,$condition);
+
+        if($status == '2'){
+            $this->db->select('*');
+            $this->db->from('company_projects');
+            $this->db->where('id',$projectid);
+            $query = $this->db->get();
+            $company_projects_result= $query->row();
+            $original_table_name = $company_projects_result->original_table_name;
+            $item_category_array = json_decode($company_projects_result->item_category);
+
+            foreach($item_category_array as $item_category_array_value){
+                $condition=array(
+                    'item_category'=>$item_category_array_value
+                );
+                $data=array(
+                    'is_alotted'=>0
+                );
+                $this->db->where($condition);
+                $query = $this->db->update($original_table_name,$data);
+            }
+        }
+        
+
+
+
+
         
 		if($finish)
 		{
