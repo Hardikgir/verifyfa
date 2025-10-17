@@ -4176,7 +4176,28 @@ $this->email->attach($file_path);
         $type_of_issue = $this->input->post('type_of_issue');
         $issue_title = $this->input->post('issue_title');
         $issue_description = $this->input->post('issue_description');
-        $issue_attachment = $this->input->post('issue_attachment');
+        // $issue_attachment = $this->input->post('issue_attachment');
+
+
+        $config['upload_path'] = './issueattachment/';
+        $config['allowed_types'] = '*';
+		$config['encrypt_name']=true;
+
+        $this->load->library('upload', $config);
+		$issue_attachment='';
+        if (!$this->upload->do_upload('issue_attachment')) {
+            $error = array('error' => $this->upload->display_errors());
+			// print_r($error);
+			// exit;
+        } else {
+            $data = $this->upload->data();
+			$issue_attachment=$data['file_name'];
+		}
+
+
+
+
+
         
         // Get conditional fields
         $groupadmin_id = $this->input->post('groupadmin_id');
@@ -4244,8 +4265,9 @@ $this->email->attach($file_path);
                 'groupadmin_name' => ($type_of_issue === 'Project based') ? '0' : $groupadmin_id,
                 'issue_title' => $issue_title,
                 'issue_description' => $issue_description,
-                'issue_attachment' => $issue_attachment ? $issue_attachment : '',
-                'status' => 'Open',
+                // 'issue_attachment' => $issue_attachment ? $issue_attachment : '',
+                "issue_attachment" => $issue_attachment ? $issue_attachment : '',
+                'status' => '1',
                 'status_type' => '1',
                 'remark_content' => '',
                 'created_by' => $user_id,
@@ -4442,8 +4464,10 @@ $this->email->attach($file_path);
                     "issue_type" => $issue_type,
                     "subject" => $subject,
                     "description" => $description,
-                    "handled_by" => $handled_by_name . ' | ' . $created_at,
-                    "attachment" => $attachment ? base_url('attachment/' . $attachment) : '',
+                    "handled_id" => $issue_data->resolved_by,
+                    "handled_by" => $handled_by_name,
+                    "created_at" => $created_at,
+                    "attachment" => $attachment ? base_url('issueattachment/' . $attachment) : '',
                     "status" => $status_type_text
                 );
                 
@@ -5749,6 +5773,18 @@ public function resolve_issue(){
 		
 		$user_role = 0;
 		$resulttttt=$this->db->query('SELECT user_role.*,users.* from user_role INNER JOIN users ON users.id=user_role.user_id where FIND_IN_SET('.$user_role.',user_role) AND user_role.location_id='.$location_id.' AND user_role.entity_code="'.$entity_code.'"')->result();
+
+        
+
+        foreach($resulttttt as $resulttttt_key=>$resulttttt_value){
+            $resulttttt[$resulttttt_key]->userName = $resulttttt_value->firstName.' '.$resulttttt_value->lastName;
+        }
+
+        // echo '<pre>resulttttt ';
+        // print_r($resulttttt);
+        // echo '</pre>';
+        // exit();
+
         $response['message'] = 'Get Manager';
         $response['status'] = 1;
         $response['data'] = $resulttttt;
@@ -5761,6 +5797,12 @@ public function resolve_issue(){
         $entity_code=$this->input->post('entity_code');
 		$user_role = 5;
 		$group_admin = $this->db->query('SELECT user_role.*,users.* from user_role INNER JOIN users ON users.id=user_role.user_id where FIND_IN_SET('.$user_role.',user_role) AND user_role.entity_code="'.$entity_code.'"')->result();
+        
+         foreach($group_admin as $group_admin_key=>$group_admin_value){
+            $group_admin[$group_admin_key]->userName = $group_admin_value->firstName.' '.$group_admin_value->lastName;
+        }
+
+        
         $response['message'] = 'Get Group Admin';
         $response['status'] = 1;
         $response['data'] = $group_admin;
