@@ -64,7 +64,12 @@ $this->load->view('layouts/sidebar');
                         <label class="form-label">GroupAdmin</label>
                         <select name="selectGropAdmin[]" id="selectGropAdmin" class="form-control" multiple>
                             <?php foreach($all_GroupAdmin as $GroupAdminkey=>$GroupAdminvalue){
-                                echo '<option value="'.$GroupAdminvalue->id.'">'.$GroupAdminvalue->firstName.' '.$GroupAdminvalue->lastName.'</option>';    
+
+                                $selected = "";
+                                if($this->user_id == $GroupAdminvalue->id){
+                                    $selected = "selected";
+                                }
+                                echo '<option value="'.$GroupAdminvalue->id.'" '.$selected.'>'.$GroupAdminvalue->firstName.' '.$GroupAdminvalue->lastName.'</option>';    
                             } ?>
                         </select>
                     </div>

@@ -13,10 +13,14 @@ $this->load->view('layouts/sidebar');
 	
 		<div class="row">
         <div class="col-lg-12 mt-4 mb-4" style="border-bottom:1px solid #6e50505e;">
-            <h4 class="page-title">Manage Notification</h4>            
+            <h4 class="page-title">Manage Notification</h4>          
+            <a href="<?php echo base_url();?>index.php/view-all-notification">
+             <button class="btn btn-success" style="float:right">View All Received Notifications</button>
+            </a>
             <a href="<?php echo base_url();?>index.php/brodcast-notification">
              <button class="btn btn-primary" style="float:right">Broadcast New Notification</button>
             </a>
+           
        </div>     
 
 			<div class="col-lg-12">
@@ -44,7 +48,7 @@ $this->load->view('layouts/sidebar');
                 <?php /* <td><?php echo $row->type;?></td> */ ?>
                 <td><?php echo $row->title;?></td>
                 <td><?php echo $user_row->firstName.' '.$user_row->lastName;?></td>
-                <td><?php echo $row->created_at;?></td>
+                <td><?php echo date('d-M-Y H:s A',strtotime($row->created_at));?></td>
                 <?php /*
                 <td><?php 
                 if($row->staus =='0'){echo "Progress";}

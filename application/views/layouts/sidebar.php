@@ -258,7 +258,7 @@ $get_user_all_roles = get_user_all_roles($user_id,$entity_code); // get all user
 			// }
 			
 			//if(($user_role_addmin_cnt > 0) || ($user_role_manager_cnt > 0) ){ ?>
-				<li class="nav-item <?php echo $page_title=='Issue For Me'?'active':'';?>  ">
+				<li class="nav-item <?php if($page_title=='Issue For Me' || $page_title== 'View Issue'){ echo 'active'; }?>  ">
 				<a class="nav-link" href="<?php echo base_url();?>index.php/issue-for-me/groupadmin"><i class="fa fa-tasks"></i>
 					<p>Issue For Me</p>
 				</a>

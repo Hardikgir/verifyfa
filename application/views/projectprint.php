@@ -33,7 +33,7 @@ $allcategories=getCategories($projects[0]->project_name);
                         
                             <div class="col-md-3"><h4>Project Detail<h4></div>
                             <div class="col-md-3 col-xs-3 text-right">
-                            <a href="<?php echo base_url();?>index.php/dashboard/projectdetail/<?php echo $projectId;?>" class="btn btn-round btn-blue">Back</a>
+                            <a href="<?php echo base_url();?>index.php/ProjectDetails/one/<?php echo $projectId;?>" class="btn btn-round btn-blue">Back</a>
                             </div>
                             <div class="col-md-3 col-xs-3 text-right">
                             <a href="#" class="btn btn-round btn-blue" onclick="window.print()">Print</a>
@@ -96,8 +96,9 @@ $allcategories=getCategories($projects[0]->project_name);
                    
                             <div class="col-md-6">
                                 <div class="form-group">
+                                    <?php $verifiercnt=  explode(',',$pro->project_verifier);?>
                                     <label class="bmd-label-floating">No.of Resources assigned</label>
-                                    <input type="text" value="<?php echo count($pro->project_verifier); ?>" class="form-control">
+                                    <input type="text" value="<?php echo count($verifiercnt); ?>" class="form-control">
                                 </div>
                             </div>
                             <div class="col-md-6">

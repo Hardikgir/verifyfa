@@ -59,7 +59,7 @@
                             <table class="table table-bordered">
                                 <tr>
                                     <th>Created By</th>
-                                    <td><?php echo $issue_result->solver_firstName.$issue_result->solver_lastName." | ".$issue_result->created_at;?></td>
+                                    <td><?php echo $issue_result->solver_firstName.' '.$issue_result->solver_lastName." | ". date('d-M-Y H:s A',strtotime($issue_result->created_at));?></td>
                                 </tr>
                               
 
@@ -92,7 +92,7 @@
 
                                 <tr>
                                     <th>Issue Handled By</th>
-                                    <td><?php echo $issue_result->resolver_firstName." - ".$issue_result->resolver_lastName." | ".$issue_result->updated_at; ?></td>
+                                    <td><?php echo $issue_result->resolver_firstName." ".$issue_result->resolver_lastName." | ".date('d-M-Y H:s A',strtotime($issue_result->updated_at)); ?></td>
                                 </tr>
                                 <?php 
                                 if(!empty($issue_result->issue_attachment)){ ?>

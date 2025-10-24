@@ -6476,7 +6476,7 @@ class Dashboard extends CI_Controller {
 		$this->db->where("id",$project_id);
 		$this->db->update("company_projects",$data);
 		$this->session->set_flashdata("success","Project Accept Request Delete Successfully");
-		redirect("index.php/dashboard");		
+		redirect("index.php/dashboard/project");		
 
 	}
 	
@@ -6488,7 +6488,7 @@ class Dashboard extends CI_Controller {
 		$this->db->where("id",$project_id);
 		$this->db->update("company_projects",$data);
 		$this->session->set_flashdata("success","Project Accept Request Delete Successfully");
-		redirect("index.php/dashboard");	
+		redirect("index.php/dashboard/project");	
 
 	}
 

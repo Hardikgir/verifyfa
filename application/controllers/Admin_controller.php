@@ -260,8 +260,8 @@ class Admin_controller extends CI_Controller {
         $digits = 5;
         // $temp_password = rand(pow(10, $digits-1), pow(10, $digits)-1);
         // exit();
-        // $temp_password = rand(pow(10, $digits-1), pow(10, $digits)-1);
-        $temp_password = '12345';
+        $temp_password = rand(pow(10, $digits-1), pow(10, $digits)-1);
+        // $temp_password = '12345';
 
         $data=array(
             "created_by"=>$user_id,
@@ -296,7 +296,7 @@ class Admin_controller extends CI_Controller {
 
 		$APPLICATIONNAME = 'VerifyFA';
 		$RECEIVERNAME = $this->input->post('firstName');	
-		$subject = $APPLICATIONNAME.' ReActivate Your Account';
+		$subject = $APPLICATIONNAME.' Activate Your Account';
 
 		$digits = 5;
 		$TEMPORARYPASSWORD = $temp_password;
@@ -334,6 +334,8 @@ class Admin_controller extends CI_Controller {
 									<br>
                                     Your New Temporary Password for login is: <b>'.$TEMPORARYPASSWORD.'</b>.
                                     <br>
+                                    <br>
+                                    Please click on the link to Activate and setup your New Password. '.$activation_link.'
                                     </p>
 
 
@@ -366,6 +368,8 @@ class Admin_controller extends CI_Controller {
                 </tbody>
             </table>
             </body>';
+
+            
 
          
 
@@ -401,38 +405,7 @@ class Admin_controller extends CI_Controller {
                 }
             }
 
-            /*
-            if ($CI->mailer->send()) {
-                echo '✅ Email sent successfully!';
-            } else {
-                echo $CI->mailer->print_debugger();
-            }
-
-            exit();
-
-
-		$CIM = setEmailProtocol();
-        echo '<pre>CIM ';
-        print_r($CIM);
-        echo '</pre>';
-        exit();
-		$from_email = 'solutions@ethicalminds.in';
-		$CIM->email->set_newline("\r\n");
-		$CIM->email->set_mailtype("html");
-		$CIM->email->set_header('Content-Type', 'text/html');
-		$CIM->email->from($from_email);
-		$CIM->email->to($to);
-		$CIM->email->subject($subject);
-		$CIM->email->message($email_updated_content);
-        		
-        $mailsend = 0;
-        if(server_check() == 'live'){
-            if($CIM->email->send()){
-                $mailsend = 1;
-            }
-        }
-        exit();
-        */
+            
 
         $this->session->set_flashdata('success', "User Created Successfully");
         redirect("index.php/manage-user-admin/");
@@ -813,63 +786,77 @@ $role=implode(',',$this->input->post('user_role'));
        
         if(!empty($user_roles)){
             foreach(array_unique($user_roles) as $user_role_key=>$user_role_value){
-                if($user_role_value == '5'){
+                // if($user_role_value == '5'){
                     // $all_GroupAdmin = $this->Admin_model->get_users_by_role($user_role_value);
-                    $all_GroupAdmin_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
+                    $all_GroupAdmin_roles = $this->Admin_model->get_all_user_of_role_by_entity(5,$entity_code);
                     $all_GroupAdmin_array = array();
                     foreach($all_GroupAdmin_roles as $all_GroupAdmin_roleskey=>$all_GroupAdmin_rolesvalue){
                         $all_GroupAdmin_roles_array[] = $all_GroupAdmin_rolesvalue->user_id;
                     }
-                    $all_GroupAdmin = $this->Admin_model->get_users_by_ids(implode(',', $all_GroupAdmin_roles_array));
-                }
+                    if(!empty($all_GroupAdmin_roles_array)){
+                        $all_GroupAdmin = $this->Admin_model->get_users_by_ids(implode(',', $all_GroupAdmin_roles_array));
+                    }
+                // }
 
-                if($user_role_value == '4'){
-                    $all_SubAdmin_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
+                // if($user_role_value == '4'){
+                    $all_SubAdmin_roles = $this->Admin_model->get_all_user_of_role_by_entity(4,$entity_code);
                     $all_SubAdmin_roles_array = array();
                     foreach($all_SubAdmin_roles as $all_SubAdmin_roleskey=>$all_SubAdmin_rolesvalue){
                         $all_SubAdmin_roles_array[] = $all_SubAdmin_rolesvalue->user_id;
                     }
-                    $all_SubAdmin = $this->Admin_model->get_users_by_ids(implode(',', $all_SubAdmin_roles_array));
-                }
-                if($user_role_value == '3'){
+                    if(!empty($all_SubAdmin_roles_array)){
+                        $all_SubAdmin = $this->Admin_model->get_users_by_ids(implode(',', $all_SubAdmin_roles_array));
+                    }
+                // }
+                // if($user_role_value == '3'){
                     // $all_EntityOwner = $this->Admin_model->get_users_by_role($user_role_value);
-                    $all_EntityOwner_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
+                    $all_EntityOwner_roles = $this->Admin_model->get_all_user_of_role_by_entity(3,$entity_code);
                     $all_EntityOwner_roles_array = array();
                     foreach($all_EntityOwner_roles as $all_EntityOwner_roleskey=>$all_EntityOwner_rolesvalue){
                         $all_EntityOwner_roles_array[] = $all_EntityOwner_rolesvalue->user_id;
                     }
-                    $all_EntityOwner = $this->Admin_model->get_users_by_ids(implode(',', $all_EntityOwner_roles_array));
-                }
-                if($user_role_value == '2'){
+                    if(!empty($all_EntityOwner_roles_array)){
+                        $all_EntityOwner = $this->Admin_model->get_users_by_ids(implode(',', $all_EntityOwner_roles_array));
+                    }
+                // }
+                // if($user_role_value == '2'){
                     // $all_ProcessOwner = $this->Admin_model->get_users_by_role($user_role_value);
-                    $all_ProcessOwner_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
+                    $all_ProcessOwner_roles = $this->Admin_model->get_all_user_of_role_by_entity(2,$entity_code);
                     $all_ProcessOwner_roles_array = array();
                     foreach($all_ProcessOwner_roles as $all_ProcessOwner_roleskey=>$all_ProcessOwner_rolesvalue){
                         $all_ProcessOwner_roles_array[] = $all_ProcessOwner_rolesvalue->user_id;
                     }
-                    $all_ProcessOwner = $this->Admin_model->get_users_by_ids(implode(',', $all_ProcessOwner_roles_array));
-                }
-                if($user_role_value == '0'){
+                    if(!empty($all_ProcessOwner_roles_array)){
+                        $all_ProcessOwner = $this->Admin_model->get_users_by_ids(implode(',', $all_ProcessOwner_roles_array));
+                    }
+                // }
+                // if($user_role_value == '0'){
                     // $all_Manager = $this->Admin_model->get_users_by_role($user_role_value);
-                    $all_Manager_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
+                    $all_Manager_roles = $this->Admin_model->get_all_user_of_role_by_entity(0,$entity_code);
                     $all_Manager_roles_array = array();
                     foreach($all_Manager_roles as $all_Manager_roleskey=>$all_Manager_rolesvalue){
                         $all_Manager_roles_array[] = $all_Manager_rolesvalue->user_id;
                     }
-                    $all_Manager = $this->Admin_model->get_users_by_ids(implode(',', $all_Manager_roles_array));
-                }
-                if($user_role_value == '1'){
+                    if(!empty($all_Manager_roles_array)){
+                        $all_Manager = $this->Admin_model->get_users_by_ids(implode(',', $all_Manager_roles_array));
+                    }
+                    
+                // }
+                // if($user_role_value == '1'){
                     // $all_Verify = $this->Admin_model->get_users_by_role($user_role_value);
-                    $all_Verify_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
+                    $all_Verify_roles = $this->Admin_model->get_all_user_of_role_by_entity(1,$entity_code);
                     $all_Verify_roles_array = array();
                     foreach($all_Verify_roles as $all_Verify_roleskey=>$all_Verify_rolesvalue){
                         $all_Verify_roles_array[] = $all_Verify_rolesvalue->user_id;
                     }
-                    $all_Verify = $this->Admin_model->get_users_by_ids(implode(',', $all_Verify_roles_array));
+                    if(!empty($all_Verify_roles_array)){
+                        $all_Verify = $this->Admin_model->get_users_by_ids(implode(',', $all_Verify_roles_array));
+                    }
                     // las
-                }
+                // }
             }
         }
+        
         $data['all_GroupAdmin'] = $all_GroupAdmin;
         $data['all_SubAdmin'] = $all_SubAdmin;
         $data['all_EntityOwner'] = $all_EntityOwner;
@@ -1162,8 +1149,8 @@ $role=implode(',',$this->input->post('user_role'));
         $data["notification"]=$this->Admin_model->save_delete_request($data);
         $insert_id = $this->db->insert_id();
 
-        $this->session->set_flashdata('success', "Delete Requesting Successfull..");
-        redirect("index.php/dashboard");
+        $this->session->set_flashdata('success', "Project Deletion Successful");
+        redirect("index.php/dashboard/project");
         
     }
 
@@ -1328,7 +1315,8 @@ $role=implode(',',$this->input->post('user_role'));
             
             "created_by"=>$created_by,
             "resolved_by" => $resolved_by,
-            "created_at"=>date("Y-m-d H:i:s")
+            "created_at"=>date("Y-m-d H:i:s"),
+            "updated_at"=>date("Y-m-d H:i:s")
         );
        
         $data["notification"]=$this->Admin_model->save_issue_details($data);
@@ -1379,7 +1367,7 @@ $role=implode(',',$this->input->post('user_role'));
 
 
       public function update_issue(){
-
+         date_default_timezone_set("Asia/Calcutta"); 
         $hdn_issue_id = $this->input->post("hdn_issue_id");
 
         $created_by=$this->user_id;
@@ -1418,6 +1406,7 @@ $role=implode(',',$this->input->post('user_role'));
             "status_type"=>$hdn_status_type_value,
             "remark_content"=>$status_remark_value,
             "remark_content" => $status_remark_value,
+            "created_at"=>date("Y-m-d H:i:s"),
             "updated_at"=>date("Y-m-d H:i:s")
         );
        

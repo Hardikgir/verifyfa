@@ -26,7 +26,7 @@ $this->load->view('layouts/sidebar');
                                      $com=get_company_row($company_name);
                                      $loc=get_location_row($company_location);
                                     ?>
-                                    <p class="text-center" style="font-weight:bold; margin:0;padding: 10px;"> Entity Name: <?php echo $com->company_name;?> Location Name: <?php echo $loc->location_name;?> </p>
+                                    <p class="text-center" style="font-weight:bold; margin:0;padding: 10px;"> Entity Name: <?php echo $com->company_name;?> <br> Location Name: <?php echo $loc->location_name;?> </p>
 
                                 </ul>
                             </form>
