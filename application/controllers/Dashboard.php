@@ -127,14 +127,9 @@ class Dashboard extends CI_Controller {
 		$register_user_id=$this->admin_registered_user_id;
 
 		// Common For All Funcionality Start Here
-		$condition=array('company_id IN ('.$company_id_imp.') AND project_location IN ('.$location_id.')',"entity_code"=>$this->admin_registered_entity_code);
-		if($this->input->post('company_id') && $this->input->post('company_id') !=''){
-			$condition=array('company_id'=>$this->input->post('company_id'));
-		}
-		if($this->input->post('location_id') && $this->input->post('location_id') !=''){
-			$condition=array('company_id'=>$this->input->post('company_id'), 'project_location'=>$this->input->post('location_id'),);
-		}		
+		$condition=array('company_id IN ('.$company_id_imp.') AND project_location IN ('.$location_id.')',"entity_code"=>$this->admin_registered_entity_code,"status"=>4);
 		$projects=$this->tasks->get_data('company_projects',$condition);	
+
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		foreach($projects as $project)
@@ -197,6 +192,65 @@ class Dashboard extends CI_Controller {
 		$data['total_company_count'] = $total_company_count;
 		$data['total_company_locations_count'] = $total_company_locations_count;
 		$data['total_users_count'] = $total_users_count;
+
+
+
+
+
+
+
+		$condition = 'status = 4';
+	   	$condition= 
+		'company_id IN ('.$company_id_imp.') AND project_location IN ('.$location_id.') AND entity_code = "'.$this->admin_registered_entity_code.'" AND status = 4';
+
+	  
+		$projects=$this->tasks->get_data('company_projects',$condition);	
+		
+		
+	
+		
+		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+		$new_pattern = array("_", "_", "");
+		foreach($projects as $project)
+		{
+			$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($project->project_name)));
+			$getprojectdetails=$this->tasks->projectdetail($project_name);
+			 
+			if(!empty($getprojectdetails))
+			{
+				$project->TotalQuantity= ((int)$getprojectdetails[0]->TotalQuantity);
+				if($getprojectdetails[0]->VerifiedQuantity !='')
+				$project->VerifiedQuantity=$getprojectdetails[0]->VerifiedQuantity;
+				else
+				$project->VerifiedQuantity=0;
+			}
+			else
+			{   
+				$project->TotalQuantity=0;
+				$project->VerifiedQuantity=0;
+			}
+
+
+			$project->LocationValue=get_LocationName($project->project_location);
+			$project->CompanyValue=get_CompanyName($project->company_id);
+			
+		}
+
+		
+
+
+		$data['projects']=$projects;
+		
+
+
+
+
+
+
+
+
+
+
 		$this->load->view('admindashboardView',$data);	
 	}
 
@@ -6454,11 +6508,14 @@ class Dashboard extends CI_Controller {
 		// print_r($projects);
 		
 
-		$this->db->select("company_projects.id as company_project_id,company_projects.project_name as company_project_name,");
+		$this->db->select("company_projects.id as company_project_id,company_projects.project_name as company_project_name,request_for_delete_project.id as request_delete_row_id,request_for_delete_project.requester_id as request_delete_requester_id");
 		$this->db->join('company_projects', 'request_for_delete_project.project_id = company_projects.id', 'inner'); 
+		$this->db->where("request_for_delete_project.status",1);
 		$query = $this->db->get('request_for_delete_project');
 		$result = $query->row();
 
+		
+		
 		$data['projects']=$projects;
 		$data['requestdeteleprojectdetails']=$result;
 		$data['page_title']="Reports";
@@ -6471,24 +6528,48 @@ class Dashboard extends CI_Controller {
 	public function acceptrequestdeleteproject($project_id)
 	{	
 		$data=array(
-			"status"=>"5"
+			"status"=>5
 		);
 		$this->db->where("id",$project_id);
 		$this->db->update("company_projects",$data);
 		$this->session->set_flashdata("success","Project Accept Request Delete Successfully");
-		redirect("index.php/dashboard/project");		
+		redirect("index.php/dashboard/admin");		
 
 	}
 	
-	public function declinerequestdeleteproject($project_id)
+	public function declinerequestdeleteproject()
 	{		
+
+		$project_id=$this->input->post("hdn_project_id");
+		$row_id=$this->input->post("hdn_row_id");
+		$requester_id=$this->input->post("hdn_requester_id");
+		$user_id=$this->input->post("hdn_user_id");
+		
 		$data=array(
-			"status"=>"6"
+			// "status"=>"6"
+			"status"=>0
 		);
 		$this->db->where("id",$project_id);
 		$this->db->update("company_projects",$data);
+
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
+
+		 $data=array(
+            "reason_for_decline_request"=>$this->input->post("reason_for_detele"),
+            "status"=>0          
+        );
+		$this->db->where("id",$row_id);
+		// $this->db->where("id",$project_id);
+		// $this->db->where("id",$requester_id);
+		$this->db->update("request_for_delete_project",$data);
+
+
+
 		$this->session->set_flashdata("success","Project Accept Request Delete Successfully");
-		redirect("index.php/dashboard/project");	
+		redirect("index.php/dashboard/admin");	
 
 	}
 
