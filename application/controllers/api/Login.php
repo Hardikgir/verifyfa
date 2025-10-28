@@ -22,9 +22,15 @@ class Login extends CI_Controller {
 		);
 		$userid='';
 		$login=$this->login->getlogin_data($condition);
-			$userid=$login[0]["id"];
-		
-		
+
+
+		$this->db->select('id,department_name');
+        $this->db->from('department');
+        $this->db->where('id',$login[0]['department_id']);
+		$getdata=$this->db->get();		
+		$department_value = $getdata->row();
+		$login[0]['department_value'] = $department_value->department_name;
+		$userid=$login[0]["id"];
 		$login[0]["role_cnt"]=$this->login->getuserrolecnt($userid);
 		
 		

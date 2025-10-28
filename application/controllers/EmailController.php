@@ -95,8 +95,8 @@ class EmailController extends CI_Controller {
         
         
         
-        // $to = 'hardik.meghnathi12@gmail.com';
-        $to = 'tusharparmartlsu1507@gmail.com';
+        $to = 'hardik.meghnathi12@gmail.com';
+        // $to = 'tusharparmartlsu1507@gmail.com';
         $subject = " Email Attachment";
         
         $CI = setEmailProtocol();

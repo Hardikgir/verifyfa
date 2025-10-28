@@ -336,7 +336,7 @@ if($usercntrole != '3'){
 			// }
 			
 			//if(($user_role_addmin_cnt > 0) || ($user_role_manager_cnt > 0) ){ ?>
-				<li class="nav-item <?php echo $page_title=='Issue For Me'?'active':'';?>  ">
+				<li class="nav-item <?php if($page_title=='Issue For Me' || $page_title== 'View Issue'){ echo 'active'; }?>  ">
 				<a class="nav-link" href="<?php echo base_url();?>index.php/issue-for-me/groupadmin"><i class="fa fa-tasks"></i>
 					<p>Issue For Me</p>
 				</a>
@@ -487,7 +487,7 @@ if($usercntrole != '3'){
 													$unread_count++;
 													echo 'style="background: #5ca1e2;color:#fff;font-size: 18px;font-weight: bold;border-bottom: 2px solid #11589b;margin: 0;"';
 												} ?>
-												><?php echo ucfirst($userrownt->firstName).' '.ucfirst($userrownt->lastName);?> Brodcast a New <?php echo $main_notification_row->type;?><br>
+												><?php echo ucfirst($userrownt->firstName).' '.ucfirst($userrownt->lastName);?> Broadcast a New <?php echo $main_notification_row->type;?><br>
 												<p style="font-size: 15px;font-weight: normal;" class="pb-0 mb-0"> <?php echo $main_notification_row->title;?> <span style="color:blue;">Check now<span></p>
 												<p style="margin: 0;padding: 0;font-size: 12px;"><b>At:</b> <?php echo date("d-M-Y g:i:a", strtotime($main_notification_row->created_at));?></p>  
 											</a>

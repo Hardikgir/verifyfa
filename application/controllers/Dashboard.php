@@ -144,14 +144,9 @@ class Dashboard extends CI_Controller {
 =======
 
 		// Common For All Funcionality Start Here
-		$condition=array('company_id IN ('.$company_id_imp.') AND project_location IN ('.$location_id.')',"entity_code"=>$this->admin_registered_entity_code);
-		if($this->input->post('company_id') && $this->input->post('company_id') !=''){
-			$condition=array('company_id'=>$this->input->post('company_id'));
-		}
-		if($this->input->post('location_id') && $this->input->post('location_id') !=''){
-			$condition=array('company_id'=>$this->input->post('company_id'), 'project_location'=>$this->input->post('location_id'),);
-		}		
+		$condition=array('company_id IN ('.$company_id_imp.') AND project_location IN ('.$location_id.')',"entity_code"=>$this->admin_registered_entity_code,"status"=>4);
 		$projects=$this->tasks->get_data('company_projects',$condition);	
+
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		foreach($projects as $project)
@@ -214,6 +209,65 @@ class Dashboard extends CI_Controller {
 		$data['total_company_count'] = $total_company_count;
 		$data['total_company_locations_count'] = $total_company_locations_count;
 		$data['total_users_count'] = $total_users_count;
+
+
+
+
+
+
+
+		$condition = 'status = 4';
+	   	$condition= 
+		'company_id IN ('.$company_id_imp.') AND project_location IN ('.$location_id.') AND entity_code = "'.$this->admin_registered_entity_code.'" AND status = 4';
+
+	  
+		$projects=$this->tasks->get_data('company_projects',$condition);	
+		
+		
+	
+		
+		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
+		$new_pattern = array("_", "_", "");
+		foreach($projects as $project)
+		{
+			$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($project->project_name)));
+			$getprojectdetails=$this->tasks->projectdetail($project_name);
+			 
+			if(!empty($getprojectdetails))
+			{
+				$project->TotalQuantity= ((int)$getprojectdetails[0]->TotalQuantity);
+				if($getprojectdetails[0]->VerifiedQuantity !='')
+				$project->VerifiedQuantity=$getprojectdetails[0]->VerifiedQuantity;
+				else
+				$project->VerifiedQuantity=0;
+			}
+			else
+			{   
+				$project->TotalQuantity=0;
+				$project->VerifiedQuantity=0;
+			}
+
+
+			$project->LocationValue=get_LocationName($project->project_location);
+			$project->CompanyValue=get_CompanyName($project->company_id);
+			
+		}
+
+		
+
+
+		$data['projects']=$projects;
+		
+
+
+
+
+
+
+
+
+
+
 		$this->load->view('admindashboardView',$data);	
 	}
 
@@ -289,6 +343,8 @@ class Dashboard extends CI_Controller {
 
 		
 		$projects=$this->tasks->get_data('company_projects',$condition);	
+
+		
 	
 		
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
@@ -730,6 +786,7 @@ class Dashboard extends CI_Controller {
 		$location_datas = implode(",", $location_array);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		// $company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location IN ('.$location_datas.') AND company_projects.status = 0 AND item_owner = "'.$user_id.'"')->result();
 
 
@@ -743,8 +800,12 @@ class Dashboard extends CI_Controller {
 		
 =======
 		
+=======
+		// "entity_code"=>$this->admin_registered_entity_code
+>>>>>>> cfa3415db4b17deaa1439edc7e84de2a81cbd1cd
 
-		$company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id')->result();
+		// $company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id')->result();
+		$company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.entity_code = "'.$this->admin_registered_entity_code.'"')->result();
 	
 >>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
 		// echo '<pre>last_query ';
@@ -821,10 +882,13 @@ class Dashboard extends CI_Controller {
 
 
 		$company_mapped_query = $this->db->query('SELECT count(company_id) as company_mapped FROM user_role where user_role.user_id = '.$user_id.' Group by company_id');
-		// echo '<pre>last_query ';
-		// print_r($this->db->last_query());
-		// echo '</pre>';
-		// exit();
+		if(empty($company_mapped_query->row())){
+			$data['Companies_Mapped'] = 0;
+			$this->load->view('NoUserMapped',$data);	
+			exit();
+			// $company_mapped_query_result = $company_mapped_query->row();
+			// $data['Companies_Mapped'] = $company_mapped_query_result->company_mapped;
+		}
 		$company_mapped_query_result = $company_mapped_query->row();
 		$data['Companies_Mapped'] = $company_mapped_query_result->company_mapped;
 
@@ -1197,6 +1261,7 @@ class Dashboard extends CI_Controller {
 =======
 		$role_id_datas = $_POST['role_id'];
 		$user_id=$this->user_id;
+		$entity_code=$this->admin_registered_entity_code;
 
 
 
@@ -1260,12 +1325,12 @@ class Dashboard extends CI_Controller {
 
 
 
-		$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.status = 0 AND ('.$role_where.')')->result();
+		$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.status = 0 AND company_projects.entity_code = "'.$entity_code.'" AND ('.$role_where.')')->result();
 
-		$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.status = 0 AND ('.$role_where.')')->result();
+		$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.status = 0 AND company_projects.entity_code = "'.$entity_code.'" AND ('.$role_where.')')->result();
 			
 		if(!empty($location_datas)){
-			$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location = '.$location_datas.' AND company_projects.status = 0 AND ('.$role_where.')')->result();
+			$company_projects = $this->db->query('SELECT company_locations.location_name,company_projects.* FROM company_projects LEFT JOIN company_locations ON company_projects.project_location = company_locations.id WHERE company_projects.company_id IN ('.$company_datas.') AND company_projects.project_location = '.$location_datas.' AND company_projects.status = 0 AND company_projects.entity_code = "'.$entity_code.'" AND ('.$role_where.')')->result();
 		}
 >>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
 
@@ -1439,7 +1504,9 @@ class Dashboard extends CI_Controller {
 			$project_start_date = $projects_value->start_date;
 			$project_end_date = $projects_value->due_date;
 			$project_name_value = $projects_value->project_name;
-			$stackedBarchartContainer_array[$count]['y'] = [(strtotime($project_start_date. ' + 1 day')), (strtotime($project_end_date. ' + 1 day'))];
+			// $stackedBarchartContainer_array[$count]['y'] = [(strtotime($project_start_date. ' + 1 day')), (strtotime($project_end_date. ' + 1 day'))];
+			$stackedBarchartContainer_array[$count]['y'] = [(strtotime($project_start_date)), (strtotime($project_end_date))];
+			
 			// $stackedBarchartContainer_array[$count]['label'] = mb_strimwidth($project_name_value, 0, 10, "...");;
 			$stackedBarchartContainer_array[$count]['label'] = $project_name_value;
 			$count++;
@@ -6606,11 +6673,14 @@ class Dashboard extends CI_Controller {
 		// print_r($projects);
 		
 
-		$this->db->select("company_projects.id as company_project_id,company_projects.project_name as company_project_name,");
+		$this->db->select("company_projects.id as company_project_id,company_projects.project_name as company_project_name,request_for_delete_project.id as request_delete_row_id,request_for_delete_project.requester_id as request_delete_requester_id");
 		$this->db->join('company_projects', 'request_for_delete_project.project_id = company_projects.id', 'inner'); 
+		$this->db->where("request_for_delete_project.status",1);
 		$query = $this->db->get('request_for_delete_project');
 		$result = $query->row();
 
+		
+		
 		$data['projects']=$projects;
 		$data['requestdeteleprojectdetails']=$result;
 		$data['page_title']="Reports";
@@ -6623,24 +6693,48 @@ class Dashboard extends CI_Controller {
 	public function acceptrequestdeleteproject($project_id)
 	{	
 		$data=array(
-			"status"=>"5"
+			"status"=>5
 		);
 		$this->db->where("id",$project_id);
 		$this->db->update("company_projects",$data);
 		$this->session->set_flashdata("success","Project Accept Request Delete Successfully");
-		redirect("index.php/dashboard");		
+		redirect("index.php/dashboard/admin");		
 
 	}
 	
-	public function declinerequestdeleteproject($project_id)
+	public function declinerequestdeleteproject()
 	{		
+
+		$project_id=$this->input->post("hdn_project_id");
+		$row_id=$this->input->post("hdn_row_id");
+		$requester_id=$this->input->post("hdn_requester_id");
+		$user_id=$this->input->post("hdn_user_id");
+		
 		$data=array(
-			"status"=>"6"
+			// "status"=>"6"
+			"status"=>0
 		);
 		$this->db->where("id",$project_id);
 		$this->db->update("company_projects",$data);
+
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
+
+		 $data=array(
+            "reason_for_decline_request"=>$this->input->post("reason_for_detele"),
+            "status"=>0          
+        );
+		$this->db->where("id",$row_id);
+		// $this->db->where("id",$project_id);
+		// $this->db->where("id",$requester_id);
+		$this->db->update("request_for_delete_project",$data);
+
+
+
 		$this->session->set_flashdata("success","Project Accept Request Delete Successfully");
-		redirect("index.php/dashboard");	
+		redirect("index.php/dashboard/admin");	
 
 	}
 
@@ -7527,7 +7621,7 @@ public function downloadExceptionChangesUpdationsofItems()
 
 
 
-	public function downloadExceptionChangesUpdationsofItems($project_id)
+	public function downloadExceptionChangesUpdationsofItems_Backup_27Oct($project_id)
 	{
 		require 'vendor/autoload.php';
 		$spreadsheet1= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
@@ -7711,6 +7805,238 @@ public function downloadExceptionChangesUpdationsofItems()
 				$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,"-");
 			}
 
+			
+			$rowCount++;			
+			
+		}
+		// exit();
+		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet1,"Xlsx");
+		$writer->setPreCalculateFormulas(false);
+		$filename = $ReportTitle ;
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Cache-Control: max-age=0');
+		$writer->save('php://output');
+	}
+
+
+
+	public function downloadExceptionChangesUpdationsofItems($project_id)
+	{
+		require 'vendor/autoload.php';
+		$spreadsheet1= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+		$sheet1 = $spreadsheet1->getActiveSheet();
+		$ReportTitle = 'ChangesUpdationsofItems';
+		$spreadsheet= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+		$sheet = $spreadsheet->getActiveSheet();
+
+
+		
+		$rowHeads=array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ','BA','BB','BC','BD','BE','BF','BG','BH','BI','BJ','BK','BL','BM','BN','BO','BP','BQ','BR','BS','BT','BU','BV','BW','BX','BY','BZ','CA','CB','CC','CD','CE','CF','CG','CH','CI','CJ','CK','CL','CM','CN','CO','CP','CQ','CR','CS','CT','CU','CV','CW','CX','CY','CZ');
+
+		$company_projects = $this->db->query("SELECT *  FROM company_projects WHERE id='".$project_id."'")->row();
+		$company_id = $company_projects->company_id;
+		$original_table_name = $company_projects->original_table_name;
+		$project_table_name = $company_projects->project_table_name;
+
+
+		$project_headers = $this->db->query("SELECT *  FROM project_headers WHERE project_id='".$project_id."' AND is_editable = 1")->result();
+		
+
+		$project_header_column = array('id','item_sub_category','location_of_the_item_last_verified','new_location_verified');
+		
+		$project_header_New_column = array();
+		$project_header_New_column[] = 'new_location_verified_Update';
+		foreach($project_headers as $project_headers_value){
+			$project_header_column[] = $project_headers_value->keyname;
+			$project_header_New_column[] = $project_headers_value->keyname."_Update";
+		}
+
+
+	// echo '<pre>project_header_New_column ';
+	// print_r($project_header_New_column);
+	// echo '</pre>';
+	// exit();
+	
+		$project_header_column_value = implode(',', $project_header_column);
+		$project_header_column_value = '*';
+		$project_table_result = $this->db->query("SELECT ".$project_header_column_value." FROM ".$project_table_name)->result();
+	
+
+		$existing_id_array = array();
+		foreach($project_table_result as $project_table_value){
+			$existing_id_array[] = $project_table_value->id;
+		}
+		$existing_id_value = implode(',', $existing_id_array);
+	  
+
+
+		$original_table_query = "SELECT ".$project_header_column_value." FROM ".$original_table_name." WHERE id in (".$existing_id_value.") ";
+		$original_table_result = $this->db->query($original_table_query)->result();
+
+		$different_array = array();
+		$different_array2 = array();
+		$count = 1;
+
+		// echo '<pre>project_table_result ';
+		// print_r($project_table_result);
+		// echo '</pre>';
+		// exit();
+
+		foreach($project_table_result as $project_table_key=>$project_table_value){
+
+		
+			foreach($project_header_column as $project_header_column_new_value)
+			{
+				if($original_table_result[$project_table_key]->$project_header_column_new_value != $project_table_result[$project_table_key]->$project_header_column_new_value){
+
+					$column_name = $project_header_column_new_value."_Update";					
+					$project_table_value->$column_name = "Old :- ".$original_table_result[$project_table_key]->$project_header_column_new_value." || New :- ".$project_table_result[$project_table_key]->$project_header_column_new_value;
+					if(!in_array($project_table_value->id, $different_array2)){
+						$different_array[] = $project_table_value;
+					}
+					// $different_array[] = $project_table_value;
+					$different_array2[] = $project_table_value->id;
+				}
+			}
+			$count++;
+		}
+
+		
+		
+
+
+		// $different_array['project_header_column_value'] = $project_header_column_value; 
+
+		$project_header_column_value = explode(",",$project_header_column_value);
+		unset($project_header_column_value[0]);
+		unset($project_header_column_value[1]);
+
+
+
+		$this->db->select('company_projects.*,company_locations.location_name,user_role.id as role_id,company.company_name');
+		$this->db->from('company_projects');
+		$this->db->join('user_role','find_in_set(user_role.user_id,company_projects.project_verifier) AND company_projects.company_id=user_role.company_id');
+		$this->db->join('company','company.id=user_role.company_id');
+		$this->db->join('company_locations','company_locations.id=company_projects.project_location');
+		$this->db->where(array('company_projects.id'=>$project_id));
+		$gettasks=$this->db->get();
+		$company_project_details =  $gettasks->result();
+
+
+
+		$cnt=0;
+		$rowCount=1;
+		$columns="";
+		$colsArray=array();
+		
+		$details_content = "Name Of Company : ".$company_project_details[0]->company_name;
+		$sheet1->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet1->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet1->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=2;
+		$details_content = "Name Of Location : ".$company_project_details[0]->location_name;
+		// $sheet1->mergeCells("A1:F1");
+		$sheet1->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet1->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet1->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=3;
+		$details_content = "Period of Verification : ".$company_project_details[0]->period_of_verification;
+		// $sheet1->mergeCells("A1:F1");
+		$sheet1->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet1->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet1->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+
+		$rowCount=4;
+		$details_content = "Name of the Report : Changes/ Updations of Items";
+		// $sheet1->mergeCells("A1:F1");
+		$sheet1->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet1->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet1->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		// array_push($colsArray,'My title');
+
+		$rowCount = 6;
+		$cnt = 0;
+
+		$headerCondition=array('table_name'=>$original_table_name);
+		$project_headers=$this->tasks->get_data('project_headers',$headerCondition);
+
+
+		// $project_headers = array('Item Category','Item Sub Category','Unique Code','Sub Code','Item Description','Mode of Verification','Item Unique Code Update','Location Update','Item Classification Update');
+
+		$project_headers = array('Item Category','Item Sub Category','Unique Code','Sub Code','Item Description','Mode of Verification');
+
+		$project_headers = array_merge($project_headers, $project_header_New_column); 
+		
+
+		foreach($project_headers as $ph)
+		{
+			// if(($ph->keyname!='instance_count') && ($ph->keyname!='mode_of_verification') && ($ph->keyname!='serial_product_number') && ($ph->keyname!='is_edit'))
+			// {
+
+				$header_title_value = str_replace('_',' ',$ph);
+
+				$sheet1->setCellValue($rowHeads[$cnt].$rowCount, ucwords($header_title_value));
+				$sheet1->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+				$sheet1->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+				$cnt++;
+			// }
+		}
+
+
+		
+		$rowCount = 7;
+		$cnt1 = 0;
+		foreach($different_array as $different_array_value){
+
+			$cnt1 = 0;
+			
+
+			$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,$different_array_value->item_category);
+			$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,$different_array_value->item_sub_category);
+			$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,$different_array_value->item_unique_code);
+			$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,$different_array_value->item_sub_code);
+			$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,$different_array_value->item_description);
+			$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,$different_array_value->mode_of_verification);
+
+			
+			foreach($project_header_New_column as $project_header_New_column_value){
+
+				// if($project_header_New_column_value == 'new_location_verified_Update' || $project_header_New_column_value == 'item_unique_code_Update' || $project_header_New_column_value == 'item_classification_Update'){
+
+					if(isset($different_array_value->$project_header_New_column_value)){
+						$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,$different_array_value->$project_header_New_column_value);
+					}else{
+						$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,"-");
+					}
+
+				// }
+
+			}
+
+			/*
+			if(isset($different_array_value->item_unique_code_Update)){
+				$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,$different_array_value->item_unique_code_Update);
+			}else{
+				$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,"-");
+			}
+
+			if(isset($different_array_value->new_location_verified_Update)){
+				$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,$different_array_value->new_location_verified_Update);
+			}else{
+				$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,"-");
+			}
+
+			if(isset($different_array_value->item_classification_Update)){
+				$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,$different_array_value->item_classification_Update);
+			}else{
+				$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,"-");
+			}
+			*/
 			
 			$rowCount++;			
 			

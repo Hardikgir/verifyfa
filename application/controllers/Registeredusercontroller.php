@@ -4,6 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Registeredusercontroller extends CI_Controller {
 	public function __construct() {
 		parent::__construct();		
+        date_default_timezone_set("Asia/Calcutta"); 
 		$this->load->library('session');	
 		if (!$this->session->userdata('registered_user_logged')) {
             redirect(base_url()."index.php/registered-user-login", 'refresh');
@@ -166,7 +167,8 @@ class Registeredusercontroller extends CI_Controller {
 
     public function unsubscribe_account($registereduserid){
         $data=array(
-            "is_active"=>"6",
+            "is_active"=>6,
+            "unsubscribe_date"=>date("Y-m-d"),
         );
         $this->Registered_user_model->request_renew_save($registereduserid,$data);
         $this->session->set_flashdata("success","Account Unsubscribed Successfully");
@@ -247,7 +249,7 @@ class Registeredusercontroller extends CI_Controller {
             $login_cnt=$this->Registered_user_model->login_as_admin($register_usr_email_id,$register_usr_entity_code);
             if($login_cnt >0){
                
-                redirect(base_url()."index.php/dashboard", 'refresh');
+                redirect(base_url()."index.php/dashboard/admin", 'refresh');
             }else{
                 $this->session->set_flashdata("success","Something Went Wrong Please Try Again");
                 redirect(base_url()."index.php/registered-user-dashboard", 'refresh');

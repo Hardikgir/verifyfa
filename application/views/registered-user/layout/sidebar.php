@@ -144,22 +144,27 @@
 						$result = $query->row();
 						?>
 
+						<?php 
+							if($rguserrow->is_active == '4' ){ ?>
 						<ul class="navbar-nav">
-							<?php if ($result && $result->plan_end_date >= date('Y-m-d')): ?>
+							<?php 
+							if ($result && $result->plan_end_date >= date('Y-m-d')){ ?>
 								<li>
 									<a class="nav-link" href="<?php echo base_url();?>index.php/registered-user-as-admin/<?php echo $this->session->userdata('registered_user_id');?>">
 										<button type="button" class="button">Continue as Group Admin</button>
 									</a>
 								</li>
-							<?php endif; ?>
+							<?php } ?>
+							
 						</ul>
+						<?php } ?>
 
 							<li class="nav-item">								
 								<li class="nav-item dropdown">
 									<a class="nav-link" href="#pablo" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="material-icons text-white">person</i>
 										<p class="d-lg-none d-md-block"><?php echo $this->session->userdata('super_admin_name');?></p>
 									</a>
-									<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile" style="left: -100px;"> <a class="dropdown-item" href="<?php echo base_url();?>index.php/registered-user-profile">Profile</a>
+									<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile" style="left: -100px;">
 										<div class="dropdown-divider"></div> <a class="dropdown-item" href="<?php echo base_url();?>index.php/logout-registereduser">Log out</a>
 									</div>
 								</li>

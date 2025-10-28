@@ -12,17 +12,6 @@ $this->load->view('layouts/sidebar');
 		<div class="container-fluid content-new">
 	
 		<div class="row">
-<<<<<<< HEAD
-        <div class="col-lg-12 mt-4 mb-4" style="border-bottom:1px solid #6e50505e;">
-            <h4 class="page-title">Manage Issue</h4>
-            <a href="<?php echo base_url();?>index.php/add-issue">
-             <button class="btn btn-primary" style="float:right">New Issue</button>
-            </a>
-       </div>     
-
-			<div class="col-lg-12">
-				<section class="text-center">
-=======
 
          <div class="col-lg-12 mt-4 mb-4" style="border-bottom:1px solid #6e50505e;">
             <h4 class="page-title">Issue For Me</h4>           
@@ -35,15 +24,15 @@ $this->load->view('layouts/sidebar');
         <?php 
         $slugs = explode("/", parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH));
         
-        if(isset($slugs[5])){
+        if(isset($slugs[4])){
         // exit();
         ?>
     <a href="<?php echo base_url('index.php/issue-for-me/groupadmin'); ?>" 
-       class="btn <?php echo ((isset($slugs[5]) && $slugs[5] == 'groupadmin')) ? 'btn-primary' : ''; ?> mx-2">
+       class="btn <?php echo ((isset($slugs[4]) && $slugs[4] == 'groupadmin')) ? 'btn-primary' : ''; ?> mx-2">
         Group Admin
     </a>
     <a href="<?php echo base_url('index.php/issue-for-me/manager'); ?>" 
-       class="btn <?php echo ((isset($slugs[5]) && $slugs[5] == 'manager')) ? 'btn-primary' : ''; ?> mx-2">
+       class="btn <?php echo ((isset($slugs[4]) && $slugs[4] == 'manager')) ? 'btn-primary' : ''; ?> mx-2">
         Manager
     </a>
     <?php } ?>
@@ -56,7 +45,6 @@ $this->load->view('layouts/sidebar');
 				<section class="text-center">
 
 
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
 					<!-- Section heading -->
  <div class="wrapper-carousel-fix">
 						<!-- Carousel Wrapper -->
@@ -68,6 +56,7 @@ $this->load->view('layouts/sidebar');
             <tr>
             <th>Tracking id</th>
             <th>Subject Title</th>
+            <th>Date</th>
             <th>Type of Issue</th>
             <th>Project Id</th>
             <th>Status</th>
@@ -82,15 +71,17 @@ $this->load->view('layouts/sidebar');
             <tr>
                 <td ><?php echo $row->tracking_id;?></td>
                 <td ><?php echo $row->issue_title;?></td>
-<<<<<<< HEAD
+
                 <td ><?php echo 'Project based'; //$row->issue_type;?></td>
                 <td ><?php echo $row->project_id;?></td>
-=======
+
+                 <td ><?php echo date('d-M-Y H:s A',strtotime($row->created_at));?></td>
+
                 <td ><?php echo $row->issue_type;?></td>
                 <td >
                     <?php echo $row->project_code; ?>
                 </td>
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
+
                 <td ><?php 
                 if($row->status =='1'){echo "Open";}
                 if($row->status =='0'){echo "Closed";}

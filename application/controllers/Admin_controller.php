@@ -3,27 +3,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Admin_controller extends CI_Controller {
 
-	/**
-	 * Index Page for this controller.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/welcome
-	 *	- or -
-	 * 		http://example.com/index.php/welcome/index
-	 *	- or -
-	 * Since this controller is set as the default controller in
-	 * config/routes.php, it's displayed at http://example.com/
-	 *
-	 * So any other public methods not prefixed with an underscore will
-	 * map to /index.php/welcome/<method_name>
-	 * @see https://codeigniter.com/user_guide/general/urls.html
-	 */
 	public function __construct() {
 
 		parent::__construct();
+        date_default_timezone_set("Asia/Calcutta"); 
         $this->load->library('session');	
         $this->load->model('Admin_model');
         $this->load->model('Registered_user_model');
+        $this->load->model('Super_admin_model');
         if (!$this->session->userdata('logged_in')) {
             redirect(base_url()."index.php/login", 'refresh');
 		}
@@ -271,8 +258,10 @@ class Admin_controller extends CI_Controller {
         $user_id = $this->user_id;
 
         $digits = 5;
-        $temp_password = rand(pow(10, $digits-1), pow(10, $digits)-1);
+        // $temp_password = rand(pow(10, $digits-1), pow(10, $digits)-1);
         // exit();
+        $temp_password = rand(pow(10, $digits-1), pow(10, $digits)-1);
+        // $temp_password = '12345';
 
         $data=array(
             "created_by"=>$user_id,
@@ -292,6 +281,131 @@ class Admin_controller extends CI_Controller {
             "created_on"=>date("Y-m-d H:i:s")
         );
         $this->Admin_model->save_admin_user($data);
+
+
+
+
+        $user_details = $this->Super_admin_model->get_registerd_user($register_user_id);
+		$to = $this->input->post('userEmail');
+		
+		
+		$activation_link = '<a href="'.base_url().'index.php/login">Activate Your Account</a>';
+		date_default_timezone_set("Asia/Calcutta"); 
+		// $activation_link = '<a href="'.base_url().'index.php/generate-active-register-user/'.$id.'">Activate Your Account</a>';
+		$TRANSACTIONRECORDDATETIME = date('d-m-Y h:i:s A');
+
+		$APPLICATIONNAME = 'VerifyFA';
+		$RECEIVERNAME = $this->input->post('firstName');	
+		$subject = $APPLICATIONNAME.' Activate Your Account';
+
+		$digits = 5;
+		$TEMPORARYPASSWORD = $temp_password;
+		$COMPANYNAME = $user_details->organisation_name;
+
+		$email_updated_content = '<body style="font-family: Helvetica, Arial, sans-serif; margin: 0px; padding: 0px; background-color: #ffffff;">
+            <table role="presentation"
+                style="width: 100%;border-collapse: collapse;border: 0px;border-spacing: 0px;font-family: Arial, Helvetica, sans-serif;background-color: rgb(250, 250, 250);">
+                <tbody>
+                <tr>
+                    <td align="center" style="padding: 1rem 2rem; vertical-align: top; width: 100%;">
+                    <table role="presentation" style="max-width: 600px; border-collapse: collapse; border: 0px; border-spacing: 0px; text-align: left;">
+                        <tbody>
+                        <tr>
+                            <td style="padding: 40px 0px 0px;">
+                            <div style="text-align: left;">
+                                <div style="padding-bottom: 20px;text-align: center;">
+                                    <img src="https://verifyfa.developmentdemo.co.in/assets/img/logo.png" alt="APPLICATIONLOGOCompany" style="width: 56px;">
+                                </div>
+                            </div>
+                            <div style="padding: 20px;background-color: rgb(255, 255, 255);border: 1px solid grey;">
+                                <div style="color: rgb(0, 0, 0); text-align: left;">
+
+                                    <p style="font-size: 14px;color: gray;text-align: center;">
+                                    ***** This is an auto generated NO REPLY communication and replies to this email id are
+                                    not attended to. (Business Hours from Mon To Sat : 10:00am to 6:00pm) *****
+                                    </p>
+
+                                    <p style="font-size: 18px;"> '.$TRANSACTIONRECORDDATETIME.' </p>
+                                    <p style="font-size: 18px;">Dear <b>'.$RECEIVERNAME.'</b>,</p>
+
+                                    <p style="font-size: 18px;line-height: 28px;">
+                                    Thanks for registering on <b>'.$APPLICATIONNAME.'</b>. It is important to activate your account in due time to continue further.
+                                    <br>
+									<br>
+                                    Your New Temporary Password for login is: <b>'.$TEMPORARYPASSWORD.'</b>.
+                                    <br>
+                                    <br>
+                                    Please click on the link to Activate and setup your New Password. '.$activation_link.'
+                                    </p>
+
+
+                                <p style="font-size: 18px;">Thanks for your support and understanding. <br>
+                                Regards, <br>
+                                <b>'.$COMPANYNAME.'</b></p>
+
+                                <p style="font-size: 14px;color: gray;text-align: center;">*****This is a system generated communication and does not require signature. *****</p>
+
+                                </div>
+                            </div>
+                            <div style="padding-top: 20px; color: rgb(153, 153, 153); text-align: justify;">
+                                Copyright <b>'.$COMPANYNAME.'</b>. All rights reserved. Terms & Conditions Please do not share your Login details, such as User ID / Password / OTP with anyone, either over phone or through email.
+                                Do not click on link from unknown/ unsecured sources that seek your confidential information. 
+                                This email is confidential. It may also be legally privileged. If you are not the addressee, you may not copy, forward, disclose or use any part of it. Internet communications cannot be guaranteed to be timely, secure, error or virus free. The sender does not accept liability for any errors or omissions. We maintain strict security standards and procedures to prevent unauthorised access to any personal information about you.
+                                Kindly read through the Privacy Policy on our website for use of Personal Information.
+                                </p>
+                            
+
+                            </div>
+                            <div style="padding-top: 20px; color: rgb(153, 153, 153); text-align: center;">
+                            <a href="javascript:void(0)">Home</a> | <a href="javascript:void(0)">Privacy Policy</a> | <a href="javascript:void(0)">Disclaimer</a>
+                            </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            </body>';
+
+            
+
+         
+
+            $CI = &get_instance();
+
+            $config = [
+                'protocol'    => 'smtp',
+                'smtp_host'   => 'ssl://smtp.gmail.com',  // or 'tls://smtp.gmail.com'
+                'smtp_port'   => 465,                      // use 465 for SSL or 587 for TLS
+                'smtp_user'   => 'solutions@ethicalminds.in',
+                'smtp_pass'   => 'gtroozhuovdrgnob',      // must be Gmail App Password
+                'mailtype'    => 'html',
+                'charset'     => 'utf-8',
+                'wordwrap'    => TRUE,
+                'newline'     => "\r\n",
+                'crlf'        => "\r\n",
+            ];
+            $from_email = 'solutions@ethicalminds.in';
+            // ✅ Load the email library with an alias to avoid conflicts
+            $CI->load->library('email', $config, 'mailer');
+
+            // ✅ Always refer to it via the alias
+            $CI->mailer->from($from_email);
+            $CI->mailer->to($to);
+            $CI->mailer->subject($subject);
+            $CI->mailer->message($email_updated_content);
+
+              		
+            $mailsend = 0;
+            if(server_check() == 'live'){
+                if($CI->mailer->send()){
+                    $mailsend = 1;
+                }
+            }
+
+            
 
         $this->session->set_flashdata('success', "User Created Successfully");
         redirect("index.php/manage-user-admin/");
@@ -624,16 +738,16 @@ $role=implode(',',$this->input->post('user_role'));
     public function manage_notification(){
         $data['page_title']="Manage Notification";
         $entity_code=$this->admin_registered_entity_code;
-
-        
-        $user_id=$this->user_id;
-
-        $this->db->select('notification_user.*,notification.*');
+        $user_id=$this->user_id;      
+        $this->db->select('users.firstName,users.lastName,notification.*');
         $this->db->from('notification');
-        $this->db->join('notification_user','notification_user.notification_id=notification.id');
-        $this->db->where('notification_user.user_id',$user_id);
-        $this->db->group_by('notification_user.notification_id'); 
+        $this->db->join('users','users.id=notification.created_by');
+        $this->db->where('notification.created_by',$user_id);
+        // $this->db->or_where('notification.created_by',$user_id);
+        // $this->db->group_by('notification_user.notification_id'); 
         $getnotifications=$this->db->get();
+
+      
         $data["notification"] =  $getnotifications->result();
         $this->load->view('manage-notification',$data);
     }
@@ -672,63 +786,77 @@ $role=implode(',',$this->input->post('user_role'));
        
         if(!empty($user_roles)){
             foreach(array_unique($user_roles) as $user_role_key=>$user_role_value){
-                if($user_role_value == '5'){
+                // if($user_role_value == '5'){
                     // $all_GroupAdmin = $this->Admin_model->get_users_by_role($user_role_value);
-                    $all_GroupAdmin_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
+                    $all_GroupAdmin_roles = $this->Admin_model->get_all_user_of_role_by_entity(5,$entity_code);
                     $all_GroupAdmin_array = array();
                     foreach($all_GroupAdmin_roles as $all_GroupAdmin_roleskey=>$all_GroupAdmin_rolesvalue){
                         $all_GroupAdmin_roles_array[] = $all_GroupAdmin_rolesvalue->user_id;
                     }
-                    $all_GroupAdmin = $this->Admin_model->get_users_by_ids(implode(',', $all_GroupAdmin_roles_array));
-                }
+                    if(!empty($all_GroupAdmin_roles_array)){
+                        $all_GroupAdmin = $this->Admin_model->get_users_by_ids(implode(',', $all_GroupAdmin_roles_array));
+                    }
+                // }
 
-                if($user_role_value == '4'){
-                    $all_SubAdmin_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
+                // if($user_role_value == '4'){
+                    $all_SubAdmin_roles = $this->Admin_model->get_all_user_of_role_by_entity(4,$entity_code);
                     $all_SubAdmin_roles_array = array();
                     foreach($all_SubAdmin_roles as $all_SubAdmin_roleskey=>$all_SubAdmin_rolesvalue){
                         $all_SubAdmin_roles_array[] = $all_SubAdmin_rolesvalue->user_id;
                     }
-                    $all_SubAdmin = $this->Admin_model->get_users_by_ids(implode(',', $all_SubAdmin_roles_array));
-                }
-                if($user_role_value == '3'){
+                    if(!empty($all_SubAdmin_roles_array)){
+                        $all_SubAdmin = $this->Admin_model->get_users_by_ids(implode(',', $all_SubAdmin_roles_array));
+                    }
+                // }
+                // if($user_role_value == '3'){
                     // $all_EntityOwner = $this->Admin_model->get_users_by_role($user_role_value);
-                    $all_EntityOwner_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
+                    $all_EntityOwner_roles = $this->Admin_model->get_all_user_of_role_by_entity(3,$entity_code);
                     $all_EntityOwner_roles_array = array();
                     foreach($all_EntityOwner_roles as $all_EntityOwner_roleskey=>$all_EntityOwner_rolesvalue){
                         $all_EntityOwner_roles_array[] = $all_EntityOwner_rolesvalue->user_id;
                     }
-                    $all_EntityOwner = $this->Admin_model->get_users_by_ids(implode(',', $all_EntityOwner_roles_array));
-                }
-                if($user_role_value == '2'){
+                    if(!empty($all_EntityOwner_roles_array)){
+                        $all_EntityOwner = $this->Admin_model->get_users_by_ids(implode(',', $all_EntityOwner_roles_array));
+                    }
+                // }
+                // if($user_role_value == '2'){
                     // $all_ProcessOwner = $this->Admin_model->get_users_by_role($user_role_value);
-                    $all_ProcessOwner_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
+                    $all_ProcessOwner_roles = $this->Admin_model->get_all_user_of_role_by_entity(2,$entity_code);
                     $all_ProcessOwner_roles_array = array();
                     foreach($all_ProcessOwner_roles as $all_ProcessOwner_roleskey=>$all_ProcessOwner_rolesvalue){
                         $all_ProcessOwner_roles_array[] = $all_ProcessOwner_rolesvalue->user_id;
                     }
-                    $all_ProcessOwner = $this->Admin_model->get_users_by_ids(implode(',', $all_ProcessOwner_roles_array));
-                }
-                if($user_role_value == '0'){
+                    if(!empty($all_ProcessOwner_roles_array)){
+                        $all_ProcessOwner = $this->Admin_model->get_users_by_ids(implode(',', $all_ProcessOwner_roles_array));
+                    }
+                // }
+                // if($user_role_value == '0'){
                     // $all_Manager = $this->Admin_model->get_users_by_role($user_role_value);
-                    $all_Manager_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
+                    $all_Manager_roles = $this->Admin_model->get_all_user_of_role_by_entity(0,$entity_code);
                     $all_Manager_roles_array = array();
                     foreach($all_Manager_roles as $all_Manager_roleskey=>$all_Manager_rolesvalue){
                         $all_Manager_roles_array[] = $all_Manager_rolesvalue->user_id;
                     }
-                    $all_Manager = $this->Admin_model->get_users_by_ids(implode(',', $all_Manager_roles_array));
-                }
-                if($user_role_value == '1'){
+                    if(!empty($all_Manager_roles_array)){
+                        $all_Manager = $this->Admin_model->get_users_by_ids(implode(',', $all_Manager_roles_array));
+                    }
+                    
+                // }
+                // if($user_role_value == '1'){
                     // $all_Verify = $this->Admin_model->get_users_by_role($user_role_value);
-                    $all_Verify_roles = $this->Admin_model->get_all_user_of_role_by_entity($user_role_value,$entity_code);
+                    $all_Verify_roles = $this->Admin_model->get_all_user_of_role_by_entity(1,$entity_code);
                     $all_Verify_roles_array = array();
                     foreach($all_Verify_roles as $all_Verify_roleskey=>$all_Verify_rolesvalue){
                         $all_Verify_roles_array[] = $all_Verify_rolesvalue->user_id;
                     }
-                    $all_Verify = $this->Admin_model->get_users_by_ids(implode(',', $all_Verify_roles_array));
+                    if(!empty($all_Verify_roles_array)){
+                        $all_Verify = $this->Admin_model->get_users_by_ids(implode(',', $all_Verify_roles_array));
+                    }
                     // las
-                }
+                // }
             }
         }
+        
         $data['all_GroupAdmin'] = $all_GroupAdmin;
         $data['all_SubAdmin'] = $all_SubAdmin;
         $data['all_EntityOwner'] = $all_EntityOwner;
@@ -766,7 +894,6 @@ $role=implode(',',$this->input->post('user_role'));
         $entity_code=$this->admin_registered_entity_code;
         $registered_user_id=$this->admin_registered_user_id;
         $created_by=$this->user_id;
-
         $data=array(
             "type"=>$this->input->post("type"),
             "title"=>$this->input->post("title"),
@@ -776,6 +903,7 @@ $role=implode(',',$this->input->post('user_role'));
             "created_by"=>$created_by,
             "created_at"=>date("Y-m-d H:i:s")
         );
+        
         $data["notification"]=$this->Admin_model->save_notification($data);
         $insert_id = $this->db->insert_id();
         
@@ -868,7 +996,7 @@ $role=implode(',',$this->input->post('user_role'));
             
         }
         // exit();
-        $this->session->set_flashdata("success","Notification Brodcast Successfully");
+        $this->session->set_flashdata("success","Notification Broadcast Successfully");
         redirect("index.php/manage-notification");
     }
 
@@ -934,8 +1062,17 @@ $role=implode(',',$this->input->post('user_role'));
 
     public function view_all_notification(){
         $data['page_title']="Manage Notification";
+        $user_id=$this->user_id;
+        $this->db->select('notification_user.*,notification.*');
+        $this->db->from('notification');
+        $this->db->join('notification_user','notification_user.notification_id=notification.id');
+        $this->db->where('notification_user.user_id',$user_id);
+        $this->db->group_by('notification_user.notification_id'); 
+        $getnotifications=$this->db->get();
+        $data["notification"] =  $getnotifications->result();
+
         
-        $this->load->view('view-all-notification.php',$data);
+        $this->load->view('view-all-notification',$data);
     }
     
 
@@ -1012,8 +1149,8 @@ $role=implode(',',$this->input->post('user_role'));
         $data["notification"]=$this->Admin_model->save_delete_request($data);
         $insert_id = $this->db->insert_id();
 
-        $this->session->set_flashdata('success', "Delete Requesting Successfull..");
-        redirect("index.php/dashboard");
+        $this->session->set_flashdata('success', "Project Deletion Successful");
+        redirect("index.php/dashboard/project");
         
     }
 
@@ -1178,7 +1315,8 @@ $role=implode(',',$this->input->post('user_role'));
             
             "created_by"=>$created_by,
             "resolved_by" => $resolved_by,
-            "created_at"=>date("Y-m-d H:i:s")
+            "created_at"=>date("Y-m-d H:i:s"),
+            "updated_at"=>date("Y-m-d H:i:s")
         );
        
         $data["notification"]=$this->Admin_model->save_issue_details($data);
@@ -1229,7 +1367,7 @@ $role=implode(',',$this->input->post('user_role'));
 
 
       public function update_issue(){
-
+         date_default_timezone_set("Asia/Calcutta"); 
         $hdn_issue_id = $this->input->post("hdn_issue_id");
 
         $created_by=$this->user_id;
@@ -1249,23 +1387,26 @@ $role=implode(',',$this->input->post('user_role'));
 			exit;
         } else {
             $data = $this->upload->data();
-			$issue_attachment="response_".$data['file_name'];
+			$issue_attachment=$data['file_name'];
 		}
 
         
 
 
         $status_value = $this->input->post("status");
-        $status_remark_value = $this->input->post("Remstatus_remarkark");
+        $status_remark_value = $this->input->post("status_remark");
         $hdn_status_type_value = $this->input->post("hdn_status_type");
         $status_type_remark_value = $this->input->post("status_type_remark");
+        $hdn_issue_type_value = $this->input->post("hdn_issue_type");
+        
        
 
         $data=array(
             "status"=>$status_value,
             "status_type"=>$hdn_status_type_value,
             "remark_content"=>$status_remark_value,
-            "remark_content" => $this->input->post("Remark"),
+            "remark_content" => $status_remark_value,
+            "created_at"=>date("Y-m-d H:i:s"),
             "updated_at"=>date("Y-m-d H:i:s")
         );
        
@@ -1275,11 +1416,10 @@ $role=implode(',',$this->input->post('user_role'));
             "issue_id"=>$hdn_issue_id,
             "user_id"=>$created_by,
             "status"=>$status_value,
-            "status_remark"=>$status_type_remark_value,
+            "status_remark"=>$status_remark_value,
             "status_type"=>$hdn_status_type_value,
-            "status_type_remark"=>$status_type_remark_value,
+            "status_type_remark"=>$status_remark_value,
             "attachments"=>$issue_attachment,
-            "created_at" => date("Y-m-d H:i:s"),
             "updated_at"=>date("Y-m-d H:i:s")
         );
        
@@ -1287,7 +1427,11 @@ $role=implode(',',$this->input->post('user_role'));
         $insert_id = $this->db->insert_id();
         
         $this->session->set_flashdata("success","Issue Updated Successfully");
-        redirect("index.php/manage-my-issue");
+        if($hdn_issue_type_value == 'General'){
+            redirect("index.php/issue-for-me/groupadmin");
+        }else{
+            redirect("index.php/issue-for-me/manager");
+        }
     }
     
 }

@@ -236,6 +236,9 @@ border: none;
                 <label class="form-label">Unsubscribe Subscription Plan</label>
                 <button class="btn btn-danger" onclick="unsubscribe_account()">Unsubscribe Now</button>
               </div>
+
+              
+
                 <?php } ?>
                 <?php if($user_data->is_active == '6'){ ?>
         <?php if($user_data->is_resubscribe_request == '1'){ 

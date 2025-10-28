@@ -82,14 +82,15 @@ foreach($main_notification as $main_notification_row){
 						<div class="d-flex align-items-center py-1">
 
 							<div class="flex-grow-1 pl-3">
-								<strong>Title:</strong> <?php echo $main_notification_row->title;?> 
-                                <?php echo ucfirst($userrownt->firstName).' '.ucfirst($userrownt->lastName);?> Brodcast a New <?php echo $main_notification_row->type;?><br>
-                                    <p style="font-size: 15px;font-weight: normal;" class="pb-0 mb-0"> <?php echo $main_notification_row->title;?></p>
+								<?php echo ucfirst($userrownt->firstName).' '.ucfirst($userrownt->lastName);?> Broadcast a New <?php echo $main_notification_row->type;?><br>
+								    <p style="font-size: 15px;font-weight: normal;" class="pb-0 mb-0">Title: <?php echo $main_notification_row->title;?></p>
                                     <p style="margin: 0;padding: 0;font-size: 12px;"><b>At:</b> <?php echo date("d-M-Y g:i:a", strtotime($main_notification_row->created_at));?></p>
-							</div>
-                                <a class="dropdown-item d-block" href="<?php echo base_url();?>index.php/view-reply-notofication/<?php echo $main_notification_row->id;?>?main_not=1" style="                                        font-weight: bold;padding: 0;margin: 0;">
-                                        <span style="color:blue;">Check now<span>
+
+									 <a class="btn btn-success" href="<?php echo base_url();?>index.php/view-reply-notofication/<?php echo $main_notification_row->id;?>?main_not=1" style="                                        font-weight: bold;padding: 0;margin: 0;">
+                                        Check now
                                     </a>
+							</div>
+                               
                                <div>
 								
 							</div>

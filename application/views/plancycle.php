@@ -144,7 +144,7 @@ $this->load->view('layouts/sidebar');
 										<div class="row">
 											<div class="col-md-6">
 												<div class="form-group">
-													<select class="browser-default custom-select" id="company_name" name="company_name">
+													<select class="browser-default custom-select" id="company_name_new" name="company_name">
                                                         <option selected>Select Company Name</option>
                                                         <?php
                                                         foreach($companydata as $datanew){
@@ -160,7 +160,7 @@ $this->load->view('layouts/sidebar');
 											</div>
 											<div class="col-md-6">
 												<div class="form-group">
-													<select class="browser-default custom-select" id="company_location" name="company_location">
+													<select class="browser-default custom-select" id="company_location_new" name="company_location">
                                                        
 													</select>
 												</div>
@@ -364,7 +364,7 @@ $this->load->view('layouts/planningscript');
 $this->load->view('layouts/footer');
 ?>
 <script>
-document.getElementById('company_name').onchange = function() {
+document.getElementById('company_name_new').onchange = function() {
 	var company_id = this.value;
 	var fd = new FormData();
 	fd.append('company_id',[company_id]);
@@ -377,7 +377,7 @@ document.getElementById('company_name').onchange = function() {
 	  data: fd,
 	  success: function(data) {
 		// console.log(data);
-		$('#company_location').find('option').remove().end().append(data);
+		$('#company_location_new').find('option').remove().end().append(data);
 	  }
 	});
 }

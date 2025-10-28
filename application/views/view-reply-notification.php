@@ -65,6 +65,9 @@ chat-offline {
 
 	
 		<h1 class="h3 mb-3">Notification Type: <?php echo $notification_data->type;?> </h1>
+		 <a href="<?php echo base_url();?>index.php/view-all-notification">
+			<button class="btn btn-success" style="float:right">Back</button>
+		</a>
 
 		<div class="card">
 			<div class="row g-0">

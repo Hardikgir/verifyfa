@@ -144,7 +144,7 @@ $this->load->view('layouts/footer');
                                                 <a class="nav-item nav-link active" href="#div1" id="tab1" data-toggle="tab" aria-controls="open-project" aria-selected="true"><b>Open Projects</b></a>
                                                 <a class="nav-item nav-link" href="#div2" id="tab2" data-toggle="tab" aria-controls="closed-project" aria-selected="true"><b>Closed Projects</b></a>
                                                 <a class="nav-item nav-link" href="#div3" data-toggle="tab" aria-controls="cancelled-project" aria-selected="true"><b>Cancelled Projects</b></a>
-                                                <a class="nav-item nav-link" href="#div4" data-toggle="tab" aria-controls="request-clear-project" aria-selected="true"><b>Request For Clear Projects</b></a>
+                                                <?php /* <a class="nav-item nav-link" href="#div4" data-toggle="tab" aria-controls="request-clear-project" aria-selected="true"><b>Request For Clear Projects</b></a> */ ?>
                                             </div>
                                         </nav>
                                         

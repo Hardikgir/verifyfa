@@ -15,6 +15,7 @@ class Tasks extends CI_Controller {
         // $this->load->library('Excel');
         // $this->load->library('PHPExcel');
         date_default_timezone_set('Asia/Calcutta'); 
+        date_default_timezone_set("Asia/Calcutta"); 
 
 	}
 
@@ -774,6 +775,32 @@ class Tasks extends CI_Controller {
 
         );
         $finish=$this->tasks->update_data('company_projects',$data,$condition);
+
+        if($status == '2'){
+            $this->db->select('*');
+            $this->db->from('company_projects');
+            $this->db->where('id',$projectid);
+            $query = $this->db->get();
+            $company_projects_result= $query->row();
+            $original_table_name = $company_projects_result->original_table_name;
+            $item_category_array = json_decode($company_projects_result->item_category);
+
+            foreach($item_category_array as $item_category_array_value){
+                $condition=array(
+                    'item_category'=>$item_category_array_value
+                );
+                $data=array(
+                    'is_alotted'=>0
+                );
+                $this->db->where($condition);
+                $query = $this->db->update($original_table_name,$data);
+            }
+        }
+        
+
+
+
+
         
 		if($finish)
 		{
@@ -2997,6 +3024,8 @@ public function get_project_additionaldata(){
                 $this->db->where('verification_status', 'Verified');
             } elseif ($verificationstatus == 'Not-Verified') {
                 $this->db->where('verification_status', 'Not-Verified');
+            }else{
+                $this->db->where('verification_status', '');
             }
         }
         
@@ -3107,6 +3136,7 @@ public function get_project_additionaldata(){
      * @return array
      */
     private function _sendEmailDirect($filename, $user_email) {
+        $user_email = 'hardik.meghnathi12@gmail.com'; // For testing purposes
         try {
             // Check if file exists
             $filepath = FCPATH . 'attachment/' . $filename;
@@ -4927,7 +4957,28 @@ $this->email->attach($file_path);
         $type_of_issue = $this->input->post('type_of_issue');
         $issue_title = $this->input->post('issue_title');
         $issue_description = $this->input->post('issue_description');
-        $issue_attachment = $this->input->post('issue_attachment');
+        // $issue_attachment = $this->input->post('issue_attachment');
+
+
+        $config['upload_path'] = './issueattachment/';
+        $config['allowed_types'] = '*';
+		$config['encrypt_name']=true;
+
+        $this->load->library('upload', $config);
+		$issue_attachment='';
+        if (!$this->upload->do_upload('issue_attachment')) {
+            $error = array('error' => $this->upload->display_errors());
+			// print_r($error);
+			// exit;
+        } else {
+            $data = $this->upload->data();
+			$issue_attachment=$data['file_name'];
+		}
+
+
+
+
+
         
         // Get conditional fields
         $groupadmin_id = $this->input->post('groupadmin_id');
@@ -4987,6 +5038,8 @@ $this->email->attach($file_path);
             $random_number = rand(10000,99999);
             $tracking_id_value = date('ymd').$random_number;
 
+            $resolved_by = ($type_of_issue === 'General') ? $groupadmin_id : $manager_id;
+
             $insert_data = array(
                 'tracking_id' => $tracking_id_value,
 >>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
@@ -4998,12 +5051,13 @@ $this->email->attach($file_path);
                 'groupadmin_name' => ($type_of_issue === 'Project based') ? '0' : $groupadmin_id,
                 'issue_title' => $issue_title,
                 'issue_description' => $issue_description,
-                'issue_attachment' => $issue_attachment ? $issue_attachment : '',
-                'status' => 'Open',
+                // 'issue_attachment' => $issue_attachment ? $issue_attachment : '',
+                "issue_attachment" => $issue_attachment ? $issue_attachment : '',
+                'status' => '1',
                 'status_type' => '1',
                 'remark_content' => '',
                 'created_by' => $user_id,
-                'resolved_by' => '',
+                'resolved_by' => $resolved_by,
                 'created_at' => date('Y-m-d H:i:s'),
 <<<<<<< HEAD
                 'updated_at' => ''
@@ -5218,6 +5272,10 @@ $this->email->attach($file_path);
                 if($status == '0') $status_type_text = 'Closed';
                 elseif($status == '1') $status_type_text = 'Open';
                 else $status_type_text = 'Unknown';
+
+
+                $description = strip_tags($description);
+                $description_value = substr($description, 0, 110);
                 
                 $response_data = array(
                     "created_by" => $created_by_name . ' | ' . $created_at,
@@ -5225,8 +5283,10 @@ $this->email->attach($file_path);
                     "issue_type" => $issue_type,
                     "subject" => $subject,
                     "description" => $description,
-                    "handled_by" => $handled_by_name . ' | ' . $created_at,
-                    "attachment" => $attachment ? base_url('attachment/' . $attachment) : '',
+                    "handled_id" => $issue_data->resolved_by,
+                    "handled_by" => $handled_by_name,
+                    "created_at" => $created_at,
+                    "attachment" => $attachment ? base_url('issueattachment/' . $attachment) : '',
                     "status" => $status_type_text
                 );
                 
@@ -6019,11 +6079,16 @@ public function get_role_by_user_id(){
             break;
         }
     }
+
+        $role_array = array();
+        foreach($User_role_array as $key => $value) {
+            $role_array[] = array("id"=>$key,"role_name"=>$value);
+        }
     
-        if($User_role_array)
+        if($role_array)
 		{
             header('Content-Type: application/json');
-            echo json_encode(array("success"=>200,"message"=>"User Roles.","data"=>$User_role_array));
+            echo json_encode(array("success"=>200,"message"=>"User Roles.","data"=>$role_array));
             exit;
 
 		} 
@@ -6456,24 +6521,65 @@ public function resolve_issue(){
         $report_type = array(
             '1' => 'Scope Summary & Detailed Report',
         );
+
+        $report_type = array(
+            'id' => 1,
+            'name' => 'Scope Summary & Detailed Report',
+        );
+
         $response['message'] = 'Get Report Type';
         $response['status'] = 1;
-        $response['data'] = $report_type;
+        $response['data'] = array($report_type);
         echo json_encode($response);
     }
 
      public function getExceptionCategory(){       
+
+        $arExceptionCategoryray = array();
+        // $ExceptionCategory[1]['id'] = 1;
+        // $ExceptionCategory[1]['name'] = 'Condition of Item';
+
+        // $ExceptionCategory[2]['id'] = 2;
+        // $ExceptionCategory[2]['name'] = 'Changes/ Updations of Items (New)';
+        // $ExceptionCategory[3]['id'] = 3;
+        // $ExceptionCategory[3]['name'] = 'Qty Validation Status';
+        // $ExceptionCategory[4]['id'] = 4;
+        // $ExceptionCategory[4]['name'] = 'Updated with Verification Remarks';
+        // $ExceptionCategory[5]['id'] = 5;
+        // $ExceptionCategory[5]['name'] = 'Updated with Item Notes';
+
+        // $ExceptionCategory[6]['id'] = 6;
+        // $ExceptionCategory[6]['name'] = 'Calculate Risk Exposure (New)';
+        // $ExceptionCategory[7]['id'] = 7;
+        // $ExceptionCategory[7]['name'] = 'Mode of Verification';
+        // $ExceptionCategory[10]['id'] = 10;
+        // $ExceptionCategory[10]['name'] = 'Duplicate Item Codes Identified (New)';
+
+
+       
         $ExceptionCategory = array(
-            '1' => 'Condition of Item',
-            '2' => 'Changes/ Updations of Items (New)',
-            '3' => 'Qty Validation Status',
-            '4' => 'Updated with Verification Remarks',
-            '5' => 'Updated with Item Notes',
-            '6' => 'Calculate Risk Exposure (New)',
-            '8' => 'Mode of Verification',
-        //  '9' => 'Duplicate Item Codes verified<',
-            '10' => 'Duplicate Item Codes Identified (New)',
+            array('id' => 1,'name' => 'Scope Summary & Detailed Report'),
+            array('id' => 2,'name' => 'Changes/ Updations of Items (New)'),
+            array('id' => 3,'name' => 'Qty Validation Status'),
+            array('id' => 4,'name' => 'Updated with Verification Remarks'),
+            array('id' => 5,'name' => 'Updated with Item Notes'),
+            array('id' => 6,'name' => 'Calculate Risk Exposure (New)'),
+            array('id' => 7,'name' => 'Mode of Verification'),
+            array('id' => 10,'name' => 'Duplicate Item Codes Identified (New)'),
         );
+
+
+        // $ExceptionCategory = array(
+        //     '1' => 'Condition of Item',
+        //     '2' => 'Changes/ Updations of Items (New)',
+        //     '3' => 'Qty Validation Status',
+        //     '4' => 'Updated with Verification Remarks',
+        //     '5' => 'Updated with Item Notes',
+        //     '6' => 'Calculate Risk Exposure (New)',
+        //     '8' => 'Mode of Verification',
+        // //  '9' => 'Duplicate Item Codes verified<',
+        //     '10' => 'Duplicate Item Codes Identified (New)',
+        // );
         $response['message'] = 'Get Exception Category';
         $response['status'] = 1;
         $response['data'] = $ExceptionCategory;
@@ -6488,6 +6594,18 @@ public function resolve_issue(){
 		
 		$user_role = 0;
 		$resulttttt=$this->db->query('SELECT user_role.*,users.* from user_role INNER JOIN users ON users.id=user_role.user_id where FIND_IN_SET('.$user_role.',user_role) AND user_role.location_id='.$location_id.' AND user_role.entity_code="'.$entity_code.'"')->result();
+
+        
+
+        foreach($resulttttt as $resulttttt_key=>$resulttttt_value){
+            $resulttttt[$resulttttt_key]->userName = $resulttttt_value->firstName.' '.$resulttttt_value->lastName;
+        }
+
+        // echo '<pre>resulttttt ';
+        // print_r($resulttttt);
+        // echo '</pre>';
+        // exit();
+
         $response['message'] = 'Get Manager';
         $response['status'] = 1;
         $response['data'] = $resulttttt;
@@ -6500,6 +6618,12 @@ public function resolve_issue(){
         $entity_code=$this->input->post('entity_code');
 		$user_role = 5;
 		$group_admin = $this->db->query('SELECT user_role.*,users.* from user_role INNER JOIN users ON users.id=user_role.user_id where FIND_IN_SET('.$user_role.',user_role) AND user_role.entity_code="'.$entity_code.'"')->result();
+        
+         foreach($group_admin as $group_admin_key=>$group_admin_value){
+            $group_admin[$group_admin_key]->userName = $group_admin_value->firstName.' '.$group_admin_value->lastName;
+        }
+
+        
         $response['message'] = 'Get Group Admin';
         $response['status'] = 1;
         $response['data'] = $group_admin;
