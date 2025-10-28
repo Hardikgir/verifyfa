@@ -454,24 +454,6 @@ class Tasks_model extends CI_Model {
     function getExceptionTwoReport($tablename,$verificationstatus,$reportHeaders)
     {
 
-<<<<<<< HEAD
-        // echo '<pre>tablename ::';
-        // print_r($tablename);
-        // echo '</pre>';
-
-        // echo '<pre>verificationstatus ::';
-        // print_r($verificationstatus);
-        // echo '</pre>';
-
-        // echo '<pre>reportHeaders ::';
-        // print_r($reportHeaders);
-        // echo '</pre>';
-        // exit(); 
-        // exit(); 
-        // exit(); 
-
-=======
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
         $company_projects = $this->db->query("SELECT *  FROM company_projects WHERE project_table_name='".$tablename."'")->row();
         // echo '<pre>last_query 1';
         // print_r($this->db->last_query());
@@ -498,14 +480,7 @@ class Tasks_model extends CI_Model {
 
 
         $project_table_result = $this->db->query("SELECT ".$project_header_column_value." FROM ".$project_table_name)->result();
-<<<<<<< HEAD
-        // echo '<pre>last_query ';
-        // print_r($this->db->last_query());
-        // echo '</pre>';
-        // exit();
-=======
        
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
         $existing_id_array = array();
         foreach($project_table_result as $project_table_value){
             $existing_id_array[] = $project_table_value->id;
@@ -523,15 +498,7 @@ class Tasks_model extends CI_Model {
 
         $project_header_column_base_value = implode(',', $project_header_column_base);
         $original_table_result = $this->db->query("SELECT ".$project_header_column_base_value." FROM ".$original_table_name." WHERE id in (".$existing_id_value.") ")->result();
-<<<<<<< HEAD
-        // echo '<pre>last_query 3:';
-        // print_r($this->db->last_query());
-        // echo '</pre>';
-        // exit();
-
-=======
       
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
         $different_array = array();
         foreach($project_table_result as $project_table_key=>$project_table_value){
 
@@ -555,19 +522,9 @@ class Tasks_model extends CI_Model {
                
             }
         }
-<<<<<<< HEAD
-        $different_array['project_header_column_value'] = $project_header_column_value; 
-
-
-        // echo '<pre>different_array ';
-        // print_r($different_array);
-        // echo '</pre>';
-        // exit();
-=======
         
        
         $different_array['project_header_column_value'] = $project_header_column_value;
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
         
         return $different_array;
     }
