@@ -84,7 +84,19 @@ class Tasks extends CI_Controller {
             $project->verifier_name=$verifiername;
             $project->assigned_by=get_UserName($project->assigned_by);
             $projectheaders=$this->tasks->get_data('project_headers',array('project_id'=>$project->project_header_id));
-            $project->visiblecolumns=$projectheaders;
+
+                
+            $update_array = array();
+            $check_array = array();
+            foreach($projectheaders as $projectheaders_key=>$projectheaders_value){
+                
+                if(!in_array($projectheaders_value->keyname,$check_array)){
+                    $update_array[] = $projectheaders_value;
+                    $check_array[] = $projectheaders_value->keyname;
+                }
+                
+            }
+            $project->visiblecolumns=$update_array;
         }else{
             $project->verifier_name=$verifiername;
 
@@ -3261,9 +3273,11 @@ public function get_project_additionaldata(){
 
     public function verifybylist()
     {
+        
         $projectid=$this->input->post('project_id');
         $userid=$this->input->post('user_id');
         $verification_status=$this->input->post('verification_status');
+        $tag_status_y_n_na=$this->input->post('tag_status_y_n_na');        
         // $tag_status_y_n_na =$this->input->post('tag_status_y_n_na');
         // $item_category  =$this->input->post('item_category');
         // $item_sub_category =$this->input->post('item_sub_category');
@@ -3328,6 +3342,8 @@ public function get_project_additionaldata(){
         */
 
         
+
+        
         if($verification_status !='All')
         {
             if($is_where == 1){
@@ -3350,6 +3366,17 @@ public function get_project_additionaldata(){
                 }
                 $is_where = 1;
             }
+        }
+
+        if($tag_status_y_n_na !='All')
+        {
+            if($is_where == 1){
+                $where.=' AND tag_status_y_n_na="'.$tag_status_y_n_na.'"';    
+            }else{
+                $where.=' WHERE tag_status_y_n_na="'.$tag_status_y_n_na.'"';    
+            }
+            
+            $is_where = 1;
         }
       
 
@@ -3379,6 +3406,8 @@ public function get_project_additionaldata(){
         
         $select="SELECT * FROM ".$projectname;
         $scantask=$this->db->query($select.$where)->result();
+
+
         // echo '<pre>last_query ';
         // print_r($this->db->last_query());
         // echo '</pre>';
