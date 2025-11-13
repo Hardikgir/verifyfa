@@ -55,7 +55,8 @@ class Tasks_model extends CI_Model {
         $this->db->join('company_locations','company_locations.id=company_projects.project_location');
         // $this->db->where(array('user_role.user_id'=>$userid,'company_projects.status'=>0));
         // $this->db->where(array('user_role.user_id'=>$userid,'company_projects.status'=>0));
-        $this->db->where( 'company_projects.status !=','2');
+        // $this->db->where('company_projects.status !=','2');
+        $this->db->where("company_projects.status NOT IN (2,5)", NULL, FALSE);
         $this->db->where(array('user_role.user_id'=>$userid));
         $this->db->where($condition1 );
         $this->db->where(array('company_projects.company_id'=>$company_id,'company_projects.project_location'=>$location_id));
@@ -98,8 +99,8 @@ class Tasks_model extends CI_Model {
         // $this->db->where(array('user_role.user_id'=>$userid,'company_projects.status'=>0));
         // $this->db->where($condition);
         $this->db->where($condition[0]);
-        $this->db->where('company_projects.status !=','2');
-
+        // $this->db->where('company_projects.status !=','2');
+        $this->db->where("company_projects.status NOT IN (2,5)", NULL, FALSE);
         // $this->db->where(array('company_projects.company_id'=>$company_id,'company_projects.project_location'=>$location_id));
         $this->db->group_by('company_projects.project_id');
         $gettasks=$this->db->get();
@@ -119,7 +120,8 @@ class Tasks_model extends CI_Model {
         $this->db->join('company','company.id=users.company_id');
         $this->db->join('company_locations','company_locations.id=company_projects.project_location');
         $this->db->where(array('users.id'=>$userid));
-        $this->db->where('company_projects.status !=','2');
+        // $this->db->where('company_projects.status !=','2');
+        $this->db->where("company_projects.status NOT IN (2,5)", NULL, FALSE);
         if(!empty($location_id)){
             $this->db->where('company_locations.id',$location_id);
         }
@@ -1461,7 +1463,8 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
     $this->db->select('*');
     $this->db->from('company_projects');
     $this->db->where('company_id',$company_id);
-    $this->db->where('status !=','2');
+    // $this->db->where('status !=','2');
+    $this->db->where("status NOT IN (2,5)", NULL, FALSE);
 
     $query=$this->db->get();
     $result=$query->result();
@@ -1485,7 +1488,8 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
     // $this->db->where('project_verifier',$userid);
     $this->db->where('project_location',$location_id);
     $this->db->where('company_id',$company_id);
-    $this->db->where('status !=','2');
+    // $this->db->where('status !=','2');
+     $this->db->where("status NOT IN (2,5)", NULL, FALSE);
     // $this->db->group_by('project_location');
     $query=$this->db->get();
     $result=$query->result_array();
@@ -1521,6 +1525,7 @@ public function get_project_company_location($userid,$company_id,$location_id){
     // $this->db->where('project_verifier',$userid);
     $this->db->where('company_id',$company_id);
     $this->db->where('project_location',$location_id);
+    $this->db->where('status !=','5');///Added new on 13 Nov 2025
     $query=$this->db->get();
     $result=$query->result_array();
 //  $this->db->last_query();
@@ -1625,7 +1630,8 @@ public function get_project_company_location($userid,$company_id,$location_id){
     $this->db->select('*');
     $this->db->from('company_projects');
     $this->db->where($condition1 );
-    $this->db->where('status !=','2');
+    // $this->db->where('status !=','2');
+     $this->db->where("status NOT IN (2,5)", NULL, FALSE);
     $gettasks=$this->db->get();
     // echo $this->db->last_query();
     return $gettasks->result_array();
@@ -1687,7 +1693,8 @@ public function get_project_close($project_id){
     $this->db->select('*');
     $this->db->from('company_projects');
     $this->db->where('id',$project_id);
-    $this->db->where('status !=','2');
+    // $this->db->where('status !=','2');
+     $this->db->where("status NOT IN (2,5)", NULL, FALSE);
     $query=$this->db->get();
     $result=$query->row();
     $data['is_project_close'] = 0;

@@ -1149,7 +1149,7 @@ $role=implode(',',$this->input->post('user_role'));
         $data["notification"]=$this->Admin_model->save_delete_request($data);
         $insert_id = $this->db->insert_id();
 
-        $this->session->set_flashdata('success', "Project Deletion Successful");
+        $this->session->set_flashdata('success', "Request For Project Deletion Done");
         redirect("index.php/dashboard/project");
         
     }

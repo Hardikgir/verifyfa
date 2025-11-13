@@ -42,6 +42,7 @@ $allcategories=getCategories($projects[0]->project_name);
                         foreach($projects as $pro)
                         {
                     ?>
+                    <?php /*
                     <div class="row inSummary23">
                         <!-- <div class="col-md-12"> -->
                             <div class="col-md-4" style="float: left;">
@@ -66,7 +67,7 @@ $allcategories=getCategories($projects[0]->project_name);
                             </div>
                         <!-- </div> -->
                         
-                    </div>
+                    </div> */ ?>
                     <div class="row inDetails">
                             
                             <div class="col-md-6">
@@ -109,11 +110,24 @@ $allcategories=getCategories($projects[0]->project_name);
                                     <input type="text" value="<?php echo get_UserName($pro->assigned_by); ?>" class="form-control" disabled>
                                 </div>
                             </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="bmd-label-floating">Reason of Deletion</label>
+                                    <input type="text" value="<?php echo $requestdeteleprojectdetails->reason_for_delete;?>" class="form-control" disabled>
+                                </div>
+                            </div>
+
+
                         </div>
 
                         <?php 
+
+                     
                         if($_SESSION['logged_in']['main_role'] == '5'){
-                            $project_id = $requestdeteleprojectdetails->company_project_id;
+                            
+                            // $project_id = $requestdeteleprojectdetails->company_project_id;
+                            $project_id = $projects[0]->id;
                             $accept_url = base_url().'index.php/dashboard/acceptrequestdeleteproject/'.$project_id;
                             $declined_url = base_url().'index.php/dashboard/declinerequestdeleteproject/'.$project_id;
                             ?>
@@ -121,7 +135,7 @@ $allcategories=getCategories($projects[0]->project_name);
                                 <div class="col-md-12">
                                     <a class="btn btn-primary" href='<?php echo $accept_url; ?>'>Accept</a>
                                     <!-- <a class="btn btn-danger" href='<?php echo $declined_url; ?>'>Declined</a> -->
-                                    <a href="javascript:void(0)" onclick="requestfordelete(this,<?php echo $project_id; ?>)" class="btn btn-danger">Declined</a>
+                                    <a href="javascript:void(0)" onclick="requestfordelete(this,<?php echo $project_id; ?>)" class="btn btn-danger">Decline</a>
                                 </div>
                             </div>
                         <?php } ?>

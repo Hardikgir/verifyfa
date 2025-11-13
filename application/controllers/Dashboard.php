@@ -686,11 +686,22 @@ class Dashboard extends CI_Controller {
 		if($this->input->post('location_id') && $this->input->post('location_id') !=''){
 			$condition=array('company_id'=>$this->input->post('company_id'), 'project_location'=>$this->input->post('location_id'),);
 		}
+		
+		$condition[0] = $condition[0].' AND status != 5';
+		// echo '<pre>condition ';
+		// print_r($condition);
+		// echo '</pre>';
+		// exit();
+		// $condition[] = ;
 
 		// $condition = array();
 		
 	
 		$projects=$this->tasks->get_data('company_projects',$condition);	
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		foreach($projects as $project)
@@ -756,7 +767,7 @@ class Dashboard extends CI_Controller {
 		// "entity_code"=>$this->admin_registered_entity_code
 
 		// $company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id')->result();
-		$company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.entity_code = "'.$this->admin_registered_entity_code.'"')->result();
+		$company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.entity_code = "'.$this->admin_registered_entity_code.'" AND status != 5')->result();
 	
 		// echo '<pre>last_query ';
 		// print_r($this->db->last_query());
@@ -1364,7 +1375,7 @@ class Dashboard extends CI_Controller {
 		$entity_code_value = $this->admin_registered_entity_code;
 		$fetch_query = "";
 
-		$fetch_query .= "SELECT * from company_projects WHERE entity_code = '".$entity_code_value."'";
+		$fetch_query .= "SELECT * from company_projects WHERE entity_code = '".$entity_code_value."' AND status != 5";
 
 		if(!empty($application_open_project_company_id)){
 			$fetch_query .= " AND company_id = '".$application_open_project_company_id."'";
@@ -6508,14 +6519,13 @@ class Dashboard extends CI_Controller {
 		// print_r($projects);
 		
 
-		$this->db->select("company_projects.id as company_project_id,company_projects.project_name as company_project_name,request_for_delete_project.id as request_delete_row_id,request_for_delete_project.requester_id as request_delete_requester_id");
+		$this->db->select("company_projects.id as company_project_id,company_projects.project_name as company_project_name,request_for_delete_project.id as request_delete_row_id,request_for_delete_project.requester_id as request_delete_requester_id,request_for_delete_project.reason_for_delete as reason_for_delete");
 		$this->db->join('company_projects', 'request_for_delete_project.project_id = company_projects.id', 'inner'); 
 		$this->db->where("request_for_delete_project.status",1);
 		$query = $this->db->get('request_for_delete_project');
 		$result = $query->row();
 
-		
-		
+	
 		$data['projects']=$projects;
 		$data['requestdeteleprojectdetails']=$result;
 		$data['page_title']="Reports";
@@ -6525,21 +6535,10 @@ class Dashboard extends CI_Controller {
 
 
 
-	public function acceptrequestdeleteproject_Backup($project_id)
-	{	
-		$data=array(
-			"status"=>5
-		);
-		$this->db->where("id",$project_id);
-		$this->db->update("company_projects",$data);
-		$this->session->set_flashdata("success","Project Accept Request Delete Successfully");
-		redirect("index.php/dashboard/admin");		
-
-	}
 
 
 	public function acceptrequestdeleteproject($project_id)
-{
+	{
     
     $data = array("status" => 5);
     $this->db->where("id", $project_id);
@@ -6618,7 +6617,7 @@ class Dashboard extends CI_Controller {
         }
     }
 
-    $this->session->set_flashdata("success","Project Accept Request Delete Successfully");
+    $this->session->set_flashdata("success","Request to Delete Project processed successfully");
     redirect("index.php/dashboard/admin");
 }
 	
@@ -6653,7 +6652,7 @@ class Dashboard extends CI_Controller {
 
 
 
-		$this->session->set_flashdata("success","Project Accept Request Delete Successfully");
+		$this->session->set_flashdata("success","Request to Delete Project Declined successfully");
 		redirect("index.php/dashboard/admin");	
 
 	}

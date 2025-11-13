@@ -1506,7 +1506,7 @@ public function get_project_additionaldata(){
 	{
 		$userid=$this->input->post('user_id');
         $projects =$this->tasks->getProjectsreport($userid);
-
+        
 
         if(!empty($projects))
         {
