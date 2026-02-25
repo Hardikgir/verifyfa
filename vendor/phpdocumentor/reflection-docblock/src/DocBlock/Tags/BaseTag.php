@@ -8,7 +8,9 @@ declare(strict_types=1);
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @link http://phpdoc.org
+ * @copyright 2010-2015 Mike van Riel<mike@phpdoc.org>
+ * @license   http://www.opensource.org/licenses/mit-license.php MIT
+ * @link      http://phpdoc.org
  */
 
 namespace phpDocumentor\Reflection\DocBlock\Tags;
@@ -22,27 +24,27 @@ use phpDocumentor\Reflection\DocBlock\Description;
 abstract class BaseTag implements DocBlock\Tag
 {
     /** @var string Name of the tag */
-    protected string $name = '';
+    protected $name = '';
 
     /** @var Description|null Description of the tag. */
-    protected ?Description $description = null;
+    protected $description;
 
     /**
      * Gets the name of this tag.
      *
      * @return string The name of this tag.
      */
-    public function getName(): string
+    public function getName()
     {
         return $this->name;
     }
 
-    public function getDescription(): ?Description
+    public function getDescription()
     {
         return $this->description;
     }
 
-    public function render(?Formatter $formatter = null): string
+    public function render(Formatter $formatter = null)
     {
         if ($formatter === null) {
             $formatter = new Formatter\PassthroughFormatter();

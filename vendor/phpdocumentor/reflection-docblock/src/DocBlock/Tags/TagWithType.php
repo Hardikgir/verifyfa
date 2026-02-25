@@ -8,80 +8,53 @@ declare(strict_types=1);
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
+ * @copyright 2010-2015 Mike van Riel<mike@phpdoc.org>
+ * @license   http://www.opensource.org/licenses/mit-license.php MIT
  * @link      http://phpdoc.org
  */
 
 namespace phpDocumentor\Reflection\DocBlock\Tags;
 
-use InvalidArgumentException;
 use phpDocumentor\Reflection\Type;
-
-use function in_array;
-use function sprintf;
-use function strlen;
-use function substr;
-use function trim;
 
 abstract class TagWithType extends BaseTag
 {
-    /** @var ?Type */
-    protected ?Type $type = null;
+    /** @var Type */
+    protected $type;
 
     /**
      * Returns the type section of the variable.
+     *
+     * @return Type
      */
-    public function getType(): ?Type
+    public function getType()
     {
         return $this->type;
     }
 
-    /**
-     * @return string[]
-     */
-    protected static function extractTypeFromBody(string $body): array
+    protected static function extractTypeFromBody(string $body) : array
     {
-        $type         = '';
+        $type = '';
         $nestingLevel = 0;
-        for ($i = 0, $iMax = strlen($body); $i < $iMax; $i++) {
+        for ($i = 0; $i < strlen($body); $i++) {
             $character = $body[$i];
 
-            if ($nestingLevel === 0 && trim($character) === '') {
+            if (trim($character) === '' && $nestingLevel === 0) {
                 break;
             }
 
             $type .= $character;
             if (in_array($character, ['<', '(', '[', '{'])) {
                 $nestingLevel++;
-                continue;
             }
 
             if (in_array($character, ['>', ')', ']', '}'])) {
                 $nestingLevel--;
-                continue;
             }
-        }
-
-        if ($nestingLevel < 0 || $nestingLevel > 0) {
-            throw new InvalidArgumentException(
-                sprintf('Could not find type in %s, please check for malformed notations', $body)
-            );
         }
 
         $description = trim(substr($body, strlen($type)));
 
         return [$type, $description];
-    }
-
-    public function __toString(): string
-    {
-        if ($this->description) {
-            $description = $this->description->render();
-        } else {
-            $description = '';
-        }
-
-        $type = (string) $this->type;
-
-        return $type . ($description !== '' ? ($type !== '' ? ' ' : '') . $description : '');
     }
 }

@@ -1,7 +1,7 @@
 {
     "name": "symfony/yaml",
     "type": "library",
-    "description": "Loads and dumps YAML files",
+    "description": "Symfony Yaml Component",
     "keywords": [],
     "homepage": "https://symfony.com",
     "license": "MIT",
@@ -16,7 +16,7 @@
         }
     ],
     "require": {
-        "php": ">=7.1.3",
+        "php": "^7.1.3",
         "symfony/polyfill-ctype": "~1.8"
     },
     "require-dev": {
@@ -34,5 +34,10 @@
             "/Tests/"
         ]
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "4.4-dev"
+        }
+    }
 }

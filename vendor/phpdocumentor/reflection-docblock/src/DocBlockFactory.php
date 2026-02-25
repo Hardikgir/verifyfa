@@ -1,60 +1,36 @@
 <?php
-
-declare(strict_types=1);
-
 /**
  * This file is part of phpDocumentor.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
+ * @copyright 2010-2015 Mike van Riel<mike@phpdoc.org>
+ * @license   http://www.opensource.org/licenses/mit-license.php MIT
  * @link      http://phpdoc.org
  */
 
 namespace phpDocumentor\Reflection;
 
-use InvalidArgumentException;
-use LogicException;
 use phpDocumentor\Reflection\DocBlock\DescriptionFactory;
 use phpDocumentor\Reflection\DocBlock\StandardTagFactory;
 use phpDocumentor\Reflection\DocBlock\Tag;
 use phpDocumentor\Reflection\DocBlock\TagFactory;
-use phpDocumentor\Reflection\DocBlock\Tags\Factory\AbstractPHPStanFactory;
-use phpDocumentor\Reflection\DocBlock\Tags\Factory\ExtendsFactory;
-use phpDocumentor\Reflection\DocBlock\Tags\Factory\Factory;
-use phpDocumentor\Reflection\DocBlock\Tags\Factory\ImplementsFactory;
-use phpDocumentor\Reflection\DocBlock\Tags\Factory\MethodFactory;
-use phpDocumentor\Reflection\DocBlock\Tags\Factory\ParamFactory;
-use phpDocumentor\Reflection\DocBlock\Tags\Factory\PropertyFactory;
-use phpDocumentor\Reflection\DocBlock\Tags\Factory\PropertyReadFactory;
-use phpDocumentor\Reflection\DocBlock\Tags\Factory\PropertyWriteFactory;
-use phpDocumentor\Reflection\DocBlock\Tags\Factory\ReturnFactory;
-use phpDocumentor\Reflection\DocBlock\Tags\Factory\TemplateExtendsFactory;
-use phpDocumentor\Reflection\DocBlock\Tags\Factory\TemplateFactory;
-use phpDocumentor\Reflection\DocBlock\Tags\Factory\TemplateImplementsFactory;
-use phpDocumentor\Reflection\DocBlock\Tags\Factory\VarFactory;
 use Webmozart\Assert\Assert;
-
-use function array_shift;
-use function count;
-use function explode;
-use function is_object;
-use function method_exists;
-use function preg_match;
-use function preg_replace;
-use function str_replace;
-use function strpos;
-use function substr;
-use function trim;
 
 final class DocBlockFactory implements DocBlockFactoryInterface
 {
-    private DocBlock\DescriptionFactory $descriptionFactory;
+    /** @var DocBlock\DescriptionFactory */
+    private $descriptionFactory;
 
-    private TagFactory $tagFactory;
+    /** @var DocBlock\TagFactory */
+    private $tagFactory;
 
     /**
      * Initializes this factory with the required subcontractors.
+     *
+     * @param DescriptionFactory $descriptionFactory
+     * @param TagFactory         $tagFactory
      */
     public function __construct(DescriptionFactory $descriptionFactory, TagFactory $tagFactory)
     {
@@ -65,44 +41,18 @@ final class DocBlockFactory implements DocBlockFactoryInterface
     /**
      * Factory method for easy instantiation.
      *
-     * @param array<string, class-string<Tag>|Factory> $additionalTags
+     * @param string[] $additionalTags
+     *
+     * @return DocBlockFactory
      */
-    public static function createInstance(array $additionalTags = []): DocBlockFactoryInterface
+    public static function createInstance(array $additionalTags = [])
     {
         $fqsenResolver = new FqsenResolver();
         $tagFactory = new StandardTagFactory($fqsenResolver);
         $descriptionFactory = new DescriptionFactory($tagFactory);
-        $typeResolver = new TypeResolver($fqsenResolver);
-
-        $phpstanTagFactory = new AbstractPHPStanFactory(
-            new ParamFactory($typeResolver, $descriptionFactory),
-            new VarFactory($typeResolver, $descriptionFactory),
-            new ReturnFactory($typeResolver, $descriptionFactory),
-            new PropertyFactory($typeResolver, $descriptionFactory),
-            new PropertyReadFactory($typeResolver, $descriptionFactory),
-            new PropertyWriteFactory($typeResolver, $descriptionFactory),
-            new MethodFactory($typeResolver, $descriptionFactory),
-            new ImplementsFactory($typeResolver, $descriptionFactory),
-            new ExtendsFactory($typeResolver, $descriptionFactory),
-            new TemplateFactory($typeResolver, $descriptionFactory),
-            new TemplateImplementsFactory($typeResolver, $descriptionFactory),
-            new TemplateExtendsFactory($typeResolver, $descriptionFactory),
-        );
 
         $tagFactory->addService($descriptionFactory);
-        $tagFactory->addService($typeResolver);
-        $tagFactory->registerTagHandler('param', $phpstanTagFactory);
-        $tagFactory->registerTagHandler('var', $phpstanTagFactory);
-        $tagFactory->registerTagHandler('return', $phpstanTagFactory);
-        $tagFactory->registerTagHandler('property', $phpstanTagFactory);
-        $tagFactory->registerTagHandler('property-read', $phpstanTagFactory);
-        $tagFactory->registerTagHandler('property-write', $phpstanTagFactory);
-        $tagFactory->registerTagHandler('method', $phpstanTagFactory);
-        $tagFactory->registerTagHandler('extends', $phpstanTagFactory);
-        $tagFactory->registerTagHandler('implements', $phpstanTagFactory);
-        $tagFactory->registerTagHandler('template', $phpstanTagFactory);
-        $tagFactory->registerTagHandler('template-extends', $phpstanTagFactory);
-        $tagFactory->registerTagHandler('template-implements', $phpstanTagFactory);
+        $tagFactory->addService(new TypeResolver($fqsenResolver));
 
         $docBlockFactory = new self($descriptionFactory, $tagFactory);
         foreach ($additionalTags as $tagName => $tagHandler) {
@@ -115,18 +65,20 @@ final class DocBlockFactory implements DocBlockFactoryInterface
     /**
      * @param object|string $docblock A string containing the DocBlock to parse or an object supporting the
      *                                getDocComment method (such as a ReflectionClass object).
+     * @param Types\Context $context
+     * @param Location      $location
+     *
+     * @return DocBlock
      */
-    public function create($docblock, ?Types\Context $context = null, ?Location $location = null): DocBlock
+    public function create($docblock, Types\Context $context = null, Location $location = null)
     {
         if (is_object($docblock)) {
             if (!method_exists($docblock, 'getDocComment')) {
                 $exceptionMessage = 'Invalid object passed; the given object must support the getDocComment method';
-
-                throw new InvalidArgumentException($exceptionMessage);
+                throw new \InvalidArgumentException($exceptionMessage);
             }
 
             $docblock = $docblock->getDocComment();
-            Assert::string($docblock);
         }
 
         Assert::stringNotEmpty($docblock);
@@ -136,13 +88,14 @@ final class DocBlockFactory implements DocBlockFactoryInterface
         }
 
         $parts = $this->splitDocBlock($this->stripDocComment($docblock));
-
-        [$templateMarker, $summary, $description, $tags] = $parts;
+        list($templateMarker, $summary, $description, $tags) = $parts;
 
         return new DocBlock(
             $summary,
             $description ? $this->descriptionFactory->create($description, $context) : null,
-            $this->parseTagBlock($tags, $context),
+            array_filter($this->parseTagBlock($tags, $context), function ($tag) {
+                return $tag instanceof Tag;
+            }),
             $context,
             $location,
             $templateMarker === '#@+',
@@ -150,10 +103,7 @@ final class DocBlockFactory implements DocBlockFactoryInterface
         );
     }
 
-    /**
-     * @param class-string<Tag>|Factory $handler
-     */
-    public function registerTagHandler(string $tagName, $handler): void
+    public function registerTagHandler($tagName, $handler)
     {
         $this->tagFactory->registerTagHandler($tagName, $handler);
     }
@@ -162,12 +112,12 @@ final class DocBlockFactory implements DocBlockFactoryInterface
      * Strips the asterisks from the DocBlock comment.
      *
      * @param string $comment String containing the comment text.
+     *
+     * @return string
      */
-    private function stripDocComment(string $comment): string
+    private function stripDocComment($comment)
     {
-        $comment = preg_replace('#[ \t]*(?:\/\*\*|\*\/|\*)?[ \t]?(.*)?#u', '$1', $comment);
-        Assert::string($comment);
-        $comment = trim($comment);
+        $comment = trim(preg_replace('#[ \t]*(?:\/\*\*|\*\/|\*)?[ \t]{0,1}(.*)?#u', '$1', $comment));
 
         // reg ex above is not able to remove */ from a single line docblock
         if (substr($comment, -2) === '*/') {
@@ -177,22 +127,18 @@ final class DocBlockFactory implements DocBlockFactoryInterface
         return str_replace(["\r\n", "\r"], "\n", $comment);
     }
 
-    // phpcs:disable
-
     /**
      * Splits the DocBlock into a template marker, summary, description and block of tags.
      *
      * @param string $comment Comment to split into the sub-parts.
      *
-     * @return string[] containing the template marker (if any), summary, description and a string containing the tags.
-     *
+     * @author Richard van Velzen (@_richardJ) Special thanks to Richard for the regex responsible for the split.
      * @author Mike van Riel <me@mikevanriel.com> for extending the regex with template marker support.
      *
-     * @author Richard van Velzen (@_richardJ) Special thanks to Richard for the regex responsible for the split.
+     * @return string[] containing the template marker (if any), summary, description and a string containing the tags.
      */
-    private function splitDocBlock(string $comment): array
+    private function splitDocBlock($comment)
     {
-        // phpcs:enable
         // Performance improvement cheat: if the first character is an @ then only tags are in this DocBlock. This
         // method does not split tags so we return this verbatim as the fourth result (tags). This saves us the
         // performance impact of running a regular expression
@@ -202,7 +148,7 @@ final class DocBlockFactory implements DocBlockFactoryInterface
 
         // clears all extra horizontal whitespace from the line endings to prevent parsing issues
         $comment = preg_replace('/\h*$/Sum', '', $comment);
-        Assert::string($comment);
+
         /*
          * Splits the docblock into a template marker, summary, description and tags section.
          *
@@ -230,7 +176,7 @@ final class DocBlockFactory implements DocBlockFactoryInterface
                 [^\n.]+
                 (?:
                   (?! \. \n | \n{2} )     # End summary upon a dot followed by newline or two newlines
-                  [\n.]* (?! [ \t]* @\pL ) # End summary when an @ is found as first character on a new line
+                  [\n.] (?! [ \t]* @\pL ) # End summary when an @ is found as first character on a new line
                   [^\n.]+                 # Include anything else
                 )*
                 \.?
@@ -273,16 +219,15 @@ final class DocBlockFactory implements DocBlockFactoryInterface
      *
      * @return DocBlock\Tag[]
      */
-    private function parseTagBlock(string $tags, Types\Context $context): array
+    private function parseTagBlock($tags, Types\Context $context)
     {
         $tags = $this->filterTagBlock($tags);
-        if ($tags === null) {
+        if (!$tags) {
             return [];
         }
 
-        $result = [];
-        $lines = $this->splitTagBlockIntoTagLines($tags);
-        foreach ($lines as $key => $tagLine) {
+        $result = $this->splitTagBlockIntoTagLines($tags);
+        foreach ($result as $key => $tagLine) {
             $result[$key] = $this->tagFactory->create(trim($tagLine), $context);
         }
 
@@ -290,36 +235,40 @@ final class DocBlockFactory implements DocBlockFactoryInterface
     }
 
     /**
+     * @param string $tags
+     *
      * @return string[]
      */
-    private function splitTagBlockIntoTagLines(string $tags): array
+    private function splitTagBlockIntoTagLines($tags)
     {
         $result = [];
-        foreach (explode("\n", $tags) as $tagLine) {
-            if ($tagLine !== '' && strpos($tagLine, '@') === 0) {
-                $result[] = $tagLine;
+        foreach (explode("\n", $tags) as $tag_line) {
+            if (isset($tag_line[0]) && ($tag_line[0] === '@')) {
+                $result[] = $tag_line;
             } else {
-                $result[count($result) - 1] .= "\n" . $tagLine;
+                $result[count($result) - 1] .= "\n" . $tag_line;
             }
         }
 
         return $result;
     }
 
-    private function filterTagBlock(string $tags): ?string
+    /**
+     * @param $tags
+     * @return string
+     */
+    private function filterTagBlock($tags)
     {
         $tags = trim($tags);
         if (!$tags) {
             return null;
         }
 
-        if ($tags[0] !== '@') {
+        if ('@' !== $tags[0]) {
             // @codeCoverageIgnoreStart
             // Can't simulate this; this only happens if there is an error with the parsing of the DocBlock that
             // we didn't foresee.
-
-            throw new LogicException('A tag block started with text instead of an at-sign(@): ' . $tags);
-
+            throw new \LogicException('A tag block started with text instead of an at-sign(@): ' . $tags);
             // @codeCoverageIgnoreEnd
         }
 
