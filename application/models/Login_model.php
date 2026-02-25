@@ -18,7 +18,7 @@ class Login_model extends CI_Model {
 	}
 	function getlogin_data($condition)
 	{	
-		$this->db->select('id,userName,firstName,lastName,userEmail,entity_code,created_on,updated_on');
+		$this->db->select('id,userName,firstName,lastName,userEmail,entity_code,designation,department_id,created_on,updated_on');
         $this->db->from('users');
         $this->db->where($condition);
 		$getdata=$this->db->get();
