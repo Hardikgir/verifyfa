@@ -767,7 +767,7 @@ class Plancycle extends CI_Controller {
 							
 						}
 					?>
-					<tr>
+					<tr <?php  if($pro->status=='5'){ echo 'style="color: red;"'; }?>>
 						<td><?php echo ++$i;?></td>
 						<td><?php echo $pro->project_id;?></td>
 						<td>
@@ -788,24 +788,41 @@ class Plancycle extends CI_Controller {
 							?>
 						</td>
 						<td><?php echo $pro->item_category;?></td>
-						<td><?php echo $pro->status==0 ? "In-Process":($pro->status==3?"Verification Finished":"Cancelled");?></td>
+						<td>
+							<?php 
+							if($pro->status == 0){
+								echo "In-Process";
+							}else if($pro->status == 3){
+								echo "Verification Finished";
+							}else if($pro->status == 5){
+								echo "Deleted";
+							}
+							// echo $pro->status==0 ? "In-Process":($pro->status==3?"Verification Finished":"Cancelled");?>
+						</td>
 						<td>
                 		<?php if($pro->status==3){ ?> 
                        		<a href="<?php echo base_url();?>index.php/dashboard/projectdetail/<?php echo $pro->id;?>" id="contact_detail">
 								<i class="fa fa-check"></i> Close & Finish
 							</a>
              			<?php } ?>
+						
+
+						<?php if($pro->status!=5){ ?>
 
 						<a href="#" id="contact_detail" onclick="save_contact_detail('<?php echo $pro->id;?>')">
 						<i class="fa fa-address-book"></i> Contact Detail
 
 						</a>
 							
+
+							
 							||
 
 							<a href="<?php echo base_url();?>index.php/plancycle/editverificationcycle/<?php echo $prooooid = $pro->id; ?>">
 							<i class="fa fa-pencil"></i>Edit
 							</a>
+
+							<?php } ?>
 
 							<!-- || -->
 

@@ -686,11 +686,22 @@ class Dashboard extends CI_Controller {
 		if($this->input->post('location_id') && $this->input->post('location_id') !=''){
 			$condition=array('company_id'=>$this->input->post('company_id'), 'project_location'=>$this->input->post('location_id'),);
 		}
+		
+		$condition[0] = $condition[0].' AND status != 5';
+		// echo '<pre>condition ';
+		// print_r($condition);
+		// echo '</pre>';
+		// exit();
+		// $condition[] = ;
 
 		// $condition = array();
 		
 	
 		$projects=$this->tasks->get_data('company_projects',$condition);	
+		// echo '<pre>last_query ';
+		// print_r($this->db->last_query());
+		// echo '</pre>';
+		// exit();
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		foreach($projects as $project)
@@ -776,7 +787,7 @@ class Dashboard extends CI_Controller {
 >>>>>>> cfa3415db4b17deaa1439edc7e84de2a81cbd1cd
 
 		// $company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id')->result();
-		$company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.entity_code = "'.$this->admin_registered_entity_code.'"')->result();
+		$company_projects = $this->db->query('SELECT company.company_name,company_projects.* FROM company_projects LEFT JOIN company ON company_projects.company_id = company.id WHERE company_projects.entity_code = "'.$this->admin_registered_entity_code.'" AND status != 5')->result();
 	
 		// echo '<pre>last_query ';
 		// print_r($this->db->last_query());
@@ -1384,7 +1395,7 @@ class Dashboard extends CI_Controller {
 		$entity_code_value = $this->admin_registered_entity_code;
 		$fetch_query = "";
 
-		$fetch_query .= "SELECT * from company_projects WHERE entity_code = '".$entity_code_value."'";
+		$fetch_query .= "SELECT * from company_projects WHERE entity_code = '".$entity_code_value."' AND status != 5";
 
 		if(!empty($application_open_project_company_id)){
 			$fetch_query .= " AND company_id = '".$application_open_project_company_id."'";
@@ -6528,14 +6539,13 @@ class Dashboard extends CI_Controller {
 		// print_r($projects);
 		
 
-		$this->db->select("company_projects.id as company_project_id,company_projects.project_name as company_project_name,request_for_delete_project.id as request_delete_row_id,request_for_delete_project.requester_id as request_delete_requester_id");
+		$this->db->select("company_projects.id as company_project_id,company_projects.project_name as company_project_name,request_for_delete_project.id as request_delete_row_id,request_for_delete_project.requester_id as request_delete_requester_id,request_for_delete_project.reason_for_delete as reason_for_delete");
 		$this->db->join('company_projects', 'request_for_delete_project.project_id = company_projects.id', 'inner'); 
 		$this->db->where("request_for_delete_project.status",1);
 		$query = $this->db->get('request_for_delete_project');
 		$result = $query->row();
 
-		
-		
+	
 		$data['projects']=$projects;
 		$data['requestdeteleprojectdetails']=$result;
 		$data['page_title']="Reports";
@@ -6545,17 +6555,91 @@ class Dashboard extends CI_Controller {
 
 
 
-	public function acceptrequestdeleteproject($project_id)
-	{	
-		$data=array(
-			"status"=>5
-		);
-		$this->db->where("id",$project_id);
-		$this->db->update("company_projects",$data);
-		$this->session->set_flashdata("success","Project Accept Request Delete Successfully");
-		redirect("index.php/dashboard/admin");		
 
-	}
+
+	public function acceptrequestdeleteproject($project_id)
+	{
+    
+    $data = array("status" => 5);
+    $this->db->where("id", $project_id);
+    $this->db->update("company_projects", $data);
+
+    // ========== UN-ALLOCATE ORIGINAL ROWS ==========
+    $project_id_to_unalloc = $project_id;
+
+    // load project metadata
+    $proj = $this->db->get_where('company_projects', ['id' => $project_id_to_unalloc])->row();
+
+    if ($proj && !empty($proj->project_table_name) && !empty($proj->original_table_name)) {
+
+        $project_table  = $this->db->escape_str($proj->project_table_name);   // e.g. hardiktestone
+        $original_table = $this->db->escape_str($proj->original_table_name);  // e.g. project_1757148074
+
+        // check if original table has allocated_project_id column
+        $has_alloc_col = $this->db->field_exists('allocated_project_id', $original_table);
+
+        // start transaction for safety
+        $this->db->trans_start();
+
+        // 1) collect unique codes from project table (preferred)
+        $codes_q = $this->db->query("SELECT item_unique_code FROM `{$project_table}` WHERE IFNULL(item_unique_code,'') <> ''");
+        $codes = array_column($codes_q->result_array(), 'item_unique_code');
+
+        if (!empty($codes)) {
+            // chunk large lists to avoid very long IN() clauses
+            $chunks = array_chunk($codes, 500);
+            foreach ($chunks as $chunk) {
+                $escaped = array_map(function($v){ return $this->db->escape($v); }, $chunk);
+                $inlist = implode(',', $escaped);
+
+                if ($has_alloc_col) {
+                    // clear is_alotted and allocated_project_id
+                    $sql = "UPDATE `{$original_table}` 
+                            SET is_alotted = 0, allocated_project_id = NULL 
+                            WHERE item_unique_code IN ({$inlist})";
+                } else {
+                    // clear only is_alotted
+                    $sql = "UPDATE `{$original_table}` 
+                            SET is_alotted = 0 
+                            WHERE item_unique_code IN ({$inlist})";
+                }
+                $this->db->query($sql);
+            }
+        } else {
+            // FALLBACK: no unique codes — join by category + description (less precise)
+            if ($has_alloc_col) {
+                $sql = "
+                    UPDATE `{$original_table}` o
+                    JOIN `{$project_table}` p 
+                      ON (o.item_category = p.item_category AND o.item_description = p.item_description)
+                    SET o.is_alotted = 0, o.allocated_project_id = NULL
+                    WHERE o.is_alotted = 1
+                ";
+            } else {
+                $sql = "
+                    UPDATE `{$original_table}` o
+                    JOIN `{$project_table}` p 
+                      ON (o.item_category = p.item_category AND o.item_description = p.item_description)
+                    SET o.is_alotted = 0
+                    WHERE o.is_alotted = 1
+                ";
+            }
+            $this->db->query($sql);
+        }
+
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === FALSE) {
+            log_message('error', 'Un-allocate transaction failed for project ' . $project_id_to_unalloc);
+            // optionally set flash and redirect or show error
+        } else {
+            log_message('debug', 'Un-allocate completed for project ' . $project_id_to_unalloc);
+        }
+    }
+
+    $this->session->set_flashdata("success","Request to Delete Project processed successfully");
+    redirect("index.php/dashboard/admin");
+}
 	
 	public function declinerequestdeleteproject()
 	{		
@@ -6588,7 +6672,7 @@ class Dashboard extends CI_Controller {
 
 
 
-		$this->session->set_flashdata("success","Project Accept Request Delete Successfully");
+		$this->session->set_flashdata("success","Request to Delete Project Declined successfully");
 		redirect("index.php/dashboard/admin");	
 
 	}
