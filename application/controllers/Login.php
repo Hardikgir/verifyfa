@@ -291,9 +291,9 @@ class Login extends CI_Controller {
 		$this->load->view('forget-password',$this->data);
 	}
 	//already
-	// public function VerifyForForgetPassword(){
-	// 	// $this->data['title']="VerifyFa Registered User Login";		
-	// 	// $this->load->view('password-change',$this->data);
+	public function VerifyForForgetPassword(){
+		$this->data['title']="VerifyFa Registered User Login";		
+		$this->load->view('password-change',$this->data);
 
 		$email=$this->input->post('userEmail');
 		$password=$this->input->post('userPassword');
@@ -347,12 +347,12 @@ class Login extends CI_Controller {
 	}
 	
 	//already
-	// public function VerifyForForgetPasswordRegistered(){
-	// 	// $this->data['title']="VerifyFa Registered User Login";		
-	// 	// $this->load->view('password-change',$this->data);
+	public function VerifyForForgetPasswordRegistered(){
+		// $this->data['title']="VerifyFa Registered User Login";		
+		// $this->load->view('password-change',$this->data);
 
-	// 	$email=$this->input->post('email');
-	// 	$entity=$this->input->post('entity');
+		$email=$this->input->post('email');
+		$entity=$this->input->post('entity');
 
 		$this->db->select('*');
 		$this->db->from('registred_users');
