@@ -63,7 +63,11 @@ class Inline
      *
      * @throws ParseException
      */
+<<<<<<< HEAD
     public static function parse($value, $flags = 0, $references = [])
+=======
+    public static function parse(string $value = null, int $flags = 0, array $references = [])
+>>>>>>> main
     {
         if (\is_bool($flags)) {
             @trigger_error('Passing a boolean flag to toggle exception handling is deprecated since Symfony 3.1 and will be removed in 4.0. Use the Yaml::PARSE_EXCEPTION_ON_INVALID_TYPE flag instead.', \E_USER_DEPRECATED);
@@ -127,7 +131,7 @@ class Inline
             }
 
             // some comments are allowed at the end
-            if (preg_replace('/\s*#.*$/A', '', substr($value, $i))) {
+            if (preg_replace('/\s+#.*$/A', '', substr($value, $i))) {
                 throw new ParseException(sprintf('Unexpected characters near "%s".', substr($value, $i)), self::$parsedLineNumber + 1, $value, self::$parsedFilename);
             }
 
@@ -210,10 +214,15 @@ class Inline
                 return 'false';
             case ctype_digit($value):
                 return \is_string($value) ? "'$value'" : (int) $value;
+<<<<<<< HEAD
             case is_numeric($value) && false === strpos($value, "\f") && false === strpos($value, "\n") && false === strpos($value, "\r") && false === strpos($value, "\t") && false === strpos($value, "\v"):
                 $locale = setlocale(\LC_NUMERIC, 0);
+=======
+            case is_numeric($value):
+                $locale = setlocale(LC_NUMERIC, 0);
+>>>>>>> main
                 if (false !== $locale) {
-                    setlocale(\LC_NUMERIC, 'C');
+                    setlocale(LC_NUMERIC, 'C');
                 }
                 if (\is_float($value)) {
                     $repr = (string) $value;
@@ -227,7 +236,7 @@ class Inline
                     $repr = \is_string($value) ? "'$value'" : (string) $value;
                 }
                 if (false !== $locale) {
-                    setlocale(\LC_NUMERIC, $locale);
+                    setlocale(LC_NUMERIC, $locale);
                 }
 
                 return $repr;
@@ -318,7 +327,11 @@ class Inline
      *
      * @internal
      */
+<<<<<<< HEAD
     public static function parseScalar($scalar, $flags = 0, $delimiters = null, &$i = 0, $evaluate = true, $references = [], $legacyOmittedKeySupport = false)
+=======
+    public static function parseScalar(string $scalar, int $flags = 0, array $delimiters = null, int &$i = 0, bool $evaluate = true, array $references = [])
+>>>>>>> main
     {
         if (\in_array($scalar[$i], ['"', "'"])) {
             // quoted scalar
@@ -340,7 +353,7 @@ class Inline
                 $i += \strlen($output);
 
                 // remove comments
-                if (Parser::preg_match('/[ \t]+#/', $output, $match, \PREG_OFFSET_CAPTURE)) {
+                if (Parser::preg_match('/[ \t]+#/', $output, $match, PREG_OFFSET_CAPTURE)) {
                     $output = substr($output, 0, $match[0][1]);
                 }
             } elseif (Parser::preg_match('/^(.'.($legacyOmittedKeySupport ? '+' : '*').'?)('.implode('|', $delimiters).')/', substr($scalar, $i), $match)) {
@@ -377,7 +390,11 @@ class Inline
      *
      * @throws ParseException When malformed inline YAML string is parsed
      */
+<<<<<<< HEAD
     private static function parseQuotedScalar($scalar, &$i)
+=======
+    private static function parseQuotedScalar(string $scalar, int &$i): string
+>>>>>>> main
     {
         if (!Parser::preg_match('/'.self::REGEX_QUOTED_STRING.'/Au', substr($scalar, $i), $match)) {
             throw new ParseException(sprintf('Malformed inline YAML string: "%s".', substr($scalar, $i)), self::$parsedLineNumber + 1, $scalar, self::$parsedFilename);
@@ -409,7 +426,11 @@ class Inline
      *
      * @throws ParseException When malformed inline YAML string is parsed
      */
+<<<<<<< HEAD
     private static function parseSequence($sequence, $flags, &$i = 0, $references = [])
+=======
+    private static function parseSequence(string $sequence, int $flags, int &$i = 0, array $references = []): array
+>>>>>>> main
     {
         $output = [];
         $len = \strlen($sequence);
@@ -478,7 +499,11 @@ class Inline
      *
      * @throws ParseException When malformed inline YAML string is parsed
      */
+<<<<<<< HEAD
     private static function parseMapping($mapping, $flags, &$i = 0, $references = [])
+=======
+    private static function parseMapping(string $mapping, int $flags, int &$i = 0, array $references = [])
+>>>>>>> main
     {
         $output = [];
         $len = \strlen($mapping);
@@ -502,6 +527,7 @@ class Inline
 
             // key
             $isKeyQuoted = \in_array($mapping[$i], ['"', "'"], true);
+<<<<<<< HEAD
             $key = self::parseScalar($mapping, $flags, [':', ' '], $i, false, [], true);
 
             if ('!php/const' === $key) {
@@ -512,6 +538,17 @@ class Inline
                 } else {
                     $key = self::evaluateScalar($key, $flags);
                 }
+=======
+            $key = self::parseScalar($mapping, $flags, [':', ' '], $i, false, []);
+
+            if ($offsetBeforeKeyParsing === $i) {
+                throw new ParseException('Missing mapping key.', self::$parsedLineNumber + 1, $mapping);
+            }
+
+            if ('!php/const' === $key) {
+                $key .= ' '.self::parseScalar($mapping, $flags, [':'], $i, false, []);
+                $key = self::evaluateScalar($key, $flags);
+>>>>>>> main
             }
 
             if (':' !== $key && false === $i = strpos($mapping, ':', $i)) {
@@ -588,7 +625,11 @@ class Inline
                         }
                         break;
                     default:
+<<<<<<< HEAD
                         $value = self::parseScalar($mapping, $flags, [',', '}'], $i, null === $tag, $references);
+=======
+                        $value = self::parseScalar($mapping, $flags, [',', '}', "\n"], $i, null === $tag, $references);
+>>>>>>> main
                         // Spec: Keys MUST be unique; first one wins.
                         // Parser cannot abort this mapping earlier, since lines
                         // are processed sequentially.
@@ -626,7 +667,11 @@ class Inline
      *
      * @throws ParseException when object parsing support was disabled and the parser detected a PHP object or when a reference could not be resolved
      */
+<<<<<<< HEAD
     private static function evaluateScalar($scalar, $flags, $references = [])
+=======
+    private static function evaluateScalar(string $scalar, int $flags, array $references = [])
+>>>>>>> main
     {
         $scalar = trim($scalar);
         $scalarLower = strtolower($scalar);
@@ -661,6 +706,7 @@ class Inline
                 return false;
             case '!' === $scalar[0]:
                 switch (true) {
+<<<<<<< HEAD
                     case 0 === strpos($scalar, '!str'):
                         @trigger_error(self::getDeprecationMessage('Support for the !str tag is deprecated since Symfony 3.4. Use the !!str tag instead.'), \E_USER_DEPRECATED);
 
@@ -695,6 +741,12 @@ class Inline
                         }
 
                         return null;
+=======
+                    case 0 === strpos($scalar, '!!str '):
+                        return (string) substr($scalar, 6);
+                    case 0 === strpos($scalar, '! '):
+                        return substr($scalar, 2);
+>>>>>>> main
                     case 0 === strpos($scalar, '!php/object'):
                         if (self::$objectSupport) {
                             if (!isset($scalar[12])) {
@@ -759,21 +811,15 @@ class Inline
 
                 switch (true) {
                     case ctype_digit($scalar):
-                        if (preg_match('/^0[0-7]+$/', $scalar)) {
-                            return octdec($scalar);
-                        }
-
+                        $raw = $scalar;
                         $cast = (int) $scalar;
 
-                        return ($scalar === (string) $cast) ? $cast : $scalar;
+                        return '0' == $scalar[0] ? octdec($scalar) : (((string) $raw == (string) $cast) ? $cast : $raw);
                     case '-' === $scalar[0] && ctype_digit(substr($scalar, 1)):
-                        if (preg_match('/^-0[0-7]+$/', $scalar)) {
-                            return -octdec(substr($scalar, 1));
-                        }
-
+                        $raw = $scalar;
                         $cast = (int) $scalar;
 
-                        return ($scalar === (string) $cast) ? $cast : $scalar;
+                        return '0' == $scalar[1] ? -octdec(substr($scalar, 1)) : (($raw === (string) $cast) ? $cast : $raw);
                     case is_numeric($scalar):
                     case Parser::preg_match(self::getHexRegex(), $scalar):
                         $scalar = str_replace('_', '', $scalar);
@@ -828,9 +874,19 @@ class Inline
         $nextOffset = $i + $tagLength + 1;
         $nextOffset += strspn($value, ' ', $nextOffset);
 
+<<<<<<< HEAD
         // Is followed by a scalar
         if ((!isset($value[$nextOffset]) || !\in_array($value[$nextOffset], ['[', '{'], true)) && 'tagged' !== $tag) {
             // Manage non-whitelisted scalars in {@link self::evaluateScalar()}
+=======
+        if ('' === $tag && (!isset($value[$nextOffset]) || \in_array($value[$nextOffset], [']', '}', ','], true))) {
+            throw new ParseException(sprintf('Using the unquoted scalar value "!" is not supported. You must quote it.', $value), self::$parsedLineNumber + 1, $value, self::$parsedFilename);
+        }
+
+        // Is followed by a scalar and is a built-in tag
+        if ('' !== $tag && (!isset($value[$nextOffset]) || !\in_array($value[$nextOffset], ['[', '{'], true)) && ('!' === $tag[0] || 'str' === $tag || 'php/const' === $tag || 'php/object' === $tag)) {
+            // Manage in {@link self::evaluateScalar()}
+>>>>>>> main
             return null;
         }
 

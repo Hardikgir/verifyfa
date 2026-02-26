@@ -561,10 +561,7 @@ class ProjectDetails extends CI_Controller {
 		// echo '</pre>';
 		// exit();
 
-	// echo '<pre>user_wise_count ';
-	// print_r($user_wise_count);
-	// echo '</pre>';
-	// exit();
+	
 		
 			$ResourcewiseUtilizationChart_dataPoints1 = array();
 			foreach($user_wise_count as $user_wise_count_key=>$user_wise_count_value){

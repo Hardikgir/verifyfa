@@ -32,9 +32,16 @@ Parsing can be initiated by instantiating the
 a DocBlock (including asterisks) or by passing an object supporting the
 `getDocComment()` method.
 
+<<<<<<< HEAD
 > *Examples of objects having the `getDocComment()` method are the
 > `ReflectionClass` and the `ReflectionMethod` classes of the PHP
 > Reflection extension*
+=======
+Then we can use the `create` method of the factory to interpret the DocBlock. 
+Please note that it is also possible to provide a class that has the 
+`getDocComment()` method, such as an object of type `ReflectionClass`, the
+create method will read that if it exists.
+>>>>>>> main
 
 Example:
 

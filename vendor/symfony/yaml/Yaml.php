@@ -33,11 +33,15 @@ class Yaml
     const PARSE_CONSTANT = 256;
     const PARSE_CUSTOM_TAGS = 512;
     const DUMP_EMPTY_ARRAY_AS_SEQUENCE = 1024;
+<<<<<<< HEAD
 
     /**
      * @deprecated since version 3.4, to be removed in 4.0. Quote your evaluable keys instead.
      */
     const PARSE_KEYS_AS_STRINGS = 2048;
+=======
+    const DUMP_NULL_AS_TILDE = 2048;
+>>>>>>> main
 
     /**
      * Parses a YAML file into a PHP value.

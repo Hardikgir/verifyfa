@@ -457,10 +457,6 @@ class Tasks_model extends CI_Model {
     {
 
         $company_projects = $this->db->query("SELECT *  FROM company_projects WHERE project_table_name='".$tablename."'")->row();
-        // echo '<pre>last_query 1';
-        // print_r($this->db->last_query());
-        // echo '</pre>';
-        // exit();
         $project_id = $company_projects->id;
         $company_id = $company_projects->company_id;
         $original_table_name = $company_projects->original_table_name;

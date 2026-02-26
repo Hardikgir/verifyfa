@@ -270,6 +270,7 @@ $get_user_all_roles = get_user_all_roles($user_id,$entity_code); // get all user
 	</div>
 </div>
 
+
 		<div class="main-panel">
 			<!-- Navbar -->
 			<nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
@@ -375,5 +376,3 @@ $get_user_all_roles = get_user_all_roles($user_id,$entity_code); // get all user
 								<?php echo $this->session->flashdata('success'); ?>
 				</div>
 			<!-- End Navbar -->
-
-			
