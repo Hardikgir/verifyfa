@@ -1406,7 +1406,6 @@ $role=implode(',',$this->input->post('user_role'));
             "status_type"=>$hdn_status_type_value,
             "remark_content"=>$status_remark_value,
             "remark_content" => $status_remark_value,
-            "created_at"=>date("Y-m-d H:i:s"),
             "updated_at"=>date("Y-m-d H:i:s")
         );
        

@@ -2395,11 +2395,13 @@ public function get_project_additionaldata(){
                     </p>
                     <p style="font-size: 18px; margin-bottom: 15px;">Dear User,</p>
                     <p style="font-size: 16px; line-height: 1.6;">
-                        Please find attached the CSV file containing the report that you requested.
+                        Please find attached Summary of the report that you requested.
                         <br><br>
                         <strong>Generated on:</strong> ' . date('Y-m-d H:i:s') . '
                         <br><br>
-                        Thank you for using our system.
+                        <a href="'.base_url().'">Click here</a> to get Detailed Report.                         
+                        <br><br>
+                        Thank you for using VerifyFA.
                     </p>
                     <p style="font-size: 16px; margin-top: 20px;">
                         Thanks for your support and understanding.<br>
@@ -4972,7 +4974,7 @@ public function generateExceptionReport_original() {
             fputcsv($fp, $total_row);
 
         } else {
-            fputcsv($fp, ["No data found"]);
+            fputcsv($fp, ["No data found 11"]);
         }
 
         fclose($fp);
@@ -5226,7 +5228,7 @@ public function generateExceptionReportDev() {
             fputcsv($fp, $total_row);
 
         } else {
-            fputcsv($fp, ["No data found"]);
+            fputcsv($fp, ["No data found 22"]); /// This Data is Fetching While Report Generated
         }
 
         fclose($fp);
@@ -5782,7 +5784,7 @@ public function resolve_issue(){
 
        
         $ExceptionCategory = array(
-            array('id' => 1,'name' => 'Scope Summary & Detailed Report'),
+            array('id' => 1,'name' => 'Condition of Item'),
             array('id' => 2,'name' => 'Changes/ Updations of Items (New)'),
             array('id' => 3,'name' => 'Qty Validation Status'),
             array('id' => 4,'name' => 'Updated with Verification Remarks'),
