@@ -290,10 +290,16 @@ class Login extends CI_Controller {
 		$this->data['title']="VerifyFa Registered User Login";		
 		$this->load->view('forget-password',$this->data);
 	}
+<<<<<<< HEAD
 	//already
-	// public function VerifyForForgetPassword(){
-	// 	// $this->data['title']="VerifyFa Registered User Login";		
-	// 	// $this->load->view('password-change',$this->data);
+	public function VerifyForForgetPassword(){
+		$this->data['title']="VerifyFa Registered User Login";		
+		$this->load->view('password-change',$this->data);
+=======
+	public function VerifyForForgetPassword(){
+		// $this->data['title']="VerifyFa Registered User Login";		
+		// $this->load->view('password-change',$this->data);
+>>>>>>> main
 
 		$email=$this->input->post('userEmail');
 		$password=$this->input->post('userPassword');
@@ -313,7 +319,10 @@ class Login extends CI_Controller {
 			'name' => $login[0]->firstName.' '.$login[0]->lastName,
 			'id' => $login[0]->id
 			);
-			$this->session->set_userdata('logged_in', $sess_data);
+			$this->session->set_userdata('temp_logged_in', $sess_data);
+		}else{
+			$this->session->set_flashdata('error_message', 'Invalid Email or Entity Code');
+			redirect("index.php/forget-password-verifyfa-user");
 		}
 
 		redirect("index.php/login/VerifyForChangePassword");
@@ -346,13 +355,16 @@ class Login extends CI_Controller {
 
 	}
 	
+<<<<<<< HEAD
 	//already
-	// public function VerifyForForgetPasswordRegistered(){
-	// 	// $this->data['title']="VerifyFa Registered User Login";		
-	// 	// $this->load->view('password-change',$this->data);
+=======
+>>>>>>> main
+	public function VerifyForForgetPasswordRegistered(){
+		// $this->data['title']="VerifyFa Registered User Login";		
+		// $this->load->view('password-change',$this->data);
 
-	// 	$email=$this->input->post('email');
-	// 	$entity=$this->input->post('entity');
+		$email=$this->input->post('email');
+		$entity=$this->input->post('entity');
 
 		$this->db->select('*');
 		$this->db->from('registred_users');
@@ -362,18 +374,17 @@ class Login extends CI_Controller {
 		$result= $query->row();
 		$num = $query->num_rows();
 
-	
-
 		if($num !='0'){
 			$sess_data = array(
 			'email' => $result->email_id,
 			'name' => $result->first_name.' '.$result->last_name,
 			'id' => $result->id
 			);
-			$this->session->set_userdata('logged_in', $sess_data);
+			$this->session->set_userdata('temp_logged_in', $sess_data);
+		}else{
+			$this->session->set_flashdata('error_message', 'Invalid Email or Entity Code');
+			redirect("index.php/forget-password-register-user");
 		}
-
-
 
 
 

@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-
-=======
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 $this->load->view('layouts/header');
@@ -57,14 +53,11 @@ $user_role_admin_cnt=get_user_role_cnt_admin($user_id,$entity_code);
 	min-height: 200px !important;
 }
 
-<<<<<<< HEAD
-=======
 
 .canvasjs-chart-toolbar button{
     display: none;
 }
 
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
 	</style>
 
 
@@ -105,13 +98,10 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
 
 
 <div class="container-fluid">
-<<<<<<< HEAD
-=======
 
 
 
 
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
     <div class="row">
     <div class="col-md-4">
         <div class="card">
@@ -209,11 +199,6 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
 
 
     <div class="container-fluid">
-<<<<<<< HEAD
- <div class="row">
-
-
-=======
 
       <div class="row">
     <div class="col-md-12 mt-5">
@@ -260,26 +245,18 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
  
 
 
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
     <div class="col-md-12 mt-5">
         <form id="userForm" method="post" class="bg-white">
                 <br>
                 <div class="row">
-<<<<<<< HEAD
-=======
 <div class="col-md-12 text-center" style="padding: 15px;" >
                   <h2 class="text-center">Status of Open Projects</h2>
 </div>
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
                 <div class="col-md-2 form-row">
                 </div>
                 <div class="col-md-4 form-row">
                     <label class="form-label">Select Company</label>
-<<<<<<< HEAD
-                    <select name="company_id" id="company_id" class="form-control" required>
-=======
                     <select name="company_id" id="company_id" class="form-control" >
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
                         <option value="">All</option>
                         <?php foreach($company_data_list as $row_com_list){ 
                              $company_n=get_company_row($row_com_list['company_id']);
@@ -298,13 +275,6 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
                 <div class="col-md-2 form-row">
                 <button type="submit" class="btn btn-success">GO</button>
               </div>
-<<<<<<< HEAD
-                </div><br>
-               
-                
-                <br>
-        </form>
-=======
                 </div>
                
                 
@@ -312,19 +282,11 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
             
         </form>
        
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
     <!-- </div> -->
 
 
 
     <!-- <div class="col-md-12 mt-5"> -->
-<<<<<<< HEAD
-			<div  style="background: #fff;height: 150px;padding: 15px;">
-				<h2 class="text-center">Applicable to Open Project</h2>
-				
-			</div>
-			<div id="TypeSubscriptionActiveChart" style="height: 370px; width: 100%;"></div>
-=======
             <div id="TypeSubscriptionActiveChart_section" style="display: none;">
                 
                 <div  style="background: #fff;height: 150px;padding: 15px;" >
@@ -335,7 +297,6 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
             
                 <div id="TypeSubscriptionActiveChart" style="height: 370px; width: 100%;" ></div>
             </div>
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
         </div>
 
         <div class="col-md-12 mt-5" >
@@ -343,13 +304,6 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
           <form id="application_open_project_userForm" method="post" class="bg-white">
                 <br>
                 <div class="row p-3">
-<<<<<<< HEAD
-                
-
-                <div class="col-md-3">
-                    <label class="form-label">Select Company</label>
-                    <select name="application_open_project_company_id" id="application_open_project_company_id" class="form-control" required>
-=======
 
                 <div class="col-md-12 text-center" style="background: #fff;padding: 15px;" >
                   <h2 class="text-center">Status of Resource Allocation</h2>
@@ -368,7 +322,6 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
                     
                     <label class="form-label">Select Company</label>
                     <select name="application_open_project_company_id" id="application_open_project_company_id" class="form-control" >
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
                         <option value="">All</option>
                         <?php foreach($company_data_list as $row_com_list){ 
                              $company_n=get_company_row($row_com_list['company_id']);
@@ -393,19 +346,7 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
                     </select>
                 </div>
 
-<<<<<<< HEAD
-                <div class="col-md-3">
-                    <label class="form-label">Select Verifier</label>
-                    <select name="application_open_project_verifier" id="application_open_project_verifier" class="form-control">
-                        <option value="">All</option>
-                         <?php foreach($vrifier_users as $vrifier_users_value){ ?>
-                            <option value="<?php echo $vrifier_users_value->user_id;?>"><?php echo $vrifier_users_value->user_firstName;?></option> 
-                         <?php } ?>
-                    </select>
-                </div>
-=======
                 
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
 
 
 
@@ -415,15 +356,6 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
                 </div>
                
                 
-<<<<<<< HEAD
-                <br>
-        </form>
-
-            <div style="background: #fff;padding: 15px;">
-            <h2 class="text-center">Applicable to Open Projects only</h2>
-            <div id="chartContainer" style="height: 400px; width: 100%;"></div>
-            </div>
-=======
                 <!-- <br> -->
         </form>
 
@@ -434,7 +366,6 @@ $Date = "2024-04-09 01:00:00"; // Set the date to the current date
             <div id="chartContainer" style="height: 400px; width: 100%;"></div>
             </div>
             </div>
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
         </div> 
 
         </div>  
@@ -557,10 +488,6 @@ function toggleDataSeries(e) {
 
 document.getElementById('company_id').onchange = function() {
     var company_id = this.value;
-<<<<<<< HEAD
-    var fd = new FormData();
-    fd.append('company_id',[company_id]);
-=======
     var role_id = $("#user_select_role_val").val();
     if (role_id == ''){
         alert("Please Select Your Role");
@@ -568,7 +495,6 @@ document.getElementById('company_id').onchange = function() {
     var fd = new FormData();
     fd.append('company_id',[company_id]);
     fd.append('role_id',[role_id]);    
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
     $.ajax({
       url: "<?php echo base_url();?>index.php/plancycle/getlocationdata",
       type: 'POST',
@@ -584,10 +510,6 @@ document.getElementById('company_id').onchange = function() {
 
 document.getElementById('application_open_project_company_id').onchange = function() {
     var company_id = this.value;
-<<<<<<< HEAD
-    var fd = new FormData();
-    fd.append('company_id',[company_id]);
-=======
     var role_id = $("#user_select_role_val").val();
     if (role_id == ''){
         alert("Please Select Your Role");
@@ -595,7 +517,6 @@ document.getElementById('application_open_project_company_id').onchange = functi
     var fd = new FormData();
     fd.append('company_id',[company_id]);
     fd.append('role_id',[role_id]);   
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
     $.ajax({
       url: "<?php echo base_url();?>index.php/plancycle/getlocationdata",
       type: 'POST',
@@ -642,14 +563,6 @@ document.getElementById('application_open_project_company_location').onchange = 
     }
 $(document).ready(function(){
     $('#userForm').on('submit', function(e){
-<<<<<<< HEAD
-        e.preventDefault();
-
-        $.ajax({
-            url: "<?php echo base_url();?>index.php/Dashboard/ApplicableOpenProjectGraph",
-            type: "POST",
-            data: $(this).serialize(),
-=======
 
         var role_id = $("#user_select_role_val").val();
         if (role_id == ''){
@@ -665,7 +578,6 @@ $(document).ready(function(){
             url: "<?php echo base_url();?>index.php/Dashboard/ApplicableOpenProjectGraph",
             type: "POST",
             data: $.param(data),
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
             dataType: "json",
             success: function(res){
 
@@ -681,11 +593,7 @@ $(document).ready(function(){
                     reversed: true
                 },
                 axisY: {
-<<<<<<< HEAD
-                    title: "No. of Subscriptions",
-=======
                     title: "No. of Active Projects",
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
                     suffix: "",
                     interval: 1,
                 },
@@ -720,11 +628,7 @@ $(document).ready(function(){
 
      $('#application_open_project_userForm').on('submit', function(e){
         e.preventDefault();
-<<<<<<< HEAD
-
-=======
      $("#ApplicableOpenProjects_section").show();
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
         $.ajax({
             url: "<?php echo base_url();?>index.php/Dashboard/ApplicableOpenProjectGraphProjectWise",
             type: "POST",
@@ -780,8 +684,6 @@ $(document).ready(function(){
 
 
 });
-<<<<<<< HEAD
-=======
 
 
 
@@ -789,5 +691,4 @@ function user_select(active_role){
     $('#user_select_role_val').val(active_role);
     $('#user_select_role_submit').click();
 }
->>>>>>> 5a939923fd6302d3dffefbde4eacd316ccc9d0f5
 </script>
