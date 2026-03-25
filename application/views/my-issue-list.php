@@ -39,7 +39,7 @@ $this->load->view('layouts/sidebar');
             <th>Tracking id</th>
             <th>Subject Title</th>
             <th>Date</th>
-            <th>Type of Issue</th>
+            <th>Type of Issues</th>
             <th>Project Id</th>
             <th>Status</th>
             <th>Status Type</th>
@@ -53,7 +53,7 @@ $this->load->view('layouts/sidebar');
             <tr>
                 <td ><?php echo $row->tracking_id;?></td>
                 <td ><?php echo $row->issue_title;?></td>
-                <td ><?php echo date('d-M-Y H:s A',strtotime($row->created_at));?></td>
+                <td ><?php echo date('d-M-Y H:i A',strtotime($row->created_at));?></td>
                 <td ><?php echo $row->issue_type;?></td>
                 <td >
                     <?php echo $row->project_code; ?>
