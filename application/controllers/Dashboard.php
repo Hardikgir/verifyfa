@@ -291,17 +291,12 @@ class Dashboard extends CI_Controller {
 			$role_where .= "FIND_IN_SET($user_id, $field)";
 		} else {
 			// If user has multiple roles or fallback, show all relevant projects
-			/*
 			$role_where .=
 				"FIND_IN_SET($user_id, project_verifier) OR " .
 				"FIND_IN_SET($user_id, process_owner) OR " .
 				"FIND_IN_SET($user_id, item_owner) OR " .
 				"FIND_IN_SET($user_id, manager) OR " .
 				"FIND_IN_SET($user_id, assigned_by)";
-			*/
-
-				$role_where .=			
-				"FIND_IN_SET($user_id, manager) " ;
 		}
 
 		$condition = 'id is NOT NULL';
@@ -363,6 +358,8 @@ class Dashboard extends CI_Controller {
 		$data['projects']=$projects;
 		$data['page_title']="Project Dashboard";
 		$data['company_data_list']=$this->company_data_list();
+		$data['selected_company_id'] = $this->input->post('company_id');
+		$data['selected_location_id'] = $this->input->post('location_id');
 		// $data['company_data_list']=$this->company_data_list_by_role($user_id,0);
 		
 
@@ -389,17 +386,12 @@ class Dashboard extends CI_Controller {
 			$role_where = "FIND_IN_SET('$user_id', $field)";
 		} else {
 			// If user has multiple roles or fallback, show all relevant projects
-			/*
 			$role_where =
 				"FIND_IN_SET('$user_id', project_verifier) OR " .
 				"FIND_IN_SET('$user_id', process_owner) OR " .
 				"FIND_IN_SET('$user_id', item_owner) OR " .
 				"FIND_IN_SET('$user_id', manager) OR " .
 				"FIND_IN_SET('$user_id', assigned_by)";
-			*/
-
-			$role_where =
-				"FIND_IN_SET('$user_id', manager)";
 		}
 
 		$query = "SELECT * FROM company_projects WHERE status IN (0,1,2) AND ($role_where) ORDER BY id DESC";
@@ -1966,10 +1958,11 @@ class Dashboard extends CI_Controller {
 		if($type=='consolidated')
 		{		
 
-			$lastProj=$this->db->query('Select * from company_projects where status="'.$projectstatus.'" and company_id='.$company_id.'  and entity_code="'.$this->admin_registered_entity_code.'" order by id desc limit 1')->result();
+			$lastProj=$this->db->query('Select * from company_projects where status="'.$projectstatus.'" and company_id='.$company_id.' and project_location='.$location_id.'  and entity_code="'.$this->admin_registered_entity_code.'" order by id desc limit 1')->result();
 			$condition=array(
 				"status"=>$projectstatus,
 				'company_id'=>$company_id,
+				'project_location'=>$location_id,
 				'original_table_name'=>$lastProj[0]->original_table_name,
 				'entity_code'=>$this->admin_registered_entity_code
 
@@ -1978,7 +1971,7 @@ class Dashboard extends CI_Controller {
 				"type"=>$type,
 				"project_status"=>$projectstatus,
 				"verification_status"=>$verificationstatus,
-				"table_name"=>$original_table_name,
+				"table_name"=>$lastProj[0]->original_table_name,
 				"report_headers"=>$reportHeaders
 			);
 			$getProject=$this->tasks->get_data('company_projects',$condition);
@@ -2001,6 +1994,7 @@ class Dashboard extends CI_Controller {
 					{
 						$getreport[$i]=$this->tasks->getExceptionTwoReport($project_name,$verificationstatus,$reportHeaders);
 						$reportView="updationConsolidatedReport";
+
 					}
 					else if($exceptioncategory==3)
 					{
@@ -2517,7 +2511,8 @@ class Dashboard extends CI_Controller {
 	{
 		$location_row=get_location_row($location_id);
 
-		require 'vendor/autoload.php';
+		//require 'vendor/autoload.php';
+		require_once APPPATH . '../vendor/autoload.php';
 		$reportData=$this->session->get_userdata('reportData');
 
 		$reportData['logged_in']['company_id']=$location_row->company_id;
@@ -2674,6 +2669,7 @@ class Dashboard extends CI_Controller {
 	public function downloadProjectReportUnspecified()
 	{
 		require 'vendor/autoload.php';
+		//require_once APPPATH . '../vendor/autoload.php';
 		$reportData=$this->session->get_userdata('reportData');
 		$type=$reportData['reportData']['type'];
 		$projectid=$reportData['reportData']['id'];
@@ -3470,8 +3466,11 @@ class Dashboard extends CI_Controller {
 		$type=$reportData['reportData']['type'];
 		$project_status=$reportData['reportData']['project_status'];
 		$verification_status=$reportData['reportData']['verification_status'];
-		$table_name=$reportData['reportData']['table_name'];
 		$reportHeaders=$reportData['reportData']['report_headers'];
+		// Fix: Use the clicked project's own table_name (session stores only the last project's table_name for consolidated reports)
+		$projForTableCondition=array('id'=>$projectid);
+		$projForTable=$this->tasks->get_data('company_projects',$projForTableCondition);
+		$table_name=$projForTable[0]->original_table_name;
 		$headerCondition=array('table_name'=>$table_name);
 		$project_headers=$this->tasks->get_data('project_headers',$headerCondition);
 		$rowHeads=array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ','BA','BB','BC','BD','BE','BF','BG','BH','BI','BJ','BK','BL','BM','BN','BO','BP','BQ','BR','BS','BT','BU','BV','BW','BX','BY','BZ','CA','CB','CC','CD','CE','CF','CG','CH','CI','CJ','CK','CL','CM','CN','CO','CP','CQ','CR','CS','CT','CU','CV','CW','CX','CY','CZ');
@@ -3547,6 +3546,7 @@ class Dashboard extends CI_Controller {
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Last Updated on");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+		
 		array_push($colsArray,'verification_remarks');
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Verification Remarks");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
@@ -4143,6 +4143,11 @@ class Dashboard extends CI_Controller {
 
 
 
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Verify By");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Allocation Status");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
@@ -4347,6 +4352,7 @@ class Dashboard extends CI_Controller {
 			// print_r($gr[$colsArray[$rh]]);
 			// echo '</pre>';
 			// exit();
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, get_UserName($gr['verified_by']));
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, "Allocated");
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $getProject[0]->project_id);
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $getProject[0]->project_name);
@@ -4391,8 +4397,11 @@ class Dashboard extends CI_Controller {
 		$type=$reportData['reportData']['type'];
 		$project_status=$reportData['reportData']['project_status'];
 		$verification_status=$reportData['reportData']['verification_status'];
-		$table_name=$reportData['reportData']['table_name'];
 		$reportHeaders=$reportData['reportData']['report_headers'];
+		// Fix: Use the clicked project's own table_name (session stores only the last project's table_name for consolidated reports)
+		$projForTableCondition=array('id'=>$projectid);
+		$projForTable=$this->tasks->get_data('company_projects',$projForTableCondition);
+		$table_name=$projForTable[0]->original_table_name;
 		$headerCondition=array('table_name'=>$table_name);
 		$project_headers=$this->tasks->get_data('project_headers',$headerCondition);
 		$rowHeads=array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ','BA','BB','BC','BD','BE','BF','BG','BH','BI','BJ','BK','BL','BM','BN','BO','BP','BQ','BR','BS','BT','BU','BV','BW','BX','BY','BZ','CA','CB','CC','CD','CE','CF','CG','CH','CI','CJ','CK','CL','CM','CN','CO','CP','CQ','CR','CS','CT','CU','CV','CW','CX','CY','CZ');
@@ -4446,7 +4455,7 @@ class Dashboard extends CI_Controller {
 			}
 
 		}
-		$columns.="quantity_as_per_invoice,total_item_amount_capitalized, verification_status,new_location_verified,updatedat,verification_remarks,qty_ok,qty_damaged,qty_scrapped,qty_not_in_use,qty_missing,qty_shifted,mode_of_verification,quantity_verified";
+		$columns.="quantity_as_per_invoice,total_item_amount_capitalized, verification_status,new_location_verified,updatedat,verification_remarks,qty_ok,qty_damaged,qty_scrapped,qty_not_in_use,qty_missing,qty_shifted,mode_of_verification,quantity_verified,verified_by";
 		
 		array_push($colsArray,'verification_status');
 		$sheet->setCellValue($rowHeads[$cnt].$rowCount, "Verification Status");
@@ -4502,6 +4511,9 @@ class Dashboard extends CI_Controller {
 			$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 			$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		}
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Verify By");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Allocation Status");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
@@ -4642,8 +4654,9 @@ class Dashboard extends CI_Controller {
 				}
 				$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $condition_of_item);
 			}
-			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, "Allocated");
-			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $getProject[0]->project_id);
+				$sheet->setCellValue($rowHeads[$cnt++].$rowCount, get_UserName($gr['verified_by']));
+				$sheet->setCellValue($rowHeads[$cnt++].$rowCount, "Allocated");
+				$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $getProject[0]->project_id);
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $getProject[0]->project_name);
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, date_format($startdate,"d-m-Y"));
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, date_format($duedate,"d-m-Y"));
@@ -4772,7 +4785,7 @@ class Dashboard extends CI_Controller {
 			}
 
 		}
-		$columns.="quantity_as_per_invoice,total_item_amount_capitalized, verification_status,updatedat,verification_remarks,mode_of_verification,quantity_verified";
+		$columns.="quantity_as_per_invoice,total_item_amount_capitalized, verification_status,updatedat,verification_remarks,mode_of_verification,quantity_verified,verified_by";
 		array_push($colsArray,'quantity_as_per_invoice');
 		$sheet->setCellValue($rowHeads[$cnt].$rowCount, "To be Verified");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
@@ -4802,6 +4815,9 @@ class Dashboard extends CI_Controller {
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Verified Amount");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Verify By");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Allocation Status");
@@ -4879,6 +4895,7 @@ class Dashboard extends CI_Controller {
 			}
 			$remainingAmount=$gr['total_item_amount_capitalized']/$gr['quantity_as_per_invoice'];
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $remainingAmount*$gr['quantity_verified']);
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, get_UserName($gr['verified_by']));
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, "Allocated");
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $getProject[0]->project_id);
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $getProject[0]->project_name);
@@ -5010,7 +5027,7 @@ class Dashboard extends CI_Controller {
 			}
 
 		}
-		$columns.="quantity_as_per_invoice,total_item_amount_capitalized, verification_status,updatedat,verification_remarks,mode_of_verification,quantity_verified";
+		$columns.="quantity_as_per_invoice,total_item_amount_capitalized, verification_status,updatedat,verification_remarks,mode_of_verification,quantity_verified,verified_by";
 		array_push($colsArray,'quantity_as_per_invoice');
 		$sheet->setCellValue($rowHeads[$cnt].$rowCount, "To be Verified");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
@@ -5040,6 +5057,9 @@ class Dashboard extends CI_Controller {
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Verified Amount");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Verify By");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Allocation Status");
@@ -5117,6 +5137,7 @@ class Dashboard extends CI_Controller {
 			}
 			$remainingAmount=$gr['total_item_amount_capitalized']/$gr['quantity_as_per_invoice'];
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $remainingAmount*$gr['quantity_verified']);
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, get_UserName($gr['verified_by']));
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, "Allocated");
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $getProject[0]->project_id);
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $getProject[0]->project_name);
@@ -6063,7 +6084,7 @@ class Dashboard extends CI_Controller {
 			}
 
 		}
-		$columns.="verification_status,updatedat,mode_of_verification,verification_remarks,new_location_verified,qty_ok,qty_damaged,qty_scrapped,qty_not_in_use,qty_missing,qty_shifted,quantity_verified";
+		$columns.="verification_status,updatedat,mode_of_verification,verification_remarks,new_location_verified,qty_ok,qty_damaged,qty_scrapped,qty_not_in_use,qty_missing,qty_shifted,quantity_verified,verified_by";
 		array_push($colsArray,'verification_status');
 		$sheet->setCellValue($rowHeads[$cnt].$rowCount, "Verification Status");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
@@ -6086,6 +6107,9 @@ class Dashboard extends CI_Controller {
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		array_push($colsArray,'new_location_verified');
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "New Location Verified");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Verify By");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Allocation Status");
@@ -6191,6 +6215,7 @@ class Dashboard extends CI_Controller {
 			}
 			
 			
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, get_UserName($gr['verified_by']));
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, "Allocated");
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $getProject[0]->project_id);
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $getProject[0]->project_name);
@@ -6221,8 +6246,11 @@ class Dashboard extends CI_Controller {
 		$type=$reportData['reportData']['type'];
 		$project_status=$reportData['reportData']['project_status'];
 		$verification_status=$reportData['reportData']['verification_status'];
-		$table_name=$reportData['reportData']['table_name'];
 		$reportHeaders=$reportData['reportData']['report_headers'];
+		// Fix: Use the clicked project's own table_name (session stores only the last project's table_name for consolidated reports)
+		$projForTableCondition=array('id'=>$projectid);
+		$projForTable=$this->tasks->get_data('company_projects',$projForTableCondition);
+		$table_name=$projForTable[0]->original_table_name;
 		$headerCondition=array('table_name'=>$table_name);
 		$project_headers=$this->tasks->get_data('project_headers',$headerCondition);
 		$rowHeads=array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ','BA','BB','BC','BD','BE','BF','BG','BH','BI','BJ','BK','BL','BM','BN','BO','BP','BQ','BR','BS','BT','BU','BV','BW','BX','BY','BZ','CA','CB','CC','CD','CE','CF','CG','CH','CI','CJ','CK','CL','CM','CN','CO','CP','CQ','CR','CS','CT','CU','CV','CW','CX','CY','CZ');
@@ -6276,7 +6304,7 @@ class Dashboard extends CI_Controller {
 			}
 
 		}
-		$columns.="verification_status,updatedat,mode_of_verification,verification_remarks,new_location_verified,qty_ok,qty_damaged,qty_scrapped,qty_not_in_use,qty_missing,qty_shifted,quantity_verified";
+		$columns.="verification_status,updatedat,mode_of_verification,verification_remarks,new_location_verified,qty_ok,qty_damaged,qty_scrapped,qty_not_in_use,qty_missing,qty_shifted,quantity_verified,verified_by";
 		array_push($colsArray,'verification_status');
 		$sheet->setCellValue($rowHeads[$cnt].$rowCount, "Verification Status");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
@@ -6299,6 +6327,9 @@ class Dashboard extends CI_Controller {
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		array_push($colsArray,'new_location_verified');
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "New Location Verified");
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Verify By");
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 		$sheet->setCellValue($rowHeads[++$cnt].$rowCount, "Allocation Status");
@@ -6403,6 +6434,7 @@ class Dashboard extends CI_Controller {
 			{
 				$condition_of_item.="Shifted: ".$gr['qty_shifted'];
 			}
+			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, get_UserName($gr['verified_by']));
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, "Allocated");
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $getProject[0]->project_id);
 			$sheet->setCellValue($rowHeads[$cnt++].$rowCount, $getProject[0]->project_name);
