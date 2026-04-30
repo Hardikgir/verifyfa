@@ -806,6 +806,142 @@ class Superadmin_controller extends CI_Controller {
 		$data['page_title']="Manage User";
         $this->load->view("super-admin/test",$data);
 	}
+public function generate_active_register_user($id)
+{
+    $user = $this->db->get_where('registred_users', array('id' => $id))->row();
+
+    if (!$user) {
+        show_404();
+    }
+
+    // Check if already activated
+    if ($user->is_activated == 1) {
+        echo "Account already activated.";
+        return;
+    }
+
+    // Check expiry time
+    if (strtotime($user->activation_expiry_at) < time()) {
+
+        // Mail 2 send here
+        redirect(base_url().'index.php/EmailController/revalidationRequired2/'.$id);
+
+        return;
+    }
+
+    // If valid, show password setup page
+    $data['user'] = $user;
+    $this->load->view('activation-password-setup', $data);
+}
+// public function confirmation_userdetail22($id)
+// {
+//     date_default_timezone_set("Asia/Calcutta");
+
+//     $user_details = $this->Super_admin_model->get_registerd_user($id);
+
+//     if (!$user_details) {
+//         show_404();
+//     }
+
+//     $to = $user_details->email_id;
+
+//     $activation_link = base_url().'index.php/generate-active-register-user/'.$id;
+
+//     $TRANSACTIONRECORDDATETIME = date('d-m-Y h:i:s A');
+
+//     $APPLICATIONNAME = 'VerifyFA';
+//     $RECEIVERNAME    = $user_details->first_name;
+//     $COMPANYNAME     = $user_details->organisation_name;
+
+//     $subject = $APPLICATIONNAME.' Activate Your Account and Setup New Password';
+
+//     // Generate Temporary Password
+//     $digits = 5;
+//     $TEMPORARYPASSWORD = rand(pow(10, $digits-1), pow(10, $digits)-1);
+
+//     // Email Body
+//     $email_updated_content = '
+//     <html>
+//     <body style="font-family:Arial,sans-serif;">
+//         <h3>'.$APPLICATIONNAME.'</h3>
+
+//         <p>***** This is an auto generated NO REPLY communication *****</p>
+
+//         <p>'.$TRANSACTIONRECORDDATETIME.'</p>
+
+//         <p>Dear <b>'.$RECEIVERNAME.'</b>,</p>
+
+//         <p>
+//         Thanks for registering on <b>'.$APPLICATIONNAME.'</b>.<br><br>
+
+//         Your Temporary Password for 1st time login is:
+//         <b>'.$TEMPORARYPASSWORD.'</b><br><br>
+
+//         Please click below link to activate account and setup new password:
+//         </p>
+
+//         // <p>
+//         //     // <a href="'.$activation_link.'">Activate Your Account</a>
+// 			 $activation_link = '<a href="'.base_url().'index.php/generate-active-register-user/'.$id.'">Activate Your Account</a>';
+			
+
+
+
+
+
+
+//         </p>
+
+//         <br>
+
+//         <p>
+//         Regards,<br>
+//         <b>'.$COMPANYNAME.'</b>
+//         </p>
+//     </body>
+//     </html>';
+
+//     // Email Send
+//     $CI = setEmailProtocol();
+
+//     $from_email = 'solutions@ethicalminds.in';
+
+//     $CI->email->clear(TRUE);
+//     $CI->email->set_newline("\r\n");
+//     $CI->email->set_mailtype("html");
+
+//     $CI->email->from($from_email, 'VerifyFA');
+//     $CI->email->to($to);
+//     $CI->email->subject($subject);
+//     $CI->email->message($email_updated_content);
+
+//     $mailsend = 0;
+
+//     if (server_check() == 'live') {
+//         if ($CI->email->send()) {
+//             $mailsend = 1;
+//         }
+//     }
+
+//     // Save Password + Activation Times
+//     $data = array(
+//         "password"             => md5($TEMPORARYPASSWORD),
+//         "password_view"        => $TEMPORARYPASSWORD,
+//         "activation_sent_at"   => date("Y-m-d H:i:s"),
+//         "activation_expiry_at" => date("Y-m-d H:i:s", strtotime("+24 hours"))
+//     );
+
+//     $this->db->where('id', $id);
+//     $this->db->update('registred_users', $data);
+
+//     // Load Page
+//     $data['user'] = $user_details;
+
+//     $this->load->view("super-admin/confirmation-user-detail", $data);
+// }
+
+	
+	//already working perfectly
 	public function confirmation_userdetail($id){
 		date_default_timezone_set("Asia/Calcutta"); 
 		$data['page_title']="Manage User";
@@ -908,7 +1044,7 @@ class Superadmin_controller extends CI_Controller {
 		$from_email = 'solutions@ethicalminds.in';
 		$CI->email->set_newline("\r\n");
 		$CI->email->set_mailtype("html");
-		$CI->email->set_header('Content-Type', 'text/html');
+	//	$CI->email->set_header('Content-Type', 'text/html');
 		$CI->email->from($from_email);
 		$CI->email->to($to);
 		$CI->email->subject($subject);
@@ -1120,8 +1256,8 @@ class Superadmin_controller extends CI_Controller {
 	 $this->session->set_flashdata('success', 'Link Re Generated Successfully');
 	 redirect("index.php/confirmation-user-detail/".$id);
  }
- 
- public function regenerate_activation_send_link($id){
+ //already working perfectly
+ public function regenerate_activation_send_link1($id){
 	$date = date("Y-m-d");
 	$expire_date= date('Y-m-d', strtotime($date. ' + 1 days'));
 
@@ -1152,6 +1288,45 @@ class Superadmin_controller extends CI_Controller {
 	 $this->session->set_flashdata('success', 'Activation Link Send Successfully');
 	 redirect("index.php/confirmation-user-detail/".$id);
  }
+
+
+
+
+public function regenerate_activation_send_link($id){
+	$date = date("Y-m-d");
+	$expire_date= date('Y-m-d', strtotime($date. ' + 1 days'));
+
+	$digits = 5;
+	$TEMPORARYPASSWORD = rand(pow(10, $digits-1), pow(10, $digits)-1);
+
+	$data=array(
+        "is_activation_send"=>"1",
+		"activation_send_date"=>$date,
+		"link_expiry_date"=>$expire_date,
+		"regenrred_link_send_date"=>$date,
+		"password"=>md5($TEMPORARYPASSWORD),
+		"password_view"=>$TEMPORARYPASSWORD,
+	 );
+	 $this->Super_admin_model->update_confirmation_data_user($id,$data);
+
+	 require_once(APPPATH.'controllers/EmailController.php');
+	 $emailObj = new EmailController();
+	 ob_start();
+	 $emailObj->activationLinkExpiration2($id);
+	 ob_end_clean();
+
+
+	 $this->session->set_flashdata('success', 'Activation Link Send Successfully');
+	 redirect("index.php/confirmation-user-detail/".$id);
+ }
+
+
+
+
+
+
+
+
 
  public function suspend_account($id){
 	$date = date("Y-m-d");

@@ -781,7 +781,7 @@ class Plancycle extends CI_Controller {
 								foreach($expverifier as $ver)
 								{
 									if($k==0)
-										echo get_UserName($ver);
+										echo get_UserName($ver)." | ";
 									else
 										echo ', '.get_UserName($ver);
 								}

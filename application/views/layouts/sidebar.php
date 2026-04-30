@@ -249,7 +249,7 @@ $get_user_all_roles = get_user_all_roles($user_id,$entity_code); // get all user
 			// } 
 			
 			// if(($user_role_addmin_cnt > 0) || ($user_role_manager_cnt > 0) ){ ?>
-				<li class="nav-item <?php echo $page_title=='Manage My Issue'?'active':'';?>  ">
+				<li class="nav-item <?php if($page_title=='Manage My Issue' || $page_title== 'View My Issue'){ echo 'active'; }?>  ">
 				<a class="nav-link" href="<?php echo base_url();?>index.php/manage-my-issue"><i class="fa fa-bug"></i>
 					<p>Manage My Issue</p>
 				</a>

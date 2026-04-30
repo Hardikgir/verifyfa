@@ -1744,6 +1744,12 @@ class Dashboard extends CI_Controller {
 		$data['data']=$getreport;
 		$this->load->view('consolidateReport',$data);
 	}
+
+
+
+//exception catagory
+//updation with verification remark, update with item notes, mode of verification, 
+
 	public function exceptions()
 	{
 
@@ -3089,32 +3095,32 @@ class Dashboard extends CI_Controller {
 	public function downloadExceptionOneDamagedReport()
 	{
 		$reportOneType='qty_damaged';
-		$this->downloadExceptionOneReport($reportOneType,'ExceptionDamagedReport');
+		$this->downloadExceptionOneReport($reportOneType,'Condition of Items - Damaged');
 	}
 	public function downloadExceptionOneScrappedReport()
 	{
 		$reportOneType='qty_scrapped';
-		$this->downloadExceptionOneReport($reportOneType,'ExceptionScrappedReport');
+		$this->downloadExceptionOneReport($reportOneType,'Condition of Items - Scrapped');
 	}
 	public function downloadExceptionOneMissingReport()
 	{
 		$reportOneType='qty_missing';
-		$this->downloadExceptionOneReport($reportOneType,'ExceptionMissingReport');
+		$this->downloadExceptionOneReport($reportOneType,'Condition of Items - Missing');
 	}
 	public function downloadExceptionOneShiftedReport()
 	{
 		$reportOneType='qty_shifted';
-		$this->downloadExceptionOneReport($reportOneType,'ExceptionShiftedReport');
+		$this->downloadExceptionOneReport($reportOneType,'Condition of Items - Shifted');
 	}
 	public function downloadExceptionOneNotinuseReport()
 	{
 		$reportOneType='qty_not_in_use';
-		$this->downloadExceptionOneReport($reportOneType,'ExceptionNotinuseReport');
+		$this->downloadExceptionOneReport($reportOneType,'Condition of Items - Not in Use');
 	}
 	public function downloadExceptionOneRemainingReport()
 	{
 		$reportOneType='qty_remaining';
-		$this->downloadExceptionOneReport($reportOneType,'ExceptionRemainingReport');
+		$this->downloadExceptionOneReport($reportOneType,'Condition of Items - Remaining');
 	}
 	public function downloadExceptionOneReportAllocated($projectid)
 	{
@@ -3189,7 +3195,7 @@ class Dashboard extends CI_Controller {
 
 
 		$rowCount=4;
-		$details_content = "Name of the Report : Condition of Items";
+		$details_content = "Name of the Report : " . $ReportTitle;
 		// $sheet->mergeCells("A1:F1");
 		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
@@ -3476,9 +3482,42 @@ class Dashboard extends CI_Controller {
 		$rowHeads=array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ','BA','BB','BC','BD','BE','BF','BG','BH','BI','BJ','BK','BL','BM','BN','BO','BP','BQ','BR','BS','BT','BU','BV','BW','BX','BY','BZ','CA','CB','CC','CD','CE','CF','CG','CH','CI','CJ','CK','CL','CM','CN','CO','CP','CQ','CR','CS','CT','CU','CV','CW','CX','CY','CZ');
 		$spreadsheet= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 		$sheet = $spreadsheet->getActiveSheet();
+		$this->db->select('company_projects.*,company_locations.location_name,company.company_name');
+		$this->db->from('company_projects');
+		$this->db->join('company','company.id=company_projects.company_id');
+		$this->db->join('company_locations','company_locations.id=company_projects.project_location');
+		$this->db->where(array('company_projects.id'=>$projectid));
+		$gettasks=$this->db->get();
+		$company_project_details =  $gettasks->result();
+
 		$cnt=0;
-		$columns="";
 		$rowCount=1;
+
+		$details_content = "Name Of Company : ".$company_project_details[0]->company_name;
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=2;
+		$details_content = "Name Of Location : ".$company_project_details[0]->location_name;
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=3;
+		$details_content = "Period of Verification : ".$company_project_details[0]->period_of_verification;
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=4;
+		$details_content = "Name of the Report : Condition of Items";
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$columns="";
+		$rowCount=6;
 		$colsArray=array();
 		if($reportHeaders[0]=='all')
 		{
@@ -3624,7 +3663,7 @@ class Dashboard extends CI_Controller {
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
-		$rowCount=2;
+		$rowCount=7;
 		$getreport=$this->tasks->getDetailedExceptionOneReport($project_name,$verification_status,$columns,$reportOneType);
 		foreach($getreport as $gr)
 		{
@@ -3683,7 +3722,7 @@ class Dashboard extends CI_Controller {
 		
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
 		$writer->setPreCalculateFormulas(false);
-		$filename = 'Exception Report';
+		$filename = 'Condition of Items';
  
 		header('Content-Type: application/vnd.ms-excel');
 		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
@@ -3706,7 +3745,40 @@ class Dashboard extends CI_Controller {
 		$rowHeads=array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ','BA','BB','BC','BD','BE','BF','BG','BH','BI','BJ','BK','BL','BM','BN','BO','BP','BQ','BR','BS','BT','BU','BV','BW','BX','BY','BZ','CA','CB','CC','CD','CE','CF','CG','CH','CI','CJ','CK','CL','CM','CN','CO','CP','CQ','CR','CS','CT','CU','CV','CW','CX','CY','CZ');
 		$spreadsheet= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 		$sheet = $spreadsheet->getActiveSheet();
+		$this->db->select('company_projects.*,company_locations.location_name,company.company_name');
+		$this->db->from('company_projects');
+		$this->db->join('company','company.id=company_projects.company_id');
+		$this->db->join('company_locations','company_locations.id=company_projects.project_location');
+		$this->db->where(array('company_projects.id'=>$projectid));
+		$gettasks=$this->db->get();
+		$company_project_details =  $gettasks->result();
+
 		$cnt=0;
+		$rowCount=1;
+
+		$details_content = "Name Of Company : ".$company_project_details[0]->company_name;
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=2;
+		$details_content = "Name Of Location : ".$company_project_details[0]->location_name;
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=3;
+		$details_content = "Period of Verification : ".$company_project_details[0]->period_of_verification;
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=4;
+		$details_content = "Name of the Report : Duplicate Item Codes Identified";
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
 		$columns="";
 		$rowCount=6;
 		$colsArray=array();
@@ -3915,17 +3987,17 @@ class Dashboard extends CI_Controller {
 	public function downloadExceptionThreeShortReport()
 	{
 		$reportOneType='short';
-		$this->downloadExceptionThreeReport($reportOneType,'ShortReport');
+		$this->downloadExceptionThreeReport($reportOneType,'Qty Validation Status - Short');
 	}
 	public function downloadExceptionThreeExcessReport()
 	{
 		$reportOneType='excess';
-		$this->downloadExceptionThreeReport($reportOneType,'ExcessReport');
+		$this->downloadExceptionThreeReport($reportOneType,'Qty Validation Status - Excess');
 	}
 	public function downloadExceptionThreeRemainingReport()
 	{
 		$reportOneType='remaining';
-		$this->downloadExceptionThreeReport($reportOneType,'RemainingReport');
+		$this->downloadExceptionThreeReport($reportOneType,'Qty Validation Status - Remaining');
 	}
 	public function downloadExceptionThreeReportAllocated($projectid)
 	{
@@ -3997,7 +4069,7 @@ class Dashboard extends CI_Controller {
 
 
 		$rowCount=4;
-		$details_content = "Name of the Report : Qty Validation Status";
+		$details_content = "Name of the Report : " . $ReportTitle;
 		// $sheet->mergeCells("A1:F1");
 		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
 		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
@@ -4367,7 +4439,7 @@ class Dashboard extends CI_Controller {
 		
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
 		$writer->setPreCalculateFormulas(false);
-		$filename = 'Qty Validation Report';
+		$filename = 'Qty Validation Status';
 
 		$report_type = 'QtyValidationStatus_';
 		$dateddmmyy = date('dmy'); 
@@ -4407,9 +4479,46 @@ class Dashboard extends CI_Controller {
 		$rowHeads=array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ','BA','BB','BC','BD','BE','BF','BG','BH','BI','BJ','BK','BL','BM','BN','BO','BP','BQ','BR','BS','BT','BU','BV','BW','BX','BY','BZ','CA','CB','CC','CD','CE','CF','CG','CH','CI','CJ','CK','CL','CM','CN','CO','CP','CQ','CR','CS','CT','CU','CV','CW','CX','CY','CZ');
 		$spreadsheet= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 		$sheet = $spreadsheet->getActiveSheet();
+		$this->db->select('company_projects.*,company_locations.location_name,company.company_name');
+		$this->db->from('company_projects');
+		$this->db->join('company','company.id=company_projects.company_id');
+		$this->db->join('company_locations','company_locations.id=company_projects.project_location');
+		$this->db->where(array('company_projects.id'=>$projectid));
+		$gettasks=$this->db->get();
+		$company_project_details =  $gettasks->result();
+
 		$cnt=0;
-		$columns="";
 		$rowCount=1;
+
+		$details_content = "Name Of Company : ".$company_project_details[0]->company_name;
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=2;
+		$details_content = "Name Of Location : ".$company_project_details[0]->location_name;
+		// $sheet->mergeCells("A1:F1");
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=3;
+		$details_content = "Period of Verification : ".$company_project_details[0]->period_of_verification;
+		// $sheet->mergeCells("A1:F1");
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+
+		$rowCount=4;
+		$details_content = "Name of the Report : Qty Validation Status";
+		// $sheet->mergeCells("A1:F1");
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$columns="";
+		$rowCount=6;
 		$colsArray=array();
 		if($reportHeaders[0]=='all')
 		{
@@ -4546,7 +4655,7 @@ class Dashboard extends CI_Controller {
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
-		$rowCount=2;
+		$rowCount=7;
 
 		$getreport=$this->tasks->getDetailedExceptionThreeConsolidatedReport($project_name,$verification_status,$columns);	
 
@@ -4669,7 +4778,7 @@ class Dashboard extends CI_Controller {
 		
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
 		$writer->setPreCalculateFormulas(false);
-		$filename = 'Exception Report';
+		$filename = 'Qty Validation Status';
  
 		header('Content-Type: application/vnd.ms-excel');
 		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
@@ -4910,7 +5019,7 @@ class Dashboard extends CI_Controller {
 		
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
 		$writer->setPreCalculateFormulas(false);
-		$filename = 'Exception Report';
+		$filename = 'Updated with Verification Remarks';
  
 		header('Content-Type: application/vnd.ms-excel');
 		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
@@ -5152,7 +5261,7 @@ class Dashboard extends CI_Controller {
 		
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
 		$writer->setPreCalculateFormulas(false);
-		$filename = 'verificationRemarksReport';
+		$filename = 'Updated with Verification Remarks';
  
 		header('Content-Type: application/vnd.ms-excel');
 		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
@@ -5174,9 +5283,42 @@ class Dashboard extends CI_Controller {
 		$rowHeads=array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ','BA','BB','BC','BD','BE','BF','BG','BH','BI','BJ','BK','BL','BM','BN','BO','BP','BQ','BR','BS','BT','BU','BV','BW','BX','BY','BZ','CA','CB','CC','CD','CE','CF','CG','CH','CI','CJ','CK','CL','CM','CN','CO','CP','CQ','CR','CS','CT','CU','CV','CW','CX','CY','CZ');
 		$spreadsheet= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 		$sheet = $spreadsheet->getActiveSheet();
+		$this->db->select('company_projects.*,company_locations.location_name,company.company_name');
+		$this->db->from('company_projects');
+		$this->db->join('company','company.id=company_projects.company_id');
+		$this->db->join('company_locations','company_locations.id=company_projects.project_location');
+		$this->db->where(array('company_projects.id'=>$projectid));
+		$gettasks=$this->db->get();
+		$company_project_details =  $gettasks->result();
+
 		$cnt=0;
-		$columns="";
 		$rowCount=1;
+
+		$details_content = "Name Of Company : ".$company_project_details[0]->company_name;
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=2;
+		$details_content = "Name Of Location : ".$company_project_details[0]->location_name;
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=3;
+		$details_content = "Period of Verification : ".$company_project_details[0]->period_of_verification;
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=4;
+		$details_content = "Name of the Report : Updated with Verification Remarks";
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$columns="";
+		$rowCount=6;
 		$colsArray=array();
 		if($reportHeaders[0]=='all')
 		{
@@ -5287,7 +5429,7 @@ class Dashboard extends CI_Controller {
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
-		$rowCount=2;
+		$rowCount=7;
 		$getreport=$this->tasks->getDetailedExceptionFourAllReport($project_name,$verification_status,$columns);
 		foreach($getreport as $gr)
 		{
@@ -5344,7 +5486,7 @@ class Dashboard extends CI_Controller {
 		
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
 		$writer->setPreCalculateFormulas(false);
-		$filename = 'Exception Report';
+		$filename = 'Updated with Verification Remarks';
  
 		header('Content-Type: application/vnd.ms-excel');
 		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
@@ -5567,7 +5709,7 @@ class Dashboard extends CI_Controller {
 		
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
 		$writer->setPreCalculateFormulas(false);
-		$filename = 'itemNotesReport';
+		$filename = 'Updated with Item Notes';
  
 		header('Content-Type: application/vnd.ms-excel');
 		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
@@ -5790,7 +5932,7 @@ class Dashboard extends CI_Controller {
 		
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
 		$writer->setPreCalculateFormulas(false);
-		$filename = 'Exception Report';
+		$filename = 'Updated with Item Notes';
  
 		header('Content-Type: application/vnd.ms-excel');
 		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
@@ -5812,9 +5954,42 @@ class Dashboard extends CI_Controller {
 		$rowHeads=array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ','BA','BB','BC','BD','BE','BF','BG','BH','BI','BJ','BK','BL','BM','BN','BO','BP','BQ','BR','BS','BT','BU','BV','BW','BX','BY','BZ','CA','CB','CC','CD','CE','CF','CG','CH','CI','CJ','CK','CL','CM','CN','CO','CP','CQ','CR','CS','CT','CU','CV','CW','CX','CY','CZ');
 		$spreadsheet= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 		$sheet = $spreadsheet->getActiveSheet();
+		$this->db->select('company_projects.*,company_locations.location_name,company.company_name');
+		$this->db->from('company_projects');
+		$this->db->join('company','company.id=company_projects.company_id');
+		$this->db->join('company_locations','company_locations.id=company_projects.project_location');
+		$this->db->where(array('company_projects.id'=>$projectid));
+		$gettasks=$this->db->get();
+		$company_project_details =  $gettasks->result();
+
 		$cnt=0;
-		$columns="";
 		$rowCount=1;
+
+		$details_content = "Name Of Company : ".$company_project_details[0]->company_name;
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=2;
+		$details_content = "Name Of Location : ".$company_project_details[0]->location_name;
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=3;
+		$details_content = "Period of Verification : ".$company_project_details[0]->period_of_verification;
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=4;
+		$details_content = "Name of the Report : Updated with Item Notes";
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$columns="";
+		$rowCount=6;
 		$colsArray=array();
 		if($reportHeaders[0]=='all')
 		{
@@ -5914,7 +6089,7 @@ class Dashboard extends CI_Controller {
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
-		$rowCount=2;
+		$rowCount=7;
 		$getreport=$this->tasks->getDetailedExceptionFiveAllReport($project_name,$verification_status,$columns);
 		foreach($getreport as $gr)
 		{
@@ -5969,7 +6144,7 @@ class Dashboard extends CI_Controller {
 		
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
 		$writer->setPreCalculateFormulas(false);
-		$filename = 'Exception Report';
+		$filename = 'Updated with Item Notes';
  
 		header('Content-Type: application/vnd.ms-excel');
 		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
@@ -6231,7 +6406,7 @@ class Dashboard extends CI_Controller {
 		
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
 		$writer->setPreCalculateFormulas(false);
-		$filename = 'modeReport_'.$mode;
+		$filename = 'Mode of Verification';
  
 		header('Content-Type: application/vnd.ms-excel');
 		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
@@ -6256,9 +6431,42 @@ class Dashboard extends CI_Controller {
 		$rowHeads=array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ','BA','BB','BC','BD','BE','BF','BG','BH','BI','BJ','BK','BL','BM','BN','BO','BP','BQ','BR','BS','BT','BU','BV','BW','BX','BY','BZ','CA','CB','CC','CD','CE','CF','CG','CH','CI','CJ','CK','CL','CM','CN','CO','CP','CQ','CR','CS','CT','CU','CV','CW','CX','CY','CZ');
 		$spreadsheet= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 		$sheet = $spreadsheet->getActiveSheet();
+		$this->db->select('company_projects.*,company_locations.location_name,company.company_name');
+		$this->db->from('company_projects');
+		$this->db->join('company','company.id=company_projects.company_id');
+		$this->db->join('company_locations','company_locations.id=company_projects.project_location');
+		$this->db->where(array('company_projects.id'=>$projectid));
+		$gettasks=$this->db->get();
+		$company_project_details =  $gettasks->result();
+
 		$cnt=0;
-		$columns="";
 		$rowCount=1;
+
+		$details_content = "Name Of Company : ".$company_project_details[0]->company_name;
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=2;
+		$details_content = "Name Of Location : ".$company_project_details[0]->location_name;
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=3;
+		$details_content = "Period of Verification : ".$company_project_details[0]->period_of_verification;
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$rowCount=4;
+		$details_content = "Name of the Report : Mode of Verification";
+		$sheet->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
+		$sheet->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+		$sheet->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+
+		$columns="";
+		$rowCount=6;
 		$colsArray=array();
 		if($reportHeaders[0]=='all')
 		{
@@ -6367,7 +6575,7 @@ class Dashboard extends CI_Controller {
 		$old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
 		$new_pattern = array("_", "_", "");
 		$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
-		$rowCount=2;
+		$rowCount=7;
 		$getreport=$this->tasks->getDetailedExceptionEightConsolidatedReport($project_name,$verification_status,$columns);
 		foreach($getreport as $gr)
 		{
@@ -6449,7 +6657,7 @@ class Dashboard extends CI_Controller {
 		
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
 		$writer->setPreCalculateFormulas(false);
-		$filename = 'Exception Report';
+		$filename = 'Mode of Verification';
  
 		header('Content-Type: application/vnd.ms-excel');
 		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
@@ -6697,7 +6905,7 @@ public function downloadExceptionChangesUpdationsofItems()
 
 		$projectid = 26;
 		$reportOneType = 'qty_ok';
-		$ReportTitle = 'ChangesUpdationsofItems';
+		$ReportTitle = 'Changes/ Updations of Items';
 		require 'vendor/autoload.php';
 		$reportData=$this->session->get_userdata('reportData');
 		$type=$reportData['reportData']['type'];
@@ -7105,7 +7313,7 @@ public function downloadExceptionChangesUpdationsofItems()
 
 		$projectid = 1;
 		$reportOneType = 'qty_ok';
-		$ReportTitle = 'ChangesUpdationsofItems';
+		$ReportTitle = 'Changes/ Updations of Items';
 		require 'vendor/autoload.php';
 		$reportData=$this->session->get_userdata('reportData');
 		$type=$reportData['reportData']['type'];
@@ -7401,7 +7609,7 @@ public function downloadExceptionChangesUpdationsofItems()
 		require 'vendor/autoload.php';
 		$spreadsheet1= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 		$sheet1 = $spreadsheet1->getActiveSheet();
-		$ReportTitle = 'ChangesUpdationsofItems';
+		$ReportTitle = 'Changes/ Updations of Items';
 		$spreadsheet= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 		$sheet = $spreadsheet->getActiveSheet();
 
@@ -7601,7 +7809,7 @@ public function downloadExceptionChangesUpdationsofItems()
 		require 'vendor/autoload.php';
 		$spreadsheet1= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 		$sheet1 = $spreadsheet1->getActiveSheet();
-		$ReportTitle = 'ChangesUpdationsofItems';
+		$ReportTitle = 'Changes/ Updations of Items';
 		$spreadsheet= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 		$sheet = $spreadsheet->getActiveSheet();
 

@@ -92,7 +92,7 @@
 
                                 <tr>
                                     <th>Issue Handled By</th>
-                                    <td><?php echo $issue_result->resolver_firstName." ".$issue_result->resolver_lastName." | ".date('d-M-Y H:m A',strtotime($issue_result->updated_at)); ?></td>
+                                    <td><?php echo $issue_result->resolver_firstName." ".$issue_result->resolver_lastName." | ".date('d-M-Y H:i A',strtotime($issue_result->updated_at)); ?></td>
                                 </tr>
                                 <?php 
                                 if(!empty($issue_result->issue_attachment)){ ?>
@@ -174,6 +174,7 @@
                                                 <input type="hidden" name="hdn_status_type" id="hdn_status_type" value="<?php echo $issue_result->status_type; ?>">
                                                 <input type="hidden" name="hdn_issue_id" id="hdn_issue_id" value="<?php echo $issue_result->id; ?>">
                                                 <input type="hidden" name="hdn_issue_type" id="hdn_issue_type" value="<?php echo $issue_result->issue_type; ?>">
+                                                <input type="hidden" name="hdn_page_title" id="hdn_page_title" value="<?php echo str_replace(" ","_",$page_title); ?>">
                                                 
                                                 <button type="reset" class="btn btn-danger">Cancel</button>
                                                 <button type="submit" class="btn btn-success">Save</button>

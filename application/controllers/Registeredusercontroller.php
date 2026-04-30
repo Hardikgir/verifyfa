@@ -164,17 +164,32 @@ class Registeredusercontroller extends CI_Controller {
         $this->session->set_flashdata("success","Renew Request Send Successfully");
         redirect("index.php/registered-user-subscription");
     }
-
-    public function unsubscribe_account($registereduserid){
+//already
+    public function unsubscribe_account_already($registereduserid){
         $data=array(
-            "is_active"=>6,
+            "is_active"=>6, 
             "unsubscribe_date"=>date("Y-m-d"),
         );
         $this->Registered_user_model->request_renew_save($registereduserid,$data);
         $this->session->set_flashdata("success","Account Unsubscribed Successfully");
         redirect("index.php/registered-user-subscription");
     }
+//try
+public function unsubscribe_account($registereduserid){
 
+    $data = array(
+        "is_active"=>6,
+        "unsubscribe_date"=>date("Y-m-d"),
+    );
+
+    $this->Registered_user_model->request_renew_save($registereduserid,$data);
+
+    $this->load->library('../controllers/EmailController');
+    $this->emailcontroller->successfulDeRegistration6($registereduserid);
+
+    $this->session->set_flashdata("success","Account Unsubscribed Successfully");
+    redirect("index.php/registered-user-subscription");
+}
     
     public function request_resubscribe($registereduserid){
         $data=array(

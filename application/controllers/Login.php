@@ -202,11 +202,33 @@ class Login extends CI_Controller {
 		$expiry_date= $userrow->link_expiry_date;
 		if( $expiry_date < $date){
 		
-			$this->session->set_flashdata('error_message', 'Your activation link expire kindly connect with verifyfa team.');
+			$digits = 5;
+			$TEMPORARYPASSWORD = rand(pow(10, $digits-1), pow(10, $digits)-1);
+
+			$data_pass = array(
+				"password"=>md5($TEMPORARYPASSWORD),
+				"password_view"=>$TEMPORARYPASSWORD,
+			);
+			$this->Super_admin_model->update_confirmation_data_user($user_id, $data_pass);
+
+			require_once(APPPATH.'controllers/EmailController.php');
+			$emailObj = new EmailController();
+			ob_start();
+			$emailObj->activationLinkExpiration2($user_id);
+			ob_end_clean();
+
+			$this->session->set_flashdata('error_message', 'Your activation link has expired. A new activation link and temporary password have been sent to your email.');
 			redirect("index.php/registered-user-login");
 		}else{
 			$data=array("is_active"=>"4");
 			$this->login->activate_register_user_save($user_id,$data);
+
+			require_once(APPPATH.'controllers/EmailController.php');
+			$emailObj = new EmailController();
+			ob_start();
+			$emailObj->successfulRegistration3($user_id);
+			ob_end_clean();
+
 			$this->session->set_flashdata('error_message', 'Your account is active please login here');
 			redirect("index.php/registered-user-login");
 		 }
@@ -261,6 +283,13 @@ class Login extends CI_Controller {
 
 		$data=array("is_active"=>"4");
 		$this->login->activate_register_user_save($id,$data);
+
+		require_once(APPPATH.'controllers/EmailController.php');
+		$emailObj = new EmailController();
+		ob_start();
+		$emailObj->successfulRegistration3($id);
+		ob_end_clean();
+
 		$this->session->set_flashdata('error_message', 'Your account is active please login here');
 		redirect("index.php/registered-user-login");
 		
@@ -351,6 +380,10 @@ class Login extends CI_Controller {
 	public function VerifyForForgetPasswordRegistered(){
 		// $this->data['title']="VerifyFa Registered User Login";		
 		// $this->load->view('password-change',$this->data);
+
+		$email=$this->input->post('email');
+		$entity=$this->input->post('entity');
+
 		$this->db->select('*');
 		$this->db->from('registred_users');
 		$this->db->where('email_id',$email);

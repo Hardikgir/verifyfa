@@ -39,7 +39,7 @@ $this->load->view('layouts/sidebar');
             <th>Tracking id</th>
             <th>Subject Title</th>
             <th>Date</th>
-            <th>Type of Issues</th>
+            <th>Type of Issue</th>
             <th>Project Id</th>
             <th>Status</th>
             <th>Status Type</th>
@@ -69,7 +69,7 @@ $this->load->view('layouts/sidebar');
                 ?>  
                </td>
                 <td>
-                    <a href="<?php echo base_url();?>index.php/view-issue/<?php echo $row->id;?>">
+                    <a href="<?php echo base_url();?>index.php/view-my-issue/<?php echo $row->id;?>">
                      <i class="fa fa-eye"></i>view
                     </a>
                     <!-- ||

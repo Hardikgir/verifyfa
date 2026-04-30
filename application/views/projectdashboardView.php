@@ -90,7 +90,8 @@ $this->load->view('layouts/footer');
         // $user_role_admin_cnt = 1;   //TEMPORARTY
         // if($user_role_admin_cnt > 0){
              ?>
-        <form action="<?php echo base_url();?>index.php/dashboard/index" method="post" class="bg-white">
+        <!-- <form action="<?php echo base_url();?>index.php/dashboard/index" method="post" class="bg-white"> -->
+            <form action="<?php echo base_url();?>index.php/dashboard/project" method="post" class="bg-white">
                 <br>
                 <div class="row">
                    
@@ -104,7 +105,7 @@ $this->load->view('layouts/footer');
                         <?php foreach($company_data_list as $row_com_list){ 
                              $company_n=get_company_row($row_com_list->company_id);
                             ?>
-                        <option value="<?php echo $company_n->id;?>"><?php echo $company_n->company_name.'('. $company_n->short_code.')';?></option>
+                        <option value="<?php echo $company_n->id;?>" <?php if(isset($selected_company_id) && $selected_company_id == $company_n->id) { echo "selected"; } ?>><?php echo $company_n->company_name.'('. $company_n->short_code.')';?></option>
 
                         <?php }?>
                     </select>
@@ -686,6 +687,29 @@ document.getElementById('company_id').onchange = function() {
       }
     });
 }
+
+<?php if(isset($selected_company_id) && $selected_company_id != ''): ?>
+$(document).ready(function() {
+    var company_id = "<?php echo $selected_company_id; ?>";
+    var selected_location_id = "<?php echo isset($selected_location_id) ? $selected_location_id : ''; ?>";
+    var fd = new FormData();
+    fd.append('company_id', [company_id]);
+    $.ajax({
+      url: "<?php echo base_url();?>index.php/plancycle/getlocationdata",
+      type: 'POST',
+      cache: false,
+      contentType: false,
+      processData: false,
+      data: fd,
+      success: function(data) {
+        $('#company_location').find('option').remove().end().append(data);
+        if (selected_location_id != '') {
+            $('#company_location').val(selected_location_id);
+        }
+      }
+    });
+});
+<?php endif; ?>
 </script>
 <script>
     //form submit handler

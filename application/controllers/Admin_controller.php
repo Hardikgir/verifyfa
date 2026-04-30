@@ -252,7 +252,51 @@ class Admin_controller extends CI_Controller {
         $this->load->view('create-user',$data);
     }
 
-    public function save_admin_user(){
+
+//bjp
+   public function save_admin_user0()
+{
+    $register_user_id = $this->admin_registered_user_id;
+    $entity_code      = $this->admin_registered_entity_code;
+    $user_id          = $this->user_id;
+
+    $digits = 5;
+    $temp_password = rand(pow(10, $digits-1), pow(10, $digits)-1);
+
+    $data = array(
+        "created_by"         => $user_id,
+        "registered_user_id" => $register_user_id,
+        "entity_code"        => $entity_code,
+        "firstName"          => $this->input->post('firstName'),
+        "lastName"           => $this->input->post('lastName'),
+        "userEmail"          => $this->input->post('userEmail'),
+        "password"           => md5($temp_password),
+        "password_view"      => $temp_password,
+        "phone_no"           => $this->input->post('phone_no'),
+        "department_id"      => $this->input->post('department_id'),
+        "designation"        => $this->input->post('designation'),
+        "company_id"         => $this->input->post('company_id'),
+        "location_id"        => $this->input->post('location_id'),
+        "created_on"         => date("Y-m-d H:i:s")
+    );
+
+    $this->Admin_model->save_admin_user($data);
+
+    $newUserId = $this->db->insert_id();
+
+    // SEND CASE 14 MAIL
+    require_once(APPPATH.'controllers/EmailController.php');
+    $emailObj = new EmailController();
+    $emailObj->addingUserByAdmin14($newUserId);
+
+    $this->session->set_flashdata('success', "User Created Successfully");
+    redirect("index.php/manage-user-admin/");
+}
+
+
+
+//already working 
+    public function save_admin_user_privous(){
        $register_user_id = $this->admin_registered_user_id;
         $entity_code = $this->admin_registered_entity_code;
         $user_id = $this->user_id;
@@ -302,7 +346,8 @@ class Admin_controller extends CI_Controller {
 		$TEMPORARYPASSWORD = $temp_password;
 		$COMPANYNAME = $user_details->organisation_name;
 
-		$email_updated_content = '<body style="font-family: Helvetica, Arial, sans-serif; margin: 0px; padding: 0px; background-color: #ffffff;">
+		$email_updated_content = 
+        '<body style="font-family: Helvetica, Arial, sans-serif; margin: 0px; padding: 0px; background-color: #ffffff;">
             <table role="presentation"
                 style="width: 100%;border-collapse: collapse;border: 0px;border-spacing: 0px;font-family: Arial, Helvetica, sans-serif;background-color: rgb(250, 250, 250);">
                 <tbody>
@@ -410,6 +455,215 @@ class Admin_controller extends CI_Controller {
         $this->session->set_flashdata('success', "User Created Successfully");
         redirect("index.php/manage-user-admin/");
     }
+
+
+
+//latest working code with mail
+ public function save_admin_user(){
+       $register_user_id = $this->admin_registered_user_id;
+        $entity_code = $this->admin_registered_entity_code;
+        $user_id = $this->user_id;
+
+        $digits = 5;
+        // $temp_password = rand(pow(10, $digits-1), pow(10, $digits)-1);
+        // exit();
+        $temp_password = rand(pow(10, $digits-1), pow(10, $digits)-1);
+        // $temp_password = '12345';
+
+        $data=array(
+            "created_by"=>$user_id,
+            "registered_user_id"=>$register_user_id,
+            "entity_code"=>$entity_code,
+            "firstName" => $this->input->post('firstName'),
+            "lastName"=> $this->input->post('lastName'),
+            "userEmail"=>$this->input->post('userEmail'),
+            // "password"=>md5('12345'),
+            "password"=>md5($temp_password),
+            "password_view"=>$temp_password,
+            "phone_no"=>$this->input->post('phone_no'),
+            "department_id"=>$this->input->post('department_id'),
+            "designation"=>$this->input->post('designation'),
+            "company_id"=>$this->input->post('company_id'),
+            "location_id"=>$this->input->post('location_id'),
+            "created_on"=>date("Y-m-d H:i:s")
+        );
+        $this->Admin_model->save_admin_user($data);
+
+
+
+
+       $user_details = $this->Super_admin_model->get_registerd_user($register_user_id);
+
+$to = $this->input->post('userEmail');
+
+date_default_timezone_set("Asia/Calcutta");
+
+$TRANSACTIONRECORDDATETIME = date('d-m-Y h:i:s A');
+
+$APPLICATIONNAME = 'VerifyFA';
+
+$RECEIVERNAME = $this->input->post('firstName').' '.$this->input->post('lastName');
+
+$subject = 'You have been added as VerifyFA User';
+
+$TEMPORARYPASSWORD = $temp_password;
+
+$ENTITYCODE = $entity_code;
+
+$COMPANYNAME = $user_details->organisation_name;
+
+$LOGINLINK = base_url().'index.php/login';
+
+$APPDOWNLOADLINK = 'https://play.google.com/store/apps/details?id=com.verifyfa';
+
+$LOGO = 'https://verifyfa.developmentdemo.co.in/assets/img/logo.png';
+
+
+$email_updated_content = '
+
+<body style="font-family:Arial;background:#f4f4f4;padding:20px;">
+
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
+<td align="center">
+
+<table width="700" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #ddd;padding:30px;">
+
+<tr>
+<td align="center" style="padding-bottom:20px;">
+<img src="'.$LOGO.'" height="70">
+</td>
+</tr>
+
+<tr>
+<td style="font-size:12px;color:#d9534f;text-align:center;padding-bottom:20px;">
+***** This is an auto generated NO REPLY communication and replies to this email id are not attended to. *****
+</td>
+</tr>
+
+<tr>
+<td style="font-size:13px;color:#666;padding-bottom:15px;">
+'.$TRANSACTIONRECORDDATETIME.'
+</td>
+</tr>
+
+<tr>
+<td style="font-size:15px;color:#333;padding-bottom:15px;">
+Dear <b>'.$RECEIVERNAME.'</b>,
+</td>
+</tr>
+
+<tr>
+<td style="font-size:14px;color:#333;line-height:26px;padding-bottom:18px;">
+You have been added as <b>'.$APPLICATIONNAME.'</b> User.
+</td>
+</tr>
+
+<tr>
+<td align="center" style="padding:10px 0 20px 0;">
+<a href="'.$LOGINLINK.'" style="background:#007bff;color:#fff;text-decoration:none;padding:14px 24px;border-radius:5px;">
+Login to VerifyFA
+</a>
+</td>
+</tr>
+
+<tr>
+<td style="font-size:14px;color:#333;line-height:26px;padding-bottom:18px;">
+<b>Entity Code:</b> '.$ENTITYCODE.'<br>
+<b>Username:</b> '.$to.'<br>
+<b>Your Temporary Password:</b> <span style="color:#d9534f;"><b>'.$TEMPORARYPASSWORD.'</b></span><br>
+It is strongly suggested to setup your New Password upon your 1st login.
+</td>
+</tr>
+
+<tr>
+<td style="font-size:14px;color:#333;padding-bottom:12px;">
+Download VerifyFA App:
+</td>
+</tr>
+
+<tr>
+<td align="center" style="padding-bottom:20px;">
+<a href="'.$APPDOWNLOADLINK.'" style="background:#28a745;color:#fff;text-decoration:none;padding:14px 24px;border-radius:5px;">
+Download App
+</a>
+</td>
+</tr>
+
+<tr>
+<td style="font-size:14px;color:#333;padding-bottom:18px;">
+Thanks for your support and understanding.
+</td>
+</tr>
+
+<tr>
+<td style="font-size:14px;color:#333;padding-bottom:20px;">
+Regards,<br>
+<b>'.$COMPANYNAME.'</b>
+</td>
+</tr>
+
+<tr>
+<td style="border-top:1px solid #eee;padding-top:15px;font-size:12px;color:#777;text-align:center;">
+***** This is a system generated communication and does not require signature. *****
+</td>
+</tr>
+
+</table>
+
+</td>
+</tr>
+</table>
+
+</body>';
+
+            
+
+         
+
+            $CI = &get_instance();
+
+            $config = [
+                'protocol'    => 'smtp',
+                'smtp_host'   => 'ssl://smtp.gmail.com',  // or 'tls://smtp.gmail.com'
+                'smtp_port'   => 465,                      // use 465 for SSL or 587 for TLS
+                'smtp_user'   => 'solutions@ethicalminds.in',
+                'smtp_pass'   => 'gtroozhuovdrgnob',      // must be Gmail App Password
+                'mailtype'    => 'html',
+                'charset'     => 'utf-8',
+                'wordwrap'    => TRUE,
+                'newline'     => "\r\n",
+                'crlf'        => "\r\n",
+            ];
+            $from_email = 'solutions@ethicalminds.in';
+            // ✅ Load the email library with an alias to avoid conflicts
+            $CI->load->library('email', $config, 'mailer');
+
+            // ✅ Always refer to it via the alias
+            $CI->mailer->from($from_email);
+            $CI->mailer->to($to);
+            $CI->mailer->subject($subject);
+            $CI->mailer->message($email_updated_content);
+
+              		
+            $mailsend = 0;
+            if(server_check() == 'live'){
+                if($CI->mailer->send()){
+                    $mailsend = 1;
+                }
+            }
+
+            
+
+        $this->session->set_flashdata('success', "User Created Successfully");
+        redirect("index.php/manage-user-admin/");
+    }
+
+
+
+
+
+
 
     public function check_admin_userEmail(){
         $register_user_id = $this->admin_registered_user_id;
@@ -1365,11 +1619,51 @@ $role=implode(',',$this->input->post('user_role'));
         $this->load->view('general-issue-view',$data);
     }
 
+    public function view_my_issue($issue_id){
+        $data['page_title']="View My Issue"; 
+        $company_id = $_SESSION['logged_in']['company_id'];
+        $user_id = $_SESSION['logged_in']['id'];
+        $registered_user_id = $_SESSION['logged_in']['admin_registered_user_id'];
+
+        /*       
+        $this->db->select('issue_manage.*,company_projects.project_id,users.firstName,users.lastName,company.company_name,company_locations.location_name');
+        $this->db->from('issue_manage');
+        $this->db->join('company','company.id=issue_manage.company_name');
+        $this->db->join('company_locations','company_locations.id=issue_manage.location_name');
+        $this->db->join('company_projects','company_projects.id=issue_manage.project_name');
+        $this->db->join('users','users.id=issue_manage.resolved_by');
+        $this->db->where('issue_manage.id',$issue_id);
+        $issue_row=$this->db->get();
+        $issue_result = $issue_row->row();
+            */ 
+
+        $this->db->select('issue_manage.*,usr.firstName as resolver_firstName,usr.lastName as resolver_lastName,uss.firstName as solver_firstName,uss.lastName as solver_lastName');
+        $this->db->from('issue_manage');
+        $this->db->join('users usr','usr.id=issue_manage.resolved_by');
+        $this->db->join('users uss','uss.id=issue_manage.created_by');
+        $this->db->where('issue_manage.id',$issue_id);
+        $issue_row=$this->db->get();
+        $issue_result = $issue_row->row();
+
+
+        $this->db->select('*');
+        $this->db->from('issue_log_manage');
+        $this->db->where('issue_log_manage.issue_id',$issue_id);
+        $issue_resolve_row=$this->db->get();
+        $issue_resolve_result = $issue_resolve_row->row();
+
+        $data['issue_result'] = $issue_result;
+        $data['issue_resolve_result'] = $issue_resolve_result;
+        
+        // $this->load->view('issue-view',$data);
+        $this->load->view('general-issue-view',$data);
+    }
+
 
       public function update_issue(){
-         date_default_timezone_set("Asia/Calcutta"); 
+        date_default_timezone_set("Asia/Calcutta"); 
         $hdn_issue_id = $this->input->post("hdn_issue_id");
-
+        $hdn_page_title = $this->input->post("hdn_page_title");
         $created_by=$this->user_id;
         $random_number = rand(10000,99999);
         $tracking_id_value = date('ymd').$random_number;
@@ -1426,10 +1720,15 @@ $role=implode(',',$this->input->post('user_role'));
         $insert_id = $this->db->insert_id();
         
         $this->session->set_flashdata("success","Issue Updated Successfully");
-        if($hdn_issue_type_value == 'General'){
-            redirect("index.php/issue-for-me/groupadmin");
+
+        if($hdn_page_title == 'View_My_Issue'){
+            redirect("index.php/manage-my-issue");
         }else{
-            redirect("index.php/issue-for-me/manager");
+            if($hdn_issue_type_value == 'General'){
+                redirect("index.php/issue-for-me/groupadmin");
+            }else{
+                redirect("index.php/issue-for-me/manager");
+            }
         }
     }
     
