@@ -6,6 +6,29 @@ ini_set('allow_url_fopen', 1);
  /**
      * Helper to send and display dynamic email results
      */
+    
+if(!function_exists('sendEmailDynamicContent'))
+{
+    function sendEmailDynamicContent($to, $subject, $content) {
+        $CI = setEmailProtocol();
+        $CI->email->set_newline("\r\n");
+        $CI->email->set_mailtype("html");
+        $CI->email->from('solutions@ethicalminds.in', 'VerifyFA Notification');
+        $CI->email->to($to);
+        $CI->email->subject($subject);
+        $CI->email->message($content);
+
+        if($CI->email->send()){
+            //  echo "<h3 style='color: green;'>Email Sent Successfully to $to</h3>";
+            //  echo "<b>Subject:</b> $subject";
+            //  echo "<hr><h4>Live Preview:</h4>" . $content;
+            return true;
+        } else {
+             echo "<h3 style='color: red;'>Email Sending Failed to $to</h3>";
+             echo $CI->email->print_debugger();
+        }
+    }
+}
 
 
 if(!function_exists('setEmailProtocol'))
@@ -39,30 +62,6 @@ if(!function_exists('setEmailProtocol'))
        
 
         return $CI;
-    }
-}
-
-    
-if(!function_exists('sendEmailDynamicContent'))
-{
-    function sendEmailDynamicContent($to, $subject, $content) {
-        $CI = setEmailProtocol();
-        $CI->email->set_newline("\r\n");
-        $CI->email->set_mailtype("html");
-        $CI->email->from('solutions@ethicalminds.in', 'VerifyFA Notification');
-        $CI->email->to($to);
-        $CI->email->subject($subject);
-        $CI->email->message($content);
-
-        if($CI->email->send()){
-            //  echo "<h3 style='color: green;'>Email Sent Successfully to $to</h3>";
-            //  echo "<b>Subject:</b> $subject";
-            //  echo "<hr><h4>Live Preview:</h4>" . $content;
-            return true;
-        } else {
-             echo "<h3 style='color: red;'>Email Sending Failed to $to</h3>";
-             echo $CI->email->print_debugger();
-        }
     }
 }
 
