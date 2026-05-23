@@ -61,9 +61,244 @@ class Registeredusercontroller extends CI_Controller {
 
     public function registered_user_passwod_save(){
         $user_id=$this->session->userdata('registered_user_id');
+
+        $this->db->select('*');
+		$this->db->from('registred_users');
+		$this->db->where('id',$user_id);
+		$query = $this->db->get();
+		$user_result= $query->row();
+		$num = $query->num_rows();
+
+
+        $this->db->select('
+			register_user_plan_log.*,
+			subscription_plan.title,
+			subscription_plan.subtitle,
+			subscription_plan.amount,
+			subscription_plan.user_number_register,
+			subscription_plan.allowed_entities_no,
+			subscription_plan.location_each_entity,
+			subscription_plan.user_number_register,
+			subscription_plan.line_item_avaliable,
+			subscription_plan.time_subscription
+		');
+
+
+
+
+		$this->db->from('register_user_plan_log');
+
+		$this->db->join(
+			'subscription_plan',
+			'subscription_plan.id = register_user_plan_log.plan_id',
+			'left'
+		);
+
+		$this->db->where('register_user_plan_log.register_user_id', $user_id);
+
+		$subscription_plan_query = $this->db->get();
+
+		$subscription_plan_result = $subscription_plan_query->row_array();	
+
+
+        if(empty($user_result->is_first_login)){		
+			// Get User Data
+				$user = $this->Registered_user_model->get_registerd_user($user_id);
+
+				if (!$user) {
+					echo "User not found.";
+					return;
+				}
+
+				/*
+				--------------------------------------------------
+				Real DB Fields
+				--------------------------------------------------
+				first_name
+				last_name
+				email_id
+				entity_code
+				plan_id
+				created_at
+				--------------------------------------------------
+				*/
+
+				$receiverName = trim($user->first_name . ' ' . $user->last_name);
+				$to = $user->email_id;
+				$entityCode   = $user->entity_code;
+
+				if (empty($to)) {
+					echo "Email ID not found.";
+					return;
+				}
+
+				// Login Link
+				$loginLink = base_url('index.php/registered-user-login');
+
+				// Subject
+				$subject = "VerifyFA Activation Successful";
+
+				// Date Time
+				$dateTime = date('d-m-Y h:i A');
+
+				// Logo
+				$logo = base_url('assets/img/logo.png');
+
+				/*
+				--------------------------------------------------
+				Subscription Plan Values
+				Change if plan table exists later
+				--------------------------------------------------
+				*/
+
+				$companiesAllowed = $subscription_plan_result['allowed_entities_no'];
+				$locationsAllowed = $subscription_plan_result['location_each_entity'];
+				$usersAllowed     = $subscription_plan_result['user_number_register'];
+				$rowsAllowed      = $subscription_plan_result['line_item_avaliable'];
+
+				// Plan expiry after 1 year (example)
+				$expiryDate = date('d-m-Y', strtotime('+1 year'));
+
+				// Email Template
+				$email_content = '
+				<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:20px;font-family:Arial,sans-serif;">
+					<tr>
+						<td align="center">
+
+							<table width="680" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #dddddd;padding:30px;">
+
+								<!-- Logo -->
+								<tr>
+									<td align="center" style="padding-bottom:20px;">
+										<img src="' . $logo . '" height="70">
+									</td>
+								</tr>
+
+								<!-- Top Note -->
+								<tr>
+									<td style="font-size:12px;color:#d9534f;text-align:center;padding-bottom:20px;">
+										***** This is an auto generated NO REPLY communication and replies to this email id are not attended to. *****
+									</td>
+								</tr>
+
+								<!-- Date -->
+								<tr>
+									<td style="font-size:13px;color:#666;padding-bottom:15px;">
+										' . $dateTime . '
+									</td>
+								</tr>
+
+								<!-- Greeting -->
+								<tr>
+									<td style="font-size:15px;color:#333;padding-bottom:15px;">
+										Dear <b>' . $receiverName . '</b>,
+									</td>
+								</tr>
+
+								<!-- Activation Success -->
+								<tr>
+									<td style="font-size:14px;color:#333;line-height:24px;padding-bottom:15px;">
+										Your Account Activation on <b>VerifyFA</b> is successful.
+									</td>
+								</tr>
+
+								<!-- Plan Details -->
+								<tr>
+									<td style="font-size:14px;color:#333;padding-bottom:10px;">
+										<b>Following is the Subscription Plan Breakup:</b>
+									</td>
+								</tr>
+
+								<tr>
+									<td style="font-size:14px;color:#333;line-height:26px;padding-bottom:20px;">
+										- No. of Companies allowed to be added: <b>' . $companiesAllowed . '</b><br>
+										- No. of Locations under each Company allowed to be added: <b>' . $locationsAllowed . '</b><br>
+										- Total No. of Users allowed to be added: <b>' . $usersAllowed . '</b><br>
+										- No. of Rows allowed for upload under each Location: <b>' . $rowsAllowed . '</b><br>
+										- Subscription Plan Expires on: <b>' . $expiryDate . '</b>
+									</td>
+								</tr>
+
+								<!-- Login Button -->
+								<tr>
+									<td align="center" style="padding:15px 0;">
+										<a href="' . $loginLink . '" 
+										style="background:#28a745;color:#ffffff;text-decoration:none;padding:14px 24px;border-radius:5px;font-size:14px;display:inline-block;">
+										Login to VerifyFA
+										</a>
+									</td>
+								</tr>
+
+								<!-- Credentials -->
+								<tr>
+									<td style="font-size:14px;color:#333;line-height:26px;padding-top:20px;padding-bottom:15px;">
+										Please use the following login credentials:<br>
+										<b>Entity Code:</b> ' . $entityCode . '<br>
+										<b>Username:</b> ' . $to . '<br>
+										<b>Password:</b> '.$user_result->password_view.'
+									</td>
+								</tr>
+
+								<!-- Thanks -->
+								<tr>
+									<td style="font-size:14px;color:#333;padding-bottom:15px;">
+										Thanks for your support and understanding.
+									</td>
+								</tr>
+
+								<!-- Footer -->
+								<tr>
+									<td style="font-size:14px;color:#333;padding-bottom:20px;">
+										Regards,<br>
+										<b>VerifyFA</b>
+									</td>
+								</tr>
+
+								<!-- Bottom Note -->
+								<tr>
+									<td style="border-top:1px solid #eeeeee;padding-top:15px;font-size:12px;color:#777;text-align:center;">
+										***** This is a system generated communication and does not require signature. *****
+									</td>
+								</tr>
+
+							</table>
+
+						</td>
+					</tr>
+				</table>';
+
+				// Send Email
+				$result = sendEmailDynamicContent($to, $subject, $email_content);
+
+				if ($result) {
+					echo "Activation success email sent successfully to " . $to;
+				} else {
+					echo "Email sending failed.";
+				}
+
+
+				$updatedata=array(
+					'is_first_login'=>1,
+				);
+
+				$this->db->where('id', $user_result->id);
+				$query = $this->db->update('registred_users',$updatedata);
+				// echo "<pre>Last query :";
+				// print_r($this->db->last_query());
+				// echo "</pre>";
+				// exit;
+
+
+		}
+			// Email End
+
+
+
+
         $data=array( 
             "password"=>md5($this->input->post('password')),
             "password_view"=>$this->input->post('password'),
+            "is_active" => 4,
         );
      $this->Registered_user_model->update_password($user_id,$data);
      $this->session->set_flashdata("success","Password Changed Successfully");
@@ -164,32 +399,17 @@ class Registeredusercontroller extends CI_Controller {
         $this->session->set_flashdata("success","Renew Request Send Successfully");
         redirect("index.php/registered-user-subscription");
     }
-//already
-    public function unsubscribe_account_already($registereduserid){
+
+    public function unsubscribe_account($registereduserid){
         $data=array(
-            "is_active"=>6, 
+            "is_active"=>6,
             "unsubscribe_date"=>date("Y-m-d"),
         );
         $this->Registered_user_model->request_renew_save($registereduserid,$data);
         $this->session->set_flashdata("success","Account Unsubscribed Successfully");
         redirect("index.php/registered-user-subscription");
     }
-//try
-public function unsubscribe_account($registereduserid){
 
-    $data = array(
-        "is_active"=>6,
-        "unsubscribe_date"=>date("Y-m-d"),
-    );
-
-    $this->Registered_user_model->request_renew_save($registereduserid,$data);
-
-    $this->load->library('../controllers/EmailController');
-    $this->emailcontroller->successfulDeRegistration6($registereduserid);
-
-    $this->session->set_flashdata("success","Account Unsubscribed Successfully");
-    redirect("index.php/registered-user-subscription");
-}
     
     public function request_resubscribe($registereduserid){
         $data=array(
@@ -214,6 +434,7 @@ public function unsubscribe_account($registereduserid){
       $register_usr_phone_no= $register_userdata->phone_no;
     //   $password=rand(0,9).rand(0,9).rand(0,9).rand(0,9).rand(0,9);
          $password="12345";
+         $password = $register_userdata->password_view;
       //   check register user admin exist or not//
        $check_admin_row= $this->Registered_user_model->check_as_a_admin_user($register_user_id,$register_usr_email_id,$register_usr_entity_code);
 

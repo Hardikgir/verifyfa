@@ -2381,8 +2381,7 @@ public function get_project_additionaldata(){
             
             // Set up email using the existing helper
             $CI = setEmailProtocol();
-            $from_email = '
-            ';
+            $from_email = 'solutions@ethicalminds.in';
             
             // Simple email content
             $email_content = '
@@ -3464,6 +3463,15 @@ public function get_project_additionaldata(){
     }
 
 
+
+
+
+
+
+
+
+
+
     public function downloadExceptionFiveConsolidatedReport()
 	{
 		require 'vendor/autoload.php';
@@ -3719,7 +3727,7 @@ public function get_project_additionaldata(){
     }
 
 
-    //18 march - 7 april
+    
 
     public function emailsending(){
 

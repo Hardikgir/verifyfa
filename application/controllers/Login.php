@@ -6,6 +6,7 @@ class Login extends CI_Controller {
 	public function __construct()
 	{
 		parent::__construct();
+		date_default_timezone_set("Asia/Calcutta"); 
 		$this->load->model('login_model','login');	
 		$this->load->model('Super_admin_model');
 		$this->load->model('Admin_model');
@@ -165,23 +166,62 @@ class Login extends CI_Controller {
 		$email=$this->input->post('email');
 		$password=md5($this->input->post('password'));
 
-            $this->db->select('*');
-            $this->db->from('registred_users');
-            $this->db->where('email_id',$email);
-            $this->db->where('password',$password);
-            $query = $this->db->get();
-            $result= $query->row();
-            $num = $query->num_rows();
+		$this->db->select('*');
+		$this->db->from('registred_users');
+		$this->db->where('email_id',$email);
+		$this->db->where('password',$password);
+		$query = $this->db->get();
+		$user_result= $query->row();
+		$num = $query->num_rows();
+
+
+
+		$this->db->select('
+			register_user_plan_log.*,
+			subscription_plan.title,
+			subscription_plan.subtitle,
+			subscription_plan.amount,
+			subscription_plan.user_number_register,
+			subscription_plan.allowed_entities_no,
+			subscription_plan.location_each_entity,
+			subscription_plan.user_number_register,
+			subscription_plan.line_item_avaliable,
+			subscription_plan.time_subscription
+		');
+
+
+
+
+		$this->db->from('register_user_plan_log');
+
+		$this->db->join(
+			'subscription_plan',
+			'subscription_plan.id = register_user_plan_log.plan_id',
+			'left'
+		);
+
+		$this->db->where('register_user_plan_log.register_user_id', $user_result->id);
+
+		$subscription_plan_query = $this->db->get();
+
+		$subscription_plan_result = $subscription_plan_query->row_array();	
+
+
+
+
+		
+
+
 			
 			
-  if($num !='0'){
-			$is_active= $result->is_active;
+  		if($num !='0'){
+			$is_active= $user_result->is_active;
             // echo $this->db->last_query();die;
 			if($is_active == '5'){
 				$this->session->set_flashdata('error_message', 'Your Account Suspended Connect with Admin');
 			redirect("index.php/registered-user-login");
 			}else{
-                $the_session = array("registered_user_logged" => "1", "registered_user_id" => $result->id, "registered_user_email" => $result->email_id,"registered_user_first_name" => $result->first_name,"registered_user_last_name" => $result->last_name,"registered_user_organisation_name" => $result->organisation_name );
+                $the_session = array("registered_user_logged" => "1", "registered_user_id" => $user_result->id, "registered_user_email" => $user_result->email_id,"registered_user_first_name" => $user_result->first_name,"registered_user_last_name" => $user_result->last_name,"registered_user_organisation_name" => $user_result->organisation_name );
                 $this -> session -> set_userdata($the_session);
                redirect("index.php/registered-user-dashboard");
 			}
@@ -193,9 +233,8 @@ class Login extends CI_Controller {
 
 
 	}
-	//for registered user//
 
-	public function activation_registered_user($user_id){
+public function activation_registered_user($user_id){
 	
 		$userrow = $this->login->activate_register_user($user_id);
 		$date=date("Y-m-d");
@@ -234,6 +273,28 @@ class Login extends CI_Controller {
 		 }
 	}
 
+
+
+	//already working perfectly
+	//for registered user//
+
+	public function activation_registered_user1($user_id){
+	
+		$userrow = $this->login->activate_register_user($user_id);
+		$date=date("Y-m-d");
+		$expiry_date= $userrow->link_expiry_date;
+		if( $expiry_date < $date){
+		
+			$this->session->set_flashdata('error_message', 'Your activation link expire kindly connect with verifyfa team.');
+			redirect("index.php/registered-user-login");
+		}else{
+			$data=array("is_active"=>"4");
+			$this->login->activate_register_user_save($user_id,$data);
+			$this->session->set_flashdata('error_message', 'Your account is active please login here');
+			redirect("index.php/registered-user-login");
+		 }
+	}
+
 	public function logout_superadmin()
 	{
 		$this->session->sess_destroy();
@@ -251,7 +312,42 @@ class Login extends CI_Controller {
         $this->load->view("registered-user/confirmation-window-transfer",$data);
      }
 
-	 public function generate_active_register_user($id){
+
+
+
+public function generate_active_register_user($id)
+{
+    $date = date("Y-m-d");
+
+    $activation_link = base_url().'index.php/activation-registered-user/'.$id;
+
+    $data = array(
+        "is_activation_send" => "1",
+        "activation_generete_link" => "1",
+        "activation_generete_link_date" => $date,
+        "activation_link" => $activation_link,
+        "activation_send_date" => date('Y-m-d'),
+    );
+
+    $this->Super_admin_model->update_confirmation_data_user($id,$data);
+
+    // Activate account
+    $data = array("is_active" => "4");
+    $this->login->activate_register_user_save($id,$data);
+
+    // 🔥 SEND MAIL 3 HERE
+    $this->load->library('../controllers/EmailController');
+    $this->emailcontroller->successfulRegistration3($id);
+
+    // Redirect after everything
+    $this->session->set_flashdata('error_message', 'Your account is active please login here');
+    redirect("index.php/registered-user-login");
+}
+
+
+
+//already working perfectly
+	 public function generate_active_register_user1($id){
 		$date = date("Y-m-d");
 	   	$activation_link = base_url().'index.php/activation-registered-user/'.$id;
 	
@@ -283,13 +379,6 @@ class Login extends CI_Controller {
 
 		$data=array("is_active"=>"4");
 		$this->login->activate_register_user_save($id,$data);
-
-		require_once(APPPATH.'controllers/EmailController.php');
-		$emailObj = new EmailController();
-		ob_start();
-		$emailObj->successfulRegistration3($id);
-		ob_end_clean();
-
 		$this->session->set_flashdata('error_message', 'Your account is active please login here');
 		redirect("index.php/registered-user-login");
 		
@@ -390,6 +479,12 @@ class Login extends CI_Controller {
 		$this->db->where('entity_code',$entity);
 		$query = $this->db->get();
 		$result= $query->row();
+
+		// echo "<pre>result :";
+		// print_r($result);
+		// echo "</pre>";
+		// exit;
+
 		$num = $query->num_rows();
 
 		if($num !='0'){
@@ -405,6 +500,154 @@ class Login extends CI_Controller {
 		}
 
 
+
+		/*hhhh
+		// Get User Data
+        $user = $this->Registered_user_model->get_registerd_user($result->id);
+
+        if (!$user) {
+            echo "User not found.";
+            return;
+        }
+
+        /*
+        -----------------------------------------
+        Actual DB Fields
+        -----------------------------------------
+        first_name
+        last_name
+        email_id
+        entity_code
+        -----------------------------------------
+        */
+		/*hhhh
+        $receiverName = trim($user->first_name . ' ' . $user->last_name);
+        $to = $user->email_id;
+
+        if (empty($to)) {
+            echo "Email ID not found.";
+            return;
+        }
+
+        // Temporary Password
+        $tempPassword = "AUTH_" . rand(1000, 9999);
+
+        // Reset Password Link
+        $resetLink = base_url('index.php/login/resetPassword/' . md5($to));
+
+        // Subject
+        $subject = "VerifyFA - Reset Password";
+
+        // Date Time
+        $dateTime = date('d-m-Y h:i A');
+
+        // Logo Path
+        $logo = base_url('assets/img/logo.png');
+
+        // Email Template
+        $email_content = '
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:20px;font-family:Arial,sans-serif;">
+            <tr>
+                <td align="center">
+
+                    <table width="650" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #dddddd;padding:30px;">
+
+                        <!-- Logo -->
+                        <tr>
+                            <td align="center" style="padding-bottom:20px;">
+                                <img src="' . $logo . '" height="70">
+                            </td>
+                        </tr>
+
+                        <!-- Auto Generated Message -->
+                        <tr>
+                            <td style="font-size:12px;color:#d9534f;text-align:center;padding-bottom:20px;">
+                                ***** This is an auto generated NO REPLY communication and replies to this email id are not attended to. *****
+                            </td>
+                        </tr>
+
+                        <!-- Date -->
+                        <tr>
+                            <td style="font-size:13px;color:#666;padding-bottom:15px;">
+                                ' . $dateTime . '
+                            </td>
+                        </tr>
+
+                        <!-- Greeting -->
+                        <tr>
+                            <td style="font-size:15px;color:#333;padding-bottom:15px;">
+                                Dear <b>' . $receiverName . '</b>,
+                            </td>
+                        </tr>
+
+                        <!-- Main Body -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:24px;padding-bottom:15px;">
+                                Upon your request to reset Password / unlocking the User Account,
+                                a Temporary Password has been generated:
+                                <b style="color:#d9534f;">' . $tempPassword . '</b>
+                            </td>
+                        </tr>
+
+                        <!-- Sub Body -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:24px;padding-bottom:15px;">
+                                You requested to enter New Password on <b>VerifyFA</b>.
+                                Please click on the link below to setup your New Password:
+                            </td>
+                        </tr>
+
+                        <!-- Button -->
+                        <tr>
+                            <td align="center" style="padding:20px 0;">
+                                <a href="' . $resetLink . '" 
+                                style="background:#007bff;color:#ffffff;text-decoration:none;padding:14px 24px;border-radius:5px;font-size:14px;display:inline-block;">
+                                Setup New Password
+                                </a>
+                            </td>
+                        </tr>
+
+                        <!-- Thanks -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;padding-bottom:15px;">
+                                Thanks for your support and understanding.
+                            </td>
+                        </tr>
+
+                        <!-- Footer -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;padding-bottom:20px;">
+                                Regards,<br>
+                                <b>VerifyFA</b>
+                            </td>
+                        </tr>
+
+                        <!-- Bottom Note -->
+                        <tr>
+                            <td style="border-top:1px solid #eeeeee;padding-top:15px;font-size:12px;color:#777;text-align:center;">
+                                ***** This is a system generated communication and does not require signature. *****
+                            </td>
+                        </tr>
+
+                    </table>
+
+                </td>
+            </tr>
+        </table>';
+
+        // Send Email using your existing working dynamic function
+        $result = sendEmailDynamic($to, $subject, $email_content);
+
+        if ($result) {
+            echo "Password reset email sent successfully to " . $to;
+        } else {
+            echo "Email sending failed.";
+        }
+
+
+		$this->session->set_flashdata('success', 'Reset Password Email');
+		redirect("index.php/forget-password-register-user");
+		*/
 
 		redirect("index.php/login/VerifyForChangePasswordRegistered");
 	}
@@ -431,5 +674,32 @@ class Login extends CI_Controller {
 
 	}
 	
+
+
+	public function activate_account_submit()
+{
+    $id = $this->input->post('user_id');
+
+    $password = $this->input->post('password');
+    $confirm  = $this->input->post('confirm_password');
+
+    if ($password != $confirm) {
+        echo "Passwords do not match.";
+        return;
+    }
+
+    $data = array(
+        'password'      => md5($password),
+        'password_view' => $password,
+        'is_active'     => 4,
+        'is_activated'  => 1
+    );
+
+    $this->db->where('id', $id);
+    $this->db->update('registred_users', $data);
+
+    // Mail 3
+    redirect(base_url().'index.php/EmailController/successfulRegistration3/'.$id);
+}
 	
 }

@@ -559,9 +559,11 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                             }
                                                                             ?>
                                                                             <td>
-                                                                                <?php                                                                                
-                                                                                $li_overall_percent = ($overalltotal > 0) ? round(($overallverified / $overalltotal) * 100, 2) : 0;
-                                                                                echo ($li_overall_percent == 100) ? "Verified" : "In Process";
+                                                                                <?php                                                                                 
+                                                                                // echo $projects[0]->status<3  ? 'In Process':'Completed';
+
+                                                                                $li_percent = isset($ct['percentage']) ? $ct['percentage'] : 0;
+                                                                                echo ($li_percent == 100) ? "Verified" : "In Process";
                                                                                 ?>
 
                                                                                 </td>
@@ -915,9 +917,12 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                             ?>
                                                                             <td>
                                                                                 <?php 
-                                                                                $amt_overall_percent = (isset($overalltotal) && $overalltotal > 0) ? round(($overallverified / $overalltotal) * 100, 2) : 0;
-                                                                                echo ($amt_overall_percent >= 100) ? "Verified" : "In Progress";
+                                                                                // echo$projects[0]->status<3  ? 'In Process':'Completed';
+                                                                                
+                                                                                $li_percent = isset($ct['amountpercentage']) ? $ct['amountpercentage'] : 0;
+                                                                                echo ($li_percent == 100) ? "Verified" : "In Process";
                                                                                 ?>
+
                                                                                 </td>
                                                                             
                                                                             

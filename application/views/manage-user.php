@@ -18,8 +18,7 @@ $this->load->view('layouts/sidebar');
             <?php 
             $total_user_count= count($user);
             $plan_user_cnt=create_user_count_check($this->admin_registered_user_id);
-            // if($total_user_count >= $plan_user_cnt){
-                if($total_user_count > $plan_user_cnt){
+            if($total_user_count >= $plan_user_cnt){
                 ?>
                  <button class="btn btn-primary" style="float:right" onclick="alertuser();">Create New User</button>
             <?php }else{?>

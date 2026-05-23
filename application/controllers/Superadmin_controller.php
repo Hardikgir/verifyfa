@@ -959,9 +959,9 @@ public function generate_active_register_user($id)
 		$to = $data['user']->email_id;
 		// $to = 'hardik.meghnathi12@gmail.com';
 		
-		// $activation_link = '<a href="'.base_url().'index.php/registered-user-login/">Activate Your Account</a>';
+		$activation_link = '<a href="'.base_url().'index.php/registered-user-login/">Activate Your Account</a>';
 		// $activation_link = '<a href="'.base_url().'index.php/activation-registered-user/">Activate Your Account</a>';
-		$activation_link = '<a href="'.base_url().'index.php/generate-active-register-user/'.$id.'">Activate Your Account</a>';
+		// $activation_link = '<a href="'.base_url().'index.php/generate-active-register-user/'.$id.'">Activate Your Account</a>';
 		$TRANSACTIONRECORDDATETIME = date('d-m-Y h:i:s A');
 
 		$APPLICATIONNAME = 'VerifyFA';
@@ -1054,18 +1054,22 @@ public function generate_active_register_user($id)
 
 		if($user_details->is_activation_send != '1'){				
 			$mailsend = 0;
+			/* Hardik Temporary comment on 22 May 2026
 			if(server_check() == 'live'){
 				if($CI->email->send()){
 					$mailsend = 1;
 				}
 			}
+			*/
 
 			
+		/* Hardik Temporary comment on 22 May 2026
 		$data=array(
         "password"=>md5($TEMPORARYPASSWORD),
 		"password_view"=>$TEMPORARYPASSWORD,
 	 	);
 	 	$this->Super_admin_model->update_confirmation_data_user($id,$data);
+		*/ 
 
 		}
 		// exit();
@@ -1183,8 +1187,168 @@ public function generate_active_register_user($id)
 
 
 
+
+	// Get user details
+        $user = $this->Registered_user_model->get_registerd_user($registered_user_id);
+        // echo "<pre>Last query :";
+        // print_r($this->db->last_query());
+        // echo "</pre>";
+        // exit;
+
+        if (!$user) {
+            echo "User not found.";
+            return;
+        }
+
+        /*
+        --------------------------------------------------
+        YOUR REAL DATABASE COLUMN NAMES
+        --------------------------------------------------
+        first_name
+        last_name
+        email_id
+        activation_link
+        --------------------------------------------------
+        */
+
+        $receiverName = trim($user->first_name . ' ' . $user->last_name);
+        $to = $user->email_id;
+
+        // Safety check
+        if (empty($to)) {
+            echo "Email ID not found.";
+            return;
+        }
+
+        // Temporary Password
+        $tempPassword = $TEMPORARYPASSWORD;
+
+       
+
+        $activationLink = base_url('index.php/registered-user-login/');
+
+        // Subject line as required format
+        $subject = "VerifyFA - Activate Your Account and Setup New Password";
+
+        // Date Time
+        $dateTime = date('d-m-Y h:i A');
+
+        // Logo Path
+        $logo = base_url('assets/img/logo.png');
+
+        // Email HTML Content
+        $email_content = '
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:20px;font-family:Arial,sans-serif;">
+            <tr>
+                <td align="center">
+
+                    <table width="650" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #dddddd;padding:30px;">
+
+                        <!-- Logo -->
+                        <tr>
+                            <td align="center" style="padding-bottom:20px;">
+                                <img src="' . $logo . '" height="70">
+                            </td>
+                        </tr>
+
+                        <!-- Auto Generated Message -->
+                        <tr>
+                            <td style="font-size:12px;color:#d9534f;text-align:center;padding-bottom:20px;">
+                                ***** This is an auto generated NO REPLY communication and replies to this email id are not attended to. *****
+                            </td>
+                        </tr>
+
+                        <!-- Date -->
+                        <tr>
+                            <td style="font-size:13px;color:#666;padding-bottom:15px;">
+                                ' . $dateTime . '
+                            </td>
+                        </tr>
+
+                        <!-- Greeting -->
+                        <tr>
+                            <td style="font-size:15px;color:#333;padding-bottom:15px;">
+                                Dear <b>' . $receiverName . '</b>,
+                            </td>
+                        </tr>
+
+                        <!-- Message -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:24px;padding-bottom:15px;">
+                                Thanks for registering on <b>VerifyFA</b>.<br>
+                                It is important to activate your account in due time to continue further.
+                            </td>
+                        </tr>
+
+                        <!-- Password -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;padding-bottom:15px;">
+                                Your Temporary Password for 1st time login is:
+                                <b style="color:#d9534f;">' . $tempPassword . '</b>
+                            </td>
+                        </tr>
+
+                        <!-- please click on the link to setup your new password -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:24px;padding-bottom:15px;">
+                            please click on the link to setup your new password 
+                            </td>
+                        </tr>
+
+                        <!-- Button -->
+                        <tr>
+                            <td align="center" style="padding:20px 0;">
+                                <a href="' . $activationLink . '" 
+                                style="background:#007bff;color:#ffffff;text-decoration:none;padding:14px 24px;border-radius:5px;font-size:14px;display:inline-block;">
+                                Activate Account & Setup New Password
+                                </a>
+                            </td>
+                        </tr>
+
+                        <!-- Thanks -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;padding-bottom:15px;">
+                                Thanks for your support and understanding.
+                            </td>
+                        </tr>
+
+                        <!-- Footer -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;padding-bottom:20px;">
+                                Regards,<br>
+                                <b>VerifyFA</b>
+                            </td>
+                        </tr>
+
+                        <!-- System Generated -->
+                        <tr>
+                            <td style="border-top:1px solid #eeeeee;padding-top:15px;font-size:12px;color:#777;text-align:center;">
+                                ***** This is a system generated communication and does not require signature *****
+                            </td>
+                        </tr>
+
+                    </table>
+
+                </td>
+            </tr>
+        </table>';
+
+        // Send Email
+        $result = sendEmailDynamicContent($to, $subject, $email_content);
+
+
+
+
+
+		// Second Email//
+
+
+
 	$this->session->set_flashdata('success', 'User Created Successfully Now you Are In Confirmation Page');
 	redirect("index.php/confirmation-user-detail/".$registered_user_id);
+
+
+	
 	}
  	
 
@@ -1200,6 +1364,147 @@ public function generate_active_register_user($id)
 	$date = date("Y-m-d");
    // Use date_add() function to add date object
    $activation_link = base_url().'index.php/activation-registered-user/'.$id;
+
+
+   	// Get User Data
+	$user = $this->Registered_user_model->get_registerd_user($id);
+
+	if (!$user) {
+		echo "User not found.";
+		return;
+	}
+
+
+	 $receiverName = trim($user->first_name . ' ' . $user->last_name);
+        $to = $user->email_id;
+
+        if (empty($to)) {
+            echo "Email ID not found.";
+            return;
+        }
+
+        // Temporary Password
+        // $tempPassword = "AUTH_" . rand(1000, 9999);
+		$tempPassword = $user->password_view;
+
+        // Revalidation Link
+        // $reactivationLink = base_url('index.php/login/revalidate/' . md5($to));
+
+        // Subject
+        $subject = "VerifyFA - Revalidation required to Activate Your Account and Setup New Password";
+
+        // Date Time
+        $dateTime = date('d-m-Y h:i A');
+
+        // Logo Path
+        $logo = base_url('assets/img/logo.png');
+
+        // Email Template
+        $email_content = '
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:20px;font-family:Arial,sans-serif;">
+            <tr>
+                <td align="center">
+
+                    <table width="650" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #dddddd;padding:30px;">
+
+                        <!-- Logo -->
+                        <tr>
+                            <td align="center" style="padding-bottom:20px;">
+                                <img src="' . $logo . '" height="70">
+                            </td>
+                        </tr>
+
+                        <!-- Auto Generated Message -->
+                        <tr>
+                            <td style="font-size:12px;color:#d9534f;text-align:center;padding-bottom:20px;">
+                                ***** This is an auto generated NO REPLY communication and replies to this email id are not attended to. *****
+                            </td>
+                        </tr>
+
+                        <!-- Date -->
+                        <tr>
+                            <td style="font-size:13px;color:#666;padding-bottom:15px;">
+                                ' . $dateTime . '
+                            </td>
+                        </tr>
+
+                        <!-- Greeting -->
+                        <tr>
+                            <td style="font-size:15px;color:#333;padding-bottom:15px;">
+                                Dear <b>' . $receiverName . '</b>,
+                            </td>
+                        </tr>
+
+                        <!-- Body -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:24px;padding-bottom:15px;">
+                                Thanks for registering on <b>VerifyFA</b>.<br>
+                                It is important to activate your account in due time to continue further.
+                            </td>
+                        </tr>
+
+                        <!-- please click on the link to setup your new password -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:24px;padding-bottom:15px;">
+                            Please click on the link to Activate and setup your New Password:
+                            </td>
+
+
+                        <!-- Temp Password -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;padding-bottom:15px;">
+                                Your Temporary Password for 1st time login is:
+                                <b style="color:#d9534f;">' . $tempPassword . '</b>
+                            </td>
+                        </tr>
+
+                        <!-- Button -->
+                        <tr>
+                            <td align="center" style="padding:20px 0;">
+                                <a href="' . $activation_link . '" 
+                                style="background:#dc3545;color:#ffffff;text-decoration:none;padding:14px 24px;border-radius:5px;font-size:14px;display:inline-block;">
+                                Revalidate & Activate Account
+                                </a>
+                            </td>
+                        </tr>
+
+                        <!-- Thanks -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;padding-bottom:15px;">
+                                Thanks for your support and understanding.
+                            </td>
+                        </tr>
+
+                        <!-- Footer -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;padding-bottom:20px;">
+                                Regards,<br>
+                                <b>VerifyFA</b>
+                            </td>
+                        </tr>
+
+                        <!-- Bottom Note -->
+                        <tr>
+                            <td style="border-top:1px solid #eeeeee;padding-top:15px;font-size:12px;color:#777;text-align:center;">
+                                ***** This is a system generated communication and does not require signature *****
+                            </td>
+                        </tr>
+
+                    </table>
+
+                </td>
+            </tr>
+        </table>';
+
+        // Send Mail
+        $result = sendEmailDynamicContent($to, $subject, $email_content);
+        // if ($result) {
+        //     echo "Revalidation email sent successfully to " . $to;
+        // } else {
+        //     echo "Email sending failed.";
+        // }
+
+
 
     $expire_date= date('Y-m-d', strtotime($date. ' + 1 days'));
 	$data=array(
@@ -1332,6 +1637,140 @@ public function regenerate_activation_send_link($id){
 	$date = date("Y-m-d");
 	$expire_date= date('Y-m-d', strtotime($date. ' + 1 days'));
 
+	// Get User Data
+        $user = $this->Registered_user_model->get_registerd_user($id);
+
+        if (!$user) {
+            echo "User not found.";
+            return;
+        }
+
+        /*
+        -----------------------------------------
+        Actual DB Fields
+        -----------------------------------------
+        first_name
+        last_name
+        email_id
+        -----------------------------------------
+        */
+
+        $receiverName = trim($user->first_name . ' ' . $user->last_name);
+        $to = $user->email_id;
+
+        if (empty($to)) {
+            echo "Email ID not found.";
+            return;
+        }
+
+        // Subscription End Date
+        // If DB field exists then use it, otherwise sample date
+        $subscriptionEndDate = !empty($user->expiryDate)
+            ? date('d-m-Y', strtotime($user->expiryDate))
+            : date('d-m-Y');
+
+        // Subject
+        $subject = "VerifyFA Account Suspended due to non-renewal of Your Subscription Plan";
+
+        // Date Time
+        $dateTime = date('d-m-Y h:i A');
+
+        // Logo Path
+        $logo = base_url('assets/img/logo.png');
+
+        // Contact Email
+        $supportEmail = "solutions@ethicalminds.in";
+
+        // Email Template
+        $email_content = '
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:20px;font-family:Arial,sans-serif;">
+            <tr>
+                <td align="center">
+
+                    <table width="700" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #dddddd;padding:30px;">
+
+                        <!-- Logo -->
+                        <tr>
+                            <td align="center" style="padding-bottom:20px;">
+                                <img src="' . $logo . '" height="70">
+                            </td>
+                        </tr>
+
+                        <!-- Auto Generated -->
+                        <tr>
+                            <td style="font-size:12px;color:#d9534f;text-align:center;padding-bottom:20px;">
+                                ***** This is an auto generated NO REPLY communication and replies to this email id are not attended to. *****
+                            </td>
+                        </tr>
+
+                        <!-- Date -->
+                        <tr>
+                            <td style="font-size:13px;color:#666;padding-bottom:15px;">
+                                ' . $dateTime . '
+                            </td>
+                        </tr>
+
+                        <!-- Greeting -->
+                        <tr>
+                            <td style="font-size:15px;color:#333;padding-bottom:15px;">
+                                Dear <b>' . $receiverName . '</b>,
+                            </td>
+                        </tr>
+
+                        <!-- Body -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:26px;padding-bottom:18px;">
+                                Please note that your current <b>VerifyFA</b> Subscription Plan has expired on 
+                                <b>' . $subscriptionEndDate . '</b>.
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:26px;padding-bottom:18px;">
+                                Your Account is under suspension for next <b>30 days</b>.
+                                Kindly renew your subscription to avoid permanent deletion of your Account
+                                and any active projects.
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:26px;padding-bottom:18px;">
+                                In case you require to make changes to your Subscription Plan,
+                                please contact us for more details at
+                                <b>' . $supportEmail . '</b>.
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="font-size:14px;color:#333;padding-bottom:18px;">
+                                Your earliest action will be much appreciated.
+                            </td>
+                        </tr>
+
+                        <!-- Footer -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;padding-bottom:20px;">
+                                Regards,<br>
+                                <b>VerifyFA</b>
+                            </td>
+                        </tr>
+
+                        <!-- Bottom Note -->
+                        <tr>
+                            <td style="border-top:1px solid #eeeeee;padding-top:15px;font-size:12px;color:#777;text-align:center;">
+                                ***** This is a system generated communication and does not require signature. *****
+                            </td>
+                        </tr>
+
+                    </table>
+
+                </td>
+            </tr>
+        </table>';
+
+        // Send Email
+        $result = sendEmailDynamicContent($to, $subject, $email_content);
+
 	$data=array(
         "is_active"=>"5",
 		"suspend_date"=>$date,
@@ -1350,6 +1789,149 @@ public function regenerate_activation_send_link($id){
 		"unsubscribe_date"=>$date,
 	 );
 	 $this->Super_admin_model->update_confirmation_data_user($id,$data);
+
+
+
+	 // Get User Data
+        $user = $this->Registered_user_model->get_registerd_user($id);
+
+        if (!$user) {
+            echo "User not found.";
+            return;
+        }
+
+        /*
+        -----------------------------------------
+        Actual DB Fields
+        -----------------------------------------
+        first_name
+        last_name
+        email_id
+        entity_code
+        -----------------------------------------
+        */
+
+        $receiverName = trim($user->first_name . ' ' . $user->last_name);
+        $to = $user->email_id;
+        $entityCode   = $user->entity_code;
+
+        if (empty($to)) {
+            echo "Email ID not found.";
+            return;
+        }
+
+        // Subject
+        $subject = "VerifyFA Account Successfully De-activated";
+
+        // Date Time
+        $dateTime = date('d-m-Y h:i A');
+
+        // Logo Path
+        $logo = base_url('assets/img/logo.png');
+
+        // Email Template
+        $email_content = '
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:20px;font-family:Arial,sans-serif;">
+            <tr>
+                <td align="center">
+
+                    <table width="700" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #dddddd;padding:30px;">
+
+                        <!-- Logo -->
+                        <tr>
+                            <td align="center" style="padding-bottom:20px;">
+                                <img src="' . $logo . '" height="70">
+                            </td>
+                        </tr>
+
+                        <!-- Top Auto Message -->
+                        <tr>
+                            <td style="font-size:12px;color:#d9534f;text-align:center;padding-bottom:20px;">
+                                ***** This is an auto generated NO REPLY communication and replies to this email id are not attended to. *****
+                            </td>
+                        </tr>
+
+                        <!-- Date -->
+                        <tr>
+                            <td style="font-size:13px;color:#666;padding-bottom:15px;">
+                                ' . $dateTime . '
+                            </td>
+                        </tr>
+
+                        <!-- Greeting -->
+                        <tr>
+                            <td style="font-size:15px;color:#333;padding-bottom:15px;">
+                                Dear <b>' . $receiverName . '</b>,
+                            </td>
+                        </tr>
+
+                        <!-- Main Body -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:26px;padding-bottom:18px;">
+                                Your User Registration on <b>VerifyFA</b> is successfully 
+                                <b style="color:#dc3545;">De-activated</b>.
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:26px;padding-bottom:18px;">
+                                Following your recorded consent to deactivate the Username:
+                                <b>' . $to . '</b>,
+                                your Entity Code:
+                                <b>' . $entityCode . '</b>
+                                is now completely suspended.
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:26px;padding-bottom:18px;">
+                                No User will be allowed to login using the Entity Code:
+                                <b>' . $entityCode . '</b>.
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:26px;padding-bottom:18px;">
+                                As per the requirement of our Privacy Policy and to maintain data integrity,
+                                your Personal Data Information has been completely encrypted and hashed,
+                                and the same will no longer be useable for any communication or activity
+                                related to <b>VerifyFA</b>.
+                            </td>
+                        </tr>
+
+                        <!-- Thanks -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;padding-bottom:15px;">
+                                Thanks for your support and understanding.
+                            </td>
+                        </tr>
+
+                        <!-- Footer -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;padding-bottom:20px;">
+                                Regards,<br>
+                                <b>VerifyFA</b>
+                            </td>
+                        </tr>
+
+                        <!-- Bottom Note -->
+                        <tr>
+                            <td style="border-top:1px solid #eeeeee;padding-top:15px;font-size:12px;color:#777;text-align:center;">
+                                ***** This is a system generated communication and does not require signature. *****
+                            </td>
+                        </tr>
+
+                    </table>
+
+                </td>
+            </tr>
+        </table>';
+
+        // Send Email
+        $result = sendEmailDynamicContent($to, $subject, $email_content);
+
+
+
 	 $this->session->set_flashdata('success', 'Activation Suspended Successfully');
 	 redirect("index.php/confirmation-user-detail/".$id);
  }
@@ -1475,22 +2057,173 @@ public function regenerate_activation_send_link($id){
 
 	 
 				
-			$mailsend = 0;
-			if(server_check() == 'live'){
-				if($CI->email->send()){
-					$mailsend = 1;
-				}
-			}
+			// $mailsend = 0;
+			// if(server_check() == 'live'){
+			// 	if($CI->email->send()){
+			// 		$mailsend = 1;
+			// 	}
+			// }
 		
 
-
+		
 		$data=array(
         "password"=>md5($TEMPORARYPASSWORD),
 		"password_view"=>$TEMPORARYPASSWORD,
 	 	);
 	 	$this->Super_admin_model->update_confirmation_data_user($id,$data);
+		
 
 
+
+		// Get User Data
+        $user = $this->Registered_user_model->get_registerd_user($id);
+
+        if (!$user) {
+            echo "User not found.";
+            return;
+        }
+
+        /*
+        -----------------------------------------
+        Actual DB Fields
+        -----------------------------------------
+        first_name
+        last_name
+        email_id
+        -----------------------------------------
+        */
+
+        $receiverName = trim($user->first_name . ' ' . $user->last_name);
+        $to = $user->email_id;
+
+        if (empty($to)) {
+            echo "Email ID not found.";
+            return;
+        }
+
+        // New Expiry Date
+        // If DB renewal expiry exists use it, otherwise +1 year
+        $expiryDate = !empty($user->expiryDate)
+            ? date('d-m-Y', strtotime($user->expiryDate))
+            : date('d-m-Y', strtotime('+1 year'));
+
+        // Login Link
+        $loginLink = base_url('index.php/registered-user-login');
+
+        // Subject
+        $subject = "VerifyFA Account Subscription Plan Successfully Renewed";
+
+        // Date Time
+        $dateTime = date('d-m-Y h:i A');
+
+        // Logo Path
+        $logo = base_url('assets/img/logo.png');
+
+        // Email Template
+        $email_content = '
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:20px;font-family:Arial,sans-serif;">
+            <tr>
+                <td align="center">
+
+                    <table width="700" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #dddddd;padding:30px;">
+
+                        <!-- Logo -->
+                        <tr>
+                            <td align="center" style="padding-bottom:20px;">
+                                <img src="' . $logo . '" height="70">
+                            </td>
+                        </tr>
+
+                        <!-- Auto Generated -->
+                        <tr>
+                            <td style="font-size:12px;color:#d9534f;text-align:center;padding-bottom:20px;">
+                                ***** This is an auto generated NO REPLY communication and replies to this email id are not attended to. *****
+                            </td>
+                        </tr>
+
+                        <!-- Date -->
+                        <tr>
+                            <td style="font-size:13px;color:#666;padding-bottom:15px;">
+                                ' . $dateTime . '
+                            </td>
+                        </tr>
+
+                        <!-- Greeting -->
+                        <tr>
+                            <td style="font-size:15px;color:#333;padding-bottom:15px;">
+                                Dear <b>' . $receiverName . '</b>,
+                            </td>
+                        </tr>
+
+                        <!-- Main Body -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:26px;padding-bottom:18px;">
+                                Your <b>VerifyFA</b> Account Subscription Plan has successfully been renewed.
+                            </td>
+                        </tr>
+
+                        <!-- Expiry -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:26px;padding-bottom:18px;">
+                                - Subscription Plan Expires on:
+                                <b>' . $expiryDate . '</b>
+                            </td>
+                        </tr>
+
+                        <!-- Login Button -->
+                        <tr>
+                            <td align="center" style="padding:15px 0;">
+                                <a href="' . $loginLink . '" 
+                                style="background:#28a745;color:#ffffff;text-decoration:none;padding:14px 24px;border-radius:5px;font-size:14px;display:inline-block;">
+                                Login to VerifyFA
+                                </a>
+                            </td>
+                        </tr>
+
+                        <!-- Credentials -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:26px;padding-top:15px;padding-bottom:18px;">
+                                Your Temporary Password for login is: <b>'.$TEMPORARYPASSWORD.'</b>.
+                            </td>
+                        </tr>
+
+                        <!-- Thanks -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;padding-bottom:18px;">
+                                Thanks for your support and understanding.
+                            </td>
+                        </tr>
+
+                        <!-- Footer -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;padding-bottom:20px;">
+                                Regards,<br>
+                                <b>VerifyFA</b>
+                            </td>
+                        </tr>
+
+                        <!-- Bottom Note -->
+                        <tr>
+                            <td style="border-top:1px solid #eeeeee;padding-top:15px;font-size:12px;color:#777;text-align:center;">
+                                ***** This is a system generated communication and does not require signature. *****
+                            </td>
+                        </tr>
+
+                    </table>
+
+                </td>
+            </tr>
+        </table>';
+
+        // Send Email
+        $result = sendEmailDynamicContent($to, $subject, $email_content);
+
+        if ($result) {
+            echo "Account renewal email sent successfully to " . $to;
+        } else {
+        // echo "Email sending failed.";
+        echo $this->email->print_debugger();
+        }
 
 
 
@@ -1614,6 +2347,201 @@ $this->Super_admin_model->save_upgradePlan($data_array);
 
 
 }
+
+
+		$this->db->select('
+			register_user_plan_log.*,
+			subscription_plan.title,
+			subscription_plan.subtitle,
+			subscription_plan.amount,
+			subscription_plan.user_number_register,
+			subscription_plan.allowed_entities_no,
+			subscription_plan.location_each_entity,
+			subscription_plan.user_number_register,
+			subscription_plan.line_item_avaliable,
+			subscription_plan.time_subscription
+		');
+
+
+
+
+		$this->db->from('register_user_plan_log');
+
+		$this->db->join(
+			'subscription_plan',
+			'subscription_plan.id = register_user_plan_log.plan_id',
+			'left'
+		);
+
+		$this->db->where('register_user_plan_log.register_user_id', $registered_user_id);
+
+		$subscription_plan_query = $this->db->get();
+
+		$subscription_plan_result = $subscription_plan_query->row_array();	
+
+
+
+// Get User Data
+        $user = $this->Registered_user_model->get_registerd_user($registered_user_id);
+
+        if (!$user) {
+            echo "User not found.";
+            return;
+        }
+
+        /*
+        -----------------------------------------
+        Actual DB Fields
+        -----------------------------------------
+        first_name
+        last_name
+        email_id
+        -----------------------------------------
+        */
+
+        $receiverName = trim($user->first_name . ' ' . $user->last_name);
+        $to = $user->email_id;
+
+        if (empty($to)) {
+            echo "Email ID not found.";
+            return;
+        }
+
+        // Updated Plan Details (Change dynamically later if plan table exists)
+        // $companiesAllowed = "5";
+        // $locationsAllowed = "10";
+        // $usersAllowed     = "50";
+        // $rowsAllowed      = "5000";
+        $expiryDate       = date('d-m-Y', strtotime('+1 year'));
+
+		$companiesAllowed = $subscription_plan_result['allowed_entities_no'];
+		$locationsAllowed = $subscription_plan_result['location_each_entity'];
+		$usersAllowed     = $subscription_plan_result['user_number_register'];
+		$rowsAllowed      = $subscription_plan_result['line_item_avaliable'];
+
+        // Login Link
+        $loginLink = base_url('index.php/registered-user-login');
+
+        // Subject
+        $subject = "VerifyFA Account Subscription Plan Successfully Changed";
+
+        // Date Time
+        $dateTime = date('d-m-Y h:i A');
+
+        // Logo Path
+        $logo = base_url('assets/img/logo.png');
+
+        // Email Template
+        $email_content = '
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:20px;font-family:Arial,sans-serif;">
+            <tr>
+                <td align="center">
+
+                    <table width="700" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #dddddd;padding:30px;">
+
+                        <!-- Logo -->
+                        <tr>
+                            <td align="center" style="padding-bottom:20px;">
+                                <img src="' . $logo . '" height="70">
+                            </td>
+                        </tr>
+
+                        <!-- Auto Generated -->
+                        <tr>
+                            <td style="font-size:12px;color:#d9534f;text-align:center;padding-bottom:20px;">
+                                ***** This is an auto generated NO REPLY communication and replies to this email id are not attended to. *****
+                            </td>
+                        </tr>
+
+                        <!-- Date -->
+                        <tr>
+                            <td style="font-size:13px;color:#666;padding-bottom:15px;">
+                                ' . $dateTime . '
+                            </td>
+                        </tr>
+
+                        <!-- Greeting -->
+                        <tr>
+                            <td style="font-size:15px;color:#333;padding-bottom:15px;">
+                                Dear <b>' . $receiverName . '</b>,
+                            </td>
+                        </tr>
+
+                        <!-- Main Body -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:26px;padding-bottom:18px;">
+                                Your <b>VerifyFA</b> Account Subscription Plan has successfully been changed.
+                            </td>
+                        </tr>
+
+                        <!-- Plan Details -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;padding-bottom:10px;">
+                                <b>Following is the updated Subscription Plan Breakup:</b>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:26px;padding-bottom:20px;">
+                                - No. of Companies allowed to be added: <b>' . $companiesAllowed . '</b><br>
+                                - No. of Locations under each Company allowed to be added: <b>' . $locationsAllowed . '</b><br>
+                                - Total No. of Users allowed to be added: <b>' . $usersAllowed . '</b><br>
+                                - No. of Rows allowed for upload under each Location: <b>' . $rowsAllowed . '</b><br>
+                                - Subscription Plan Expires on: <b>' . $expiryDate . '</b>
+                            </td>
+                        </tr>
+
+                        <!-- Login Button -->
+                        <tr>
+                            <td align="center" style="padding:15px 0;">
+                                <a href="' . $loginLink . '" 
+                                style="background:#17a2b8;color:#ffffff;text-decoration:none;padding:14px 24px;border-radius:5px;font-size:14px;display:inline-block;">
+                                Login to VerifyFA
+                                </a>
+                            </td>
+                        </tr>
+
+                        <!-- Credentials -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:26px;padding-top:15px;padding-bottom:18px;">
+                                Your login credentials remain unchanged.
+                            </td>
+                        </tr>
+
+                        <!-- Thanks -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;padding-bottom:18px;">
+                                Thanks for your support and understanding.
+                            </td>
+                        </tr>
+
+                        <!-- Footer -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;padding-bottom:20px;">
+                                Regards,<br>
+                                <b>VerifyFA</b>
+                            </td>
+                        </tr>
+
+                        <!-- Bottom Note -->
+                        <tr>
+                            <td style="border-top:1px solid #eeeeee;padding-top:15px;font-size:12px;color:#777;text-align:center;">
+                                ***** This is a system generated communication and does not require signature. *****
+                            </td>
+                        </tr>
+
+                    </table>
+
+                </td>
+            </tr>
+        </table>';
+
+        // Send Email
+        $result = sendEmailDynamicContent($to, $subject, $email_content);
+
+
+
+
 $this->session->set_flashdata('success', 'User Details Updated Successfully Now you Are In Confirmation Page');
 redirect("index.php/confirmation-user-detail/".$registered_user_id);
 

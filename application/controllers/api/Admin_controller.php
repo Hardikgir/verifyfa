@@ -369,7 +369,6 @@ class Admin_controller extends CI_Controller {
             </table>
             </body>';
 
-            
          
 
             $CI = &get_instance();

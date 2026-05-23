@@ -3,40 +3,66 @@ ini_set('allow_url_fopen', 'On');
 ini_set('allow_url_fopen', 1);
 
 
+ /**
+     * Helper to send and display dynamic email results
+     */
+
+
 if(!function_exists('setEmailProtocol'))
 {
     function setEmailProtocol()
     {
         $CI = &get_instance();
         $CI->load->library('email');
-
-        $config = array(
-            'protocol'    => 'smtp',
-            'smtp_host'   => 'smtp.gmail.com',
-            'smtp_port'   => 587,
-            'smtp_crypto' => 'tls',
-            'smtp_user'   => 'solutions@ethicalminds.in',
-            'smtp_pass'   => 'gtroozhuovdrgnob',
-            'mailtype'    => 'html',
-            'charset'     => 'utf-8',
-            'wordwrap'    => TRUE,
-            'newline'     => "\r\n",
-            'crlf'        => "\r\n",
-            // Fix for SSL certificate verification failure on localhost/XAMPP
-            'smtp_conn_options' => array(
-                'ssl' => array(
-                    'verify_peer'       => false,
-                    'verify_peer_name'  => false,
-                    'allow_self_signed' => true
-                )
-            )
-        );
-
+        // $config['protocol'] = "smtp";
+        // $config['smtp_host'] = 'smtp.office365.com';
+        $config['smtp_host'] = 'smtp.gmail.com';
+        $config['smtp_port'] = '587';
+        // $config['smtp_user'] = 'grievance_alert@ptcfinancial.com';
+        $config['smtp_user'] = 'solutions@ethicalminds.in';
+        $config['_smtp_auth'] = TRUE;
+        // $config['smtp_pass'] = 'Pfs!Q1#789w2#E3$';
+        // $config['smtp_pass'] = 'Ethj@s123';
+        $config['smtp_pass'] = 'gtroozhuovdrgnob';
+        $config['smtp_crypto'] = 'tls';
+        $config['protocol'] = 'smtp';
+        $config['mailtype'] = 'html';
+        // $config['crlf'] = '\r\n';
+        $config['send_multipart'] = FALSE;
+        // $config['charset'] = 'utf-8';
+        $config['charset'] = 'iso-8859-1';
+        $config['wordwrap'] = TRUE;
+        $config['crlf'] = "\r\n";
+        $config['newline'] = "\r\n";
         $CI->email->initialize($config);
 
        
 
         return $CI;
+    }
+}
+
+    
+if(!function_exists('sendEmailDynamicContent'))
+{
+    function sendEmailDynamicContent($to, $subject, $content) {
+        $CI = setEmailProtocol();
+        $CI->email->set_newline("\r\n");
+        $CI->email->set_mailtype("html");
+        $CI->email->from('solutions@ethicalminds.in', 'VerifyFA Notification');
+        $CI->email->to($to);
+        $CI->email->subject($subject);
+        $CI->email->message($content);
+
+        if($CI->email->send()){
+            //  echo "<h3 style='color: green;'>Email Sent Successfully to $to</h3>";
+            //  echo "<b>Subject:</b> $subject";
+            //  echo "<hr><h4>Live Preview:</h4>" . $content;
+            return true;
+        } else {
+             echo "<h3 style='color: red;'>Email Sending Failed to $to</h3>";
+             echo $CI->email->print_debugger();
+        }
     }
 }
 

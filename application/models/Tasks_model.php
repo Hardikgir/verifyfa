@@ -156,6 +156,13 @@ class Tasks_model extends CI_Model {
         return $result;
     }
 
+    function scanitem3($userid,$companyid,$projectname,$projectid,$item_id)
+    {
+        $this->db->where(array('id'=>$item_id));
+        $result=$this->db->get($projectname)->result();
+        return $result;
+    }
+
 
     function get_schema($table)
 	{

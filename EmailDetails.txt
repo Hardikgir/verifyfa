@@ -1,0 +1,60 @@
+1) http://verifyfa.com/Dev/index.php/EmailController/registrationActivation1/12 :- Setup ( Superadmin > save_registred_user) [should be Setup in confirmation_userdetail] 22/05/2026
+2) http://verifyfa.com/Dev/index.php/EmailController/activationLinkExpiration2/12 :- Setup (Superadmin > generate_activation_link)
+3) http://verifyfa.com/Dev/index.php/EmailController/successfulRegistration3/12 :- Setup (Login > registered_user_login_check) To (Registeredusercontroller > registered_user_passwod_save)
+4) http://verifyfa.com/Dev/index.php/EmailController/accountIdUnlocking/12
+5) http://verifyfa.com/Dev/index.php/EmailController/passwordResetUnlock5/12 :- (Discussion on 11:30 pm)  (Login > VerifyForForgetPasswordRegistered) Not Completed <<Need to Work>>>
+6) http://verifyfa.com/Dev/index.php/EmailController/successfulDeRegistration6/12 :- Setup ( Superadmin > unsubscribe_account)
+11) http://verifyfa.com/Dev/index.php/EmailController/accountSuspension11/12  :- Setup (Superadmin > suspend_account)  <<approval>>
+12) http://verifyfa.com/Dev/index.php/EmailController/accountRenewal12/12 :- Seutp reactive_account (Theri is 2 Mail Remove fro One above)  <<approval>>
+13) http://verifyfa.com/Dev/index.php/EmailController/accountUpgradation13/12 :- Setup ( Superadmin > save_edit_registred_user)
+14) http://verifyfa.com/Dev/index.php/EmailController/addingUserByAdmin14/12 :- Setup ( Admin_controller > save_admin_user) (But Thier is some issue so i hide email)  [Password is Still showing 12345]
+Error Showing Like :- 
+    {
+        Type: Error
+
+        Message: Call to a member function initialize() on string
+
+        Filename: D:\xampp\v74\htdocs\verifyfa_client_server\application\helpers\function_helper.php
+
+        Line Number: 37
+
+        Backtrace:
+
+        File: D:\xampp\v74\htdocs\verifyfa_client_server\application\controllers\Admin_controller.php
+        Line: 67
+        Function: setEmailProtocol
+
+        File: D:\xampp\v74\htdocs\verifyfa_client_server\application\controllers\Admin_controller.php
+        Line: 502
+        Function: _sendEmailDynamic
+
+        File: D:\xampp\v74\htdocs\verifyfa_client_server\index.php
+        Line: 316
+        Function: require_once
+    }
+
+24) http://verifyfa.com/Dev/index.php/EmailController/reportAvailableForDownload/12 :- Setup (Tasks > _sendEmailDirect)
+
+
+http://verifyfa.com/Dev/index.php/super-admin-login
+
+http://verifyfa.com/Dev/index.php/registered-user-login
+
+
+
+Work Log
+Comment Given :- Hardik Temporary comment on 22 May 2026
+
+
+Password is not Currect.
+
+
+-> If Suspend then they are not able to login
+
+
+Meeting Discussion Point :- 
+
+-> Register user their information is not showing proper once upgrade their packege (Group admin that details is showing proper)
+-> email 5 need to setup in Login controller
+-> Some of email is showing solution Email so need to update that one
+-> 

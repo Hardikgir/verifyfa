@@ -9,6 +9,7 @@ class Admin_controller extends CI_Controller {
         date_default_timezone_set("Asia/Calcutta"); 
         $this->load->library('session');	
         $this->load->model('Admin_model');
+        $this->load->library('email');
         $this->load->model('Registered_user_model');
         $this->load->model('Super_admin_model');
         if (!$this->session->userdata('logged_in')) {
@@ -25,6 +26,59 @@ class Admin_controller extends CI_Controller {
 			$this->admin_registered_user_id=$session['admin_registered_user_id'];
 			$this->admin_registered_entity_code=$session['admin_registered_entity_code'];
 			$this->main_role=$session['main_role'];
+        }
+    }
+
+    public  function setEmailProtocol()
+    {
+        $CI = &get_instance();
+        $CI->load->library('email');
+        // $config['protocol'] = "smtp";
+        // $config['smtp_host'] = 'smtp.office365.com';
+        $config['smtp_host'] = 'smtp.gmail.com';
+        $config['smtp_port'] = '587';
+        // $config['smtp_user'] = 'grievance_alert@ptcfinancial.com';
+        $config['smtp_user'] = 'solutions@ethicalminds.in';
+        $config['_smtp_auth'] = TRUE;
+        // $config['smtp_pass'] = 'Pfs!Q1#789w2#E3$';
+        // $config['smtp_pass'] = 'Ethj@s123';
+        $config['smtp_pass'] = 'gtroozhuovdrgnob';
+        $config['smtp_crypto'] = 'tls';
+        $config['protocol'] = 'smtp';
+        $config['mailtype'] = 'html';
+        // $config['crlf'] = '\r\n';
+        $config['send_multipart'] = FALSE;
+        // $config['charset'] = 'utf-8';
+        $config['charset'] = 'iso-8859-1';
+        $config['wordwrap'] = TRUE;
+        $config['crlf'] = "\r\n";
+        $config['newline'] = "\r\n";
+        $CI->email->initialize($config);
+
+       
+
+        return $CI;
+    }
+
+       /**
+     * Helper to send and display dynamic email results
+     */
+    public function _sendEmailDynamic($to, $subject, $content) {
+        $CI = $this->setEmailProtocol();
+        $CI->email->set_newline("\r\n");
+        $CI->email->set_mailtype("html");
+        $CI->email->from('solutions@ethicalminds.in', 'VerifyFA Notification');
+        $CI->email->to($to);
+        $CI->email->subject($subject);
+        $CI->email->message($content);
+
+        if($CI->email->send()){
+             echo "<h3 style='color: green;'>Email Sent Successfully to $to</h3>";
+             echo "<b>Subject:</b> $subject";
+             echo "<hr><h4>Live Preview:</h4>" . $content;
+        } else {
+             echo "<h3 style='color: red;'>Email Sending Failed to $to</h3>";
+             echo $CI->email->print_debugger();
         }
     }
   
@@ -252,51 +306,7 @@ class Admin_controller extends CI_Controller {
         $this->load->view('create-user',$data);
     }
 
-
-//bjp
-   public function save_admin_user0()
-{
-    $register_user_id = $this->admin_registered_user_id;
-    $entity_code      = $this->admin_registered_entity_code;
-    $user_id          = $this->user_id;
-
-    $digits = 5;
-    $temp_password = rand(pow(10, $digits-1), pow(10, $digits)-1);
-
-    $data = array(
-        "created_by"         => $user_id,
-        "registered_user_id" => $register_user_id,
-        "entity_code"        => $entity_code,
-        "firstName"          => $this->input->post('firstName'),
-        "lastName"           => $this->input->post('lastName'),
-        "userEmail"          => $this->input->post('userEmail'),
-        "password"           => md5($temp_password),
-        "password_view"      => $temp_password,
-        "phone_no"           => $this->input->post('phone_no'),
-        "department_id"      => $this->input->post('department_id'),
-        "designation"        => $this->input->post('designation'),
-        "company_id"         => $this->input->post('company_id'),
-        "location_id"        => $this->input->post('location_id'),
-        "created_on"         => date("Y-m-d H:i:s")
-    );
-
-    $this->Admin_model->save_admin_user($data);
-
-    $newUserId = $this->db->insert_id();
-
-    // SEND CASE 14 MAIL
-    require_once(APPPATH.'controllers/EmailController.php');
-    $emailObj = new EmailController();
-    $emailObj->addingUserByAdmin14($newUserId);
-
-    $this->session->set_flashdata('success', "User Created Successfully");
-    redirect("index.php/manage-user-admin/");
-}
-
-
-
-//already working 
-    public function save_admin_user_privous(){
+    public function save_admin_user(){
        $register_user_id = $this->admin_registered_user_id;
         $entity_code = $this->admin_registered_entity_code;
         $user_id = $this->user_id;
@@ -324,15 +334,199 @@ class Admin_controller extends CI_Controller {
             "location_id"=>$this->input->post('location_id'),
             "created_on"=>date("Y-m-d H:i:s")
         );
+
+        // echo "<pre>data :";
+        // print_r($data);
+        // echo "</pre>";
+        // exit;
+
         $this->Admin_model->save_admin_user($data);
+        $id = $this->db->insert_id();
 
+        $this->db->select('*');
+        $this->db->from('users');
+        $this->db->where('id',$id);
+        $query= $this->db->get();
+        $user = $query->row();
 
+        // echo "<pre>user :";
+        // print_r($user);
+        // echo "</pre>";
+        // exit;
 
-
+        /*
         $user_details = $this->Super_admin_model->get_registerd_user($register_user_id);
+
+
+        // Get User Data
+        $user = $this->Super_admin_model->get_registerd_user($register_user_id); */
+
+        if (!$user) {
+            echo "User not found.";
+            return;
+        }
+
+        /*
+        -----------------------------------------
+        Actual DB Fields
+        -----------------------------------------
+        first_name
+        last_name
+        email_id
+        entity_code
+        -----------------------------------------
+        */
+
+        $receiverName = trim($user->firstName . ' ' . $user->lastName);
+        $to = $user->userEmail;
+        $entityCode   = $user->entity_code;
+
+        if (empty($to)) {
+            echo "Email ID not found.";
+            return;
+        }
+
+        // Temporary Password
+        $tempPassword = $temp_password;
+
+        // Login Link
+        $loginLink = base_url('index.php/login');
+
+        // Mobile App Download Link
+        $appDownloadLink = "https://play.google.com/store/apps/details?id=com.verifyfa";
+
+        // Subject
+        $subject = "You have been added as VerifyFA User";
+
+        // Date Time
+        $dateTime = date('d-m-Y h:i A');
+
+        // Logo Path
+        $logo = base_url('assets/img/logo.png');
+
+        // Email Template
+        $email_updated_content = '
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:20px;font-family:Arial,sans-serif;">
+            <tr>
+                <td align="center">
+
+                    <table width="700" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #dddddd;padding:30px;">
+
+                        <!-- Logo -->
+                        <tr>
+                            <td align="center" style="padding-bottom:20px;">
+                                <img src="' . $logo . '" height="70">
+                            </td>
+                        </tr>
+
+                        <!-- Auto Generated -->
+                        <tr>
+                            <td style="font-size:12px;color:#d9534f;text-align:center;padding-bottom:20px;">
+                                ***** This is an auto generated NO REPLY communication and replies to this email id are not attended to. *****
+                            </td>
+                        </tr>
+
+                        <!-- Date -->
+                        <tr>
+                            <td style="font-size:13px;color:#666;padding-bottom:15px;">
+                                ' . $dateTime . '
+                            </td>
+                        </tr>
+
+                        <!-- Greeting -->
+                        <tr>
+                            <td style="font-size:15px;color:#333;padding-bottom:15px;">
+                                Dear <b>' . $receiverName . '</b>,
+                            </td>
+                        </tr>
+
+                        <!-- Main Body -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:26px;padding-bottom:18px;">
+                                You have been added as <b>VerifyFA</b> User.
+                            </td>
+                        </tr>
+
+                        <!-- Login Button -->
+                        <tr>
+                            <td align="center" style="padding:10px 0 20px 0;">
+                                <a href="' . $loginLink . '" 
+                                style="background:#007bff;color:#ffffff;text-decoration:none;padding:14px 24px;border-radius:5px;font-size:14px;display:inline-block;">
+                                Login to VerifyFA
+                                </a>
+                            </td>
+                        </tr>
+
+                        <!-- Credentials -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:26px;padding-bottom:18px;">
+                                <b>Entity Code:</b> ' . $entityCode . '<br>
+                                <b>Username:</b> ' . $to . '<br>
+                                <b>Your Temporary Password for 1st time login is:</b> 
+                                <span style="color:#d9534f;"><b>' . $tempPassword . '</b></span><br>
+                                It is strongly suggested to setup your New Password upon your 1st login.
+                            </td>
+                        </tr>
+
+                        <!-- App Download -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:26px;padding-bottom:12px;">
+                                Kindly make sure that you download the Android based 
+                                <b>VerifyFA</b> Mobile App from here:
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td align="center" style="padding-bottom:20px;">
+                                <a href="' . $appDownloadLink . '" 
+                                style="background:#28a745;color:#ffffff;text-decoration:none;padding:14px 24px;border-radius:5px;font-size:14px;display:inline-block;">
+                                Download VerifyFA App
+                                </a>
+                            </td>
+                        </tr>
+
+                        <!-- Thanks -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;padding-bottom:18px;">
+                                Thanks for your support and understanding.
+                            </td>
+                        </tr>
+
+                        <!-- Footer -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;padding-bottom:20px;">
+                                Regards,<br>
+                                <b>VerifyFA</b>
+                            </td>
+                        </tr>
+
+                        <!-- Bottom Note -->
+                        <tr>
+                            <td style="border-top:1px solid #eeeeee;padding-top:15px;font-size:12px;color:#777;text-align:center;">
+                                ***** This is a system generated communication and does not require signature. *****
+                            </td>
+                        </tr>
+
+                    </table>
+
+                </td>
+            </tr>
+        </table>';
+        $to = $this->input->post('userEmail');
+
+        /*
+        // Send Email
+        $result =  $this->_sendEmailDynamic($to, $subject, $email_content);
+        echo "<pre>result :";
+        print_r($result);
+        echo "</pre>";
+        exit;
+        
+
+    
 		$to = $this->input->post('userEmail');
-		
-		
+		*/
+		/*
 		$activation_link = '<a href="'.base_url().'index.php/login">Activate Your Account</a>';
 		date_default_timezone_set("Asia/Calcutta"); 
 		// $activation_link = '<a href="'.base_url().'index.php/generate-active-register-user/'.$id.'">Activate Your Account</a>';
@@ -346,8 +540,7 @@ class Admin_controller extends CI_Controller {
 		$TEMPORARYPASSWORD = $temp_password;
 		$COMPANYNAME = $user_details->organisation_name;
 
-		$email_updated_content = 
-        '<body style="font-family: Helvetica, Arial, sans-serif; margin: 0px; padding: 0px; background-color: #ffffff;">
+		$email_updated_content = '<body style="font-family: Helvetica, Arial, sans-serif; margin: 0px; padding: 0px; background-color: #ffffff;">
             <table role="presentation"
                 style="width: 100%;border-collapse: collapse;border: 0px;border-spacing: 0px;font-family: Arial, Helvetica, sans-serif;background-color: rgb(250, 250, 250);">
                 <tbody>
@@ -413,9 +606,24 @@ class Admin_controller extends CI_Controller {
                 </tbody>
             </table>
             </body>';
-
+            */
             
+            /*
+            echo "<pre>subject :";
+            print_r($subject);
+            echo "</pre>";
+            // exit;
 
+            echo "<pre>email_updated_content :";
+            print_r($email_updated_content);
+            echo "</pre>";
+            // exit;
+
+            echo "<pre>to :";
+            print_r($to);
+            echo "</pre>";
+            // exit;
+            */
          
 
             $CI = &get_instance();
@@ -441,8 +649,9 @@ class Admin_controller extends CI_Controller {
             $CI->mailer->to($to);
             $CI->mailer->subject($subject);
             $CI->mailer->message($email_updated_content);
+            $email_Result = $CI->mailer->send();
+           
 
-              		
             $mailsend = 0;
             if(server_check() == 'live'){
                 if($CI->mailer->send()){
@@ -452,218 +661,14 @@ class Admin_controller extends CI_Controller {
 
             
 
-        $this->session->set_flashdata('success', "User Created Successfully");
-        redirect("index.php/manage-user-admin/");
-    }
 
-
-
-//latest working code with mail
- public function save_admin_user(){
-       $register_user_id = $this->admin_registered_user_id;
-        $entity_code = $this->admin_registered_entity_code;
-        $user_id = $this->user_id;
-
-        $digits = 5;
-        // $temp_password = rand(pow(10, $digits-1), pow(10, $digits)-1);
-        // exit();
-        $temp_password = rand(pow(10, $digits-1), pow(10, $digits)-1);
-        // $temp_password = '12345';
-
-        $data=array(
-            "created_by"=>$user_id,
-            "registered_user_id"=>$register_user_id,
-            "entity_code"=>$entity_code,
-            "firstName" => $this->input->post('firstName'),
-            "lastName"=> $this->input->post('lastName'),
-            "userEmail"=>$this->input->post('userEmail'),
-            // "password"=>md5('12345'),
-            "password"=>md5($temp_password),
-            "password_view"=>$temp_password,
-            "phone_no"=>$this->input->post('phone_no'),
-            "department_id"=>$this->input->post('department_id'),
-            "designation"=>$this->input->post('designation'),
-            "company_id"=>$this->input->post('company_id'),
-            "location_id"=>$this->input->post('location_id'),
-            "created_on"=>date("Y-m-d H:i:s")
-        );
-        $this->Admin_model->save_admin_user($data);
-
-
-
-
-       $user_details = $this->Super_admin_model->get_registerd_user($register_user_id);
-
-$to = $this->input->post('userEmail');
-
-date_default_timezone_set("Asia/Calcutta");
-
-$TRANSACTIONRECORDDATETIME = date('d-m-Y h:i:s A');
-
-$APPLICATIONNAME = 'VerifyFA';
-
-$RECEIVERNAME = $this->input->post('firstName').' '.$this->input->post('lastName');
-
-$subject = 'You have been added as VerifyFA User';
-
-$TEMPORARYPASSWORD = $temp_password;
-
-$ENTITYCODE = $entity_code;
-
-$COMPANYNAME = $user_details->organisation_name;
-
-$LOGINLINK = base_url().'index.php/login';
-
-$APPDOWNLOADLINK = 'https://play.google.com/store/apps/details?id=com.verifyfa';
-
-$LOGO = 'https://verifyfa.developmentdemo.co.in/assets/img/logo.png';
-
-
-$email_updated_content = '
-
-<body style="font-family:Arial;background:#f4f4f4;padding:20px;">
-
-<table width="100%" cellpadding="0" cellspacing="0">
-<tr>
-<td align="center">
-
-<table width="700" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #ddd;padding:30px;">
-
-<tr>
-<td align="center" style="padding-bottom:20px;">
-<img src="'.$LOGO.'" height="70">
-</td>
-</tr>
-
-<tr>
-<td style="font-size:12px;color:#d9534f;text-align:center;padding-bottom:20px;">
-***** This is an auto generated NO REPLY communication and replies to this email id are not attended to. *****
-</td>
-</tr>
-
-<tr>
-<td style="font-size:13px;color:#666;padding-bottom:15px;">
-'.$TRANSACTIONRECORDDATETIME.'
-</td>
-</tr>
-
-<tr>
-<td style="font-size:15px;color:#333;padding-bottom:15px;">
-Dear <b>'.$RECEIVERNAME.'</b>,
-</td>
-</tr>
-
-<tr>
-<td style="font-size:14px;color:#333;line-height:26px;padding-bottom:18px;">
-You have been added as <b>'.$APPLICATIONNAME.'</b> User.
-</td>
-</tr>
-
-<tr>
-<td align="center" style="padding:10px 0 20px 0;">
-<a href="'.$LOGINLINK.'" style="background:#007bff;color:#fff;text-decoration:none;padding:14px 24px;border-radius:5px;">
-Login to VerifyFA
-</a>
-</td>
-</tr>
-
-<tr>
-<td style="font-size:14px;color:#333;line-height:26px;padding-bottom:18px;">
-<b>Entity Code:</b> '.$ENTITYCODE.'<br>
-<b>Username:</b> '.$to.'<br>
-<b>Your Temporary Password:</b> <span style="color:#d9534f;"><b>'.$TEMPORARYPASSWORD.'</b></span><br>
-It is strongly suggested to setup your New Password upon your 1st login.
-</td>
-</tr>
-
-<tr>
-<td style="font-size:14px;color:#333;padding-bottom:12px;">
-Download VerifyFA App:
-</td>
-</tr>
-
-<tr>
-<td align="center" style="padding-bottom:20px;">
-<a href="'.$APPDOWNLOADLINK.'" style="background:#28a745;color:#fff;text-decoration:none;padding:14px 24px;border-radius:5px;">
-Download App
-</a>
-</td>
-</tr>
-
-<tr>
-<td style="font-size:14px;color:#333;padding-bottom:18px;">
-Thanks for your support and understanding.
-</td>
-</tr>
-
-<tr>
-<td style="font-size:14px;color:#333;padding-bottom:20px;">
-Regards,<br>
-<b>'.$COMPANYNAME.'</b>
-</td>
-</tr>
-
-<tr>
-<td style="border-top:1px solid #eee;padding-top:15px;font-size:12px;color:#777;text-align:center;">
-***** This is a system generated communication and does not require signature. *****
-</td>
-</tr>
-
-</table>
-
-</td>
-</tr>
-</table>
-
-</body>';
-
-            
-
-         
-
-            $CI = &get_instance();
-
-            $config = [
-                'protocol'    => 'smtp',
-                'smtp_host'   => 'ssl://smtp.gmail.com',  // or 'tls://smtp.gmail.com'
-                'smtp_port'   => 465,                      // use 465 for SSL or 587 for TLS
-                'smtp_user'   => 'solutions@ethicalminds.in',
-                'smtp_pass'   => 'gtroozhuovdrgnob',      // must be Gmail App Password
-                'mailtype'    => 'html',
-                'charset'     => 'utf-8',
-                'wordwrap'    => TRUE,
-                'newline'     => "\r\n",
-                'crlf'        => "\r\n",
-            ];
-            $from_email = 'solutions@ethicalminds.in';
-            // ✅ Load the email library with an alias to avoid conflicts
-            $CI->load->library('email', $config, 'mailer');
-
-            // ✅ Always refer to it via the alias
-            $CI->mailer->from($from_email);
-            $CI->mailer->to($to);
-            $CI->mailer->subject($subject);
-            $CI->mailer->message($email_updated_content);
-
-              		
-            $mailsend = 0;
-            if(server_check() == 'live'){
-                if($CI->mailer->send()){
-                    $mailsend = 1;
-                }
-            }
-
+          
+            // exit("Stop");
             
 
         $this->session->set_flashdata('success', "User Created Successfully");
         redirect("index.php/manage-user-admin/");
     }
-
-
-
-
-
-
 
     public function check_admin_userEmail(){
         $register_user_id = $this->admin_registered_user_id;

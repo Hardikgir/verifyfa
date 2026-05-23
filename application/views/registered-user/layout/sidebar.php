@@ -53,6 +53,11 @@
   padding: 5px !important;
 }
 </style>
+<?php 
+	$registered_user_id = $this->session->userdata("registered_user_id");
+	$rguserrow=registered_user_row($registered_user_id);
+	// echo date("Y-m-d g:i:a");
+	?>
 <div class="sidebar" data-color="purple" data-background-color="white" data-image="<?php echo base_url();?>assets/img/sidebar-1.jpg">
 			<div class="logo">
 				<a href="#" class="simple-text logo-normal">
@@ -66,6 +71,7 @@
 							<p>Dashboard</p>
 						</a>
 					</li>
+					<?php if($rguserrow->is_active == '4' ){ ?>
 					 <li class="nav-item <?php echo $page_title=='My Subscription'?'active':'';?>">
 						<a class="nav-link" href="<?php echo base_url();?>index.php/registered-user-subscription"> <i class="fas fa-chart-pie"></i>
 							<p>My Subscription</p>
@@ -89,12 +95,16 @@
 							<p>Transfer My Account</p>
 						</a>
 					</li>
+					<?php } ?>
 
+					<?php 
+							if($rguserrow->is_active != '6' ){ ?>
 					<li class="nav-item <?php echo $page_title=='Change Password'?'active':'';?>">
 						<a class="nav-link" href="<?php echo base_url();?>index.php/registered-user-change-password"> <i class="far fa-edit"></i>
 							<p>Change Password</p>
 						</a>
 					</li>
+					<?php } ?>
 
 					
 					<!-- <li class="nav-item <?php echo $page_title=='Exceptions'?'active':'';?>">
@@ -115,11 +125,7 @@
 			<nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
 				<div class="container-fluid mb-2">
 					<div class="navbar-wrapper"> <a class="navbar-brand text-white" href="#pablo">	Hello <?php echo get_textday();?> <span style="font-size: 1.125rem;font-weight: bold;"><?php echo $this->session->userdata("registered_user_first_name")." ".$this->session->userdata("registered_user_last_name"); ?> </span>
-				    <?php 
-					$registered_user_id = $this->session->userdata("registered_user_id");
-					$rguserrow=registered_user_row($registered_user_id);
-					// echo date("Y-m-d g:i:a");
-					?>
+				    
 				
 				<br>
 				<span style="font-size: 1rem;"> This subscription is registered in the name of <?php echo $rguserrow->organisation_name;?> (<?php echo $rguserrow->entity_code;?>).</sapn>

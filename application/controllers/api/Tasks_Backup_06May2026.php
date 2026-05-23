@@ -2062,11 +2062,6 @@ public function get_project_additionaldata(){
                 
                 $getProjects = $this->tasks->get_data('company_projects', $condition);
                 
-                // echo "<pre>Last query :";
-                // print_r($this->db->last_query());
-                // echo "</pre>";
-                // exit;
-
                 if (count($getProjects) > 0) {
                     $all_report_data = array();
                     $project_data = array();
@@ -2114,11 +2109,11 @@ public function get_project_additionaldata(){
             }
             
             // 6. Send email
-            $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id);
+            $email_result = $this->_sendEmailWithAttachment($filename, $user_email);
             
             // Fallback to direct method if cURL fails
             if (!$email_result['success']) {
-                $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id);
+                $email_result = $this->_sendEmailDirect($filename, $user_email);
             }
             
             // 7. Return success response
@@ -2643,103 +2638,9 @@ public function get_project_additionaldata(){
      * @param string $user_email
      * @return array
      */
-    private function _sendEmailDirect($filename, $user_email,$project_id,$user_id) {
+    private function _sendEmailDirect($filename, $user_email) {
         // $user_email = 'hardik.meghnathi12@gmail.com'; // For testing purposes
         try {
-
-            $this->db->select("*");   
-            $this->db->from("users");   
-            $this->db->where("id",$user_id);
-            $query= $this->db->get();   
-            $user = $query->row();
-
-            // echo "<pre>Last query :";
-            // print_r($this->db->last_query());
-            // echo "</pre>";
-            // exit;
-
-             if (!$user) {
-                echo "User not found.";
-                return;
-            }
-
-             /*
-        -----------------------------------------
-        Actual DB Fields
-        -----------------------------------------
-        first_name
-        last_name
-        email_id
-        entity_code
-        organisation_name
-        -----------------------------------------
-        */
-
-        // echo "<pre>user :";
-        // print_r($user);
-        // echo "</pre>";
-        // exit;
-
-        $receiverName = trim($user->firstName . ' ' . $user->lastName);
-        $to = $user->userEmail;
-        $entityCode   = $user->entity_code;
-
-        $this->db->select("id,company_name");   
-        $this->db->from("company");   
-        $this->db->where("id",$user->company_id);
-        $query= $this->db->get();   
-        $organization_details = $query->row();
-
-     
-       
-        $companyName  = $organization_details->company_name;
-
-       
-        if (empty($to)) {
-            echo "Email ID not found.";
-            return;
-        }
-
-        /*
-        -----------------------------------------
-        Demo Dynamic Values
-        Replace from DB later
-        -----------------------------------------
-        */
-
-        $this->db->select("*");   
-        $this->db->from("company_projects");   
-        $this->db->where("id",$project_id);
-        $query= $this->db->get();   
-        $project_details = $query->row();
-
-        $this->db->select("*");   
-        $this->db->from("company_locations");   
-        $this->db->where("id",$project_details->project_location);
-        $query= $this->db->get();   
-        $project_location_details = $query->row();
-
-        $locationName = $project_location_details->location_name;
-        $projectName  = $project_details->project_name;
-        $projectId    = $project_details->project_id;
-        $reportType   = "Report";
-
-        // Subject
-        $subject = "Report Available for Download (Request generated VerifyFA Mobile App)";
-
-        // Date Time
-        $dateTime = date('d-m-Y h:i A');
-
-        // Logo Path
-        $logo = base_url('assets/img/logo.png');
-
-        // App Download Link
-        $appDownloadLink = "https://play.google.com/store/apps/details?id=com.verifyfa";
-
-        // Attachment File Path
-        // $attachmentPath = FCPATH . 'uploads/reports/sample-report.pdf';
-
-
             // Check if file exists
             $filepath = FCPATH . 'attachment/' . $filename;
             if (!file_exists($filepath)) {
@@ -2750,7 +2651,6 @@ public function get_project_additionaldata(){
             $CI = setEmailProtocol();
             $from_email = 'solutions@ethicalminds.in';
             
-            /*
             // Simple email content
             $email_content = '
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -2780,116 +2680,10 @@ public function get_project_additionaldata(){
                 <div style="text-align: center; margin-top: 20px; color: #666; font-size: 12px;">
                     <p>***** This is a system generated communication and does not require signature. *****</p>
                 </div>
-            </div>'; */
-
-
-            /*
-        -----------------------------------------
-        Email HTML Template
-        -----------------------------------------
-        */
-
-        $email_content = '
-        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:20px;font-family:Arial,sans-serif;">
-            <tr>
-                <td align="center">
-
-                    <table width="700" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #dddddd;padding:30px;">
-
-                        <!-- Logo -->
-                        <tr>
-                            <td align="center" style="padding-bottom:20px;">
-                                <img src="' . $logo . '" height="70">
-                            </td>
-                        </tr>
-
-                        <!-- Auto Generated -->
-                        <tr>
-                            <td style="font-size:12px;color:#d9534f;text-align:center;padding-bottom:20px;">
-                                ***** This is an auto generated NO REPLY communication and replies to this email id are not attended to. *****
-                            </td>
-                        </tr>
-
-                        <!-- Date -->
-                        <tr>
-                            <td style="font-size:13px;color:#666;padding-bottom:15px;">
-                                ' . $dateTime . '
-                            </td>
-                        </tr>
-
-                        <!-- Greeting -->
-                        <tr>
-                            <td style="font-size:15px;color:#333;padding-bottom:15px;">
-                                Dear <b>' . $receiverName . '</b>,
-                            </td>
-                        </tr>
-
-                        <!-- Main Message -->
-                        <tr>
-                            <td style="font-size:14px;color:#333;line-height:26px;padding-bottom:18px;">
-                                As requested, please find attached the selected Report using 
-                                <b>VerifyFA</b> Mobile App.
-                            </td>
-                        </tr>
-
-                        <!-- Details -->
-                        <tr>
-                            <td style="font-size:14px;color:#333;line-height:28px;padding-bottom:20px;">
-                                <b>Entity Code:</b> ' . $entityCode . '<br>
-                                <b>Company Name:</b> ' . $companyName . '<br>
-                                <b>Location Name:</b> ' . $locationName . '<br>
-                                <b>Project Name (Project ID):</b> ' . $projectName . ' (' . $projectId . ')<br>
-                                <b>Report Type:</b> ' . $reportType . '
-                            </td>
-                        </tr>
-
-                        <!-- App Link -->
-                        <tr>
-                            <td style="font-size:14px;color:#333;line-height:26px;padding-bottom:12px;">
-                                Kindly make sure that you have downloaded the Android based VerifyFA Mobile App from here: to execute the Project Assigned.
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td align="center" style="padding-bottom:20px;">
-                                <a href="' . $appDownloadLink . '" 
-                                style="background:#28a745;color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:5px;display:inline-block;">
-                                Download VerifyFA App
-                                </a>
-                            </td>
-                        </tr>
-
-                        <!-- Thanks -->
-                        <tr>
-                            <td style="font-size:14px;color:#333;padding-bottom:18px;">
-                                Thanks for your support and understanding.
-                            </td>
-                        </tr>
-
-                        <!-- Footer -->
-                        <tr>
-                            <td style="font-size:14px;color:#333;padding-bottom:20px;">
-                                Regards,<br>
-                                <b>VerifyFA</b>
-                            </td>
-                        </tr>
-
-                        <!-- Bottom -->
-                        <tr>
-                            <td style="border-top:1px solid #eeeeee;padding-top:15px;font-size:12px;color:#777;text-align:center;">
-                                ***** This is a system generated communication and does not require signature. *****
-                            </td>
-                        </tr>
-
-                    </table>
-
-                </td>
-            </tr>
-        </table>';
+            </div>';
             
             $subject = "Report Generated - " . date('Y-m-d H:i:s');
             
-            // $user_email = 'hardik.meghnathi12@gmail.com';
             // Configure email
             $CI->email->set_newline("\r\n");
             $CI->email->set_mailtype("html");
@@ -2898,8 +2692,6 @@ public function get_project_additionaldata(){
             $CI->email->subject($subject);
             $CI->email->message($email_content);
             $CI->email->attach($filepath);
-
-            // exit("Break Here");
             
             // Send email
             if ($CI->email->send()) {
@@ -5208,7 +5000,7 @@ public function generateExceptionReport() {
          */
         $email_result = $this->_sendEmailWithAttachment($filename, $user_email);
         if (!$email_result['success']) {
-            $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id);
+            $email_result = $this->_sendEmailDirect($filename, $user_email);
         }
 
         // Final Response
@@ -5487,7 +5279,7 @@ public function generateExceptionReport_original() {
          * EMAIL SENDING
          * ------------------------
          */
-        $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id);
+        $email_result = $this->_sendEmailDirect($filename, $user_email);
 
         echo json_encode([
             "success" => true,
@@ -5516,264 +5308,6 @@ public function generateExceptionReport_original() {
     }
 }
 
-
-
-
-public function generateExceptionReportDev11() {
-
-    
-    header('Content-Type: application/json');
-
-    try {
-        // 1. Collect POST parameters
-        $type               = $this->input->post('optradio'); 
-        $projectSelect      = $this->input->post('projectSelect');
-        $exceptioncategory  = $this->input->post('exception_category');
-        $projectstatus      = $this->input->post('projectstatus');
-        $verificationstatus = $this->input->post('verificationstatus');
-        $reportHeaders      = $this->input->post('reportHeaders');
-        $original_table_name= $this->input->post('original_table_name');
-        $company_id         = $this->input->post('company_id');
-        $location_id        = $this->input->post('location_id');
-        $user_id            = $this->input->post('user_id');
-
-        // 2. Validate user
-        if (empty($user_id)) {
-            echo json_encode(["success" => false, "status_code" => 400, "message" => "User ID is required"]);
-            return;
-        }
-        $this->db->where('id', $user_id);
-        $user = $this->db->get('users')->row();
-        if (!$user) {
-            echo json_encode(["success" => false, "status_code" => 404, "message" => "User not found"]);
-            return;
-        }
-        $user_email = !empty($user->userEmail) ? $user->userEmail : $user->email;
-
-        // Ensure tasks model is loaded
-        if (!isset($this->tasks)) {
-            $this->load->model('Tasks_model', 'tasks');
-        }
-
-        $report_data = [];
-        $project_data = [];
-
-        /**
-         * ------------------------
-         * FETCH REPORT DATA
-         * ------------------------
-         */
-        if ($type === 'Project Based') {
-            $condition = [
-                "id"              => $projectSelect,
-                "status"          => $projectstatus,
-                "company_id"      => $company_id,
-                "project_location"=> $location_id
-            ];
-            $getProject = $this->tasks->get_data('company_projects', $condition);
-
-          
-
-            // echo '<pre>getProject ';
-            // print_r($getProject);
-            // echo '</pre>';
-            // exit();
-
-            if (count($getProject) > 0) {
-                $old_pattern = ["/[^a-zA-Z0-9]/", "/_+/", "/_$/"];
-                $new_pattern = ["_", "_", ""];
-                $project_name = strtolower(preg_replace($old_pattern, $new_pattern, trim($getProject[0]->project_name)));
-
-              
-
-                // ✅ Fetch report dynamically
-                $report_data = $this->_getExceptionCategoryReport($project_name,$exceptioncategory,$verificationstatus,$reportHeaders) ?: []; // fallback to empty array
-
-                $project_data = $getProject[0];
-            } else {
-                echo json_encode(["success" => false, "status_code" => 404, "message" => "No project found"]);
-                return;
-            }
-        }
-        elseif ($type === 'consolidated') {
-            $lastProj = $this->db->query('SELECT * FROM company_projects 
-                WHERE status="' . $projectstatus . '" 
-                AND company_id=' . $company_id . ' 
-                AND entity_code="' . $this->admin_registered_entity_code . '" 
-                ORDER BY id DESC LIMIT 1')->result();
-
-            if ($lastProj) {
-                $condition = [
-                    "status"              => $projectstatus,
-                    "company_id"          => $company_id,
-                    "original_table_name" => $lastProj[0]->original_table_name,
-                    "entity_code"         => $this->admin_registered_entity_code
-                ];
-                $getProjects = $this->tasks->get_data('company_projects', $condition);
-
-                foreach ($getProjects as $project) {
-                    $old_pattern = ["/[^a-zA-Z0-9]/", "/_+/", "/_$/"];
-                    $new_pattern = ["_", "_", ""];
-                    $project_name = strtolower(preg_replace($old_pattern, $new_pattern, trim($project->project_name)));
-
-                    $project_report = $this->_getExceptionCategoryReport(
-                        $project_name,
-                        $exceptioncategory,
-                        $verificationstatus,
-                        $reportHeaders
-                    ) ?: [];
-
-                    if (is_array($project_report)) {
-                        $report_data = array_merge($report_data, $project_report);
-                    }
-                }
-            }
-        }
-        elseif ($type === 'additional') {
-            $report_data = $this->tasks->genrateadditionalassets($projectSelect) ?: [];
-            $project_data = [
-                "company"  => $this->tasks->com_row($company_id),
-                "location" => $this->tasks->loc_row($location_id)
-            ];
-        }
-
-        /**
-         * ------------------------
-         * CSV GENERATION
-         * ------------------------
-         */
-        $filename = 'exception_report_' . date('Y-m-d_His') . '.csv';
-        $filepath = FCPATH . 'attachment/' . $filename;
-        if (!is_dir(FCPATH . 'attachment/')) {
-            mkdir(FCPATH . 'attachment/', 0777, true);
-        }
-
-        $fp = fopen($filepath, 'w');
-
-        // Step 1: Headers
-        $headers = [
-            "Allocated Item Category",
-            "To be Verified (Amount in Lacs)", "To be Verified (Number of Qty)",
-            "Good Condition (Amount in Lacs)", "Good Condition (Number of Qty)",
-            "Damaged (Amount in Lacs)", "Damaged (Number of Qty)",
-            "Scrapped (Amount in Lacs)", "Scrapped (Number of Qty)",
-            "Missing (Amount in Lacs)", "Missing (Number of Qty)",
-            "Shifted (Amount in Lacs)", "Shifted (Number of Qty)",
-            "Not in Use (Amount in Lacs)", "Not in Use (Number of Qty)",
-            "Remaining to be Verified (Amount in Lacs)", "Remaining to be Verified (Number of Qty)"
-        ];
-        fputcsv($fp, $headers);
-
-        // Step 2: Safe loop (only if data exists)
-        if (isset($report_data['all']) && is_array($report_data['all']) && count($report_data['all']) > 0) {
-
-            $lookup = [];
-            foreach (['good', 'damaged', 'scrapped', 'missing', 'shifted', 'notinuse'] as $status) {
-                $lookup[$status] = isset($report_data[$status]) && is_array($report_data[$status]) 
-                    ? $report_data[$status] : [];
-            }
-
-            $column_totals = array_fill(0, count($headers), 0);
-
-            foreach ($report_data['all'] as $category) {
-                $row = [];
-                $row[] = $category->item_category;
-
-                $toBeVerifiedAmount = (float)($category->total_amount / 100000);
-                $toBeVerifiedQty    = (int)$category->total_qty;
-                $row[] = $toBeVerifiedAmount;
-                $row[] = $toBeVerifiedQty;
-
-                $getValues = function($status, $cat_name) use ($lookup) {
-                    foreach ($lookup[$status] as $item) {
-                        if ($item->item_category === $cat_name) {
-                            return [
-                                'amount' => (float)($item->total_amount / 100000),
-                                'qty'    => (int)($item->qty ?? 0)
-                            ];
-                        }
-                    }
-                    return ['amount' => 0, 'qty' => 0];
-                };
-
-                $good     = $getValues('good', $category->item_category);
-                $damaged  = $getValues('damaged', $category->item_category);
-                $scrapped = $getValues('scrapped', $category->item_category);
-                $missing  = $getValues('missing', $category->item_category);
-                $shifted  = $getValues('shifted', $category->item_category);
-                $notinuse = $getValues('notinuse', $category->item_category);
-
-                $row = array_merge($row, [
-                    $good['amount'], $good['qty'],
-                    $damaged['amount'], $damaged['qty'],
-                    $scrapped['amount'], $scrapped['qty'],
-                    $missing['amount'], $missing['qty'],
-                    $shifted['amount'], $shifted['qty'],
-                    $notinuse['amount'], $notinuse['qty']
-                ]);
-
-                $remainingAmount = $toBeVerifiedAmount - ($good['amount'] + $damaged['amount'] + $scrapped['amount'] + $missing['amount'] + $shifted['amount'] + $notinuse['amount']);
-                $remainingQty    = $toBeVerifiedQty - ($good['qty'] + $damaged['qty'] + $scrapped['qty'] + $missing['qty'] + $shifted['qty'] + $notinuse['qty']);
-
-                $row[] = $remainingAmount > 0 ? round($remainingAmount, 2) : 0;
-                $row[] = $remainingQty > 0 ? $remainingQty : 0;
-
-                fputcsv($fp, $row);
-
-                for ($i = 1; $i < count($row); $i++) {
-                    $column_totals[$i] += $row[$i];
-                }
-            }
-
-            // Totals
-            $total_row = ["Grand Total"];
-            for ($i = 1; $i < count($headers); $i++) {
-                $total_row[] = round($column_totals[$i], 2);
-            }
-            fputcsv($fp, $total_row);
-
-        } else {
-            fputcsv($fp, ["No data found 22"]); /// This Data is Fetching While Report Generated
-        }
-
-        fclose($fp);
-
-        /**
-         * ------------------------
-         * EMAIL SENDING
-         * ------------------------
-         */
-        $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id);
-
-        echo json_encode([
-            "success" => true,
-            "status_code" => 200,
-            "message" => $email_result['success']
-                ? "Report generated and emailed successfully"
-                : "Report generated but email sending failed",
-            "data" => [
-                "filename"     => $filename,
-                "email_sent"   => $email_result['success'],
-                "email_message"=> $email_result['message'],
-                "user_email"   => $user_email,
-                "record_count" => isset($report_data['all']) ? count($report_data['all']) : 0,
-                "generated_at" => date('Y-m-d H:i:s')
-            ]
-        ]);
-
-    } catch (Exception $e) {
-        log_message('error', 'GenerateExceptionReport Error: ' . $e->getMessage());
-        echo json_encode([
-            "success" => false,
-            "status_code" => 500,
-            "message" => "Internal server error occurred",
-            "error" => $e->getMessage()
-        ]);
-    }
-}
-
-
-//already
 
 public function generateExceptionReportDev() {
 
@@ -5827,19 +5361,8 @@ public function generateExceptionReportDev() {
                 "project_location"=> $location_id
             ];
             $getProject = $this->tasks->get_data('company_projects', $condition);
-            // echo "<pre>Last query :";
-            // print_r($this->db->last_query());
-            // echo "</pre>";
-            // exit;
-            // echo "<pre>Data :";
-            // print_r($getProject);
-            // echo "</pre>";
-            // exit;
-            // $query = $this->db->get();
 
-            // echo $this->db->last_query();
-            // exit;
-                    
+          
 
             // echo '<pre>getProject ';
             // print_r($getProject);
@@ -6025,7 +5548,7 @@ public function generateExceptionReportDev() {
          * EMAIL SENDING
          * ------------------------
          */
-        $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id);
+        $email_result = $this->_sendEmailDirect($filename, $user_email);
 
         echo json_encode([
             "success" => true,
@@ -6053,260 +5576,6 @@ public function generateExceptionReportDev() {
         ]);
     }
 }
-
-
-
-
-
-// user data:
-public function generateUserDataReport()
-{
-    header('Content-Type: application/json');
-
-    try {
-
-        // Get User ID from POST
-        $user_id = $this->input->post('user_id');
-
-        // Validate User ID
-        if (empty($user_id)) {
-            echo json_encode([
-                "success" => false,
-                "status_code" => 400,
-                "message" => "User ID is required"
-            ]);
-            return;
-        }
-
-        /**
-         * ------------------------
-         * FETCH USER DATA
-         * ------------------------
-         */
-
-        $this->db->where('id', $user_id);
-        $user = $this->db->get('users')->row_array();
-
-        // Check user exists
-        if (!$user) {
-            echo json_encode([
-                "success" => false,
-                "status_code" => 404,
-                "message" => "User not found"
-            ]);
-            return;
-        }
-
-        /**
-         * ------------------------
-         * CREATE ATTACHMENT FOLDER
-         * ------------------------
-         */
-
-        if (!is_dir(FCPATH . 'attachment/')) {
-            mkdir(FCPATH . 'attachment/', 0777, true);
-        }
-
-        /**
-         * ------------------------
-         * CSV FILE GENERATION
-         * ------------------------
-         */
-
-        $filename = 'user_report_' . date('Y-m-d_His') . '.csv';
-        $filepath = FCPATH . 'attachment/' . $filename;
-
-        $fp = fopen($filepath, 'w');
-
-        // CSV Headers
-        $headers = [
-            'ID',
-            'First Name',
-            'Last Name',
-            'Email',
-            'Mobile',
-            'Entity Code',
-            'Company ID',
-            'Location ID',
-            'Status',
-            'Created At'
-        ];
-
-        fputcsv($fp, $headers);
-
-        // CSV Data Row
-        $row = [
-            $user['id'] ?? '',
-            $user['first_name'] ?? '',
-            $user['last_name'] ?? '',
-            $user['email'] ?? '',
-            $user['mobile'] ?? '',
-            $user['entity_code'] ?? '',
-            $user['company_id'] ?? '',
-            $user['location_id'] ?? '',
-            $user['status'] ?? '',
-            $user['created_at'] ?? ''
-        ];
-
-        fputcsv($fp, $row);
-
-        fclose($fp);
-
-        /**
-         * ------------------------
-         * RESPONSE
-         * ------------------------
-         */
-
-        echo json_encode([
-            "success" => true,
-            "status_code" => 200,
-            "message" => "User report generated successfully",
-            "data" => [
-                "filename" => $filename,
-                "filepath" => base_url('attachment/' . $filename),
-                "generated_at" => date('Y-m-d H:i:s')
-            ]
-        ]);
-
-    } catch (Exception $e) {
-
-        log_message('error', 'GenerateUserDataReport Error: ' . $e->getMessage());
-
-        echo json_encode([
-            "success" => false,
-            "status_code" => 500,
-            "message" => "Internal server error occurred",
-            "error" => $e->getMessage()
-        ]);
-    }
-}
-
-public function generateUserDataReport11()
-{
-    header('Content-Type: application/json');
-
-    try {
-
-        /**
-         * ------------------------
-         * GET POST DATA
-         * ------------------------
-         */
-
-        $user_id = $this->input->post('user_id');
-
-        if (empty($user_id)) {
-            echo json_encode([
-                "success" => false,
-                "status_code" => 400,
-                "message" => "User ID is required"
-            ]);
-            return;
-        }
-
-        /**
-         * ------------------------
-         * FETCH USER DATA
-         * ------------------------
-         */
-
-        $this->db->where('id', $user_id);
-        $user = $this->db->get('users')->row_array();
-
-        if (!$user) {
-            echo json_encode([
-                "success" => false,
-                "status_code" => 404,
-                "message" => "User not found"
-            ]);
-            return;
-        }
-
-        // User email
-        $user_email = !empty($user['userEmail'])
-            ? $user['userEmail']
-            : $user['email'];
-
-        /**
-         * ------------------------
-         * CREATE ATTACHMENT FOLDER
-         * ------------------------
-         */
-
-        $folder_path = FCPATH . 'attachment/';
-
-        if (!is_dir($folder_path)) {
-            mkdir($folder_path, 0777, true);
-        }
-
-        /**
-         * ------------------------
-         * GENERATE CSV FILE
-         * ------------------------
-         */
-
-        $filename = 'user_report_' . date('Y-m-d_His') . '.csv';
-
-        $filepath = $folder_path . $filename;
-
-        $fp = fopen($filepath, 'w');
-
-        // Dynamic headers
-        $headers = array_keys($user);
-
-        // Write headers
-        fputcsv($fp, $headers);
-
-        // Write values
-        fputcsv($fp, $user);
-
-        fclose($fp);
-
-        /**
-         * ------------------------
-         * SEND EMAIL
-         * ------------------------
-         */
-        $projectSelect = 1;
-        $user_id = 1;
-        $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id);
-
-        /**
-         * ------------------------
-         * FINAL RESPONSE
-         * ------------------------
-         */
-
-        echo json_encode([
-            "success" => true,
-            "status_code" => 200,
-            "message" => $email_result['success']
-                ? "User report generated and emailed successfully"
-                : "User report generated but email failed",
-            "data" => [
-                "filename"      => $filename,
-                "user_email"    => $user_email,
-                "email_sent"    => $email_result['success'],
-                "email_message" => $email_result['message'],
-                "generated_at"  => date('Y-m-d H:i:s')
-            ]
-        ]);
-
-    } catch (Exception $e) {
-
-        log_message('error', 'GenerateUserDataReport Error: ' . $e->getMessage());
-
-        echo json_encode([
-            "success" => false,
-            "status_code" => 500,
-            "message" => "Internal server error occurred",
-            "error" => $e->getMessage()
-        ]);
-    }
-}
-
-
 
 
 
@@ -6747,7 +6016,7 @@ public function resolve_issue(){
             
             // Fallback to direct method if cURL fails
             if (!$email_result['success']) {
-                $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id);
+                $email_result = $this->_sendEmailDirect($filename, $user_email);
             }
             
             // 7. Return success response
