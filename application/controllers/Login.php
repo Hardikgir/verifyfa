@@ -234,7 +234,7 @@ class Login extends CI_Controller {
 
 	}
 
-public function activation_registered_user($user_id){
+	public function activation_registered_user($user_id){
 	
 		$userrow = $this->login->activate_register_user($user_id);
 		$date=date("Y-m-d");
@@ -301,6 +301,7 @@ public function activation_registered_user($user_id){
 		redirect(base_url()."index.php/super-admin-login",'refresh');
 		
 	}
+
 	public function logout_registereduser()
 	{
 		$this->session->sess_destroy();
@@ -436,75 +437,14 @@ public function generate_active_register_user($id)
 			redirect("index.php/forget-password-verifyfa-user");
 		}
 
-		redirect("index.php/login/VerifyForChangePassword");
-	}
-	public function VerifyForChangePassword(){
-		$this->data['title']="VerifyFa Registered User Login";		
-		$this->load->view('password-change',$this->data);
-	}
-	public function updatePasswordFromForget(){
-		$user_id=$_SESSION['temp_logged_in']['id'];
-        $data=array( 
-            "password"=>md5($this->input->post('password')),
-            "password_view"=>$this->input->post('password'),
-        );
-        $this->Admin_model->update_password($user_id,$data);
 
-		$updatedata=array(
-			'is_login'=>0,
-		);
-		$condition=array(
-			'id'=>$_SESSION['temp_logged_in']['id']
-		);
-		$update=$this->login->update_data('users ',$updatedata,$condition);	
-
-		$this->session->unset_userdata('temp_logged_in');
-		$this->session->sess_destroy();
-		$this->session->set_flashdata('success', "Password Update Successful.");
-		// redirect(base_url()."index.php/login",'refresh');
-		redirect('index.php/login');
-
-	}
-	
-	public function VerifyForForgetPasswordRegistered(){
-		// $this->data['title']="VerifyFa Registered User Login";		
-		// $this->load->view('password-change',$this->data);
-
-		$email=$this->input->post('email');
-		$entity=$this->input->post('entity');
 
 		$this->db->select('*');
-		$this->db->from('registred_users');
-		$this->db->where('email_id',$email);
-		$this->db->where('entity_code',$entity);
+		$this->db->from('users');
+		$this->db->where('id',$login[0]->id);
 		$query = $this->db->get();
-		$result= $query->row();
-
-		// echo "<pre>result :";
-		// print_r($result);
-		// echo "</pre>";
-		// exit;
-
-		$num = $query->num_rows();
-
-		if($num !='0'){
-			$sess_data = array(
-			'email' => $result->email_id,
-			'name' => $result->first_name.' '.$result->last_name,
-			'id' => $result->id
-			);
-			$this->session->set_userdata('temp_logged_in', $sess_data);
-		}else{
-			$this->session->set_flashdata('error_message', 'Invalid Email or Entity Code');
-			redirect("index.php/forget-password-register-user");
-		}
-
-
-
-		/*hhhh
-		// Get User Data
-        $user = $this->Registered_user_model->get_registerd_user($result->id);
-
+		$user= $query->row();
+		
         if (!$user) {
             echo "User not found.";
             return;
@@ -520,9 +460,9 @@ public function generate_active_register_user($id)
         entity_code
         -----------------------------------------
         */
-		/*hhhh
-        $receiverName = trim($user->first_name . ' ' . $user->last_name);
-        $to = $user->email_id;
+		
+        $receiverName = trim($user->firstName . ' ' . $user->lastName);
+        $to = $user->userEmail;
 
         if (empty($to)) {
             echo "Email ID not found.";
@@ -530,10 +470,18 @@ public function generate_active_register_user($id)
         }
 
         // Temporary Password
-        $tempPassword = "AUTH_" . rand(1000, 9999);
+		$digits = 5;
+        $tempPassword = rand(pow(10, $digits-1), pow(10, $digits)-1);
+
+		$data=array( 
+            "password"=>md5($tempPassword),
+            "password_view"=>$tempPassword,            
+        );
+     	$this->Admin_model->save_edit_admin_user($data,$user->id);
+
 
         // Reset Password Link
-        $resetLink = base_url('index.php/login/resetPassword/' . md5($to));
+        $resetLink = base_url('index.php/login');
 
         // Subject
         $subject = "VerifyFA - Reset Password";
@@ -636,7 +584,12 @@ public function generate_active_register_user($id)
         </table>';
 
         // Send Email using your existing working dynamic function
-        $result = sendEmailDynamic($to, $subject, $email_content);
+        $result = sendEmailDynamicContent($to, $subject, $email_content);
+
+		// echo "<pre>result :";
+		// print_r($result);
+		// echo "</pre>";
+		// exit;
 
         if ($result) {
             echo "Password reset email sent successfully to " . $to;
@@ -646,8 +599,236 @@ public function generate_active_register_user($id)
 
 
 		$this->session->set_flashdata('success', 'Reset Password Email');
-		redirect("index.php/forget-password-register-user");
-		*/
+		redirect("index.php/login");
+
+
+
+
+		redirect("index.php/login/VerifyForChangePassword");
+	}
+	public function VerifyForChangePassword(){
+		$this->data['title']="VerifyFa Registered User Login";		
+		$this->load->view('password-change',$this->data);
+	}
+	public function updatePasswordFromForget(){
+		$user_id=$_SESSION['temp_logged_in']['id'];
+        $data=array( 
+            "password"=>md5($this->input->post('password')),
+            "password_view"=>$this->input->post('password'),
+        );
+        $this->Admin_model->update_password($user_id,$data);
+
+		$updatedata=array(
+			'is_login'=>0,
+		);
+		$condition=array(
+			'id'=>$_SESSION['temp_logged_in']['id']
+		);
+		$update=$this->login->update_data('users ',$updatedata,$condition);	
+
+		$this->session->unset_userdata('temp_logged_in');
+		$this->session->sess_destroy();
+		$this->session->set_flashdata('success', "Password Update Successful.");
+		// redirect(base_url()."index.php/login",'refresh');
+		redirect('index.php/login');
+
+	}
+	
+	public function VerifyForForgetPasswordRegistered(){
+		// $this->data['title']="VerifyFa Registered User Login";		
+		// $this->load->view('password-change',$this->data);
+
+		$email=$this->input->post('email');
+		$entity=$this->input->post('entity');
+
+		$this->db->select('*');
+		$this->db->from('registred_users');
+		$this->db->where('email_id',$email);
+		$this->db->where('entity_code',$entity);
+		$query = $this->db->get();
+		$result= $query->row();
+
+		// echo "<pre>result :";
+		// print_r($result);
+		// echo "</pre>";
+		// exit;
+
+		$num = $query->num_rows();
+
+		if($num !='0'){
+			$sess_data = array(
+			'email' => $result->email_id,
+			'name' => $result->first_name.' '.$result->last_name,
+			'id' => $result->id
+			);
+			$this->session->set_userdata('temp_logged_in', $sess_data);
+		}else{
+			$this->session->set_flashdata('error_message', 'Invalid Email or Entity Code');
+			redirect("index.php/forget-password-register-user");
+		}
+
+
+
+		
+		// Get User Data
+        $user = $this->Registered_user_model->get_registerd_user($result->id);
+
+        if (!$user) {
+            echo "User not found.";
+            return;
+        }
+
+        /*
+        -----------------------------------------
+        Actual DB Fields
+        -----------------------------------------
+        first_name
+        last_name
+        email_id
+        entity_code
+        -----------------------------------------
+        */
+		
+        $receiverName = trim($user->first_name . ' ' . $user->last_name);
+        $to = $user->email_id;
+
+        if (empty($to)) {
+            echo "Email ID not found.";
+            return;
+        }
+
+        // Temporary Password
+		$digits = 5;
+        $tempPassword = rand(pow(10, $digits-1), pow(10, $digits)-1);
+
+		$data=array( 
+            "password"=>md5($tempPassword),
+            "password_view"=>$tempPassword,            
+        );
+     	$this->Registered_user_model->update_password($user->id,$data);
+
+
+        // Reset Password Link
+        $resetLink = base_url('index.php/registered-user-login/');
+
+        // Subject
+        $subject = "VerifyFA - Reset Password";
+
+        // Date Time
+        $dateTime = date('d-m-Y h:i A');
+
+        // Logo Path
+        $logo = base_url('assets/img/logo.png');
+
+        // Email Template
+        $email_content = '
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:20px;font-family:Arial,sans-serif;">
+            <tr>
+                <td align="center">
+
+                    <table width="650" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #dddddd;padding:30px;">
+
+                        <!-- Logo -->
+                        <tr>
+                            <td align="center" style="padding-bottom:20px;">
+                                <img src="' . $logo . '" height="70">
+                            </td>
+                        </tr>
+
+                        <!-- Auto Generated Message -->
+                        <tr>
+                            <td style="font-size:12px;color:#d9534f;text-align:center;padding-bottom:20px;">
+                                ***** This is an auto generated NO REPLY communication and replies to this email id are not attended to. *****
+                            </td>
+                        </tr>
+
+                        <!-- Date -->
+                        <tr>
+                            <td style="font-size:13px;color:#666;padding-bottom:15px;">
+                                ' . $dateTime . '
+                            </td>
+                        </tr>
+
+                        <!-- Greeting -->
+                        <tr>
+                            <td style="font-size:15px;color:#333;padding-bottom:15px;">
+                                Dear <b>' . $receiverName . '</b>,
+                            </td>
+                        </tr>
+
+                        <!-- Main Body -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:24px;padding-bottom:15px;">
+                                Upon your request to reset Password / unlocking the User Account,
+                                a Temporary Password has been generated:
+                                <b style="color:#d9534f;">' . $tempPassword . '</b>
+                            </td>
+                        </tr>
+
+                        <!-- Sub Body -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:24px;padding-bottom:15px;">
+                                You requested to enter New Password on <b>VerifyFA</b>.
+                                Please click on the link below to setup your New Password:
+                            </td>
+                        </tr>
+
+                        <!-- Button -->
+                        <tr>
+                            <td align="center" style="padding:20px 0;">
+                                <a href="' . $resetLink . '" 
+                                style="background:#007bff;color:#ffffff;text-decoration:none;padding:14px 24px;border-radius:5px;font-size:14px;display:inline-block;">
+                                Setup New Password
+                                </a>
+                            </td>
+                        </tr>
+
+                        <!-- Thanks -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;padding-bottom:15px;">
+                                Thanks for your support and understanding.
+                            </td>
+                        </tr>
+
+                        <!-- Footer -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;padding-bottom:20px;">
+                                Regards,<br>
+                                <b>VerifyFA</b>
+                            </td>
+                        </tr>
+
+                        <!-- Bottom Note -->
+                        <tr>
+                            <td style="border-top:1px solid #eeeeee;padding-top:15px;font-size:12px;color:#777;text-align:center;">
+                                ***** This is a system generated communication and does not require signature. *****
+                            </td>
+                        </tr>
+
+                    </table>
+
+                </td>
+            </tr>
+        </table>';
+
+        // Send Email using your existing working dynamic function
+        $result = sendEmailDynamicContent($to, $subject, $email_content);
+
+		// echo "<pre>result :";
+		// print_r($result);
+		// echo "</pre>";
+		// exit;
+
+        if ($result) {
+            echo "Password reset email sent successfully to " . $to;
+        } else {
+            echo "Email sending failed.";
+        }
+
+
+		$this->session->set_flashdata('success', 'Reset Password Email');
+		redirect("index.php/registered-user-login");
+		
 
 		redirect("index.php/login/VerifyForChangePasswordRegistered");
 	}

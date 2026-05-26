@@ -2113,13 +2113,9 @@ public function get_project_additionaldata(){
                 return;
             }
             
+            $report_Type = 1;
             // 6. Send email
-            $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id);
-            
-            // Fallback to direct method if cURL fails
-            if (!$email_result['success']) {
-                $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id);
-            }
+            $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id,$report_Type);
             
             // 7. Return success response
             $response = array(
@@ -2643,8 +2639,11 @@ public function get_project_additionaldata(){
      * @param string $user_email
      * @return array
      */
-    private function _sendEmailDirect($filename, $user_email,$project_id,$user_id) {
+    private function _sendEmailDirect($filename, $user_email,$project_id,$user_id,$report_Type){
         // $user_email = 'hardik.meghnathi12@gmail.com'; // For testing purposes
+
+      
+
         try {
 
             $this->db->select("*");   
@@ -2722,7 +2721,42 @@ public function get_project_additionaldata(){
         $locationName = $project_location_details->location_name;
         $projectName  = $project_details->project_name;
         $projectId    = $project_details->project_id;
-        $reportType   = "Report";
+
+
+        if($report_Type == '1'){
+            $reportType   = "Condition of Item";
+        }
+        if($report_Type == '2'){
+            $reportType   = "Changes/ Updations of Items";
+        }
+        if($report_Type == '3'){
+            $reportType   = "Qty Validation Status";
+        }
+        if($report_Type == '4'){
+            $reportType   = "Updated with Verification Remarks";
+        }
+        if($report_Type == '5'){
+            $reportType   = "Updated with Item Notes";
+        }
+        if($report_Type == '6'){
+            $reportType   = "Calculate Risk Exposure";
+        }
+        if($report_Type == '7'){
+            $reportType   = "Report";
+        }
+        if($report_Type == '8'){
+            $reportType   = "Mode of Verification";
+        }
+        if($report_Type == '9'){
+            $reportType   = "Duplicate Item Codes verified";
+        }
+        if($report_Type == '10'){
+            $reportType   = "Duplicate Item Codes Identified";
+        }
+    
+
+
+        
 
         // Subject
         $subject = "Report Available for Download (Request generated VerifyFA Mobile App)";
@@ -2735,7 +2769,7 @@ public function get_project_additionaldata(){
 
         // App Download Link
         $appDownloadLink = "https://play.google.com/store/apps/details?id=com.verifyfa";
-
+        $loginLink = base_url() . "index.php/login";
         // Attachment File Path
         // $attachmentPath = FCPATH . 'uploads/reports/sample-report.pdf';
 
@@ -2749,39 +2783,6 @@ public function get_project_additionaldata(){
             // Set up email using the existing helper
             $CI = setEmailProtocol();
             $from_email = 'solutions@ethicalminds.in';
-            
-            /*
-            // Simple email content
-            $email_content = '
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <img src="' . base_url('assets/img/logo.png') . '" alt="Company Logo" style="width: 56px;">
-                </div>
-                <div style="background-color: #f9f9f9; padding: 20px; border-radius: 5px;">
-                    <p style="font-size: 14px; color: #666; text-align: center; margin-bottom: 20px;">
-                        ***** This is an auto generated NO REPLY communication *****
-                    </p>
-                    <p style="font-size: 18px; margin-bottom: 15px;">Dear User,</p>
-                    <p style="font-size: 16px; line-height: 1.6;">
-                        Please find attached Summary of the report that you requested.
-                        <br><br>
-                        <strong>Generated on:</strong> ' . date('Y-m-d H:i:s') . '
-                        <br><br>
-                        <a href="'.base_url().'">Click here</a> to get Detailed Report.                         
-                        <br><br>
-                        Thank you for using VerifyFA.
-                    </p>
-                    <p style="font-size: 16px; margin-top: 20px;">
-                        Thanks for your support and understanding.<br>
-                        Regards,<br>
-                        <strong>System Administrator</strong>
-                    </p>
-                </div>
-                <div style="text-align: center; margin-top: 20px; color: #666; font-size: 12px;">
-                    <p>***** This is a system generated communication and does not require signature. *****</p>
-                </div>
-            </div>'; */
-
 
             /*
         -----------------------------------------
@@ -2827,7 +2828,7 @@ public function get_project_additionaldata(){
                         <!-- Main Message -->
                         <tr>
                             <td style="font-size:14px;color:#333;line-height:26px;padding-bottom:18px;">
-                                As requested, please find attached the selected Report using 
+                                As requested, please find attached Summary of the report using 
                                 <b>VerifyFA</b> Mobile App.
                             </td>
                         </tr>
@@ -2840,6 +2841,15 @@ public function get_project_additionaldata(){
                                 <b>Location Name:</b> ' . $locationName . '<br>
                                 <b>Project Name (Project ID):</b> ' . $projectName . ' (' . $projectId . ')<br>
                                 <b>Report Type:</b> ' . $reportType . '
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td align="center" style="padding-bottom:20px;">
+                                <a href="' . $loginLink . '" 
+                                style="background:#0d6efd;color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:5px;display:inline-block;">
+                                Click here to Get Details Report
+                                </a>
                             </td>
                         </tr>
 
@@ -5043,736 +5053,6 @@ $this->email->attach($file_path);
         }
     }
 
-
-
-    /**
- * Generate Exception Report API Endpoint
- * 
- * Generates Exception CSV reports and sends them via email
- * 
- * @return JSON response
- */
-public function generateExceptionReport() {
-    header('Content-Type: application/json');
-
-    try {
-        // 1. Collect POST parameters
-        $type = $this->input->post('optradio'); // project | consolidated | additional
-        $projectSelect = $this->input->post('projectSelect');
-        $exceptioncategory = $this->input->post('exception_category'); // from API
-        $projectstatus = $this->input->post('projectstatus');
-        $verificationstatus = $this->input->post('verificationstatus');
-        $reportHeaders = $this->input->post('reportHeaders');
-        $original_table_name = $this->input->post('original_table_name');
-        $company_id = $this->input->post('company_id');
-        $location_id = $this->input->post('location_id');
-        $user_id = $this->input->post('user_id');
-
-        // 2. Validate required fields
-        if (empty($user_id)) {
-            echo json_encode(["success" => false, "status_code" => 400, "message" => "User ID is required"]);
-            return;
-        }
-
-        // 3. Get user details
-        $this->db->where('id', $user_id);
-        $user = $this->db->get('users')->row();
-        if (!$user) {
-            echo json_encode(["success" => false, "status_code" => 404, "message" => "User not found"]);
-            return;
-        }
-
-        $user_email = !empty($user->userEmail) ? $user->userEmail : $user->email;
-        if (empty($user_email)) {
-            echo json_encode(["success" => false, "status_code" => 400, "message" => "User email not found"]);
-            return;
-        }
-
-        // Ensure tasks model is loaded
-        if (!isset($this->tasks)) {
-            $this->load->model('Tasks_model', 'tasks');
-        }
-
-        $report_data = [];
-        $project_data = [];
-
-        /**
-         * ------------------------
-         * PROJECT BASED REPORT
-         * ------------------------
-         */
-        if ($type === 'project') {
-            $condition = [
-                "id" => $projectSelect,
-                "status" => $projectstatus,
-                "company_id" => $company_id,
-                "project_location" => $location_id
-            ];
-
-            $getProject = $this->tasks->get_data('company_projects', $condition);
-
-            if (count($getProject) > 0) {
-                $old_pattern = ["/[^a-zA-Z0-9]/", "/_+/", "/_$/"];
-                $new_pattern = ["_", "_", ""];
-                $project_name = strtolower(preg_replace($old_pattern, $new_pattern, trim($getProject[0]->project_name)));
-
-                // Get exception data based on category
-                $report_data = $this->_getExceptionCategoryReport($project_name, $exceptioncategory, $verificationstatus, $reportHeaders);
-
-                $project_data = $getProject[0];
-            } else {
-                echo json_encode(["success" => false, "status_code" => 404, "message" => "No project found"]);
-                return;
-            }
-        }
-
-        /**
-         * ------------------------
-         * CONSOLIDATED REPORT
-         * ------------------------
-         */
-        elseif ($type === 'consolidated') {
-            $lastProj = $this->db->query('SELECT * FROM company_projects 
-                WHERE status="' . $projectstatus . '" 
-                AND company_id=' . $company_id . ' 
-                AND entity_code="' . $this->admin_registered_entity_code . '" 
-                ORDER BY id DESC LIMIT 1')->result();
-
-            if (!$lastProj) {
-                echo json_encode(["success" => false, "status_code" => 404, "message" => "No consolidated projects found"]);
-                return;
-            }
-
-            $condition = [
-                "status" => $projectstatus,
-                "company_id" => $company_id,
-                "original_table_name" => $lastProj[0]->original_table_name,
-                "entity_code" => $this->admin_registered_entity_code
-            ];
-
-            $getProjects = $this->tasks->get_data('company_projects', $condition);
-
-            if (count($getProjects) > 0) {
-                foreach ($getProjects as $project) {
-                    $old_pattern = ["/[^a-zA-Z0-9]/", "/_+/", "/_$/"];
-                    $new_pattern = ["_", "_", ""];
-                    $project_name = strtolower(preg_replace($old_pattern, $new_pattern, trim($project->project_name)));
-
-                    $project_report = $this->_getExceptionCategoryReport($project_name, $exceptioncategory, $verificationstatus, $reportHeaders);
-                    if (is_array($project_report)) {
-                        $report_data = array_merge($report_data, $project_report);
-                    }
-                    $project_data[] = $project;
-                }
-            } else {
-                echo json_encode(["success" => false, "status_code" => 404, "message" => "No projects found"]);
-                return;
-            }
-        }
-
-        /**
-         * ------------------------
-         * ADDITIONAL REPORT
-         * ------------------------
-         */
-        elseif ($type === 'additional') {
-            $report_data = $this->tasks->genrateadditionalassets($projectSelect);
-            $project_data = [
-                "company" => $this->tasks->com_row($company_id),
-                "location" => $this->tasks->loc_row($location_id)
-            ];
-        }
-
-        /**
-         * ------------------------
-         * CSV GENERATION
-         * ------------------------
-         */
-        $filename = 'exception_report_' . date('Y-m-d_H-i-s') . '_' . uniqid() . '.csv';
-        $filepath = FCPATH . 'attachment/' . $filename;
-
-        if (!is_dir(FCPATH . 'attachment/')) {
-            mkdir(FCPATH . 'attachment/', 0777, true);
-        }
-
-        $csv_result = $this->_generateCSVFile($report_data, $project_data, $filepath, 'exception');
-        if (!$csv_result['success']) {
-            echo json_encode($csv_result);
-            return;
-        }
-
-        /**
-         * ------------------------
-         * EMAIL SENDING
-         * ------------------------
-         */
-        $email_result = $this->_sendEmailWithAttachment($filename, $user_email);
-        if (!$email_result['success']) {
-            $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id);
-        }
-
-        // Final Response
-        $response = [
-            "success" => true,
-            "status_code" => 200,
-            "message" => "Exception report generated and sent successfully",
-            "data" => [
-                "filename" => $filename,
-                "email_sent" => $email_result['success'],
-                "user_email" => $user_email,
-                "record_count" => is_array($report_data) ? count($report_data) : 0,
-                "generated_at" => date('Y-m-d H:i:s')
-            ]
-        ];
-
-        if (!$email_result['success']) {
-            $response['message'] = 'Report generated but email sending failed';
-            $response['email_error'] = $email_result['message'];
-        }
-
-        echo json_encode($response);
-
-    } catch (Exception $e) {
-        log_message('error', 'GenerateExceptionReport Error: ' . $e->getMessage());
-        echo json_encode([
-            "success" => false,
-            "status_code" => 500,
-            "message" => "Internal server error occurred",
-            "error" => $e->getMessage()
-        ]);
-    }
-}
-
-/**
- * Helper: Decide which exception report to generate
- */
-private function _getExceptionCategoryReport($project_name, $exceptioncategory, $verificationstatus, $reportHeaders) {
-
-    // echo '<pre>exceptioncategory ';
-    // print_r($exceptioncategory);
-    // echo '</pre>';
-    // exit();
-
-    switch ($exceptioncategory) {
-        case 1: return $this->tasks->getExceptionOneReport($project_name, $verificationstatus, $reportHeaders);
-        case 2: return $this->tasks->getExceptionTwoReport($project_name, $verificationstatus, $reportHeaders);
-        case 3: return $this->tasks->getExceptionThreeReport($project_name, $verificationstatus, $reportHeaders);
-        case 4: return $this->tasks->getExceptionFourReport($project_name, $verificationstatus, $reportHeaders);
-        case 5: return $this->tasks->getExceptionFiveReport($project_name, $verificationstatus, $reportHeaders);
-        case 6: return $this->tasks->getExceptionSixReport($project_name, $verificationstatus, $reportHeaders);
-        case 7: return $this->tasks->getExceptionSevenReport($project_name, $verificationstatus, $reportHeaders);
-        case 8: return $this->tasks->getExceptionEightReport($project_name, $verificationstatus, $reportHeaders);
-        case 10: return $this->tasks->getExceptionNineReport($project_name, $verificationstatus, $reportHeaders);
-        default: return [];
-    }
-}
-
-//check tushar
-
-
-
-
-
-
-public function generateExceptionReport_original() {
-    header('Content-Type: application/json');
-
-    try {
-        // 1. Collect POST parameters
-        $type               = $this->input->post('optradio'); 
-        $projectSelect      = $this->input->post('projectSelect');
-        $exceptioncategory  = $this->input->post('exception_category');
-        $projectstatus      = $this->input->post('projectstatus');
-        $verificationstatus = $this->input->post('verificationstatus');
-        $reportHeaders      = $this->input->post('reportHeaders');
-        $original_table_name= $this->input->post('original_table_name');
-        $company_id         = $this->input->post('company_id');
-        $location_id        = $this->input->post('location_id');
-        $user_id            = $this->input->post('user_id');
-
-        // 2. Validate user
-        if (empty($user_id)) {
-            echo json_encode(["success" => false, "status_code" => 400, "message" => "User ID is required"]);
-            return;
-        }
-        $this->db->where('id', $user_id);
-        $user = $this->db->get('users')->row();
-        if (!$user) {
-            echo json_encode(["success" => false, "status_code" => 404, "message" => "User not found"]);
-            return;
-        }
-        $user_email = !empty($user->userEmail) ? $user->userEmail : $user->email;
-
-        // Ensure tasks model is loaded
-        if (!isset($this->tasks)) {
-            $this->load->model('Tasks_model', 'tasks');
-        }
-
-        $report_data = [];
-        $project_data = [];
-
-        /**
-         * ------------------------
-         * FETCH REPORT DATA
-         * ------------------------
-         */
-        if ($type === 'project') {
-            $condition = [
-                "id"              => $projectSelect,
-                "status"          => $projectstatus,
-                "company_id"      => $company_id,
-                "project_location"=> $location_id
-            ];
-            $getProject = $this->tasks->get_data('company_projects', $condition);
-
-            if (count($getProject) > 0) {
-                $old_pattern = ["/[^a-zA-Z0-9]/", "/_+/", "/_$/"];
-                $new_pattern = ["_", "_", ""];
-                $project_name = strtolower(preg_replace($old_pattern, $new_pattern, trim($getProject[0]->project_name)));
-
-                // ✅ Fetch report dynamically
-                $report_data = $this->_getExceptionCategoryReport($project_name,$exceptioncategory,$verificationstatus,$reportHeaders) ?: []; // fallback to empty array
-
-                $project_data = $getProject[0];
-            } else {
-                echo json_encode(["success" => false, "status_code" => 404, "message" => "No project found"]);
-                return;
-            }
-        }
-        elseif ($type === 'consolidated') {
-            $lastProj = $this->db->query('SELECT * FROM company_projects 
-                WHERE status="' . $projectstatus . '" 
-                AND company_id=' . $company_id . ' 
-                AND entity_code="' . $this->admin_registered_entity_code . '" 
-                ORDER BY id DESC LIMIT 1')->result();
-
-            if ($lastProj) {
-                $condition = [
-                    "status"              => $projectstatus,
-                    "company_id"          => $company_id,
-                    "original_table_name" => $lastProj[0]->original_table_name,
-                    "entity_code"         => $this->admin_registered_entity_code
-                ];
-                $getProjects = $this->tasks->get_data('company_projects', $condition);
-
-                foreach ($getProjects as $project) {
-                    $old_pattern = ["/[^a-zA-Z0-9]/", "/_+/", "/_$/"];
-                    $new_pattern = ["_", "_", ""];
-                    $project_name = strtolower(preg_replace($old_pattern, $new_pattern, trim($project->project_name)));
-
-                    $project_report = $this->_getExceptionCategoryReport(
-                        $project_name,
-                        $exceptioncategory,
-                        $verificationstatus,
-                        $reportHeaders
-                    ) ?: [];
-
-                    if (is_array($project_report)) {
-                        $report_data = array_merge($report_data, $project_report);
-                    }
-                }
-            }
-        }
-        elseif ($type === 'additional') {
-            $report_data = $this->tasks->genrateadditionalassets($projectSelect) ?: [];
-            $project_data = [
-                "company"  => $this->tasks->com_row($company_id),
-                "location" => $this->tasks->loc_row($location_id)
-            ];
-        }
-
-        /**
-         * ------------------------
-         * CSV GENERATION
-         * ------------------------
-         */
-        $filename = 'exception_report_' . date('Y-m-d_His') . '.csv';
-        $filepath = FCPATH . 'attachment/' . $filename;
-        if (!is_dir(FCPATH . 'attachment/')) {
-            mkdir(FCPATH . 'attachment/', 0777, true);
-        }
-
-        $fp = fopen($filepath, 'w');
-
-        // Step 1: Headers
-        $headers = [
-            "Allocated Item Category",
-            "To be Verified (Amount in Lacs)", "To be Verified (Number of Qty)",
-            "Good Condition (Amount in Lacs)", "Good Condition (Number of Qty)",
-            "Damaged (Amount in Lacs)", "Damaged (Number of Qty)",
-            "Scrapped (Amount in Lacs)", "Scrapped (Number of Qty)",
-            "Missing (Amount in Lacs)", "Missing (Number of Qty)",
-            "Shifted (Amount in Lacs)", "Shifted (Number of Qty)",
-            "Not in Use (Amount in Lacs)", "Not in Use (Number of Qty)",
-            "Remaining to be Verified (Amount in Lacs)", "Remaining to be Verified (Number of Qty)"
-        ];
-        fputcsv($fp, $headers);
-
-        // Step 2: Safe loop (only if data exists)
-        if (isset($report_data['all']) && is_array($report_data['all']) && count($report_data['all']) > 0) {
-
-            $lookup = [];
-            foreach (['good', 'damaged', 'scrapped', 'missing', 'shifted', 'notinuse'] as $status) {
-                $lookup[$status] = isset($report_data[$status]) && is_array($report_data[$status]) 
-                    ? $report_data[$status] : [];
-            }
-
-            $column_totals = array_fill(0, count($headers), 0);
-
-            foreach ($report_data['all'] as $category) {
-                $row = [];
-                $row[] = $category->item_category;
-
-                $toBeVerifiedAmount = (float)($category->total_amount / 100000);
-                $toBeVerifiedQty    = (int)$category->total_qty;
-                $row[] = $toBeVerifiedAmount;
-                $row[] = $toBeVerifiedQty;
-
-                $getValues = function($status, $cat_name) use ($lookup) {
-                    foreach ($lookup[$status] as $item) {
-                        if ($item->item_category === $cat_name) {
-                            return [
-                                'amount' => (float)($item->total_amount / 100000),
-                                'qty'    => (int)($item->qty ?? 0)
-                            ];
-                        }
-                    }
-                    return ['amount' => 0, 'qty' => 0];
-                };
-
-                $good     = $getValues('good', $category->item_category);
-                $damaged  = $getValues('damaged', $category->item_category);
-                $scrapped = $getValues('scrapped', $category->item_category);
-                $missing  = $getValues('missing', $category->item_category);
-                $shifted  = $getValues('shifted', $category->item_category);
-                $notinuse = $getValues('notinuse', $category->item_category);
-
-                $row = array_merge($row, [
-                    $good['amount'], $good['qty'],
-                    $damaged['amount'], $damaged['qty'],
-                    $scrapped['amount'], $scrapped['qty'],
-                    $missing['amount'], $missing['qty'],
-                    $shifted['amount'], $shifted['qty'],
-                    $notinuse['amount'], $notinuse['qty']
-                ]);
-
-                $remainingAmount = $toBeVerifiedAmount - ($good['amount'] + $damaged['amount'] + $scrapped['amount'] + $missing['amount'] + $shifted['amount'] + $notinuse['amount']);
-                $remainingQty    = $toBeVerifiedQty - ($good['qty'] + $damaged['qty'] + $scrapped['qty'] + $missing['qty'] + $shifted['qty'] + $notinuse['qty']);
-
-                $row[] = $remainingAmount > 0 ? round($remainingAmount, 2) : 0;
-                $row[] = $remainingQty > 0 ? $remainingQty : 0;
-
-                fputcsv($fp, $row);
-
-                for ($i = 1; $i < count($row); $i++) {
-                    $column_totals[$i] += $row[$i];
-                }
-            }
-
-            // Totals
-            $total_row = ["Grand Total"];
-            for ($i = 1; $i < count($headers); $i++) {
-                $total_row[] = round($column_totals[$i], 2);
-            }
-            fputcsv($fp, $total_row);
-
-        } else {
-            fputcsv($fp, ["No data found 11"]);
-        }
-
-        fclose($fp);
-
-        /**
-         * ------------------------
-         * EMAIL SENDING
-         * ------------------------
-         */
-        $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id);
-
-        echo json_encode([
-            "success" => true,
-            "status_code" => 200,
-            "message" => $email_result['success']
-                ? "Report generated and emailed successfully"
-                : "Report generated but email sending failed",
-            "data" => [
-                "filename"     => $filename,
-                "email_sent"   => $email_result['success'],
-                "email_message"=> $email_result['message'],
-                "user_email"   => $user_email,
-                "record_count" => isset($report_data['all']) ? count($report_data['all']) : 0,
-                "generated_at" => date('Y-m-d H:i:s')
-            ]
-        ]);
-
-    } catch (Exception $e) {
-        log_message('error', 'GenerateExceptionReport Error: ' . $e->getMessage());
-        echo json_encode([
-            "success" => false,
-            "status_code" => 500,
-            "message" => "Internal server error occurred",
-            "error" => $e->getMessage()
-        ]);
-    }
-}
-
-
-
-
-public function generateExceptionReportDev11() {
-
-    
-    header('Content-Type: application/json');
-
-    try {
-        // 1. Collect POST parameters
-        $type               = $this->input->post('optradio'); 
-        $projectSelect      = $this->input->post('projectSelect');
-        $exceptioncategory  = $this->input->post('exception_category');
-        $projectstatus      = $this->input->post('projectstatus');
-        $verificationstatus = $this->input->post('verificationstatus');
-        $reportHeaders      = $this->input->post('reportHeaders');
-        $original_table_name= $this->input->post('original_table_name');
-        $company_id         = $this->input->post('company_id');
-        $location_id        = $this->input->post('location_id');
-        $user_id            = $this->input->post('user_id');
-
-        // 2. Validate user
-        if (empty($user_id)) {
-            echo json_encode(["success" => false, "status_code" => 400, "message" => "User ID is required"]);
-            return;
-        }
-        $this->db->where('id', $user_id);
-        $user = $this->db->get('users')->row();
-        if (!$user) {
-            echo json_encode(["success" => false, "status_code" => 404, "message" => "User not found"]);
-            return;
-        }
-        $user_email = !empty($user->userEmail) ? $user->userEmail : $user->email;
-
-        // Ensure tasks model is loaded
-        if (!isset($this->tasks)) {
-            $this->load->model('Tasks_model', 'tasks');
-        }
-
-        $report_data = [];
-        $project_data = [];
-
-        /**
-         * ------------------------
-         * FETCH REPORT DATA
-         * ------------------------
-         */
-        if ($type === 'Project Based') {
-            $condition = [
-                "id"              => $projectSelect,
-                "status"          => $projectstatus,
-                "company_id"      => $company_id,
-                "project_location"=> $location_id
-            ];
-            $getProject = $this->tasks->get_data('company_projects', $condition);
-
-          
-
-            // echo '<pre>getProject ';
-            // print_r($getProject);
-            // echo '</pre>';
-            // exit();
-
-            if (count($getProject) > 0) {
-                $old_pattern = ["/[^a-zA-Z0-9]/", "/_+/", "/_$/"];
-                $new_pattern = ["_", "_", ""];
-                $project_name = strtolower(preg_replace($old_pattern, $new_pattern, trim($getProject[0]->project_name)));
-
-              
-
-                // ✅ Fetch report dynamically
-                $report_data = $this->_getExceptionCategoryReport($project_name,$exceptioncategory,$verificationstatus,$reportHeaders) ?: []; // fallback to empty array
-
-                $project_data = $getProject[0];
-            } else {
-                echo json_encode(["success" => false, "status_code" => 404, "message" => "No project found"]);
-                return;
-            }
-        }
-        elseif ($type === 'consolidated') {
-            $lastProj = $this->db->query('SELECT * FROM company_projects 
-                WHERE status="' . $projectstatus . '" 
-                AND company_id=' . $company_id . ' 
-                AND entity_code="' . $this->admin_registered_entity_code . '" 
-                ORDER BY id DESC LIMIT 1')->result();
-
-            if ($lastProj) {
-                $condition = [
-                    "status"              => $projectstatus,
-                    "company_id"          => $company_id,
-                    "original_table_name" => $lastProj[0]->original_table_name,
-                    "entity_code"         => $this->admin_registered_entity_code
-                ];
-                $getProjects = $this->tasks->get_data('company_projects', $condition);
-
-                foreach ($getProjects as $project) {
-                    $old_pattern = ["/[^a-zA-Z0-9]/", "/_+/", "/_$/"];
-                    $new_pattern = ["_", "_", ""];
-                    $project_name = strtolower(preg_replace($old_pattern, $new_pattern, trim($project->project_name)));
-
-                    $project_report = $this->_getExceptionCategoryReport(
-                        $project_name,
-                        $exceptioncategory,
-                        $verificationstatus,
-                        $reportHeaders
-                    ) ?: [];
-
-                    if (is_array($project_report)) {
-                        $report_data = array_merge($report_data, $project_report);
-                    }
-                }
-            }
-        }
-        elseif ($type === 'additional') {
-            $report_data = $this->tasks->genrateadditionalassets($projectSelect) ?: [];
-            $project_data = [
-                "company"  => $this->tasks->com_row($company_id),
-                "location" => $this->tasks->loc_row($location_id)
-            ];
-        }
-
-        /**
-         * ------------------------
-         * CSV GENERATION
-         * ------------------------
-         */
-        $filename = 'exception_report_' . date('Y-m-d_His') . '.csv';
-        $filepath = FCPATH . 'attachment/' . $filename;
-        if (!is_dir(FCPATH . 'attachment/')) {
-            mkdir(FCPATH . 'attachment/', 0777, true);
-        }
-
-        $fp = fopen($filepath, 'w');
-
-        // Step 1: Headers
-        $headers = [
-            "Allocated Item Category",
-            "To be Verified (Amount in Lacs)", "To be Verified (Number of Qty)",
-            "Good Condition (Amount in Lacs)", "Good Condition (Number of Qty)",
-            "Damaged (Amount in Lacs)", "Damaged (Number of Qty)",
-            "Scrapped (Amount in Lacs)", "Scrapped (Number of Qty)",
-            "Missing (Amount in Lacs)", "Missing (Number of Qty)",
-            "Shifted (Amount in Lacs)", "Shifted (Number of Qty)",
-            "Not in Use (Amount in Lacs)", "Not in Use (Number of Qty)",
-            "Remaining to be Verified (Amount in Lacs)", "Remaining to be Verified (Number of Qty)"
-        ];
-        fputcsv($fp, $headers);
-
-        // Step 2: Safe loop (only if data exists)
-        if (isset($report_data['all']) && is_array($report_data['all']) && count($report_data['all']) > 0) {
-
-            $lookup = [];
-            foreach (['good', 'damaged', 'scrapped', 'missing', 'shifted', 'notinuse'] as $status) {
-                $lookup[$status] = isset($report_data[$status]) && is_array($report_data[$status]) 
-                    ? $report_data[$status] : [];
-            }
-
-            $column_totals = array_fill(0, count($headers), 0);
-
-            foreach ($report_data['all'] as $category) {
-                $row = [];
-                $row[] = $category->item_category;
-
-                $toBeVerifiedAmount = (float)($category->total_amount / 100000);
-                $toBeVerifiedQty    = (int)$category->total_qty;
-                $row[] = $toBeVerifiedAmount;
-                $row[] = $toBeVerifiedQty;
-
-                $getValues = function($status, $cat_name) use ($lookup) {
-                    foreach ($lookup[$status] as $item) {
-                        if ($item->item_category === $cat_name) {
-                            return [
-                                'amount' => (float)($item->total_amount / 100000),
-                                'qty'    => (int)($item->qty ?? 0)
-                            ];
-                        }
-                    }
-                    return ['amount' => 0, 'qty' => 0];
-                };
-
-                $good     = $getValues('good', $category->item_category);
-                $damaged  = $getValues('damaged', $category->item_category);
-                $scrapped = $getValues('scrapped', $category->item_category);
-                $missing  = $getValues('missing', $category->item_category);
-                $shifted  = $getValues('shifted', $category->item_category);
-                $notinuse = $getValues('notinuse', $category->item_category);
-
-                $row = array_merge($row, [
-                    $good['amount'], $good['qty'],
-                    $damaged['amount'], $damaged['qty'],
-                    $scrapped['amount'], $scrapped['qty'],
-                    $missing['amount'], $missing['qty'],
-                    $shifted['amount'], $shifted['qty'],
-                    $notinuse['amount'], $notinuse['qty']
-                ]);
-
-                $remainingAmount = $toBeVerifiedAmount - ($good['amount'] + $damaged['amount'] + $scrapped['amount'] + $missing['amount'] + $shifted['amount'] + $notinuse['amount']);
-                $remainingQty    = $toBeVerifiedQty - ($good['qty'] + $damaged['qty'] + $scrapped['qty'] + $missing['qty'] + $shifted['qty'] + $notinuse['qty']);
-
-                $row[] = $remainingAmount > 0 ? round($remainingAmount, 2) : 0;
-                $row[] = $remainingQty > 0 ? $remainingQty : 0;
-
-                fputcsv($fp, $row);
-
-                for ($i = 1; $i < count($row); $i++) {
-                    $column_totals[$i] += $row[$i];
-                }
-            }
-
-            // Totals
-            $total_row = ["Grand Total"];
-            for ($i = 1; $i < count($headers); $i++) {
-                $total_row[] = round($column_totals[$i], 2);
-            }
-            fputcsv($fp, $total_row);
-
-        } else {
-            fputcsv($fp, ["No data found 22"]); /// This Data is Fetching While Report Generated
-        }
-
-        fclose($fp);
-
-        /**
-         * ------------------------
-         * EMAIL SENDING
-         * ------------------------
-         */
-        $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id);
-
-        echo json_encode([
-            "success" => true,
-            "status_code" => 200,
-            "message" => $email_result['success']
-                ? "Report generated and emailed successfully"
-                : "Report generated but email sending failed",
-            "data" => [
-                "filename"     => $filename,
-                "email_sent"   => $email_result['success'],
-                "email_message"=> $email_result['message'],
-                "user_email"   => $user_email,
-                "record_count" => isset($report_data['all']) ? count($report_data['all']) : 0,
-                "generated_at" => date('Y-m-d H:i:s')
-            ]
-        ]);
-
-    } catch (Exception $e) {
-        log_message('error', 'GenerateExceptionReport Error: ' . $e->getMessage());
-        echo json_encode([
-            "success" => false,
-            "status_code" => 500,
-            "message" => "Internal server error occurred",
-            "error" => $e->getMessage()
-        ]);
-    }
-}
-
-
 //already
 
 public function generateExceptionReportDev() {
@@ -5826,63 +5106,37 @@ public function generateExceptionReportDev() {
                 "company_id"      => $company_id,
                 "project_location"=> $location_id
             ];
-            $getProject = $this->tasks->get_data('company_projects', $condition);
-            // echo "<pre>Last query :";
-            // print_r($this->db->last_query());
-            // echo "</pre>";
-            // exit;
-            // echo "<pre>Data :";
-            // print_r($getProject);
-            // echo "</pre>";
-            // exit;
-            // $query = $this->db->get();
-
-            // echo $this->db->last_query();
-            // exit;
-                    
-
-            // echo '<pre>getProject ';
-            // print_r($getProject);
-            // echo '</pre>';
-            // exit();
+            $getProject = $this->tasks->get_data('company_projects', $condition);            
 
             if (count($getProject) > 0) {
                 $old_pattern = ["/[^a-zA-Z0-9]/", "/_+/", "/_$/"];
                 $new_pattern = ["_", "_", ""];
                 $project_name = strtolower(preg_replace($old_pattern, $new_pattern, trim($getProject[0]->project_name)));
-
-              
-
+                
                 // ✅ Fetch report dynamically
                 $report_data = $this->_getExceptionCategoryReport($project_name,$exceptioncategory,$verificationstatus,$reportHeaders) ?: []; // fallback to empty array
-
+               
                 $project_data = $getProject[0];
             } else {
                 echo json_encode(["success" => false, "status_code" => 404, "message" => "No project found"]);
                 return;
             }
         }
-        elseif ($type === 'consolidated') {
+        elseif ($type === 'consolidated') {   
+
+            // exceptioncategory
             /*
-            $lastProj = $this->db->query('SELECT * FROM company_projects 
-                WHERE status="' . $projectstatus . '" 
-                AND company_id=' . $company_id . ' 
-                AND entity_code="' . $this->admin_registered_entity_code . '" 
-                ORDER BY id DESC LIMIT 1')->result(); */
-
-                // echo 'SELECT * FROM company_projects 
-                // WHERE status="' . $projectstatus . '" 
-                // AND company_id=' . $company_id . '" 
-                // ORDER BY id DESC LIMIT 1';
-                // exit();
-
-                $lastProj = $this->db->query('SELECT * FROM company_projects 
-                WHERE status="' . $projectstatus . '" 
-                AND company_id=' . $company_id . ' 
-                ORDER BY id DESC LIMIT 1')->result();
-
-                
-
+            1 ->Condition of Item
+            2 ->Changes/ Updations of Items (New)
+            3 ->Qty Validation Status
+            4 ->Updated with Verification Remarks
+            5 ->Updated with Item Notes
+            6 ->Calculate Risk Exposure (New)
+            8 ->Mode of Verification
+            9 ->Duplicate Item Codes verified (NOT WORKING)
+            10 ->Duplicate Item Codes Identified (New)
+            */
+            $lastProj = $this->db->query('SELECT * FROM company_projects WHERE status="' . $projectstatus . '" AND company_id=' . $company_id . ' ORDER BY id DESC LIMIT 1')->result();
 
             if ($lastProj) {
                 $condition = [
@@ -5892,22 +5146,23 @@ public function generateExceptionReportDev() {
                     // "entity_code"         => $this->admin_registered_entity_code
                 ];
                 $getProjects = $this->tasks->get_data('company_projects', $condition);
+               
 
                 foreach ($getProjects as $project) {
                     $old_pattern = ["/[^a-zA-Z0-9]/", "/_+/", "/_$/"];
                     $new_pattern = ["_", "_", ""];
                     $project_name = strtolower(preg_replace($old_pattern, $new_pattern, trim($project->project_name)));
 
-                    $project_report = $this->_getExceptionCategoryReport(
-                        $project_name,
-                        $exceptioncategory,
-                        $verificationstatus,
-                        $reportHeaders
-                    ) ?: [];
-
+                    $project_report = $this->_getExceptionCategoryReport($project_name,$exceptioncategory,$verificationstatus,$reportHeaders) ?: [];
+                
+                
+                    
                     if (is_array($project_report)) {
                         $report_data = array_merge($report_data, $project_report);
                     }
+
+                   
+
                 }
             }
         }
@@ -5919,6 +5174,7 @@ public function generateExceptionReportDev() {
             ];
         }
 
+        // exit("Not Exist");
         /**
          * ------------------------
          * CSV GENERATION
@@ -5932,90 +5188,928 @@ public function generateExceptionReportDev() {
 
         $fp = fopen($filepath, 'w');
 
-        // Step 1: Headers
-        $headers = [
-            "Allocated Item Category",
-            "To be Verified (Amount in Lacs)", "To be Verified (Number of Qty)",
-            "Good Condition (Amount in Lacs)", "Good Condition (Number of Qty)",
-            "Damaged (Amount in Lacs)", "Damaged (Number of Qty)",
-            "Scrapped (Amount in Lacs)", "Scrapped (Number of Qty)",
-            "Missing (Amount in Lacs)", "Missing (Number of Qty)",
-            "Shifted (Amount in Lacs)", "Shifted (Number of Qty)",
-            "Not in Use (Amount in Lacs)", "Not in Use (Number of Qty)",
-            "Remaining to be Verified (Amount in Lacs)", "Remaining to be Verified (Number of Qty)"
-        ];
-        fputcsv($fp, $headers);
+        if($exceptioncategory == '1'){  //Condition of Item
+            // Step 1: Headers
+            /*
+            $headers = [
+                "Allocated Item Category",
+                "To be Verified (Amount in Lacs)", "To be Verified (Number of Qty)",
+                "Good Condition (Amount in Lacs)", "Good Condition (Number of Qty)",
+                "Damaged (Amount in Lacs)", "Damaged (Number of Qty)",
+                "Scrapped (Amount in Lacs)", "Scrapped (Number of Qty)",
+                "Missing (Amount in Lacs)", "Missing (Number of Qty)",
+                "Shifted (Amount in Lacs)", "Shifted (Number of Qty)",
+                "Not in Use (Amount in Lacs)", "Not in Use (Number of Qty)",
+                "Remaining to be Verified (Amount in Lacs)", "Remaining to be Verified (Number of Qty)"
+            ]; */
 
-        // Step 2: Safe loop (only if data exists)
-        if (isset($report_data['all']) && is_array($report_data['all']) && count($report_data['all']) > 0) {
+             $headers = [
+                "Allocated Item Category",
+                "To be Verified (Amount in Lacs)", "To be Verified (Number of Qty)",
+                "Good Condition (Number of Qty)",
+                "Damaged (Number of Qty)",
+                "Scrapped (Number of Qty)",
+                "Missing (Number of Qty)",
+                "Shifted (Number of Qty)",
+                "Not in Use (Number of Qty)",
+                "Remaining to be Verified (Amount in Lacs)", "Remaining to be Verified (Number of Qty)"
+            ];
 
-            $lookup = [];
-            foreach (['good', 'damaged', 'scrapped', 'missing', 'shifted', 'notinuse'] as $status) {
-                $lookup[$status] = isset($report_data[$status]) && is_array($report_data[$status]) 
-                    ? $report_data[$status] : [];
-            }
 
-            $column_totals = array_fill(0, count($headers), 0);
+            fputcsv($fp, $headers);
 
-            foreach ($report_data['all'] as $category) {
-                $row = [];
-                $row[] = $category->item_category;
+            // Step 2: Safe loop (only if data exists)
+            if (isset($report_data['all']) && is_array($report_data['all']) && count($report_data['all']) > 0) {
 
-                $toBeVerifiedAmount = (float)($category->total_amount / 100000);
-                $toBeVerifiedQty    = (int)$category->total_qty;
-                $row[] = $toBeVerifiedAmount;
-                $row[] = $toBeVerifiedQty;
+                $lookup = [];
+                foreach (['good', 'damaged', 'scrapped', 'missing', 'shifted', 'notinuse'] as $status) {
+                    $lookup[$status] = isset($report_data[$status]) && is_array($report_data[$status]) 
+                        ? $report_data[$status] : [];
+                }
 
-                $getValues = function($status, $cat_name) use ($lookup) {
-                    foreach ($lookup[$status] as $item) {
-                        if ($item->item_category === $cat_name) {
-                            return [
-                                'amount' => (float)($item->total_amount / 100000),
-                                'qty'    => (int)($item->qty ?? 0)
-                            ];
+                $column_totals = array_fill(0, count($headers), 0);
+                
+                $totalAmount=0;
+                $totalItems=0;
+                $goodTotalAmount=0;
+                $goodTotalItems=0;
+                $damagedTotalAmount=0;
+                $damagedTotalItems=0;
+                $scrappedTotalAmount=0;
+                $scrappedTotalItems=0;
+                $missingTotalAmount=0;
+                $missingTotalItems=0;
+                $shiftedTotalAmount=0;
+                $shiftedTotalItems=0;
+                $notinuseTotalAmount=0;
+                $notinuseTotalItems=0;
+                $remainingTotalAmount=0;
+                $remainingTotalItems=0;
+                $remainitemstotal=0;
+                foreach($report_data['all'] as $allcat)
+                {
+                    $row = [];
+                    $goodAmount=0;
+                    $goodItems=0;
+                    $damagedAmount=0;
+                    $damagedItems=0;
+                    $scrappedAmount=0;
+                    $scrappedItems=0;
+                    $missingAmount=0;
+                    $missingItems=0;
+                    $shiftedAmount=0;
+                    $shiftedItems=0;
+                    $notinuseAmount=0;
+                    $notinuseItems=0;
+                    $remainingAmount=0;
+                    $remainingItems=0;
+                    $totalAmount=$totalAmount+$allcat->total_amount;
+                    $totalItems=$totalItems+$allcat->total_qty;
+                    foreach($report_data['good'] as $good)
+                    {
+                        if($good->item_category==$allcat->item_category)
+                        {
+                            $goodAmount=$good->total_amount;
+                            $goodItems=$good->good_qty;
+                            $goodTotalAmount=$goodTotalAmount+$goodAmount;
+                            $goodTotalItems=$goodTotalItems+$goodItems;
                         }
                     }
-                    return ['amount' => 0, 'qty' => 0];
-                };
+                    foreach($report_data['damaged'] as $damaged)
+                    {
+                        if($damaged->item_category==$allcat->item_category)
+                        {
+                            $damagedAmount=$damaged->total_amount;
+                            $damagedItems=$damaged->damaged_qty;
+                            $damagedTotalAmount=$damagedTotalAmount+$damagedAmount;
+                            $damagedTotalItems=$damagedTotalItems+$damagedItems;
+                        }
+                    }
+                    foreach($report_data['scrapped'] as $scrapped)
+                    {
+                        if($scrapped->item_category==$allcat->item_category)
+                        {
+                            $scrappedAmount=$scrapped->total_amount;
+                            $scrappedItems=$scrapped->scrapped_qty;
+                            $scrappedTotalAmount=$scrappedTotalAmount+$scrappedAmount;
+                            $scrappedTotalItems=$scrappedTotalItems+$scrappedItems;
+                        }
+                    }
+                    foreach($report_data['missing'] as $missing)
+                    {
+                        if($missing->item_category==$allcat->item_category)
+                        {
+                            $missingAmount=$missing->total_amount;
+                            $missingItems=$missing->missing_item;
+                            $missingTotalAmount=$missingTotalAmount+$missingAmount;
+                            $missingTotalItems=$missingTotalItems+$missingItems;
+                        }
+                    }
+                    foreach($report_data['shifted'] as $shifted)
+                    {
+                        if($shifted->item_category==$allcat->item_category)
+                        {
+                            $shiftedAmount=$shifted->total_amount;
+                            $shiftedItems=$shifted->shifted_item;
+                            $shiftedTotalAmount=$shiftedTotalAmount+$shiftedAmount;
+                            $shiftedTotalItems=$shiftedTotalItems+$shiftedItems;
+                        }
+                    }
+                    foreach($report_data['notinuse'] as $notinuse)
+                    {
+                        if($notinuse->item_category==$allcat->item_category)
+                        {
+                            $notinuseAmount=$notinuse->total_amount;
+                            $notinuseItems=$notinuse->notinuse_qty;
+                            $notinuseTotalAmount=$notinuseTotalAmount+$notinuseAmount;
+                                $notinuseTotalItems= $notinuseTotalItems + $notinuseItems;
+                        }
+                    }
+                    $remainitem='0';
+                    foreach($report_data['remaining'] as $remainingdata)
+                    {
+                        if($remainingdata->item_category==$allcat->item_category)
+                        {
+                            $remainitem= $remainingdata->items;
+                        }
+                        $remainitem = $allcat->total_qty-($goodItems+$damagedItems+$scrappedItems+$missingItems+$shiftedItems+$notinuseItems);
 
-                $good     = $getValues('good', $category->item_category);
-                $damaged  = $getValues('damaged', $category->item_category);
-                $scrapped = $getValues('scrapped', $category->item_category);
-                $missing  = $getValues('missing', $category->item_category);
-                $shifted  = $getValues('shifted', $category->item_category);
-                $notinuse = $getValues('notinuse', $category->item_category);
+                        
+                    }
+                    $remainitemstotal +=$remainitem;
 
-                $row = array_merge($row, [
-                    $good['amount'], $good['qty'],
-                    $damaged['amount'], $damaged['qty'],
-                    $scrapped['amount'], $scrapped['qty'],
-                    $missing['amount'], $missing['qty'],
-                    $shifted['amount'], $shifted['qty'],
-                    $notinuse['amount'], $notinuse['qty']
-                ]);
 
-                $remainingAmount = $toBeVerifiedAmount - ($good['amount'] + $damaged['amount'] + $scrapped['amount'] + $missing['amount'] + $shifted['amount'] + $notinuse['amount']);
-                $remainingQty    = $toBeVerifiedQty - ($good['qty'] + $damaged['qty'] + $scrapped['qty'] + $missing['qty'] + $shifted['qty'] + $notinuse['qty']);
+                    $remainingAmount=$allcat->total_amount-($goodAmount+$damagedAmount+$scrappedAmount+$missingAmount+$shiftedAmount+$notinuseAmount);
+                    $remainingItems=$allcat->total_qty-($goodItems+$damagedItems+$scrappedItems+$missingItems+$shiftedItems+$notinuseItems);
+                    $remainingTotalAmount=$remainingTotalAmount+$remainingAmount;
+                    $remainingTotalItems=$remainingTotalItems+$remainingItems;
 
-                $row[] = $remainingAmount > 0 ? round($remainingAmount, 2) : 0;
-                $row[] = $remainingQty > 0 ? $remainingQty : 0;
 
-                fputcsv($fp, $row);
+                    $row[] = $allcat->item_category;
+                    $row[] = $allcat->total_amount!=0?getmoney_format(round(($allcat->total_amount/100000),2)):$allcat->total_amount;
+                    $row[] = $allcat->total_qty;
+                    $row[] = $goodItems;
+                    $row[] = $damagedItems;
+                    $row[] = $scrappedItems;
+                    $row[] = $missingItems;
+                    $row[] = $shiftedItems;
+                    $row[] = $notinuseItems;
+                    $row[] = $remainingAmount!=0?getmoney_format(round(($remainingAmount/100000),2)):$remainingAmount;
+                    $row[] = $remainitem;
+                    fputcsv($fp, $row);
+                }
 
-                for ($i = 1; $i < count($row); $i++) {
-                    $column_totals[$i] += $row[$i];
+
+
+                $Grand_Total_row[] = "Grand Total";
+                $Grand_Total_row[] = $totalAmount!=0?getmoney_format(round(($totalAmount/100000),2)):$totalAmount;
+                $Grand_Total_row[] = $totalItems ;
+                $Grand_Total_row[] = $goodTotalItems ;
+                $Grand_Total_row[] = $damagedTotalItems ;
+                $Grand_Total_row[] = $scrappedTotalItems ;
+                $Grand_Total_row[] = $missingTotalItems ;
+                $Grand_Total_row[] = $shiftedTotalItems ;
+                $Grand_Total_row[] = $notinuseTotalItems ;
+                $Grand_Total_row[] = $remainingTotalAmount!=0?getmoney_format(round(($remainingTotalAmount/100000),2)):$remainingTotalAmount;
+                $Grand_Total_row[] = $remainingTotalItems;
+                fputcsv($fp, $Grand_Total_row);
+
+
+
+                $Grand_Total_percentage_row[] = "% to Grand Total";
+                $Grand_Total_percentage_row[] = "100%";
+                $Grand_Total_percentage_row[] = "100%";
+                $Grand_Total_percentage_row[] = round(($goodTotalItems/$totalItems)*100,2).'%';
+                $Grand_Total_percentage_row[] = round(($damagedTotalItems/$totalItems)*100,2).'%';
+                $Grand_Total_percentage_row[] = round(($scrappedTotalItems/$totalItems)*100,2).'%';
+                $Grand_Total_percentage_row[] = round(($missingTotalItems/$totalItems)*100,2).'%';
+                $Grand_Total_percentage_row[] = round(($shiftedTotalItems/$totalItems)*100,2).'%';
+                $Grand_Total_percentage_row[] = round(($notinuseTotalItems/$totalItems)*100,2).'%';
+                $Grand_Total_percentage_row[] = round(($remainingTotalAmount/$totalAmount)*100,2).'%';
+                $Grand_Total_percentage_row[] = round(($remainingTotalItems/$totalItems)*100,2).'%';
+                fputcsv($fp, $Grand_Total_percentage_row);
+                /*
+                foreach ($report_data['all'] as $category) {
+                    $row = [];
+                    $row[] = $category->item_category;
+
+                    $toBeVerifiedAmount = (float)($category->total_amount / 100000);
+                    $toBeVerifiedQty    = (int)$category->total_qty;
+                    $row[] = $toBeVerifiedAmount;
+                    $row[] = $toBeVerifiedQty;
+
+                    $getValues = function($status, $cat_name) use ($lookup) {
+                        foreach ($lookup[$status] as $item) {
+                            if ($item->item_category === $cat_name) {
+                                return [
+                                    'amount' => (float)($item->total_amount / 100000),
+                                    'qty'    => (int)($item->qty ?? 0)
+                                ];
+                            }
+                        }
+                        return ['amount' => 0, 'qty' => 0];
+                    };
+
+                    $good     = $getValues('good', $category->item_category);
+                    $damaged  = $getValues('damaged', $category->item_category);
+                    $scrapped = $getValues('scrapped', $category->item_category);
+                    $missing  = $getValues('missing', $category->item_category);
+                    $shifted  = $getValues('shifted', $category->item_category);
+                    $notinuse = $getValues('notinuse', $category->item_category);
+
+                    $row = array_merge($row, [
+                        $good['amount'], $good['qty'],
+                        $damaged['amount'], $damaged['qty'],
+                        $scrapped['amount'], $scrapped['qty'],
+                        $missing['amount'], $missing['qty'],
+                        $shifted['amount'], $shifted['qty'],
+                        $notinuse['amount'], $notinuse['qty']
+                    ]);
+
+                    $remainingAmount = $toBeVerifiedAmount - ($good['amount'] + $damaged['amount'] + $scrapped['amount'] + $missing['amount'] + $shifted['amount'] + $notinuse['amount']);
+                    $remainingQty    = $toBeVerifiedQty - ($good['qty'] + $damaged['qty'] + $scrapped['qty'] + $missing['qty'] + $shifted['qty'] + $notinuse['qty']);
+
+                    $row[] = $remainingAmount > 0 ? round($remainingAmount, 2) : 0;
+                    $row[] = $remainingQty > 0 ? $remainingQty : 0;
+
+                    echo "<pre>row :";
+                    print_r($row);
+                    echo "</pre>";
+                    exit;
+
+                    fputcsv($fp, $row);
+
+                    for ($i = 1; $i < count($row); $i++) {
+                        $column_totals[$i] += $row[$i];
+                    }
+                } */
+
+                // Totals
+
+                /*
+                $total_row = ["Grand Total"];
+                for ($i = 1; $i < count($headers); $i++) {
+                    $total_row[] = round($column_totals[$i], 2);
+                }
+                fputcsv($fp, $total_row);
+                */ 
+
+            } else {
+                fputcsv($fp, ["No data found"]); /// This Data is Fetching While Report Generated
+            }
+        }
+
+        if($exceptioncategory == '2'){  //Changes/ Updations of Items (New)  [File Name :- ChangesUpdationsItemsReport]
+            
+            $headers = array();
+            $project_header_column_value = explode(",",$report_data['project_header_column_value']);
+            unset($project_header_column_value[0]);
+            unset($project_header_column_value[1]);
+            $headers[] = 'Allocated Item Category';
+            
+            foreach($project_header_column_value as $project_header_column_value_value){                                
+                    $headers[] = ucfirst(str_replace('_',' ',$project_header_column_value_value));
+            }            
+            fputcsv($fp, $headers);
+
+            $row = array();
+            foreach($report_data['different'] as $key=>$value){
+                $row[] = $key;
+                foreach($project_header_column_value as $project_header_column_value_value){
+                    if(isset($report_data['different'][$key][$project_header_column_value_value])){
+                        $row[] = count($report_data['different'][$key][$project_header_column_value_value]);
+                    }else{
+                        $row[] = "0";
+                    }                    
                 }
             }
+            fputcsv($fp, $row);
+        }
 
-            // Totals
-            $total_row = ["Grand Total"];
-            for ($i = 1; $i < count($headers); $i++) {
-                $total_row[] = round($column_totals[$i], 2);
+        if($exceptioncategory == '3'){  //Qty Validation Status
+            // Step 1: Headers      //Should be Dynamic     [File Name :- quantityValidationReport]
+            $headers = [
+                "Allocated Item Category",
+                "To be Verified - Amount(in Lacs)",
+                "To be Verified - Number of Line Items",
+                "Verified - Amount(in Lacs)",
+                "Verified - Number of Line Items",
+                "Verified as Equal - Amount(in Lacs)",
+                "Verified as Equal - Number of Line Items",
+                "Short Found - Amount(in Lacs)",
+                "Short Found - Number of Line Items",
+                "Excess Found - Amount(in Lacs)",
+                "Excess Found - Number of Line Items",
+                "Remaining to be Verified - Amount(in Lacs)",
+                "Remaining to be Verified - Number of Line Items",
+            ];
+            fputcsv($fp, $headers);
+            
+            
+            $totalAmount=0;
+            $totalItems=0;
+            $verifiedTotalAmount=0;
+            $verifiedTotalItems=0;
+            $shortTotalAmount=0;
+            $shortTotalItems=0;
+            $equalTotalAmount=0;
+            $equalTotalItems=0;
+            $excessTotalAmount=0;
+            $excessTotalItems=0;
+            $remainingTotalAmount=0;
+            $remainingTotalItems=0;
+            $remainitemstotal=0;
+            $remainitemamounttotal=0;
+            $excessitemtotal =0;
+            $excessamounttotalnew =0;
+            foreach($report_data['all'] as $allcat)
+            {
+                $row = [];
+                $verifiedAmount=0;
+                $verifiedItems=0;
+                $shortAmount=0;
+                $shortItems=0;
+                $equalAmount=0;
+                $equalItems=0;
+                $excessAmount=0;
+                $excessItems=0;
+                $remainingAmount=0;
+                $remainingItems=0;
+            
+                $totalAmount=$totalAmount+$allcat->total_amount;
+                $totalItems=$totalItems+$allcat->total_items;
+                foreach($report_data['verified'] as $verified)
+                {
+                    if($verified->item_category==$allcat->item_category)
+                    {
+                        $verifiedAmount=$verified->total_amount;
+                        $verifiedItems=$verified->total_items;
+                        $verifiedTotalAmount=$verifiedTotalAmount+$verifiedAmount;
+                        $verifiedTotalItems=$verifiedTotalItems+$verifiedItems;
+                        
+                        if($verified->total_items > $allcat->total_items && $verified->total_items > 0)
+                        {
+                            $shortAmount=$allcat->total_amount-$verified->total_amount;
+                            $shortItems=$allcat->total_items-$verified->total_items;
+                            $shortTotalAmount=$shortTotalAmount+$shortAmount;
+                            $shortTotalItems=$shortTotalItems+$shortItems;
+                        }
+
+                        if($verified->total_items > $allcat->total_items)
+                        {
+                            // // $excessAmount=$allcat->total_amount - $verified->total_amount;
+                            // $excessItems=$verified->total_items - $allcat->total_items;
+
+                            // $excessTotalAmount=$excessTotalAmount+$excessAmount;
+                            // $excessTotalItems=$excessTotalItems+$excessItems;
+                        }
+
+                        if($verified->total_items < 1)
+                        {
+                            $remainingAmount=$allcat->total_amount;
+                            $remainingItems=$allcat->total_items;
+                            $remainingTotalAmount=$remainingTotalAmount+$remainingAmount;
+                            $remainingTotalItems=$remainingTotalItems+$remainingItems;	
+                        }
+                        
+                    }
+
+                }
+                foreach($report_data['verifiedequal'] as $verifiedeq)
+                {
+                    if($verifiedeq->item_category==$allcat->item_category)
+                    {
+                        $equalAmount=$verifiedeq->total_amount;
+                        $equalItems=$verifiedeq->total_items;
+                        $equalTotalAmount=$equalTotalAmount+$equalAmount;
+                        $equalTotalItems=$equalTotalItems+$equalItems;
+                    }
+                }
+
+                /*
+                if($_SESSION['reportData']['verification_status']=='Not-Verified')
+                {
+                    $remainingAmount=$allcat->total_amount;
+                    $remainingItems=$allcat->total_items;
+                    $remainingTotalAmount=$remainingTotalAmount+$remainingAmount;
+                    $remainingTotalItems=$remainingTotalItems+$remainingItems;
+                }
+                */ 
+
+                $remainitem='0';
+                $remainitemamount='0';
+                foreach($report_data['remaining'] as $remainingdata)
+                {
+                    if($remainingdata->item_category==$allcat->item_category)
+                    {
+                        $remainitem= $remainingdata->items;
+                        $remainitemamount= $remainingdata->total_amount;
+                    }
+                    
+                }
+                $remainitemstotal +=$remainitem;
+                $remainitemamounttotal +=$remainitemamount;
+                    
+                $excessitem='0';
+                $excessamount='0';
+                foreach($report_data['excess'] as $excess)
+                {
+                    if($excess->item_category == $allcat->item_category)
+                    {
+                        $excessitem = $excess->items;
+                            $excessAmount =$excess->total_amount;		
+                            $excessamounttotalnew=$excessamounttotalnew+$excessAmount;
+
+                    }													
+                    
+                    
+                }
+                $excessitemtotal +=$excessitem;
+
+                    
+                /*
+                if($_SESSION['reportData']['verification_status']=='Not-Verified')
+                {
+
+                    $equalAmount = 0;
+                    $equalItems = 0;
+                    $shortAmount = 0;
+                    $shortItems = 0;
+                    $excessAmount = 0;
+                    $excessitem = 0;
+                    // $equalAmount = 0;
+
+                    $equalTotalAmount = 0;
+                    $equalTotalItems = 0;
+                    $shortTotalAmount = 0;
+                    $shortTotalItems = 0;
+                    $excessamounttotalnew = 0;
+                    $excessitemtotal = 0;
+                } */
+
+                $row[] = $allcat->item_category;
+                $row[] = $allcat->total_amount!=0?getmoney_format(round(($allcat->total_amount/100000),2)):$allcat->total_amount;
+                $row[] = $allcat->total_items;
+                $row[] = $verifiedAmount!=0?getmoney_format(round(($verifiedAmount/100000),2)):$verifiedAmount;
+                $row[] = $verifiedItems;
+                $row[] = $equalAmount!=0?getmoney_format(round(($equalAmount/100000),2)):$equalAmount;
+                $row[] = $equalItems;
+                $row[] = $shortAmount!=0?getmoney_format(round(($shortAmount/100000),2)):$shortAmount;
+                $row[] = $shortItems;
+                $row[] = $excessAmount!=0?getmoney_format(round(($excessAmount/100000),2)):$excessAmount;
+                $row[] = $excessitem; 
+                $row[] = $remainitemamount!=0?getmoney_format(round(($remainitemamount/100000),2)):$remainitemamount;
+                $row[] = $remainitem;
+                fputcsv($fp, $row);
             }
-            fputcsv($fp, $total_row);
 
-        } else {
-            fputcsv($fp, ["No data found 22"]); /// This Data is Fetching While Report Generated
+
+
+            $grand_total_row = array();
+            $grand_total_row[] = "Grand Total";
+            $grand_total_row[] = $totalAmount!=0?getmoney_format(round(($totalAmount/100000),2)):$totalAmount;
+            $grand_total_row[] = $totalItems;
+            $grand_total_row[] = $verifiedTotalAmount!=0?getmoney_format(round(($verifiedTotalAmount/100000),2)):$verifiedTotalAmount;
+            $grand_total_row[] = $verifiedTotalItems;
+            $grand_total_row[] = $equalTotalAmount!=0?getmoney_format(round(($equalTotalAmount/100000),2)):$equalTotalAmount;
+            $grand_total_row[] = $equalTotalItems;
+            $grand_total_row[] = $shortTotalAmount!=0?getmoney_format(round(($shortTotalAmount/100000),2)):$shortTotalAmount;
+            $grand_total_row[] = $shortTotalItems;
+            $grand_total_row[] = $excessamounttotalnew!=0?getmoney_format(round(($excessamounttotalnew/100000),2)):$excessamounttotalnew;
+            $grand_total_row[] = $excessitemtotal;
+            $grand_total_row[] = $remainitemamounttotal!=0?getmoney_format(round(($remainitemamounttotal/100000),2)):$remainitemamounttotal;
+            $grand_total_row[] = $remainitemstotal;
+            fputcsv($fp, $grand_total_row);
+
+            $grand_total_percentage_row = array();
+            $grand_total_percentage_row[] = "% to Grand Total";
+            $grand_total_percentage_row[] = "100%";
+            $grand_total_percentage_row[] = "100%";            
+            $grand_total_percentage_row[] = round(($verifiedTotalAmount/$totalAmount)*100,2)."%";
+            $grand_total_percentage_row[] = round(($verifiedTotalItems/$totalItems)*100,2)."%";
+            $grand_total_percentage_row[] = round(($equalTotalAmount/$totalAmount)*100,2)."%";
+            $grand_total_percentage_row[] = round(($equalTotalItems/$totalItems)*100,2)."%";
+            $grand_total_percentage_row[] = round(($shortTotalAmount/$totalAmount)*100,2)."%";
+            $grand_total_percentage_row[] = round(($shortTotalItems/$totalItems)*100,2)."%";            
+            $grand_total_percentage_row[] = round(($excessamounttotalnew/$totalAmount)*100,2)."%";
+            $grand_total_percentage_row[] = round(($excessitemtotal/$totalItems)*100,2)."%";
+            $grand_total_percentage_row[] = round(($remainitemamounttotal/$totalAmount)*100,2)."%";
+            $grand_total_percentage_row[] = round(($remainitemstotal/$totalItems)*100,2)."%";
+            fputcsv($fp, $grand_total_percentage_row);
+
+
+        }
+
+        if($exceptioncategory == '4'){  //Updated with Verification Remarks     [File Name :- verificationRemarksReport]
+
+            $headers = [
+                "Allocated Item Category",
+                "Number of Line Items",
+            ];
+            fputcsv($fp, $headers);
+
+            $totalItems=0;
+            foreach($report_data['all'] as $allcat)
+            {
+                $totalItems=$totalItems+$allcat->items;
+
+                $row[] = $allcat->item_category; 
+                $row[] = $allcat->items; 
+            }
+            fputcsv($fp, $row);
+
+            $row1[] = "Grand Total"; 
+            $row1[] = $totalItems; 
+
+            fputcsv($fp, $row1);
+
+        }
+
+        if($exceptioncategory == '5'){  //Updated with Item Notes
+
+            $headers = [
+                "Allocated Item Category",
+                "Number of Line Items",
+
+            ];
+            fputcsv($fp, $headers);
+
+             $totalItems=0;
+            foreach($report_data['all'] as $allcat)
+            {
+                $totalItems=$totalItems+$allcat->items;
+
+                $row[] = $allcat->item_category; 
+                $row[] = $allcat->items; 
+            }
+            fputcsv($fp, $row);
+
+            $row1[] = "Grand Total"; 
+            $row1[] = $totalItems; 
+
+            fputcsv($fp, $row1);
+
+
+        }
+
+        if($exceptioncategory == '6'){  //Calculate Risk Exposure (New)         I think only showing When Finish
+
+
+            $headers = [
+                "Allocated Item Category",
+                "Damaged (Amount in Lacs)", "Damaged (Number of Qty)",
+                "Scrapped (Amount in Lacs)", "Scrapped (Number of Qty)",
+                "Missing (Amount in Lacs)", "Missing (Number of Qty)",
+                "Shifted (Amount in Lacs)", "Shifted (Number of Qty)",
+                "Not in Use (Amount in Lacs)", "Not in Use (Number of Qty)",
+                "Short (Amount in Lacs)", "Short (Number of Qty)",
+                "Excess (Amount in Lacs)", "Excess (Number of Qty)",
+                "Total Risk Exposure (Amount in Lacs)", "Total Risk Exposure (Number of Qty)",
+            ];
+            fputcsv($fp, $headers);
+
+            $totalAmount=0;
+            $totalItems=0;
+            $goodTotalAmount=0;
+            $goodTotalItems=0;
+            $damagedTotalAmount=0;
+            $damagedTotalItems=0;
+            $scrappedTotalAmount=0;
+            $scrappedTotalItems=0;
+            $missingTotalAmount=0;
+            $missingTotalItems=0;
+            $shiftedTotalAmount=0;
+            $shiftedTotalItems=0;
+            $notinuseTotalAmount=0;
+            $notinuseTotalItems=0;
+            $remainingTotalAmount=0;
+            $remainingTotalItems=0;            
+            $remainitemstotal=0;
+            foreach($report_data['all'] as $allcat)
+            {
+                $row = [];
+                $goodAmount=0;
+                $goodItems=0;
+                $damagedAmount=0;
+                $damagedItems=0;
+                $scrappedAmount=0;
+                $scrappedItems=0;
+                $missingAmount=0;
+                $missingItems=0;
+                $shiftedAmount=0;
+                $shiftedItems=0;
+                $notinuseAmount=0;
+                $notinuseItems=0;
+                $remainingAmount=0;
+                $remainingItems=0;
+
+                $shortAmount=0;
+                $shortItems=0;
+                $excessitem=0;
+                $excessamount=0;
+
+                foreach($report_data['verified'] as $verified)
+                {
+                    if($verified->item_category==$allcat->item_category)
+                    {
+                        $verifiedAmount=$verified->total_amount;
+                        $verifiedItems=$verified->total_items;
+                        $verifiedTotalAmount=$verifiedTotalAmount+$verifiedAmount;
+                        $verifiedTotalItems=$verifiedTotalItems+$verifiedItems;
+                        
+                        if($verified->total_items > $allcat->total_items && $verified->total_items > 0)
+                        {
+                            $shortAmount=$allcat->total_amount-$verified->total_amount;
+                            $shortItems=$allcat->total_items-$verified->total_items;
+                            $shortTotalAmount=$shortTotalAmount+$shortAmount;
+                            $shortTotalItems=$shortTotalItems+$shortItems;
+                        }
+
+                        if($verified->total_items > $allcat->total_items)
+                        {
+                            // // $excessAmount=$allcat->total_amount - $verified->total_amount;
+                            // $excessItems=$verified->total_items - $allcat->total_items;
+
+                            // $excessTotalAmount=$excessTotalAmount+$excessAmount;
+                            // $excessTotalItems=$excessTotalItems+$excessItems;
+                        }
+
+                        if($verified->total_items < 1)
+                        {
+                            $remainingAmount=$allcat->total_amount;
+                            $remainingItems=$allcat->total_items;
+                            $remainingTotalAmount=$remainingTotalAmount+$remainingAmount;
+                            $remainingTotalItems=$remainingTotalItems+$remainingItems;	
+                        }
+                        
+                    }
+
+                }
+
+                
+
+                $totalAmount=$totalAmount+$allcat->total_amount;
+                $totalItems=$totalItems+$allcat->total_qty;
+                foreach($report_data['good'] as $good)
+                {
+                    if($good->item_category==$allcat->item_category)
+                    {
+                        $goodAmount=$good->total_amount;
+                        $goodItems=$good->good_qty;
+                        $goodTotalAmount=$goodTotalAmount+$goodAmount;
+                        $goodTotalItems=$goodTotalItems+$goodItems;
+                    }
+                }
+                foreach($report_data['damaged'] as $damaged)
+                {
+                    if($damaged->item_category==$allcat->item_category)
+                    {
+                        $damagedAmount=$damaged->total_amount;
+                        $damagedItems=$damaged->damaged_qty;
+                        $damagedTotalAmount=$damagedTotalAmount+$damagedAmount;
+                        $damagedTotalItems=$damagedTotalItems+$damagedItems;
+                    }
+                }
+                foreach($report_data['scrapped'] as $scrapped)
+                {
+                    if($scrapped->item_category==$allcat->item_category)
+                    {
+                        $scrappedAmount=$scrapped->total_amount;
+                        $scrappedItems=$scrapped->scrapped_qty;
+                        $scrappedTotalAmount=$scrappedTotalAmount+$scrappedAmount;
+                        $scrappedTotalItems=$scrappedTotalItems+$scrappedItems;
+                    }
+                }
+                foreach($report_data['missing'] as $missing)
+                {
+                    if($missing->item_category==$allcat->item_category)
+                    {
+                        $missingAmount=$missing->total_amount;
+                        $missingItems=$missing->missing_item;
+                        $missingTotalAmount=$missingTotalAmount+$missingAmount;
+                        $missingTotalItems=$missingTotalItems+$missingItems;
+                    }
+                }
+                foreach($report_data['shifted'] as $shifted)
+                {
+                    if($shifted->item_category==$allcat->item_category)
+                    {
+                        $shiftedAmount=$shifted->total_amount;
+                        $shiftedItems=$shifted->shifted_item;
+                        $shiftedTotalAmount=$shiftedTotalAmount+$shiftedAmount;
+                        $shiftedTotalItems=$shiftedTotalItems+$shiftedItems;
+                    }
+                }
+                foreach($report_data['notinuse'] as $notinuse)
+                {
+                    if($notinuse->item_category==$allcat->item_category)
+                    {
+                        $notinuseAmount=$notinuse->total_amount;
+                        $notinuseItems=$notinuse->notinuse_qty;
+                        $notinuseTotalAmount=$notinuseTotalAmount+$notinuseAmount;
+                            $notinuseTotalItems= $notinuseTotalItems + $notinuseItems;
+                    }
+                }
+                $remainitem='0';
+                foreach($report_data['remaining'] as $remainingdata)
+                {
+                    if($remainingdata->item_category==$allcat->item_category)
+                    {
+                        $remainitem= $remainingdata->items;
+                    }
+                    
+                }
+                $remainitemstotal +=$remainitem;
+
+
+                $excessitem=0;
+                $excessamount=0;
+                foreach($report_data['excess'] as $excess)
+                {
+                    if($excess->item_category == $allcat->item_category)
+                    {
+                        $excessitem = $excess->items;
+                        $excessAmount =$excess->total_amount;		
+                        $excessamounttotalnew=$excessamounttotalnew+$excessAmount;
+
+                    }
+                }
+                    
+                $excessitemtotal +=$excessitem;
+                $remainingAmount=$allcat->total_amount-($goodAmount+$damagedAmount+$scrappedAmount+$missingAmount+$shiftedAmount+$notinuseAmount);
+                $remainingItems=$allcat->total_qty-($goodItems+$damagedItems+$scrappedItems+$missingItems+$shiftedItems+$notinuseItems);
+                $remainingTotalAmount=$remainingTotalAmount+$remainingAmount;
+                $remainingTotalItems=$remainingTotalItems+$remainingItems;
+
+
+
+                $row[] = $allcat->item_category;
+                
+                $row[] = $damagedAmount!=0?getmoney_format(round(($damagedAmount/100000),2)):$damagedAmount;
+                $row[] = $damagedItems;
+                
+                $row[] = $scrappedAmount!=0?getmoney_format(round(($scrappedAmount/100000),2)):$scrappedAmount;
+                $row[] = $scrappedItems;
+                
+                $row[] = $missingAmount!=0?getmoney_format(round(($missingAmount/100000),2)):$missingAmount;
+                $row[] = $missingItems;
+
+                $row[] = $shiftedAmount!=0?getmoney_format(round(($shiftedAmount/100000),2)):$shiftedAmount;;
+                $row[] = $shiftedItems;
+
+                $row[] = $notinuseAmount!=0?getmoney_format(round(($notinuseAmount/100000),2)):$notinuseAmount;
+                $row[] = $notinuseItems;
+
+                $row[] = $shortAmount!=0?getmoney_format(round(($shortAmount/100000),2)):$shortAmount;
+                $row[] = $shortItems;
+
+                if($excessAmount == NULL){
+                    $row[] = "0";
+                }else{
+                    $row[] = $excessAmount!=0?getmoney_format(round(($excessAmount/100000),2)):$excessAmount; 
+                }
+                $row[] = $excessitem;
+
+                $row[] = "0";
+                $row[] = "0";
+                fputcsv($fp, $row);
+            }
+
+            $Grand_Total_row[] = "Grand Total";
+            $Grand_Total_row[] = $damagedTotalAmount!=0?getmoney_format(round(($damagedTotalAmount/100000),2)):$damagedTotalAmount;
+            $Grand_Total_row[] = $damagedTotalItems;
+            $Grand_Total_row[] = $scrappedTotalAmount!=0?getmoney_format(round(($scrappedTotalAmount/100000),2)):$scrappedTotalAmount;
+            $Grand_Total_row[] = $scrappedTotalItems;
+            $Grand_Total_row[] = $missingTotalAmount!=0?getmoney_format(round(($missingTotalAmount/100000),2)):$missingTotalAmount;;
+            $Grand_Total_row[] = $missingTotalItems;
+            $Grand_Total_row[] = $shiftedTotalAmount!=0?getmoney_format(round(($shiftedTotalAmount/100000),2)):$shiftedTotalAmount;
+            $Grand_Total_row[] = $shiftedTotalItems;
+            $Grand_Total_row[] = $notinuseTotalAmount!=0?getmoney_format(round(($notinuseTotalAmount/100000),2)):$notinuseTotalAmount;
+            $Grand_Total_row[] = $notinuseTotalItems;
+            $Grand_Total_row[] = $shortTotalAmount!=0?getmoney_format(round(($shortTotalAmount/100000),2)):$shortTotalAmount;
+            $Grand_Total_row[] = $shortTotalItems;
+            $Grand_Total_row[] = $excessamounttotalnew!=0?getmoney_format(round(($excessamounttotalnew/100000),2)):$excessamounttotalnew;
+            $Grand_Total_row[] = $excessitemtotal;
+            $Grand_Total_row[] = "0";
+            $Grand_Total_row[] = "0";
+            fputcsv($fp, $Grand_Total_row);
+
+            $Grand_Total_percentage_row[] = "% to Grand Total";
+            $Grand_Total_percentage_row[] = round(($damagedTotalAmount/$totalAmount)*100,2)."%" ;
+            $Grand_Total_percentage_row[] = round(($damagedTotalItems/$totalItems)*100,2)."%" ;
+            $Grand_Total_percentage_row[] = round(($scrappedTotalAmount/$totalAmount)*100,2)."%" ;
+            $Grand_Total_percentage_row[] = round(($scrappedTotalItems/$totalItems)*100,2)."%" ;
+            $Grand_Total_percentage_row[] = round(($missingTotalAmount/$totalAmount)*100,2)."%" ;
+            $Grand_Total_percentage_row[] = round(($missingTotalItems/$totalItems)*100,2)."%" ;
+            $Grand_Total_percentage_row[] = round(($shiftedTotalAmount/$totalAmount)*100,2)."%" ;
+            $Grand_Total_percentage_row[] = round(($shiftedTotalItems/$totalItems)*100,2)."%" ;
+            $Grand_Total_percentage_row[] = round(($notinuseTotalAmount/$totalAmount)*100,2)."%" ;
+            $Grand_Total_percentage_row[] = round(($notinuseTotalItems/$totalItems)*100,2)."%" ;
+            $Grand_Total_percentage_row[] = round(($shortTotalItems/$totalItems)*100,2)."%" ;
+            $Grand_Total_percentage_row[] = round(($excessamounttotalnew/$totalAmount)*100,2)."%" ;
+            $Grand_Total_percentage_row[] = round(($excessamounttotalnew/$totalAmount)*100,2)."%" ;
+            $Grand_Total_percentage_row[] = round(($excessitemtotal/$totalItems)*100,2)."%" ;
+            $Grand_Total_percentage_row[] = "0";
+            $Grand_Total_percentage_row[] = "0";
+            fputcsv($fp, $Grand_Total_percentage_row);
+        }
+
+        if($exceptioncategory == '7'){
+
+        }
+
+        if($exceptioncategory == '8'){  //Mode of Verification
+              $headers = [
+                "Allocated Item Category",
+                "Verified by Scan",
+                "Verified by Manual Search",
+            ];
+            fputcsv($fp, $headers);
+
+
+            $table = [];
+            $grandScan = $grandManual = 0;
+
+            foreach ($report_data['all'] as $row) {
+                $category = $row->item_category;
+
+                // find scan items
+                $scan = 0;
+                foreach ($report_data['scan'] as $s) {
+                    if ($s->item_category === $category) {
+                        $scan = $s->items;
+                        break;
+                    }
+                }
+
+                // find manual items
+                $manual = 0;
+                foreach ($report_data['manual'] as $m) {
+                    if ($m->item_category === $category) {
+                        $manual = $m->items;
+                        break;
+                    }
+                }
+
+                $table[] = [
+                    "category" => $category,
+                    "scan" => $scan,
+                    "manual" => $manual
+                ];
+
+                $grandScan += $scan;
+                $grandManual += $manual;
+            }
+
+            $row1 = array();
+            foreach ($table as $row){
+                $row1[] = $row['category']; 
+                $row1[] = $row['scan']; 
+                $row1[] = $row['manual'];                 
+            }
+            fputcsv($fp, $row1);
+
+
+            $row2[] = "Grand Total"; 
+            $row2[] = $grandScan; 
+            $row2[] = $grandManual;      
+            fputcsv($fp, $row2);
+
+
+
+
+
+        }
+
+        if($exceptioncategory == '9'){  //Duplicate Item Codes verified (NOT WORKING)
+
+        }
+
+        if($exceptioncategory == '10'){ //Duplicate Item Codes Identified (New)
+
+            $headers = [
+                "Allocated Item Category",
+                "No Of Line Item",
+                "Not Verified",
+                "SCAN",
+                "SEARCH"
+            ];
+            fputcsv($fp, $headers);
+
+            $row1 = array();
+            if(!empty($report_data['Duplicate_Array'])){
+                foreach($report_data['Duplicate_Array'] as $key=>$allcat)
+                {
+                    $row1[] = $allcat['item_category']; 
+                    $row1[] = $allcat['total_uniqu_record_cout']; 
+                    $row1[] = $allcat['total_not_verified_uniqu_record_cout']; 
+                    $row1[] = $allcat['total_scan_uniqu_record_cout']; 
+                    $row1[] = $allcat['total_search_uniqu_record_cout']; 
+                }
+            }
+            fputcsv($fp, $row1);
+
+
         }
 
         fclose($fp);
@@ -6025,7 +6119,9 @@ public function generateExceptionReportDev() {
          * EMAIL SENDING
          * ------------------------
          */
-        $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id);
+        $user_email = 'hardik.meghnathi12@gmail.com';
+        $report_type = $exceptioncategory;
+        $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id,$report_type);
 
         echo json_encode([
             "success" => true,
@@ -6055,254 +6151,27 @@ public function generateExceptionReportDev() {
 }
 
 
+/**
+ * Helper: Decide which exception report to generate
+ */
+private function _getExceptionCategoryReport($project_name, $exceptioncategory, $verificationstatus, $reportHeaders) {
 
+    // echo '<pre>exceptioncategory ';
+    // print_r($exceptioncategory);
+    // echo '</pre>';
+    // exit();
 
-
-// user data:
-public function generateUserDataReport()
-{
-    header('Content-Type: application/json');
-
-    try {
-
-        // Get User ID from POST
-        $user_id = $this->input->post('user_id');
-
-        // Validate User ID
-        if (empty($user_id)) {
-            echo json_encode([
-                "success" => false,
-                "status_code" => 400,
-                "message" => "User ID is required"
-            ]);
-            return;
-        }
-
-        /**
-         * ------------------------
-         * FETCH USER DATA
-         * ------------------------
-         */
-
-        $this->db->where('id', $user_id);
-        $user = $this->db->get('users')->row_array();
-
-        // Check user exists
-        if (!$user) {
-            echo json_encode([
-                "success" => false,
-                "status_code" => 404,
-                "message" => "User not found"
-            ]);
-            return;
-        }
-
-        /**
-         * ------------------------
-         * CREATE ATTACHMENT FOLDER
-         * ------------------------
-         */
-
-        if (!is_dir(FCPATH . 'attachment/')) {
-            mkdir(FCPATH . 'attachment/', 0777, true);
-        }
-
-        /**
-         * ------------------------
-         * CSV FILE GENERATION
-         * ------------------------
-         */
-
-        $filename = 'user_report_' . date('Y-m-d_His') . '.csv';
-        $filepath = FCPATH . 'attachment/' . $filename;
-
-        $fp = fopen($filepath, 'w');
-
-        // CSV Headers
-        $headers = [
-            'ID',
-            'First Name',
-            'Last Name',
-            'Email',
-            'Mobile',
-            'Entity Code',
-            'Company ID',
-            'Location ID',
-            'Status',
-            'Created At'
-        ];
-
-        fputcsv($fp, $headers);
-
-        // CSV Data Row
-        $row = [
-            $user['id'] ?? '',
-            $user['first_name'] ?? '',
-            $user['last_name'] ?? '',
-            $user['email'] ?? '',
-            $user['mobile'] ?? '',
-            $user['entity_code'] ?? '',
-            $user['company_id'] ?? '',
-            $user['location_id'] ?? '',
-            $user['status'] ?? '',
-            $user['created_at'] ?? ''
-        ];
-
-        fputcsv($fp, $row);
-
-        fclose($fp);
-
-        /**
-         * ------------------------
-         * RESPONSE
-         * ------------------------
-         */
-
-        echo json_encode([
-            "success" => true,
-            "status_code" => 200,
-            "message" => "User report generated successfully",
-            "data" => [
-                "filename" => $filename,
-                "filepath" => base_url('attachment/' . $filename),
-                "generated_at" => date('Y-m-d H:i:s')
-            ]
-        ]);
-
-    } catch (Exception $e) {
-
-        log_message('error', 'GenerateUserDataReport Error: ' . $e->getMessage());
-
-        echo json_encode([
-            "success" => false,
-            "status_code" => 500,
-            "message" => "Internal server error occurred",
-            "error" => $e->getMessage()
-        ]);
-    }
-}
-
-public function generateUserDataReport11()
-{
-    header('Content-Type: application/json');
-
-    try {
-
-        /**
-         * ------------------------
-         * GET POST DATA
-         * ------------------------
-         */
-
-        $user_id = $this->input->post('user_id');
-
-        if (empty($user_id)) {
-            echo json_encode([
-                "success" => false,
-                "status_code" => 400,
-                "message" => "User ID is required"
-            ]);
-            return;
-        }
-
-        /**
-         * ------------------------
-         * FETCH USER DATA
-         * ------------------------
-         */
-
-        $this->db->where('id', $user_id);
-        $user = $this->db->get('users')->row_array();
-
-        if (!$user) {
-            echo json_encode([
-                "success" => false,
-                "status_code" => 404,
-                "message" => "User not found"
-            ]);
-            return;
-        }
-
-        // User email
-        $user_email = !empty($user['userEmail'])
-            ? $user['userEmail']
-            : $user['email'];
-
-        /**
-         * ------------------------
-         * CREATE ATTACHMENT FOLDER
-         * ------------------------
-         */
-
-        $folder_path = FCPATH . 'attachment/';
-
-        if (!is_dir($folder_path)) {
-            mkdir($folder_path, 0777, true);
-        }
-
-        /**
-         * ------------------------
-         * GENERATE CSV FILE
-         * ------------------------
-         */
-
-        $filename = 'user_report_' . date('Y-m-d_His') . '.csv';
-
-        $filepath = $folder_path . $filename;
-
-        $fp = fopen($filepath, 'w');
-
-        // Dynamic headers
-        $headers = array_keys($user);
-
-        // Write headers
-        fputcsv($fp, $headers);
-
-        // Write values
-        fputcsv($fp, $user);
-
-        fclose($fp);
-
-        /**
-         * ------------------------
-         * SEND EMAIL
-         * ------------------------
-         */
-        $projectSelect = 1;
-        $user_id = 1;
-        $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id);
-
-        /**
-         * ------------------------
-         * FINAL RESPONSE
-         * ------------------------
-         */
-
-        echo json_encode([
-            "success" => true,
-            "status_code" => 200,
-            "message" => $email_result['success']
-                ? "User report generated and emailed successfully"
-                : "User report generated but email failed",
-            "data" => [
-                "filename"      => $filename,
-                "user_email"    => $user_email,
-                "email_sent"    => $email_result['success'],
-                "email_message" => $email_result['message'],
-                "generated_at"  => date('Y-m-d H:i:s')
-            ]
-        ]);
-
-    } catch (Exception $e) {
-
-        log_message('error', 'GenerateUserDataReport Error: ' . $e->getMessage());
-
-        echo json_encode([
-            "success" => false,
-            "status_code" => 500,
-            "message" => "Internal server error occurred",
-            "error" => $e->getMessage()
-        ]);
+    switch ($exceptioncategory) {
+        case 1: return $this->tasks->getExceptionOneReport($project_name, $verificationstatus, $reportHeaders);
+        case 2: return $this->tasks->getExceptionTwoReport($project_name, $verificationstatus, $reportHeaders);
+        case 3: return $this->tasks->getExceptionThreeReport($project_name, $verificationstatus, $reportHeaders);
+        case 4: return $this->tasks->getExceptionFourReport($project_name, $verificationstatus, $reportHeaders);
+        case 5: return $this->tasks->getExceptionFiveReport($project_name, $verificationstatus, $reportHeaders);
+        case 6: return $this->tasks->getExceptionSixReport($project_name, $verificationstatus, $reportHeaders);
+        case 7: return $this->tasks->getExceptionSevenReport($project_name, $verificationstatus, $reportHeaders);
+        case 8: return $this->tasks->getExceptionEightReport($project_name, $verificationstatus, $reportHeaders);
+        case 10: return $this->tasks->getExceptionNineReport($project_name, $verificationstatus, $reportHeaders);
+        default: return [];
     }
 }
 
@@ -6554,234 +6423,6 @@ public function resolve_issue(){
 
 
 
-   public function report_exception() {
-        header('Content-Type: application/json');
-        
-        try {
-            // 1. Get and validate input parameters
-            $type = $this->input->post('optradio');
-            $projectSelect = $this->input->post('projectSelect');
-            $reporttype = $this->input->post('reporttype');         //Optional
-            $exception_category = $this->input->post('exception_category'); //Optional
-            $projectstatus = $this->input->post('projectstatus');
-            $verificationstatus = $this->input->post('verificationstatus');
-            $reportHeaders = $this->input->post('reportHeaders');
-            $original_table_name = $this->input->post('original_table_name');
-            $company_id = $this->input->post('company_id');
-            $location_id = $this->input->post('location_id');
-            $user_id = $this->input->post('user_id');
-            $entity_code = $this->input->post('entity_code');
-
-            // 2. Validate required parameters
-            if (empty($user_id)) {
-                echo json_encode(array(
-                    "success" => false,
-                    "status_code" => 400,
-                    "message" => "User ID is required"
-                ));
-                return;
-            }
-
-            // 3. Get user information
-            $this->db->where('id', $user_id);
-            $user = $this->db->get('users')->row();
-            
-            if (!$user) {
-                echo json_encode(array(
-                    "success" => false,
-                    "status_code" => 404,
-                    "message" => "User not found"
-                ));
-                return;
-            }
-
-            $user_email = !empty($user->userEmail) ? $user->userEmail : $user->email;
-            
-            if (empty($user_email)) {
-                echo json_encode(array(
-                    "success" => false,
-                    "status_code" => 400,
-                    "message" => "User email not found"
-                ));
-                return;
-            }
-
-            // 4. Generate report data based on type
-            $report_data = null;
-            $project_data = null;
-            
-            // Ensure tasks model is loaded
-            if (!isset($this->tasks)) {
-                $this->load->model('Tasks_model', 'tasks');
-            }
-            
-            if ($type == 'project') {
-                // Project-specific report
-                $condition = array();
-                
-                if (!empty($projectSelect)) {
-                    $projectSelect = trim($projectSelect);
-                    if (is_numeric($projectSelect)) {
-                        $condition["id"] = $projectSelect;
-                    }
-                }
-                if (!empty($projectstatus)) {
-                    $condition["status"] = $projectstatus;
-                }
-                if (!empty($company_id)) {
-                    $condition['company_id'] = $company_id;
-                }
-                if (!empty($location_id)) {
-                    $condition['project_location'] = $location_id;
-                }
-                
-                $getProject = $this->tasks->get_data('company_projects', $condition);
-                
-                if (count($getProject) > 0) {
-                    // Use the original_table_name from the project data for accurate data retrieval
-                    $table_name = isset($getProject[0]->original_table_name) ? $getProject[0]->original_table_name : '';
-                    
-                    if (empty($table_name)) {
-                        // Fallback to project name if original_table_name is not available
-                        $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
-                        $new_pattern = array("_", "_", "");
-                        $table_name = strtolower(preg_replace($old_pattern, $new_pattern, trim($getProject[0]->project_name)));
-                    }
-                    
-                    // Get report data based on type - using direct query to avoid column issues
-                    try {
-                        $report_data = $this->_getReportDataDirect($table_name, $verificationstatus, $reportHeaders, $reporttype);
-                    } catch (Exception $e) {
-                        echo json_encode(array(
-                            'success' => false,
-                            'status_code' => 500,
-                            'message' => 'Error getting report data: ' . $e->getMessage()
-                        ));
-                        return;
-                    }
-                    
-                    $project_data = $getProject[0];
-                } else {
-                    // Get sample projects for debugging
-                    $this->db->select('id, project_name, status, company_id, project_location');
-                    $this->db->limit(5);
-                    $sample_projects = $this->db->get('company_projects')->result();
-                    
-                    echo json_encode(array(
-                        "success" => false,
-                        "status_code" => 404,
-                        "message" => "No project found with the specified criteria",
-                        "debug_info" => array(
-                            "search_criteria" => $condition,
-                            "projectSelect" => $projectSelect,
-                            "projectstatus" => $projectstatus,
-                            "company_id" => $company_id,
-                            "location_id" => $location_id,
-                            "sample_projects" => $sample_projects
-                        )
-                    ));
-                    return;
-                }
-            } else {
-                // Other type report (all projects)
-                $condition = array(
-                    "status" => $projectstatus,
-                    'company_id' => $company_id,
-                    // 'original_table_name' => $original_table_name,
-                    'project_table_name' => $original_table_name,
-                    'entity_code' => $entity_code
-                );
-                
-                $getProjects = $this->tasks->get_data('company_projects', $condition);
-
-             
-                
-                if (count($getProjects) > 0) {
-                    $all_report_data = array();
-                    $project_data = array();
-                    
-                    foreach ($getProjects as $project) {
-                        $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
-                        $new_pattern = array("_", "_", "");
-                        $project_name = strtolower(preg_replace($old_pattern, $new_pattern, trim($project->project_name)));
-                        
-                        // Get report data based on type - using direct query
-                        $project_report = $this->_getReportDataDirect($project_name, $verificationstatus, $reportHeaders, $reporttype);
-                        
-                        if (is_array($project_report)) {
-                            $all_report_data = array_merge($all_report_data, $project_report);
-                        }
-                        $project_data[] = $project;
-                    }
-                    
-                    $report_data = $all_report_data;
-                } else {
-                    echo json_encode(array(
-                        "success" => false,
-                        "status_code" => 404,
-                        "message" => "No projects found with the specified criteria"
-                    ));
-                    return;
-                }
-            }
-            
-            // 5. Generate CSV file
-            $filename = 'report_' . date('Y-m-d_H-i-s') . '_' . uniqid() . '.csv';
-            $filepath = FCPATH . 'attachment/' . $filename;
-            
-            // Ensure attachment directory exists
-            if (!is_dir(FCPATH . 'attachment/')) {
-                mkdir(FCPATH . 'attachment/', 0777, true);
-            }
-            
-            // Generate CSV content
-            $csv_result = $this->_generateCSVFile($report_data, $project_data, $filepath, $reporttype);
-            
-            if (!$csv_result['success']) {
-                echo json_encode($csv_result);
-                return;
-            }
-            
-            // 6. Send email
-            $email_result = $this->_sendEmailWithAttachment($filename, $user_email);
-            
-            // Fallback to direct method if cURL fails
-            if (!$email_result['success']) {
-                $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id);
-            }
-            
-            // 7. Return success response
-            $response = array(
-                'success' => true,
-                'status_code' => 200,
-                'message' => 'Report generated and sent successfully',
-                'data' => array(
-                    'filename' => $filename,
-                    'email_sent' => $email_result['success'],
-                    'user_email' => $user_email,
-                    'record_count' => count($report_data),
-                    'generated_at' => date('Y-m-d H:i:s')
-                )
-            );
-            
-            if (!$email_result['success']) {
-                $response['message'] = 'Report generated but email sending failed';
-                $response['email_error'] = $email_result['message'];
-            }
-            
-            echo json_encode($response);
-            
-        } catch (Exception $e) {
-            log_message('error', 'GenerateReport Error: ' . $e->getMessage());
-            
-            echo json_encode(array(
-                'success' => false,
-                'status_code' => 500,
-                'message' => 'Internal server error occurred',
-                'error' => $e->getMessage()
-            ));
-        }
-    }
 
 
     public function getReportType(){        

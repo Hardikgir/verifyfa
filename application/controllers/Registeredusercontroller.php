@@ -22,6 +22,7 @@ class Registeredusercontroller extends CI_Controller {
         $data['plan_data']=$this->Registered_user_model->get_registered_user_plan($id);
 
       
+        /* Not in Use Comment on 25 May 2026
         $this->db->select('register_user_plan_log.*, subscription_plan.*');
 		$this->db->from(' subscription_plan');
 		$this->db->join('register_user_plan_log','register_user_plan_log.plan_id= subscription_plan.id');
@@ -29,6 +30,21 @@ class Registeredusercontroller extends CI_Controller {
 		$getnotifications=$this->db->get();
 		$Subscription_plan_result = $getnotifications->row();
         $data['Subscription_plan']= $Subscription_plan_result;
+        */ 
+
+        $this->db->select("*");
+		$this->db->from('registred_users');
+		$this->db->where('id',$id);
+		$query=$this->db->get();
+		$registred_users_details = $query->row();
+
+        $this->db->select("*");
+		$this->db->from('subscription_plan');
+		$this->db->where('id',$registred_users_details->plan_id);
+		$query=$this->db->get();
+		$subscription_plan_details = $query->row();
+        $data['Subscription_plan'] = $subscription_plan_details;
+
 
 
         $data['page_title']="Dashboard";
@@ -312,6 +328,7 @@ class Registeredusercontroller extends CI_Controller {
         $data['payment_data']=$this->Registered_user_model->get_registred_users_payment_all($id);
         $data['plan_data']=$this->Registered_user_model->get_registered_user_plan($id);
 
+        /* Not in Use Comment on 25 May 2026
         $this->db->select('register_user_plan_log.*, subscription_plan.*');
 		$this->db->from(' subscription_plan');
 		$this->db->join('register_user_plan_log','register_user_plan_log.plan_id= subscription_plan.id');
@@ -319,6 +336,21 @@ class Registeredusercontroller extends CI_Controller {
 		$getnotifications=$this->db->get();
 		$Subscription_plan_result = $getnotifications->row();
         $data['Subscription_plan']= $Subscription_plan_result;
+        */
+
+
+        $this->db->select("*");
+		$this->db->from('registred_users');
+		$this->db->where('id',$id);
+		$query=$this->db->get();
+		$registred_users_details = $query->row();
+
+        $this->db->select("*");
+		$this->db->from('subscription_plan');
+		$this->db->where('id',$registred_users_details->plan_id);
+		$query=$this->db->get();
+		$subscription_plan_details = $query->row();
+        $data['Subscription_plan'] = $subscription_plan_details;
 
 
 

@@ -1,8 +1,0 @@
-﻿"Allocated Item Category","Total as per FAR",,Tagged,,Non-Tagged,,Unspecified,
-,"Amount(in Lacs)","Number of Line Items","Amount(in Lacs)","Number of Line Items","Amount(in Lacs)","Number of Line Items","Amount(in Lacs)","Number of Line Items"
-COMP,45000,3,15000,2,30000,1,0,0
-F&F,11598000,8,11064000,6,534000,2,0,0
-OE,131000,3,70000,2,61000,1,0,0
-MED,119000,6,108000,5,11000,1,0,0
-"Grand Total",11893000,20,11257000,15,636000,5,0,0
-"% to total FAR",100%,100%,94.65%,75%,5.35%,25%,0%,0%

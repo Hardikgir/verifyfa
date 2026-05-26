@@ -1,13 +1,14 @@
 1) http://verifyfa.com/Dev/index.php/EmailController/registrationActivation1/12 :- Setup ( Superadmin > save_registred_user) [should be Setup in confirmation_userdetail] 22/05/2026
 2) http://verifyfa.com/Dev/index.php/EmailController/activationLinkExpiration2/12 :- Setup (Superadmin > generate_activation_link)
 3) http://verifyfa.com/Dev/index.php/EmailController/successfulRegistration3/12 :- Setup (Login > registered_user_login_check) To (Registeredusercontroller > registered_user_passwod_save)
-4) http://verifyfa.com/Dev/index.php/EmailController/accountIdUnlocking/12
+4) http://verifyfa.com/Dev/index.php/EmailController/accountIdUnlocking/12 <<Not Setup on this>>
 5) http://verifyfa.com/Dev/index.php/EmailController/passwordResetUnlock5/12 :- (Discussion on 11:30 pm)  (Login > VerifyForForgetPasswordRegistered) Not Completed <<Need to Work>>>
 6) http://verifyfa.com/Dev/index.php/EmailController/successfulDeRegistration6/12 :- Setup ( Superadmin > unsubscribe_account)
 11) http://verifyfa.com/Dev/index.php/EmailController/accountSuspension11/12  :- Setup (Superadmin > suspend_account)  <<approval>>
 12) http://verifyfa.com/Dev/index.php/EmailController/accountRenewal12/12 :- Seutp reactive_account (Theri is 2 Mail Remove fro One above)  <<approval>>
 13) http://verifyfa.com/Dev/index.php/EmailController/accountUpgradation13/12 :- Setup ( Superadmin > save_edit_registred_user)
 14) http://verifyfa.com/Dev/index.php/EmailController/addingUserByAdmin14/12 :- Setup ( Admin_controller > save_admin_user) (But Thier is some issue so i hide email)  [Password is Still showing 12345]
+
 Error Showing Like :- 
     {
         Type: Error
@@ -54,7 +55,55 @@ Password is not Currect.
 
 Meeting Discussion Point :- 
 
--> Register user their information is not showing proper once upgrade their packege (Group admin that details is showing proper)
--> email 5 need to setup in Login controller
--> Some of email is showing solution Email so need to update that one
--> 
+-> email No 5 need to setup in Login controller :- Done & Move to Server (Verify user & Register User)
+
+-> Some of email is showing solution Email so need to update that one  <<<PENDING>>>>
+-> Register user their information is not showing proper once upgrade their packege (Group admin that details is showing proper) :- <<DONE>>
+
+Discussion on 23/05/2026 :- 
+-> Time is not showing proper Issue in Below (For this you have to install mobile application) (Their is GMT Default That is UL time so for convert into india time that is added +5.30 ) <<<PENDING>>>>
+    -> Task List (Here is showing Current time But that should be showing last update)
+    -> Search (Here is showing +5.30 of Current time But that should be showing last update)
+    -> In view Details their is showing proper time But in Details their is also same issue 
+-> Some Where in Application their is Wrong data is showing in [Amount Wise Breakup] (I don't know issue is from application or from api) <<<PENDING>>>>
+-> Report issue : <<<PENDING>>>>
+    1) Standard Report > Project Base :- Is koi main nai aati jab generate karte h then showing error like << No Project Found in Specified Criteare>>
+    3) Additional Report 
+        Their is email receive but not proper data
+
+
+
+    2) Execption Report > Project Base     
+        1. Condition of item :- Email aa rahi h but issue is Report me amount wise proper aa gya but qty wise data showing 0. (Whole Report you have to check)
+        2. Changes/Updation :- Email is not showing proper (Excel Format is not proper & Data is also showing Wrong)
+        3. Qty Validation :- In this case Error showing in mobile application (C:\Users\Hardikgiri\OneDrive\Desktop\Verifyfa-MeetingDiscussion) & Email is showing confition of Item not Qty Validation 
+        4. Mode of verification :- Error showing Network Error Null & Email is not Received.
+        5. Update with Verification Remark :- Also Showing Different Format 
+
+    Email also some content updates :- <<DONE>> [All Below point Done]
+        -> Report Type Value Should be Proper Value. :- <<DONE>>
+        -> One button Need to Add And that button link should be login page Content like (Click here to Get Details Report). (That Should be after Report Type) :- <<DONE>>
+        -> some Changes in Existing content (As Requested please find attached the summart if the Report using VerifyFA Mobiel app) :- <<DONE>>
+
+
+
+
+==============
+Report Setup 
+==============
+web                     Mobile
+==========================================
+conditionReport
+ChangesUpdationsItemsReport
+quantityValidationReport
+==========================================
+conditionReport             Condition of Item   :- Done
+ChangesUpdationsItemsReport Changes/ Updations of Items (New)   :- Done
+quantityValidationReport    Qty Validation Status
+verificationRemarksReport   Updated with Verification Remarks
+itemNotesReport             Updated with Item Notes
+CalculateRiskExposureReport Calculate Risk Exposure (New)
+modeReport                  Mode of Verification
+                            Duplicate Item Codes verified (NOT WORKING)
+DuplicateItemCodesReport    Duplicate Item Codes Identified (New)
+

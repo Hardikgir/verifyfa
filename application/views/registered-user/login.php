@@ -53,6 +53,11 @@
 							<?php  
 						    } 
 							?>
+							
+							<div class="alert alert-success" style="<?php echo $this->session->flashdata('success')!=''?'':'display:none;'; ?>" role="alert">
+								<?php echo $this->session->flashdata('success'); ?>
+							</div>
+
 							<form role="form" method="post" action="<?php echo base_url();?>index.php/registered-user-login-check">
 								<div class="form-group mb-3">
 									<div class="input-group input-group-merge input-group-alternative">

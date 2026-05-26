@@ -1,9 +1,25 @@
 <?php
+
+/*
+Created on Backup of Existing upto 24 May
+Below are Removed Functions
+
+1) _getExceptionCategoryReport
+2) generateExceptionReport_original
+3) generateExceptionReportDev11
+4) generateExceptionReport
+5) generateUserDataReport
+6) generateUserDataReport11
+7) report_exception
+*/
+
+
+
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 // require_once APPPATH."/third_party/PHPExcel.php";
 
-class Tasks extends CI_Controller {
+class Tasks_Backup_24May extends CI_Controller {
 
 	public function __construct()
 	{
@@ -2114,11 +2130,11 @@ public function get_project_additionaldata(){
             }
             
             // 6. Send email
-            $email_result = $this->_sendEmailDirect($filename, $user_email);
+            $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id);
             
             // Fallback to direct method if cURL fails
             if (!$email_result['success']) {
-                $email_result = $this->_sendEmailDirect($filename, $user_email);
+                $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id);
             }
             
             // 7. Return success response
@@ -2643,9 +2659,103 @@ public function get_project_additionaldata(){
      * @param string $user_email
      * @return array
      */
-    private function _sendEmailDirect($filename, $user_email) {
+    private function _sendEmailDirect($filename, $user_email,$project_id,$user_id) {
         // $user_email = 'hardik.meghnathi12@gmail.com'; // For testing purposes
         try {
+
+            $this->db->select("*");   
+            $this->db->from("users");   
+            $this->db->where("id",$user_id);
+            $query= $this->db->get();   
+            $user = $query->row();
+
+            // echo "<pre>Last query :";
+            // print_r($this->db->last_query());
+            // echo "</pre>";
+            // exit;
+
+             if (!$user) {
+                echo "User not found.";
+                return;
+            }
+
+             /*
+        -----------------------------------------
+        Actual DB Fields
+        -----------------------------------------
+        first_name
+        last_name
+        email_id
+        entity_code
+        organisation_name
+        -----------------------------------------
+        */
+
+        // echo "<pre>user :";
+        // print_r($user);
+        // echo "</pre>";
+        // exit;
+
+        $receiverName = trim($user->firstName . ' ' . $user->lastName);
+        $to = $user->userEmail;
+        $entityCode   = $user->entity_code;
+
+        $this->db->select("id,company_name");   
+        $this->db->from("company");   
+        $this->db->where("id",$user->company_id);
+        $query= $this->db->get();   
+        $organization_details = $query->row();
+
+     
+       
+        $companyName  = $organization_details->company_name;
+
+       
+        if (empty($to)) {
+            echo "Email ID not found.";
+            return;
+        }
+
+        /*
+        -----------------------------------------
+        Demo Dynamic Values
+        Replace from DB later
+        -----------------------------------------
+        */
+
+        $this->db->select("*");   
+        $this->db->from("company_projects");   
+        $this->db->where("id",$project_id);
+        $query= $this->db->get();   
+        $project_details = $query->row();
+
+        $this->db->select("*");   
+        $this->db->from("company_locations");   
+        $this->db->where("id",$project_details->project_location);
+        $query= $this->db->get();   
+        $project_location_details = $query->row();
+
+        $locationName = $project_location_details->location_name;
+        $projectName  = $project_details->project_name;
+        $projectId    = $project_details->project_id;
+        $reportType   = "Report";
+
+        // Subject
+        $subject = "Report Available for Download (Request generated VerifyFA Mobile App)";
+
+        // Date Time
+        $dateTime = date('d-m-Y h:i A');
+
+        // Logo Path
+        $logo = base_url('assets/img/logo.png');
+
+        // App Download Link
+        $appDownloadLink = "https://play.google.com/store/apps/details?id=com.verifyfa";
+
+        // Attachment File Path
+        // $attachmentPath = FCPATH . 'uploads/reports/sample-report.pdf';
+
+
             // Check if file exists
             $filepath = FCPATH . 'attachment/' . $filename;
             if (!file_exists($filepath)) {
@@ -2656,6 +2766,7 @@ public function get_project_additionaldata(){
             $CI = setEmailProtocol();
             $from_email = 'solutions@ethicalminds.in';
             
+            /*
             // Simple email content
             $email_content = '
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -2685,7 +2796,112 @@ public function get_project_additionaldata(){
                 <div style="text-align: center; margin-top: 20px; color: #666; font-size: 12px;">
                     <p>***** This is a system generated communication and does not require signature. *****</p>
                 </div>
-            </div>';
+            </div>'; */
+
+
+            /*
+        -----------------------------------------
+        Email HTML Template
+        -----------------------------------------
+        */
+
+        $email_content = '
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:20px;font-family:Arial,sans-serif;">
+            <tr>
+                <td align="center">
+
+                    <table width="700" cellpadding="0" cellspacing="0" style="background:#ffffff;border:1px solid #dddddd;padding:30px;">
+
+                        <!-- Logo -->
+                        <tr>
+                            <td align="center" style="padding-bottom:20px;">
+                                <img src="' . $logo . '" height="70">
+                            </td>
+                        </tr>
+
+                        <!-- Auto Generated -->
+                        <tr>
+                            <td style="font-size:12px;color:#d9534f;text-align:center;padding-bottom:20px;">
+                                ***** This is an auto generated NO REPLY communication and replies to this email id are not attended to. *****
+                            </td>
+                        </tr>
+
+                        <!-- Date -->
+                        <tr>
+                            <td style="font-size:13px;color:#666;padding-bottom:15px;">
+                                ' . $dateTime . '
+                            </td>
+                        </tr>
+
+                        <!-- Greeting -->
+                        <tr>
+                            <td style="font-size:15px;color:#333;padding-bottom:15px;">
+                                Dear <b>' . $receiverName . '</b>,
+                            </td>
+                        </tr>
+
+                        <!-- Main Message -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:26px;padding-bottom:18px;">
+                                As requested, please find attached the selected Report using 
+                                <b>VerifyFA</b> Mobile App.
+                            </td>
+                        </tr>
+
+                        <!-- Details -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:28px;padding-bottom:20px;">
+                                <b>Entity Code:</b> ' . $entityCode . '<br>
+                                <b>Company Name:</b> ' . $companyName . '<br>
+                                <b>Location Name:</b> ' . $locationName . '<br>
+                                <b>Project Name (Project ID):</b> ' . $projectName . ' (' . $projectId . ')<br>
+                                <b>Report Type:</b> ' . $reportType . '
+                            </td>
+                        </tr>
+
+                        <!-- App Link -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;line-height:26px;padding-bottom:12px;">
+                                Kindly make sure that you have downloaded the Android based VerifyFA Mobile App from here: to execute the Project Assigned.
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td align="center" style="padding-bottom:20px;">
+                                <a href="' . $appDownloadLink . '" 
+                                style="background:#28a745;color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:5px;display:inline-block;">
+                                Download VerifyFA App
+                                </a>
+                            </td>
+                        </tr>
+
+                        <!-- Thanks -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;padding-bottom:18px;">
+                                Thanks for your support and understanding.
+                            </td>
+                        </tr>
+
+                        <!-- Footer -->
+                        <tr>
+                            <td style="font-size:14px;color:#333;padding-bottom:20px;">
+                                Regards,<br>
+                                <b>VerifyFA</b>
+                            </td>
+                        </tr>
+
+                        <!-- Bottom -->
+                        <tr>
+                            <td style="border-top:1px solid #eeeeee;padding-top:15px;font-size:12px;color:#777;text-align:center;">
+                                ***** This is a system generated communication and does not require signature. *****
+                            </td>
+                        </tr>
+
+                    </table>
+
+                </td>
+            </tr>
+        </table>';
             
             $subject = "Report Generated - " . date('Y-m-d H:i:s');
             
@@ -5008,7 +5224,7 @@ public function generateExceptionReport() {
          */
         $email_result = $this->_sendEmailWithAttachment($filename, $user_email);
         if (!$email_result['success']) {
-            $email_result = $this->_sendEmailDirect($filename, $user_email);
+            $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id);
         }
 
         // Final Response
@@ -5287,7 +5503,7 @@ public function generateExceptionReport_original() {
          * EMAIL SENDING
          * ------------------------
          */
-        $email_result = $this->_sendEmailDirect($filename, $user_email);
+        $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id);
 
         echo json_encode([
             "success" => true,
@@ -5543,7 +5759,7 @@ public function generateExceptionReportDev11() {
          * EMAIL SENDING
          * ------------------------
          */
-        $email_result = $this->_sendEmailDirect($filename, $user_email);
+        $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id);
 
         echo json_encode([
             "success" => true,
@@ -5825,7 +6041,7 @@ public function generateExceptionReportDev() {
          * EMAIL SENDING
          * ------------------------
          */
-        $email_result = $this->_sendEmailDirect($filename, $user_email);
+        $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id);
 
         echo json_encode([
             "success" => true,
@@ -6068,8 +6284,9 @@ public function generateUserDataReport11()
          * SEND EMAIL
          * ------------------------
          */
-
-        $email_result = $this->_sendEmailDirect($filename, $user_email);
+        $projectSelect = 1;
+        $user_id = 1;
+        $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id);
 
         /**
          * ------------------------
@@ -6546,7 +6763,7 @@ public function resolve_issue(){
             
             // Fallback to direct method if cURL fails
             if (!$email_result['success']) {
-                $email_result = $this->_sendEmailDirect($filename, $user_email);
+                $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id);
             }
             
             // 7. Return success response
