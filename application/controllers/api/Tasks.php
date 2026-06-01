@@ -62,8 +62,10 @@ class Tasks extends CI_Controller {
             $getlastupdatedtime=$this->tasks->lastupdatetime($project_name,$userid);
             if(!empty($getlastupdatedtime))
             {
-                // $project->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($getlastupdatedtime[0]->updatedat)));
-                $project->updatedat=date('d-m-Y H:i:s');
+                $project->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($getlastupdatedtime[0]->updatedat)));
+                // $project->updatedat=date('d-m-Y H:i:s');
+                $project->updatedat=date('d-m-Y H:i:s',strtotime($getlastupdatedtime[0]->updatedat));
+                
             }
             else
             {
@@ -197,8 +199,9 @@ class Tasks extends CI_Controller {
             $getlastupdatedtime=$this->tasks->lastupdatetime($project_name,$userid);
             if(!empty($getlastupdatedtime))
             {
-                $project->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($getlastupdatedtime[0]->updatedat)));
+                // $project->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($getlastupdatedtime[0]->updatedat)));
                 // $project->updatedat=date('d-m-Y H:i:s');
+                $project->updatedat=date('d-m-Y H:i:s',strtotime($getlastupdatedtime[0]->updatedat));
             }
             else
             {
@@ -263,8 +266,10 @@ class Tasks extends CI_Controller {
 
             if(!empty($getlastupdatedtime))
             {
-                $project->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($getlastupdatedtime[0]->updatedat)));
+                // $project->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($getlastupdatedtime[0]->updatedat)));
                 // $project->updatedat=date('d-m-Y H:i:s');
+                $project->updatedat=date('d-m-Y H:i:s',strtotime($getlastupdatedtime[0]->updatedat));
+                
             }
             else
             {
@@ -320,8 +325,11 @@ class Tasks extends CI_Controller {
             }else{
                 $verifiername='';
             }
-            $st->createdat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->createdat)));
-            $st->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->updatedat)));
+            // $st->createdat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->createdat)));
+            // $st->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->updatedat)));
+
+            $st->createdat=date('d-m-Y H:i:s',strtotime($st->createdat));
+            $st->updatedat=date('d-m-Y H:i:s',strtotime($st->updatedat));
 
             // $st->createdat=date('d-m-Y H:i:s');
             // $st->updatedat=date('d-m-Y H:i:s');
@@ -329,7 +337,9 @@ class Tasks extends CI_Controller {
             {
                 $st->verified_by_username= $verifiername;
                 $st->verified_by_name= $verifiername;
-                $st->verified_datetime=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->verified_datetime)));
+                // $st->verified_datetime=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->verified_datetime)));
+                $st->verified_datetime=date('d-m-Y H:i:s',strtotime($st->verified_datetime));
+                
                 // $st->verified_datetime=date('d-m-Y H:i:s');
             }
             
@@ -471,14 +481,18 @@ class Tasks extends CI_Controller {
                        $verifiername='';
                    }
 
-                $st->createdat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->createdat)));
-                $st->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->updatedat)));
+                // $st->createdat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->createdat)));
+                // $st->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->updatedat)));
+
+                $st->createdat=date('d-m-Y H:i:s',strtotime($st->createdat));
+                $st->updatedat=date('d-m-Y H:i:s',strtotime($st->updatedat));
 
                 // $st->createdat=date('d-m-Y H:i:s');
                 // $st->updatedat=date('d-m-Y H:i:s');
                 if($st->verified_datetime)
                 {
-                    $st->verified_datetime=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->verified_datetime)));
+                    // $st->verified_datetime=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->verified_datetime)));
+                    $st->verified_datetime=date('d-m-Y H:i:s',strtotime($st->verified_datetime));
                     // $st->verified_datetime=date('d-m-Y H:i:s');
                     $st->verified_by_username= $verifiername;
                     $st->verified_by_name= $verifiername;
@@ -1731,15 +1745,19 @@ public function get_project_additionaldata(){
 		{
             foreach($scantask as $st)
             {
-                $st->createdat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->createdat)));
-                $st->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->updatedat)));
+                // $st->createdat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->createdat)));
+                // $st->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->updatedat)));
+
+                $st->createdat=date('d-m-Y H:i:s',strtotime($st->createdat));
+                $st->updatedat=date('d-m-Y H:i:s',strtotime($st->updatedat));
 
                 // $st->createdat=date('d-m-Y H:i:s');
                 // $st->updatedat=date('d-m-Y H:i:s');
 
                 if($st->verified_datetime)
                 {
-                    $st->verified_datetime=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->verified_datetime)));
+                    // $st->verified_datetime=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->verified_datetime)));
+                    $st->verified_datetime=date('d-m-Y H:i:s',strtotime($st->verified_datetime));
                     // $st->verified_datetime=date('d-m-Y H:i:s');
                 }
                 
@@ -3595,175 +3613,6 @@ public function get_project_additionaldata(){
     }
 
 
-
-       public function verifybylist212121()
-    {
-        $projectid=$this->input->post('project_id');
-        $userid=$this->input->post('user_id');
-        $verification_status=$this->input->post('verification_status');
-        $tag_status_y_n_na =$this->input->post('tag_status_y_n_na');
-        $item_category  =$this->input->post('item_category');
-        $item_sub_category =$this->input->post('item_sub_category');
-        $projectname=$this->input->post('project_name');
-        $search_text =$this->input->post('search_text');
-
-        // $search_fields = $this->input->post('search_fields');
-
-        $search_fields = array();
-        if(!empty($this->input->post('search_fields'))){
-            $search_fields = explode(",",$this->input->post('search_fields'));
-        }
-        
-
-
-        $item_classification=$this->input->post('item_classification');
-        $user_department=$this->input->post('user_department');
-
-        $order_by = $this->input->post('order_by');
-        $cond=array();
-        
-        $where= ' WHERE id IS NOT NULL ';
-        $is_where = 0;
-       
-        
-        
-
-        
-        
-        if($tag_status_y_n_na !='' && $tag_status_y_n_na !='All')
-        {
-            $where.=' AND tag_status_y_n_na="'.$tag_status_y_n_na.'"';    
-        }
-        if($item_category !='' && $item_category !='All')
-        {
-            $where.=' AND item_category="'.$item_category.'"';    
-        }
-        if($item_sub_category !='' && $item_sub_category !='All')
-        {
-            $where.=' AND item_sub_category="'.$item_sub_category.'"';    
-        } 
-        
-
-        
-        if($verification_status !='All')
-        {
-            if($is_where == 1){
-                $where.=' AND verification_status="'.$verification_status.'"';    
-            }else{
-                $where.=' WHERE verification_status="'.$verification_status.'"';    
-            }
-            
-            $is_where = 1;
-        }
-
-        if($item_classification !='All')
-        {
-            if((isset($item_classification)) && (!empty($item_classification)))
-            {
-                if($is_where == 1){
-                    $where.=' AND item_classification="'.$item_classification.'"';    
-                }else{
-                    $where.=' WHERE item_classification="'.$item_classification.'"';    
-                }
-                $is_where = 1;
-            }
-        }
-      
-
-        
-        if($user_department !='All')
-        {
-           
-            if((isset($user_department)) && (!empty($user_department)))
-            {
-                if($is_where == 1){
-                    $where.=' AND user_department="'.$user_department.'"';
-                }else{
-                    $where.=' WHERE user_department="'.$user_department.'"';
-                }
-                    
-            }
-        }
-
-
-
-        $where .= ' ORDER BY id '.$order_by;
-        
-        $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
-        $new_pattern = array("_", "_", "");
-        $projectname=strtolower(preg_replace($old_pattern, $new_pattern , trim($projectname)));
-        $projectdetail=$this->tasks->get_data('company_projects',array('id'=>$projectid));
-        
-        $select="SELECT * FROM ".$projectname;
-        $scantask=$this->db->query($select.$where)->result();
-        // echo '<pre>last_query ';
-        // print_r($this->db->last_query());
-        // echo '</pre>';
-        // exit();
-        $result_count = count($scantask);
-        
-        // $myscantask = array();
-		if(!empty($scantask) && count($scantask) > 0)
-		{
-            foreach($scantask as $st)
-            {
-
-                if($st->verified_by != ''){
-                    $verifiername= $this->tasks->get_verifire_namesingle($st->verified_by);
-                   }else{
-                       $verifiername='';
-                   }
-
-                $st->createdat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->createdat)));
-                $st->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->updatedat)));
-
-                // $st->createdat=date('d-m-Y H:i:s');
-                // $st->updatedat=date('d-m-Y H:i:s');
-
-                if($st->verified_datetime)
-                {
-                    $st->verified_datetime=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->verified_datetime)));
-                    // $st->verified_datetime=date('d-m-Y H:i:s');
-                    $st->verified_by_username= $verifiername;
-                    $st->verified_by_name= $verifiername;
-    
-                }
-                
-               // $st->date_of_purchase_invoice_date=date('d-m-Y',strtotime($st->date_of_purchase_invoice_date)); 
-
-            //    $myscantask[] = $st;
-
-            } 
-
-
-            // echo '<pre>scantask s';
-            // print_r($scantask);
-            // echo '</pre>';
-            // exit(); 
-
-            if(!empty($projectdetail) && in_array($scantask[0]->item_category,json_decode($projectdetail[0]->item_category)))
-            {
-                header('Content-Type: application/json');
-                echo json_encode(array("success"=>200,"message"=>"Tasks fetched successfully.","count"=>$result_count,"data"=>$scantask));
-                exit;
-            }
-            else
-            {
-                header('Content-Type: application/json');
-                echo json_encode(array("success"=>401,"message"=>"Permission to scan this category item is not granted."));
-                exit;
-            }
-			
-		} 
-		else {
-			header('Content-Type: application/json');
-			echo json_encode(array("success"=>401,"message"=>"Item not available"));
-			exit;
-		}
-    }
-
-
-
     public function verifybylist()
     {
         
@@ -3922,15 +3771,19 @@ public function get_project_additionaldata(){
                        $verifiername='';
                    }
 
-                $st->createdat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->createdat)));
-                $st->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->updatedat)));
+                // $st->createdat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->createdat)));
+                // $st->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->updatedat)));
+
+                $st->createdat=date('d-m-Y H:i:s',strtotime($st->createdat));
+                $st->updatedat=date('d-m-Y H:i:s',strtotime($st->updatedat));
 
                 // $st->createdat=date('d-m-Y H:i:s');
                 // $st->updatedat=date('d-m-Y H:i:s');
 
                 if($st->verified_datetime)
                 {
-                    $st->verified_datetime=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->verified_datetime)));
+                    // $st->verified_datetime=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->verified_datetime)));
+                    $st->verified_datetime=date('d-m-Y H:i:s',strtotime($st->verified_datetime));
                     // $st->verified_datetime=date('d-m-Y H:i:s');
                     $st->verified_by_username= $verifiername;
                     $st->verified_by_name= $verifiername;
@@ -4525,8 +4378,11 @@ $this->email->attach($file_path);
             }else{
                 $verifiername='';
             }
-            $st->createdat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->createdat)));
-            $st->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->updatedat)));
+            // $st->createdat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->createdat)));
+            // $st->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->updatedat)));
+
+            $st->createdat=date('d-m-Y H:i:s',strtotime($st->createdat));
+            $st->updatedat=date('d-m-Y H:i:s',strtotime($st->updatedat));
 
             // $st->createdat=date('d-m-Y H:i:s');
             // $st->updatedat=date('d-m-Y H:i:s');
@@ -4535,7 +4391,8 @@ $this->email->attach($file_path);
             {
                 $st->verified_by_username= $verifiername;
                 $st->verified_by_name= $verifiername;
-                $st->verified_datetime=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->verified_datetime)));
+                // $st->verified_datetime=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($st->verified_datetime)));
+                $st->verified_datetime=date('d-m-Y H:i:s',strtotime($st->verified_datetime));
                 // $st->verified_datetime=date('d-m-Y H:i:s');
             }
             
@@ -6119,7 +5976,7 @@ public function generateExceptionReportDev() {
          * EMAIL SENDING
          * ------------------------
          */
-        $user_email = 'hardik.meghnathi12@gmail.com';
+        // $user_email = 'hardik.meghnathi12@gmail.com';
         $report_type = $exceptioncategory;
         $email_result = $this->_sendEmailDirect($filename, $user_email,$projectSelect,$user_id,$report_type);
 
@@ -7091,7 +6948,8 @@ public function resolve_issue(){
             $getlastupdatedtime=$this->tasks->lastupdatetime($project_name,$userid);
             if(!empty($getlastupdatedtime))
             {
-                $project->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($getlastupdatedtime[0]->updatedat)));
+                // $project->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($getlastupdatedtime[0]->updatedat)));
+                $project->updatedat=date('d-m-Y H:i:s',strtotime($getlastupdatedtime[0]->updatedat));
                 // $project->updatedat=date('d-m-Y H:i:s');
             }
             else
