@@ -1648,6 +1648,7 @@ class Dashboard extends CI_Controller {
 				$project_name=strtolower(preg_replace($old_pattern, $new_pattern , trim($getProject[0]->project_name)));
 				$categories=$this->tasks->getdistinct_data($project_name,'item_category');
 				
+				
 				if($reporttype==1)
 				{
 					$getreport=$this->tasks->getBasicReport($project_name,$verificationstatus,$reportHeaders);

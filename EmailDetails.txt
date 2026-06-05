@@ -155,4 +155,37 @@ Below are List of Function in that Time is Different
 
 9) projectAmountwise [$project->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($getlastupdatedtime[0]->updatedat)));]
 10) 
-    
+        
+
+
+
+
+Date :- 04//06/2026
+
+1) Condition of Item :- Ok
+2) Changes/Updations of Items :- [Fixed] (Issue :- Data showing in Single Line (Total is not Showing))
+3) Qty Validation :- Ok
+4) Updated with Verification Remarks :- [Fixed] (Issue :- Data showing in Single Line)
+5) Updated with Item Notes :- Did not checked Yet
+6) Calcualtor Risk Exposure :- This Status is Once complete then (Need to Check)
+7) Mode of Verification :- (Already Working Fine) (Issue :- Koi mail nai jata (Network Error Null) and Report is not Generated)
+8) Duplicate Item code Identified :- This is not Discussed
+
+
+
+Consolidate :- Need to Check and compare with web (Need to Check)
+
+
+Additional Assetes (2 bar show ho raha h) :- [Fixed]
+1) Mail to aa raha h but data blank aa raha h
+2) report type bhi blank aa raha h 
+3) Attachment Bilkul Blank aa rahi h (totaly Blank even not showing title)
+
+In both case 
+1) Select Additional Radion Button (You have to Remove this)
+2) Select from Dropdown
+
+
+
+Standard Report > Scope & Summey 
+Ispe Error report aa raha h (No Project found in this specific Cretearea)
