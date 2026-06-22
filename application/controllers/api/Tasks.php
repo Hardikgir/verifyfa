@@ -532,6 +532,7 @@ class Tasks extends CI_Controller {
         $projectname=$this->input->post('project_name');
         $verified_by = $this->input->post('verify_by');
         $scanned=json_decode($this->input->post('scanned_data'));
+        
         $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
         $new_pattern = array("_", "_", "");
         $projectname=strtolower(preg_replace($old_pattern, $new_pattern , trim($projectname)));
@@ -546,9 +547,23 @@ class Tasks extends CI_Controller {
         $qty_not_in_use = 0;
         $qty_missing = 0;
         $qty_shifted = 0;
+        $qty_value = $scanned->quantity_verified;
 
         $getquantity=$this->tasks->get_data($projectname,$condition);
-        
+
+        $quantity_as_per_invoice = $getquantity[0]->quantity_as_per_invoice;
+
+        $quantity_verified_tbl = $getquantity[0]->quantity_verified;        
+        $quantity_verified = $scanned->quantity_verified;
+
+        $total_will_be = (int)$quantity_verified_tbl + (int)$quantity_verified;
+       
+        if($quantity_as_per_invoice < $total_will_be){
+            header('Content-Type: application/json');
+            echo json_encode(array("success"=>200,"message"=>"Qty Verification more then they actually qty"));
+            exit;
+        }
+
         if($scanned->item_scrap_condition =='qty_ok')
         {
             $qty_ok = (int)$getquantity[0]->qty_ok + (int)$scanned->quantity_verified;
@@ -622,31 +637,7 @@ class Tasks extends CI_Controller {
         $scanned->mode_of_verification= $mode_of_verification;
 
         $new_array[0] = $this->stdToArray($scanned);
-
-        // echo '<pre>';
-        // print_r($new_array);
-        // echo '</pre>';
-        // exit(); 
-
-        // $new_array[0]['is_edit'] = 1;
-        // echo '<pre>';
-        // print_r($new_array[0]);
-        // echo '</pre>';
-        // exit();
-
-        // $verify_user_detail = $this->tasks->get_single_user($this->input->post('verify_by'));
-        // $new_array[0]['verified_by'] = $this->input->post('verify_by');
-        // $new_array[0]['verified_by_username'] = $verify_user_detail->firstName." ".$verify_user_detail->lastName;
-
         unset($new_array[0]['item_scrap_condition']);
-        // echo '<pre>projectname ';
-        // print_r($projectname);
-        // echo '</pre>';
-        // // exit(); 
-        // echo '<pre>';
-        // print_r($new_array[0]);
-        // echo '</pre>';
-        // exit(); 
         $verify=$this->tasks->update_data($projectname,$new_array[0],$condition);
      
         // $verify = 1;
@@ -669,6 +660,8 @@ class Tasks extends CI_Controller {
        
         $verify_user_detail = $this->tasks->get_single_user($verified_by);       
         $verified_by_username = $verify_user_detail->firstName;
+
+        
 
         $verifiedproducts_array = array(
             'company_id' => $company_id,
@@ -698,6 +691,7 @@ class Tasks extends CI_Controller {
             'qty_shifted' => $qty_shifted,
             'mode_of_verification' => $mode_of_verification,
             'type_of_operation' => 'add',
+            'qty_value' => $qty_value,
             'created_at' => date('Y-m-d H:s:i'),
         );
         $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts',$verifiedproducts_array);
@@ -3223,7 +3217,10 @@ public function get_project_additionaldata(){
     public function editverified()
     {
         $itemid=$this->input->post('item_id');
+        $edit_opration=$this->input->post('edit_opration');
+        $project_id=$this->input->post('project_id');        
         $projectname=$this->input->post('project_name');
+        $instance=$this->input->post('instance');
         $update_details=json_decode($this->input->post('scanned_data'));
         $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
         $new_pattern = array("_", "_", "");
@@ -3241,56 +3238,115 @@ public function get_project_additionaldata(){
         $qty_shifted = 0;
 
 
-        // exit("asdasd");
+        
+        $this->db->select('*');
+        $this->db->from('verifiedproducts');
+        $this->db->where('item_id',$itemid);
+        $this->db->where('id',$instance);
+        $this->db->where('project_id',$project_id);
+        $query = $this->db->get();
+        $get_instance_details= $query->row();
+        $qty_value_of_selected_instance = $get_instance_details->qty_value; 
+        $qty_ok_of_selected_instance = $get_instance_details->qty_ok;
+        $qty_damaged_of_selected_instance = $get_instance_details->qty_damaged;
+        $qty_scrapped_of_selected_instance = $get_instance_details->qty_scrapped;
+        $qty_not_in_use_of_selected_instance = $get_instance_details->qty_not_in_use;
+        $qty_missing_of_selected_instance = $get_instance_details->qty_missing;
+        $qty_shifted_of_selected_instance = $get_instance_details->qty_shifted;
+
+        if($qty_value_of_selected_instance < $update_details->quantity_verified){
+            $operation = 'addition';
+        }else{
+            $operation = 'subtraction';
+        }
+
+        $different_from_update_qty = (int)$update_details->quantity_verified - (int)$qty_value_of_selected_instance;        
+        $instance_details_quantity_as_per_invoice = $get_instance_details->quantity_as_per_invoice;
+        $instance_details_quantity_verified = $get_instance_details->quantity_verified;
+        $input_of_quantity_verified = $update_details->quantity_verified;
+        
 
 
-        // {"item_scrap_condition":"qty_ok","qty_ok":1,"quantity_as_per_invoice":1,"quantity_verified":1,"verification_status":"","verification_remarks":"","verified_datetime":"","updatedat":"a","mode_of_verification":"Scan","new_location_verified":"ASDASDASDSD"}
-
-        $getquantity=$this->tasks->get_data($projectname,$condition);
+        $getquantity=$this->tasks->get_data($projectname,$condition);    
 
         if($update_details->item_scrap_condition =='qty_ok')
         {
-            // $qty_ok = (int)$getquantity[0]->qty_ok + (int)$update_details->quantity_verified;
-             $qty_ok = (int)$update_details->quantity_verified;
-            $update_details->qty_ok = $qty_ok;
-             
+            if($operation == 'addition'){               
+                $qty_ok_value = (int)$getquantity[0]->qty_ok + (int)$update_details->quantity_verified;
+            }else{
+                $qty_ok_value = (int)$getquantity[0]->qty_ok - (int)$update_details->quantity_verified;
+            }
+            $update_details->qty_ok = $qty_ok_value;             
         }
         else if($update_details->item_scrap_condition =='qty_damaged')
         {
             // $qty_damaged = (int)$getquantity[0]->qty_damaged + (int)$update_details->quantity_verified;
-            $qty_damaged = (int)$update_details->quantity_verified;
-            $update_details->qty_damaged = $qty_damaged;
+            // $qty_damaged = (int)$update_details->quantity_verified;
+            if($operation == 'addition'){               
+                $qty_damaged_value = (int)$getquantity[0]->qty_damaged + (int)$update_details->quantity_verified;
+            }else{
+                $qty_damaged_value = (int)$getquantity[0]->qty_damaged - (int)$update_details->quantity_verified;
+            }
+
+            $update_details->qty_damaged = $qty_damaged_value;
         }
         else if($update_details->item_scrap_condition =='qty_scrapped')
         {
             // $qty_scrapped = (int)$getquantity[0]->qty_scrapped + (int)$update_details->quantity_verified;
-            $qty_scrapped = (int)$update_details->quantity_verified;
-            $update_details->qty_scrapped = $qty_scrapped;
+            // $qty_scrapped = (int)$update_details->quantity_verified;
+            if($operation == 'addition'){               
+                $qty_scrapped_value = (int)$getquantity[0]->qty_scrapped + (int)$update_details->quantity_verified;
+            }else{
+                $qty_scrapped_value = (int)$getquantity[0]->qty_scrapped - (int)$update_details->quantity_verified;
+            }
+            $update_details->qty_scrapped = $qty_scrapped_value;
         }
         else if($update_details->item_scrap_condition =='qty_not_in_use')
         {
             // $qty_not_in_use = (int)$getquantity[0]->qty_not_in_use + (int)$update_details->quantity_verified;
-            $qty_not_in_use = (int)$update_details->quantity_verified;
-            $update_details->qty_not_in_use = $qty_not_in_use;
+            // $qty_not_in_use = (int)$update_details->quantity_verified;
+            if($operation == 'addition'){               
+                $qty_not_in_use_value = (int)$getquantity[0]->qty_not_in_use + (int)$update_details->quantity_verified;
+            }else{
+                $qty_not_in_use_value = (int)$getquantity[0]->qty_not_in_use - (int)$update_details->quantity_verified;
+            }
+            $update_details->qty_not_in_use = $qty_not_in_use_value;
         }
         else if($update_details->item_scrap_condition =='qty_missing')
         {
             // $qty_missing = (int)$getquantity[0]->qty_missing + (int)$update_details->quantity_verified;
             $qty_missing = (int)$update_details->quantity_verified;
-            $update_details->qty_missing = $qty_missing;
+            if($operation == 'addition'){               
+                $qty_missing_value = (int)$getquantity[0]->qty_missing + (int)$update_details->quantity_verified;
+            }else{
+                $qty_missing_value = (int)$getquantity[0]->qty_missing - (int)$update_details->quantity_verified;
+            }
+            $update_details->qty_missing = $qty_missing_value;
         }
         else if($update_details->item_scrap_condition =='qty_shifted')
         {
             // $qty_shifted = (int)$getquantity[0]->qty_shifted + (int)$update_details->quantity_verified;
-            $qty_shifted = (int)$update_details->quantity_verified;
-            $update_details->qty_shifted = $qty_shifted;
+            // $qty_shifted = (int)$update_details->quantity_verified;
+             if($operation == 'addition'){               
+                $qty_shifted_value = (int)$getquantity[0]->qty_shifted + (int)$update_details->quantity_verified;
+            }else{
+                $qty_shifted_value = (int)$getquantity[0]->qty_shifted - (int)$update_details->quantity_verified;
+            }
+            $update_details->qty_shifted = $qty_shifted_value;
         }
 
+        
 
         
         if($update_details->verification_remarks!='')
         {
-            $quantity_verified = (int)$getquantity[0]->quantity_verified + (int)$update_details->quantity_verified;
+            if($operation == 'addition'){  
+                $quantity_verified = (int)$getquantity[0]->quantity_verified + (int)$update_details->quantity_verified;
+                $actual_quantity_verified = $update_details->quantity_verified;
+            }else{
+                $quantity_verified = (int)$getquantity[0]->quantity_verified - (int)$update_details->quantity_verified;
+                $actual_quantity_verified = -$update_details->quantity_verified;
+            }
             $update_details->quantity_verified = $quantity_verified;
 
             $verification_status = $update_details->quantity_as_per_invoice <= $update_details->quantity_verified ? "Verified":"Not-Verified";
@@ -3310,7 +3366,13 @@ public function get_project_additionaldata(){
         }
         else{
             
-            $quantity_verified = (int)$getquantity[0]->quantity_verified + (int)$update_details->quantity_verified;
+            if($operation == 'addition'){  
+                $quantity_verified = (int)$getquantity[0]->quantity_verified + (int)$update_details->quantity_verified;
+                $actual_quantity_verified = $update_details->quantity_verified;
+            }else{
+                $quantity_verified = (int)$getquantity[0]->quantity_verified - (int)$update_details->quantity_verified;
+                $actual_quantity_verified = -$update_details->quantity_verified;
+            }
             $update_details->quantity_verified = $quantity_verified;
             
             $verification_status = $update_details->quantity_as_per_invoice <= $update_details->quantity_verified ? "Verified":"Not-Verified";
@@ -3331,9 +3393,22 @@ public function get_project_additionaldata(){
 
         $mode_of_verification = $update_details->mode_of_verification;
         $update_details->mode_of_verification= $mode_of_verification;
+
+        // echo "<pre>update_details :";
+        // print_r($update_details);
+        // echo "</pre>";
+        // exit;
+
+       
+
+       
         $new_array[0] = $this->stdToArray($update_details);
         unset($new_array[0]['item_scrap_condition']);
        
+
+
+
+
         
 
         $project_id=$this->input->post('project_id');
@@ -3362,7 +3437,7 @@ public function get_project_additionaldata(){
 
         $verifiedproducts_array = array(
             'roW_id' => $company_id,
-            'edit_opration' => "asdasd",
+            'edit_opration' => $edit_opration,
             'previous_company_id' => $company_id,
             'company_id' => $company_id,
             'previous_location_id' => $location_id,
@@ -3422,7 +3497,85 @@ public function get_project_additionaldata(){
         $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts_log',$verifiedproducts_array);
         
 
-         $verify=$this->tasks->update_data($projectname,$new_array[0],$condition);
+        $verify=$this->tasks->update_data($projectname,$new_array[0],$condition);
+
+
+
+        $condition_2=array(
+            "id"=>$instance,
+            "item_id"=>$itemid,
+        );
+        // $verify_second=$this->tasks->update_data('verifiedproducts',$new_array[0],$condition_2);
+
+        
+
+      
+        if($update_details->item_scrap_condition =='qty_ok')
+        {
+           $qty_ok_value = $quantity_verified;
+        }
+        if($update_details->item_scrap_condition =='qty_damaged')
+        {
+           $qty_damaged_value = $quantity_verified;
+        }
+        if($update_details->item_scrap_condition =='qty_scrapped')
+        {
+           $qty_scrapped_value = $quantity_verified;
+        }
+        if($update_details->item_scrap_condition =='qty_not_in_use')
+        {
+           $qty_not_in_use_value = $quantity_verified;
+        }
+        if($update_details->item_scrap_condition =='qty_missing')
+        {
+           $qty_missing_value = $quantity_verified;
+        }
+        if($update_details->item_scrap_condition =='qty_shifted')
+        {
+           $qty_shifted_value = $quantity_verified;
+        }
+        
+
+
+  
+
+        $verifiedproducts_array = array(
+            'company_id' => $company_id,
+            'location_id' => $location_id,
+            'entity_code' => $entity_code,
+            'project_id' => $project_id,
+            'project_name' => $project_name,
+            'original_table_name' => $original_table_name,
+            'item_id' => $getquantity[0]->id,
+            'item_category' => $getquantity[0]->item_category,
+            'item_unique_code' => $getquantity[0]->item_unique_code,
+            'item_sub_code' => $getquantity[0]->item_sub_code,
+            'item_description' => $getquantity[0]->item_description,
+            'quantity_as_per_invoice' => $getquantity[0]->quantity_as_per_invoice,
+            'verification_status' => $verification_status,
+            'quantity_verified' => $quantity_verified,
+            'new_location_verified' => $new_location_verified,
+            'verified_by' => $verified_by,
+            'verified_by_username' => $verified_by_username,
+            'verified_datetime' => $verified_datetime,
+            'verification_remarks' => $verification_remarks,
+            'qty_ok' => $qty_ok_value,
+            'qty_damaged' => $qty_damaged_value,
+            'qty_scrapped' => $qty_scrapped_value,
+            'qty_not_in_use' => $qty_not_in_use_value,
+            'qty_missing' => $qty_missing_value,
+            'qty_shifted' => $qty_shifted_value,
+            'mode_of_verification' => $mode_of_verification,
+            // 'type_of_operation' => $operation,
+            'qty_value' => $actual_quantity_verified,
+            'created_at' => date('Y-m-d H:s:i'),
+        );
+
+   
+
+        $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts',$verifiedproducts_array);
+
+
         
         
 		if($verify)
