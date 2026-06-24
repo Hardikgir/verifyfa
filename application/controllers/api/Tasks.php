@@ -527,7 +527,7 @@ class Tasks extends CI_Controller {
 
     public function saveverified()
     {
-        
+        date_default_timezone_set("Asia/Calcutta"); 
         $itemid=$this->input->post('item_id');
         $projectname=$this->input->post('project_name');
         $verified_by = $this->input->post('verify_by');
@@ -607,12 +607,12 @@ class Tasks extends CI_Controller {
             $verification_remarks = $getquantity[0]->verification_remarks != '' ? $getquantity[0]->verification_remarks.'_'.$scanned->verification_remarks:$scanned->verification_remarks;
             $scanned->verification_remarks= $verification_remarks;
 
-            // $verified_datetime = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
-            $verified_datetime = date('Y-m-d H:s:i');
+            // $verified_datetime = date('Y-m-d H:i:s', strtotime('+17 minutes',strtotime(date('Y-m-d H:i:s'))));
+            $verified_datetime = date('Y-m-d H:i:s');
             $scanned->verified_datetime = $verified_datetime;
 
-            // $updatedat = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
-            $updatedat = date('Y-m-d H:s:i');
+            // $updatedat = date('Y-m-d H:i:s', strtotime('+17 minutes',strtotime(date('Y-m-d H:i:s'))));
+            $updatedat = date('Y-m-d H:i:s');
             $scanned->updatedat = $updatedat;
         }
         else{
@@ -623,12 +623,12 @@ class Tasks extends CI_Controller {
             $verification_status = $scanned->quantity_as_per_invoice <= $scanned->quantity_verified ? "Verified":"Not-Verified";
             $scanned->verification_status = $verification_status;
             
-            // $verified_datetime = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
-            $verified_datetime = date('Y-m-d H:s:i');
+            // $verified_datetime = date('Y-m-d H:i:s', strtotime('+17 minutes',strtotime(date('Y-m-d H:i:s'))));
+            $verified_datetime = date('Y-m-d H:i:s');
             $scanned->verified_datetime = $verified_datetime;
             
-            // $updatedat = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
-            $updatedat = date('Y-m-d H:s:i');
+            // $updatedat = date('Y-m-d H:i:s', strtotime('+17 minutes',strtotime(date('Y-m-d H:i:s'))));
+            $updatedat = date('Y-m-d H:i:s');
             $scanned->updatedat = $updatedat;
         }
 
@@ -685,7 +685,7 @@ class Tasks extends CI_Controller {
             'new_location_verified' => $new_location_verified,
             'verified_by' => $verified_by,
             'verified_by_username' => $verified_by_username,
-            'verified_datetime' => $verified_datetime,
+            'verified_datetime' => date('Y-m-d H:i:s'),//$verified_datetime,
             'verification_remarks' => $verification_remarks,
             'qty_ok' => $qty_ok,
             'qty_damaged' => $qty_damaged,
@@ -696,8 +696,9 @@ class Tasks extends CI_Controller {
             'mode_of_verification' => $mode_of_verification,
             'type_of_operation' => 'add',
             'qty_value' => $qty_value,
-            'created_at' => date('Y-m-d H:s:i'),
+            'created_at' => date('Y-m-d H:i:s'),
         );
+       
         $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts',$verifiedproducts_array);
         
         
@@ -729,7 +730,7 @@ class Tasks extends CI_Controller {
         $projectid=$this->input->post('project_id');
         $companyid=$this->input->post('company_id');
         $data=array(
-            "begin_datetime"=>date('Y-m-d H:s:i'),
+            "begin_datetime"=>date('Y-m-d H:i:s'),
         );
         $condition=array(
             "id"=>$projectid,
@@ -758,7 +759,7 @@ class Tasks extends CI_Controller {
         $companyid=$this->input->post('company_id');
         $data=array(
             "verification_closed_by"=>$userid,
-            "finish_datetime"=>date('Y-m-d H:s:i'),
+            "finish_datetime"=>date('Y-m-d H:i:s'),
             "status"=>3
         );
         $condition=array(
@@ -790,7 +791,7 @@ class Tasks extends CI_Controller {
         {
             $data=array(
                 "project_finished_by"=>$userid,
-                "finish_datetime"=>date('Y-m-d H:s:i'),
+                "finish_datetime"=>date('Y-m-d H:i:s'),
                 "status"=>$status,
                 "end_remark"=>$remarks==''?NULL:$remarks
             );
@@ -799,7 +800,7 @@ class Tasks extends CI_Controller {
         {
             $data=array(
                 "project_finished_by"=>$userid,
-                "finish_datetime"=>date('Y-m-d H:s:i'),
+                "finish_datetime"=>date('Y-m-d H:i:s'),
                 "cancelled_date"=>date('Y-m-d'),
                 "status"=>$status,
                 "cancel_reason"=>$remarks==''?NULL:$remarks
@@ -3637,13 +3638,13 @@ public function get_project_additionaldata(){
             $verification_remarks = $getquantity[0]->verification_remarks != '' ? $getquantity[0]->verification_remarks.' || '.$update_details->verification_remarks:$update_details->verification_remarks;
             $update_details->verification_remarks= $verification_remarks;
 
-            // $verified_datetime = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
-            $verified_datetime = date('Y-m-d H:s:i');
-            // $verified_datetime = date('Y-m-d H:s:i');
+            // $verified_datetime = date('Y-m-d H:i:s', strtotime('+17 minutes',strtotime(date('Y-m-d H:i:s'))));
+            $verified_datetime = date('Y-m-d H:i:s');
+            // $verified_datetime = date('Y-m-d H:i:s');
             $update_details->verified_datetime = $verified_datetime;
 
-            // $updatedat = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
-            $updatedat = date('Y-m-d H:s:i');
+            // $updatedat = date('Y-m-d H:i:s', strtotime('+17 minutes',strtotime(date('Y-m-d H:i:s'))));
+            $updatedat = date('Y-m-d H:i:s');
             $update_details->updatedat = $updatedat;
         }
         else{
@@ -3660,13 +3661,13 @@ public function get_project_additionaldata(){
             $verification_status = $update_details->quantity_as_per_invoice <= $update_details->quantity_verified ? "Verified":"Not-Verified";
             $update_details->verification_status = $verification_status;
             
-            // $verified_datetime = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
-            $verified_datetime = date('Y-m-d H:s:i');
-            //  $verified_datetime = date('Y-m-d H:s:i');
+            // $verified_datetime = date('Y-m-d H:i:s', strtotime('+17 minutes',strtotime(date('Y-m-d H:i:s'))));
+            $verified_datetime = date('Y-m-d H:i:s');
+            //  $verified_datetime = date('Y-m-d H:i:s');
             $update_details->verified_datetime = $verified_datetime;
             
-            // $updatedat = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
-            $updatedat = date('Y-m-d H:s:i');
+            // $updatedat = date('Y-m-d H:i:s', strtotime('+17 minutes',strtotime(date('Y-m-d H:i:s'))));
+            $updatedat = date('Y-m-d H:i:s');
             $update_details->updatedat = $updatedat;
         }
         // $update_details->instance_count = (int)$getquantity[0]->instance_count + 1;
@@ -3772,8 +3773,8 @@ public function get_project_additionaldata(){
             'qty_shifted' => $qty_shifted,
             'previous_mode_of_verification' => $getquantity[0]->mode_of_verification,
             'mode_of_verification' => $mode_of_verification,
-            'previous_created_at' => date('Y-m-d H:s:i'),
-            'created_at' => date('Y-m-d H:s:i'),
+            'previous_created_at' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H:i:s'),
         );
         // $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts',$verifiedproducts_array);
         $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts_log',$verifiedproducts_array);
@@ -3856,7 +3857,7 @@ public function get_project_additionaldata(){
             'mode_of_verification' => $mode_of_verification,
             // 'type_of_operation' => $operation,
             'qty_value' => $actual_quantity_verified,
-            'created_at' => date('Y-m-d H:s:i'),
+            'created_at' => date('Y-m-d H:i:s'),
         );
 
    
@@ -4024,13 +4025,13 @@ public function get_project_additionaldata(){
             $verification_remarks = $getquantity[0]->verification_remarks != '' ? $getquantity[0]->verification_remarks.' || '.$update_details->verification_remarks:$update_details->verification_remarks;
             $update_details->verification_remarks= $verification_remarks;
 
-            // $verified_datetime = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
-            $verified_datetime = date('Y-m-d H:s:i');
-            // $verified_datetime = date('Y-m-d H:s:i');
+            // $verified_datetime = date('Y-m-d H:i:s', strtotime('+17 minutes',strtotime(date('Y-m-d H:i:s'))));
+            $verified_datetime = date('Y-m-d H:i:s');
+            // $verified_datetime = date('Y-m-d H:i:s');
             $update_details->verified_datetime = $verified_datetime;
 
-            // $updatedat = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
-            $updatedat = date('Y-m-d H:s:i');
+            // $updatedat = date('Y-m-d H:i:s', strtotime('+17 minutes',strtotime(date('Y-m-d H:i:s'))));
+            $updatedat = date('Y-m-d H:i:s');
             $update_details->updatedat = $updatedat;
         }
         else{
@@ -4049,13 +4050,13 @@ public function get_project_additionaldata(){
             $verification_status = $update_details->quantity_as_per_invoice <= $update_details->quantity_verified ? "Verified":"Not-Verified";
             $update_details->verification_status = $verification_status;
             
-            // $verified_datetime = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
-            $verified_datetime = date('Y-m-d H:s:i');
-            //  $verified_datetime = date('Y-m-d H:s:i');
+            // $verified_datetime = date('Y-m-d H:i:s', strtotime('+17 minutes',strtotime(date('Y-m-d H:i:s'))));
+            $verified_datetime = date('Y-m-d H:i:s');
+            //  $verified_datetime = date('Y-m-d H:i:s');
             $update_details->verified_datetime = $verified_datetime;
             
-            // $updatedat = date('Y-m-d H:s:i', strtotime('+17 minutes',strtotime(date('Y-m-d H:s:i'))));
-            $updatedat = date('Y-m-d H:s:i');
+            // $updatedat = date('Y-m-d H:i:s', strtotime('+17 minutes',strtotime(date('Y-m-d H:i:s'))));
+            $updatedat = date('Y-m-d H:i:s');
             $update_details->updatedat = $updatedat;
         }
         // $update_details->instance_count = (int)$getquantity[0]->instance_count + 1;
@@ -4161,8 +4162,8 @@ public function get_project_additionaldata(){
             'qty_shifted' => $qty_shifted,
             'previous_mode_of_verification' => $getquantity[0]->mode_of_verification,
             'mode_of_verification' => $mode_of_verification,
-            'previous_created_at' => date('Y-m-d H:s:i'),
-            'created_at' => date('Y-m-d H:s:i'),
+            'previous_created_at' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H:i:s'),
         );
         // $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts',$verifiedproducts_array);
         $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts_log',$verifiedproducts_array);
@@ -4245,7 +4246,7 @@ public function get_project_additionaldata(){
             'mode_of_verification' => $mode_of_verification,
             // 'type_of_operation' => $operation,
             'qty_value' => $actual_quantity_verified,
-            'created_at' => date('Y-m-d H:s:i'),
+            'created_at' => date('Y-m-d H:i:s'),
         );
 
    
@@ -5343,7 +5344,7 @@ $this->email->attach($file_path);
             'qty_shifted' => $verifiedproducts_data->qty_shifted,
             'mode_of_verification' => $verifiedproducts_data->mode_of_verification,
             'type_of_operation' => 'rollback',
-            'created_at' => date('Y-m-d H:s:i'),
+            'created_at' => date('Y-m-d H:i:s'),
         );
         $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts',$verifiedproducts_array);
 
