@@ -5581,7 +5581,6 @@ $this->email->attach($file_path);
 
     public function instance_rollback()
     {
-
         $item_id = $this->input->post('item_id');
         $project_id = $this->input->post('project_id');
         $instance_id = $this->input->post('instance_id');
@@ -5596,11 +5595,10 @@ $this->email->attach($file_path);
 
         $this->db->select("*");   
         $this->db->from($table_name);   
-        $this->db->where("id",$project_id);
+        $this->db->where("id",$item_id);
         $query= $this->db->get();   
         $company_projects_product_details = $query->row();
-
-
+    
         $this->db->select("*");   
         $this->db->from("verifiedproducts");   
         $this->db->where("project_id",$project_id);
@@ -5640,12 +5638,13 @@ $this->email->attach($file_path);
             'qty_shifted' => $verifiedproducts_data->qty_shifted,
             'mode_of_verification' => $verifiedproducts_data->mode_of_verification,
             'type_of_operation' => 'rollback',
+            'qty_value' => $verifiedproducts_data->qty_value,
             'created_at' => date('Y-m-d H:i:s'),
         );
         $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts',$verifiedproducts_array);
 
        
-        
+       
 
         $data=array(
             "quantity_verified"=>$company_projects_product_details->quantity_verified-$company_projects_product_details->quantity_verified,
@@ -5671,19 +5670,18 @@ $this->email->attach($file_path);
         $insert=$this->db->where('id',$item_id);
         $insert=$this->db->update($table_name,$data);
 
-
-
-
+        /*
         $data=array(
             "type_of_operation"=>'rollback',
         );
-         $insert=$this->db->where('company_id',$verifiedproducts_data->company_id);
-         $insert=$this->db->where('location_id',$verifiedproducts_data->location_id);
-         $insert=$this->db->where('entity_code',$verifiedproducts_data->entity_code);
-         $insert=$this->db->where('project_id',$verifiedproducts_data->project_id);
-         $insert=$this->db->where('project_name',$verifiedproducts_data->project_name);
-         $insert=$this->db->where('item_id',$verifiedproducts_data->item_id);
+        $insert=$this->db->where('company_id',$verifiedproducts_data->company_id);
+        $insert=$this->db->where('location_id',$verifiedproducts_data->location_id);
+        $insert=$this->db->where('entity_code',$verifiedproducts_data->entity_code);
+        $insert=$this->db->where('project_id',$verifiedproducts_data->project_id);
+        $insert=$this->db->where('project_name',$verifiedproducts_data->project_name);
+        $insert=$this->db->where('item_id',$verifiedproducts_data->item_id);
         $insert=$this->db->update('verifiedproducts',$data);
+        */
 
       
         // if(!empty($project_id) && count($project_id) > 0)
