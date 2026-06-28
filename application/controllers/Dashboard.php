@@ -3090,7 +3090,7 @@ class Dashboard extends CI_Controller {
 	public function downloadExceptionOneGoodReport()
 	{
 		$reportOneType='qty_ok';
-		$this->downloadExceptionOneReport($reportOneType,'ExceptionGoodReport');
+		$this->downloadExceptionOneReport($reportOneType,'Condition of Items - Good');
 	}
 	public function downloadExceptionOneDamagedReport()
 	{
@@ -3458,7 +3458,7 @@ class Dashboard extends CI_Controller {
 		$writer->setPreCalculateFormulas(false);
 		$filename = $ReportTitle;
 		header('Content-Type: application/vnd.ms-excel');
-		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+		header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"'); 
 		header('Cache-Control: max-age=0');
 		
 		$writer->save('php://output');

@@ -62,7 +62,7 @@ class Tasks extends CI_Controller {
             $getlastupdatedtime=$this->tasks->lastupdatetime($project_name,$userid);
             if(!empty($getlastupdatedtime))
             {
-                $project->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($getlastupdatedtime[0]->updatedat)));
+                // $project->updatedat=date('d-m-Y H:i:s',strtotime('+5 hour +30 minutes',strtotime($getlastupdatedtime[0]->updatedat)));
                 // $project->updatedat=date('d-m-Y H:i:s');
                 $project->updatedat=date('d-m-Y H:i:s',strtotime($getlastupdatedtime[0]->updatedat));
                 
@@ -776,14 +776,17 @@ class Tasks extends CI_Controller {
                 }else{
                     $operation = 'subtraction';
                 }
-
+                
                 $get_instance_details_qty_value = $get_instance_details->qty_value;
-                $get_instance_details_qty_ok = $get_instance_details->qty_ok;
+                $get_instance_details_qty_ok = $get_instance_details->qty_ok;                
                 $get_instance_details_qty_damaged = $get_instance_details->qty_damaged;
                 $get_instance_details_qty_scrapped = $get_instance_details->qty_scrapped;
                 $get_instance_details_qty_not_in_use = $get_instance_details->qty_not_in_use;
                 $get_instance_details_qty_missing = $get_instance_details->qty_missing;
                 $get_instance_details_qty_shifted = $get_instance_details->qty_shifted;
+
+                
+
 
                 $update_item_details_data = array(
                     'qty_ok' => (int)$get_item_details->qty_ok,
@@ -794,6 +797,78 @@ class Tasks extends CI_Controller {
                     'qty_shifted' => (int)$get_item_details->qty_shifted,
                 );
 
+             
+
+                $revert_qty = 0;
+                if(!empty($get_instance_details_qty_ok)){
+                    $update_item_details_data['qty_ok'] = (int)$get_item_details->qty_ok - (int)$get_instance_details->qty_ok;
+                    $revert_qty = (int)$revert_qty + (int)$get_instance_details->qty_ok;
+                }
+                if(!empty($get_instance_details_qty_damaged)){
+                    $update_item_details_data['qty_damaged'] = (int)$get_item_details->qty_damaged - (int)$get_instance_details->qty_damaged;
+                    $revert_qty = (int)$revert_qty + (int)$get_instance_details->qty_damaged;
+                }
+                if(!empty($get_instance_details_qty_scrapped)){
+                    $update_item_details_data['qty_scrapped'] = (int)$get_item_details->qty_scrapped - (int)$get_instance_details->qty_scrapped;
+                    $revert_qty = (int)$revert_qty + (int)$get_instance_details->qty_scrapped;
+                }
+                if(!empty($get_instance_details_qty_not_in_use)){
+                    $update_item_details_data['qty_not_in_use'] = (int)$get_item_details->qty_not_in_use - (int)$get_instance_details->qty_not_in_use;
+                    $revert_qty = (int)$revert_qty + (int)$get_instance_details->qty_not_in_use;
+                }
+                if(!empty($get_instance_details_qty_missing)){
+                    $update_item_details_data['qty_missing'] = (int)$get_item_details->qty_missing - (int)$get_instance_details->qty_missing;
+                    $revert_qty = (int)$revert_qty + (int)$get_instance_details->qty_missing;
+                }
+                if(!empty($get_instance_details_qty_shifted)){
+                    $update_item_details_data['qty_shifted'] = (int)$get_item_details->qty_shifted - (int)$get_instance_details->qty_shifted;
+                    $revert_qty = (int)$revert_qty + (int)$get_instance_details->qty_shifted;
+                }
+                $verification_remarks = $get_item_details->verification_remarks.' || (-'.$revert_qty.') || ';
+                $update_item_details_data['verification_remarks']= $verification_remarks;
+                $update_item_details_data['quantity_verified']= (int)$get_item_details->quantity_verified - (int)$revert_qty;
+                $verify=$this->tasks->update_data($projectname,$update_item_details_data,$condition);
+               
+
+                $this->db->select('*');
+                $this->db->from($projectname);        
+                $this->db->where('id',$itemid);
+                $query = $this->db->get();
+                $get_item_details= $query->row();
+
+                $update_item_details_data = array(
+                    'qty_ok' => (int)$get_item_details->qty_ok,
+                    'qty_damaged' => (int)$get_item_details->qty_damaged,
+                    'qty_scrapped' => (int)$get_item_details->qty_scrapped,
+                    'qty_not_in_use' => (int)$get_item_details->qty_not_in_use,
+                    'qty_missing' => (int)$get_item_details->qty_missing,
+                    'qty_shifted' => (int)$get_item_details->qty_shifted,
+                );
+                $update_item_details_data = array();
+                if(isset($update_details->qty_ok)){
+                    $update_item_details_data['qty_ok'] = (int)$update_details->qty_ok; 
+                }
+                if(isset($update_details->qty_damaged)){
+                    $update_item_details_data['qty_damaged'] = (int)$update_details->qty_damaged; 
+                }
+                if(isset($update_details->qty_scrapped)){
+                    $update_item_details_data['qty_scrapped'] = (int)$update_details->qty_scrapped; 
+                }
+                if(isset($update_details->qty_not_in_use)){
+                    $update_item_details_data['qty_not_in_use'] = (int)$update_details->qty_not_in_use; 
+                }
+                if(isset($update_details->qty_missing)){
+                    $update_item_details_data['qty_missing'] = (int)$update_details->qty_missing; 
+                }
+                if(isset($update_details->qty_shifted)){
+                    $update_item_details_data['qty_shifted'] = (int)$update_details->qty_shifted; 
+                }
+                $quantity_verified_update = (int)$get_item_details->quantity_verified + (int)$update_details->quantity_verified;         
+                $update_item_details_data['quantity_verified'] = $quantity_verified_update;
+                $update_item_details_data['instance_count'] = (int)$get_item_details->instance_count+2;
+                $verify=$this->tasks->update_data($projectname,$update_item_details_data,$condition);
+
+
                 $update_details_data = array(
                     'qty_ok' => $get_instance_details_qty_ok,
                     'qty_damaged' => $get_instance_details_qty_damaged, 
@@ -802,79 +877,51 @@ class Tasks extends CI_Controller {
                     'qty_missing' => $get_instance_details_qty_missing,
                     'qty_shifted' => $get_instance_details_qty_shifted
                 );
-
                 $difference = (int)$get_instance_details->qty_value - (int)$update_details->quantity_verified;         
                 $difference_value = abs($difference);
-
                 if(!empty($get_instance_details_qty_ok)){
                     if($operation == 'addition'){  
-                        // $update_details_data['qty_ok'] = (int)$get_instance_details_qty_ok + (int)$get_instance_details_qty_value;
-                        // $update_item_details_data['qty_ok'] = (int)$get_instance_details_qty_ok + (int)$get_instance_details_qty_value; 
                         $update_details_data['qty_ok'] = (int)$get_instance_details_qty_ok + (int)$difference_value;
-                        $update_item_details_data['qty_ok'] = (int)$get_instance_details_qty_ok + (int)$difference_value; 
                     }else{
-                        // $update_details_data['qty_ok'] = (int)$get_instance_details_qty_ok - (int)$get_instance_details_qty_value;
-                        // $update_item_details_data['qty_ok'] = (int)$get_instance_details_qty_ok - (int)$get_instance_details_qty_value;
                         $update_details_data['qty_ok'] = (int)$get_instance_details_qty_ok - (int)$difference_value;
-                        $update_item_details_data['qty_ok'] = (int)$get_instance_details_qty_ok - (int)$difference_value;
                     }
                 }
                 if(!empty($get_instance_details_qty_damaged)){
                     if($operation == 'addition'){  
                         $update_details_data['qty_damaged'] = (int)$get_instance_details_qty_damaged + (int)$difference_value;
-                        $update_item_details_data['qty_damaged'] = (int)$get_instance_details_qty_damaged + (int)$difference_value;
                     }else{
                         $update_details_data['qty_damaged'] = (int)$get_instance_details_qty_damaged - (int)$difference_value;
-                        $update_item_details_data['qty_damaged'] = (int)$get_instance_details_qty_damaged - (int)$difference_value;
                     }
                 }
                 if(!empty($get_instance_details_qty_scrapped)){
                     if($operation == 'addition'){  
                         $update_details_data['qty_scrapped'] = (int)$get_instance_details_qty_scrapped + (int)$difference_value;
-                        $update_item_details_data['qty_scrapped'] = (int)$get_instance_details_qty_scrapped + (int)$difference_value;
                     }else{
                         $update_details_data['qty_scrapped'] = (int)$get_instance_details_qty_scrapped - (int)$difference_value;
-                        $update_item_details_data['qty_scrapped'] = (int)$get_instance_details_qty_scrapped - (int)$difference_value;
-                    }
-                    // $update_details_data['qty_scrapped'] = - $get_instance_details_qty_scrapped;
+                    }                    
                 }
                 if(!empty($get_instance_details_qty_not_in_use)){
                     if($operation == 'addition'){  
                         $update_details_data['qty_not_in_use'] = (int)$get_instance_details_qty_not_in_use + (int)$difference_value;
-                        $update_item_details_data['qty_not_in_use'] = (int)$get_instance_details_qty_not_in_use + (int)$difference_value;
                     }else{
                         $update_details_data['qty_not_in_use'] = (int)$get_instance_details_qty_not_in_use - (int)$difference_value;
-                        $update_item_details_data['qty_not_in_use'] = (int)$get_instance_details_qty_not_in_use - (int)$difference_value;
                     }
-                    // $update_details_data['qty_not_in_use'] = - $get_instance_details_qty_not_in_use;
                 }
                 if(!empty($get_instance_details_qty_missing)){
                     if($operation == 'addition'){  
                         $update_details_data['qty_missing'] = (int)$get_instance_details_qty_missing + (int)$difference_value;
-                        $update_item_details_data['qty_missing'] = (int)$get_instance_details_qty_missing + (int)$difference_value;
                     }else{
                         $update_details_data['qty_missing'] = (int)$get_instance_details_qty_missing - (int)$difference_value;
-                        $update_item_details_data['qty_missing'] = (int)$get_instance_details_qty_missing - (int)$difference_value;
                     }
-                    // $update_details_data['qty_missing'] = - $get_instance_details_qty_missing;
                 }
                 if(!empty($get_instance_details_qty_shifted)){
                     if($operation == 'addition'){  
                         $update_details_data['qty_shifted'] = (int)$get_instance_details_qty_shifted + (int)$difference_value;
-                        $update_item_details_data['qty_shifted'] = (int)$get_instance_details_qty_shifted + (int)$difference_value;
                     }else{
                         $update_details_data['qty_shifted'] = (int)$get_instance_details_qty_shifted - (int)$difference_value;
-                        $update_item_details_data['qty_shifted'] = (int)$get_instance_details_qty_shifted - (int)$difference_value;
                     }
-                    // $update_details_data['qty_shifted'] = - $get_instance_details_qty_shifted;
                 }   
-
-
-
-                $difference = (int)$get_instance_details->qty_value - (int)$update_details->quantity_verified;         
-                $difference = abs($difference);
-        
-
+                
                 if($operation == 'addition'){                 
                     // $quantity_verified_value = (int)$get_item_details->quantity_verified + (int)$get_instance_details_qty_value;
                     $quantity_verified_value = (int)$get_item_details->quantity_verified + (int)$difference_value;
@@ -884,12 +931,7 @@ class Tasks extends CI_Controller {
                 }
 
                 $update_details_data['quantity_verified'] = $quantity_verified_value;
-                $update_item_details_data['quantity_verified'] = $quantity_verified_value;
-
-
-            
-
-            
+                
                 $current_date_time = date('Y-m-d H:i:s');
 
                 if($operation == 'addition'){  
@@ -914,250 +956,245 @@ class Tasks extends CI_Controller {
                     $verification_remarks = $get_item_details->verification_remarks != '' ? $get_item_details->verification_remarks.' || '.$update_details->verification_remarks:$update_details->verification_remarks;
                     $update_details_data['verification_remarks']= $verification_remarks;
                 }
+
+                                
+                $update_details_data['company_id'] = $get_instance_details->company_id;
+                $update_details_data['location_id'] = $get_instance_details->location_id;
+                $update_details_data['entity_code'] = $get_instance_details->entity_code;
+                $update_details_data['project_id'] = $get_instance_details->project_id;
+                $update_details_data['project_name'] = $get_instance_details->project_name;
+                $update_details_data['original_table_name'] = $get_instance_details->original_table_name;
+                $update_details_data['item_id'] = $get_item_details->id;
+                $update_details_data['item_category'] = $get_item_details->item_category;
+                $update_details_data['item_unique_code'] = $get_item_details->item_unique_code;
+                $update_details_data['item_sub_code'] = $get_item_details->item_sub_code;
+                $update_details_data['item_description'] = $get_item_details->item_description;
+                $update_details_data['quantity_as_per_invoice'] = $get_item_details->quantity_as_per_invoice;
+                $update_details_data['verification_status'] = $verification_status;
+                $update_details_data['verified_by'] = $verified_by;
+                $update_details_data['verified_by_username'] = $verified_by_username;
+                $update_details_data['verified_datetime'] = $current_date_time;
+                $update_details_data['verification_remarks'] = $verification_remarks." \2";
+                $update_details_data['mode_of_verification'] = $get_instance_details->mode_of_verification;
+                $update_details_data['qty_value'] = -$actual_quantity_verified;
+                $update_details_data['created_at'] = date('Y-m-d H:i:s');
+               
+                // exit;
+                $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts',$update_details_data);
+
+
+                //Add into Verified Products Log Table        
+                $qty_scrapped_value = 0;
+                $qty_damaged_value = 0;
+                $qty_ok_value = 0;
+                $qty_not_in_use_value = 0;
+                $qty_missing_value = 0;
+                $qty_shifted_value = 0;
+                if($update_details->item_scrap_condition =='qty_ok')
+                {
+                $qty_ok_value = $quantity_verified;
+                }
+                if($update_details->item_scrap_condition =='qty_damaged')
+                {
+                $qty_damaged_value = $quantity_verified;
+                }
+                if($update_details->item_scrap_condition =='qty_scrapped')
+                {
+                $qty_scrapped_value = $quantity_verified;
+                }
+                if($update_details->item_scrap_condition =='qty_not_in_use')
+                {
+                $qty_not_in_use_value = $quantity_verified;
+                }
+                if($update_details->item_scrap_condition =='qty_missing')
+                {
+                $qty_missing_value = $quantity_verified;
+                }
+                if($update_details->item_scrap_condition =='qty_shifted')
+                {
+                $qty_shifted_value = $quantity_verified;
+                }
                 
-
-                
-
-                // $update_item_details_data['instance_count'] = (int)$get_item_details->instance_count+1;
-                $update_item_details_data['instance_count'] = (int)$get_item_details->instance_count+2;
-
-            
-
-
-
-                $verify=$this->tasks->update_data($projectname,$update_item_details_data,$condition);
-
-                
-            $update_details_data['company_id'] = $get_instance_details->company_id;
-            $update_details_data['location_id'] = $get_instance_details->location_id;
-            $update_details_data['entity_code'] = $get_instance_details->entity_code;
-            $update_details_data['project_id'] = $get_instance_details->project_id;
-            $update_details_data['project_name'] = $get_instance_details->project_name;
-            $update_details_data['original_table_name'] = $get_instance_details->original_table_name;
-            $update_details_data['item_id'] = $get_item_details->id;
-            $update_details_data['item_category'] = $get_item_details->item_category;
-            $update_details_data['item_unique_code'] = $get_item_details->item_unique_code;
-            $update_details_data['item_sub_code'] = $get_item_details->item_sub_code;
-            $update_details_data['item_description'] = $get_item_details->item_description;
-            $update_details_data['quantity_as_per_invoice'] = $get_item_details->quantity_as_per_invoice;
-            $update_details_data['verification_status'] = $verification_status;
-            $update_details_data['verified_by'] = $verified_by;
-            $update_details_data['verified_by_username'] = $verified_by_username;
-            $update_details_data['verified_datetime'] = $current_date_time;
-            $update_details_data['verification_remarks'] = $verification_remarks;
-            $update_details_data['mode_of_verification'] = $get_instance_details->mode_of_verification;
-            $update_details_data['qty_value'] = $actual_quantity_verified;
-            $update_details_data['created_at'] = date('Y-m-d H:i:s');
-            $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts',$update_details_data);
-
-
-            //Add into Verified Products Log Table        
-            $qty_scrapped_value = 0;
-            $qty_damaged_value = 0;
-            $qty_ok_value = 0;
-            $qty_not_in_use_value = 0;
-            $qty_missing_value = 0;
-            $qty_shifted_value = 0;
-            if($update_details->item_scrap_condition =='qty_ok')
-            {
-            $qty_ok_value = $quantity_verified;
-            }
-            if($update_details->item_scrap_condition =='qty_damaged')
-            {
-            $qty_damaged_value = $quantity_verified;
-            }
-            if($update_details->item_scrap_condition =='qty_scrapped')
-            {
-            $qty_scrapped_value = $quantity_verified;
-            }
-            if($update_details->item_scrap_condition =='qty_not_in_use')
-            {
-            $qty_not_in_use_value = $quantity_verified;
-            }
-            if($update_details->item_scrap_condition =='qty_missing')
-            {
-            $qty_missing_value = $quantity_verified;
-            }
-            if($update_details->item_scrap_condition =='qty_shifted')
-            {
-            $qty_shifted_value = $quantity_verified;
-            }
-            
 
 
 
                 
-            // }
+                // }
 
-            
+                
 
-            $company_id = $get_project_details[0]->company_id;
-            $new_location_verified = $update_details->new_location_verified;
-            $location_id = $get_project_details[0]->project_location;
-            $entity_code =  $get_project_details[0]->entity_code;
-            $project_id = $get_project_details[0]->id;
-            $project_name = $get_project_details[0]->project_name;
-            $original_table_name = $get_project_details[0]->original_table_name;
+                $company_id = $get_project_details[0]->company_id;
+                $new_location_verified = $update_details->new_location_verified;
+                $location_id = $get_project_details[0]->project_location;
+                $entity_code =  $get_project_details[0]->entity_code;
+                $project_id = $get_project_details[0]->id;
+                $project_name = $get_project_details[0]->project_name;
+                $original_table_name = $get_project_details[0]->original_table_name;
 
-            $current_date_time = date('Y-m-d H:i:s');
-            $verification_status = $update_details->quantity_as_per_invoice <= $update_details->quantity_verified ? "Verified":"Not-Verified";
+                $current_date_time = date('Y-m-d H:i:s');
+                $verification_status = $update_details->quantity_as_per_invoice <= $update_details->quantity_verified ? "Verified":"Not-Verified";
 
-            $mode_of_verification = $update_details->mode_of_verification;
-            $update_details->mode_of_verification= $mode_of_verification;
+                $mode_of_verification = $update_details->mode_of_verification;
+                $update_details->mode_of_verification= $mode_of_verification;
 
-            //Add In Log File
-            $verifiedproducts_array = array(
-                'row_id' => $get_item_details->id,
-                'edit_opration' => $edit_opration,
-                'previous_company_id' => $company_id,
-                'company_id' => $company_id,
-                'previous_location_id' => $location_id,
-                'location_id' => $location_id,
-                'previous_entity_code' => $entity_code,
-                'entity_code' => $entity_code,
-                'previous_project_id' => $project_id,
-                'project_id' => $project_id,
-                'previous_project_name' => $project_name,
-                'project_name' => $project_name,
-                'previous_original_table_name' => $original_table_name,
-                'original_table_name' => $original_table_name,
-                'previous_item_id' => $get_item_details->id,
-                'item_id' => $get_item_details->id,
-                'previous_item_category' => $get_item_details->item_category,
-                'item_category' => $get_item_details->item_category,
-                'previous_item_unique_code' => $get_item_details->item_unique_code,
-                'item_unique_code' => $get_item_details->item_unique_code,
-                'previous_item_sub_code' => $get_item_details->item_sub_code,
-                'item_sub_code' => $get_item_details->item_sub_code,
-                'previous_item_description' => $get_item_details->item_description,
-                'item_description' => $get_item_details->item_description,
-                'previous_quantity_as_per_invoice' => $get_item_details->quantity_as_per_invoice,
-                'quantity_as_per_invoice' => $get_item_details->quantity_as_per_invoice,
-                'previous_verification_status' => $get_item_details->verification_status,
-                'verification_status' => $verification_status,
-                'previous_quantity_verified' => $get_item_details->quantity_verified,
-                'quantity_verified' => $quantity_verified_value,
-                'previous_new_location_verified' => $get_item_details->new_location_verified,
-                'new_location_verified' => $new_location_verified,
-                'previous_verified_by' => $get_item_details->verified_by,
-                'verified_by' => $verified_by,
-                'previous_verified_by_username' => $get_item_details->verified_by_username,
-                'verified_by_username' => $verified_by_username,
-                'previous_verified_datetime' => $get_item_details->verified_datetime,
-                'verified_datetime' => $current_date_time,
-                'previous_verification_remarks' => $get_item_details->verification_remarks,
-                'verification_remarks' => $verification_remarks,
-                'previous_qty_ok' => $get_item_details->qty_ok,
-                'qty_ok' => $qty_ok,
-                'previous_qty_damaged' => $get_item_details->qty_damaged,
-                'qty_damaged' => $qty_damaged,
-                'previous_qty_scrapped' => $get_item_details->qty_scrapped,
-                'qty_scrapped' => $qty_scrapped,
-                'previous_qty_not_in_use' => $get_item_details->qty_not_in_use,
-                'qty_not_in_use' => $qty_not_in_use,
-                'previous_qty_missing' => $get_item_details->qty_missing,
-                'qty_missing' => $qty_missing,
-                'previous_qty_shifted' => $get_item_details->qty_shifted,
-                'qty_shifted' => $qty_shifted,
-                'previous_mode_of_verification' => $get_item_details->mode_of_verification,
-                'mode_of_verification' => $mode_of_verification,
-                'previous_created_at' => date('Y-m-d H:i:s'),
-                'created_at' => date('Y-m-d H:i:s'),
-            );
-            $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts_log',$verifiedproducts_array);
-
-
-
-            //Add into Verified Products Log Table        
-            $qty_scrapped_value = 0;
-            $qty_damaged_value = 0;
-            $qty_ok_value = 0;
-            $qty_not_in_use_value = 0;
-            $qty_missing_value = 0;
-            $qty_shifted_value = 0;
-            if($update_details->item_scrap_condition =='qty_ok')
-            {
-            $qty_ok_value = $quantity_verified;
-            }
-            if($update_details->item_scrap_condition =='qty_damaged')
-            {
-            $qty_damaged_value = $quantity_verified;
-            }
-            if($update_details->item_scrap_condition =='qty_scrapped')
-            {
-            $qty_scrapped_value = $quantity_verified;
-            }
-            if($update_details->item_scrap_condition =='qty_not_in_use')
-            {
-            $qty_not_in_use_value = $quantity_verified;
-            }
-            if($update_details->item_scrap_condition =='qty_missing')
-            {
-            $qty_missing_value = $quantity_verified;
-            }
-            if($update_details->item_scrap_condition =='qty_shifted')
-            {
-            $qty_shifted_value = $quantity_verified;
-            }
-            
-
-        
-
-            
-
-
-
-
-
-
-            
-            
-            if($verifiedproducts_result)
-            {
-
+                //Add In Log File
                 $verifiedproducts_array = array(
+                    'row_id' => $get_item_details->id,
+                    'edit_opration' => $edit_opration,
+                    'previous_company_id' => $company_id,
                     'company_id' => $company_id,
+                    'previous_location_id' => $location_id,
                     'location_id' => $location_id,
+                    'previous_entity_code' => $entity_code,
                     'entity_code' => $entity_code,
+                    'previous_project_id' => $project_id,
                     'project_id' => $project_id,
+                    'previous_project_name' => $project_name,
                     'project_name' => $project_name,
+                    'previous_original_table_name' => $original_table_name,
                     'original_table_name' => $original_table_name,
+                    'previous_item_id' => $get_item_details->id,
                     'item_id' => $get_item_details->id,
+                    'previous_item_category' => $get_item_details->item_category,
                     'item_category' => $get_item_details->item_category,
+                    'previous_item_unique_code' => $get_item_details->item_unique_code,
                     'item_unique_code' => $get_item_details->item_unique_code,
+                    'previous_item_sub_code' => $get_item_details->item_sub_code,
                     'item_sub_code' => $get_item_details->item_sub_code,
+                    'previous_item_description' => $get_item_details->item_description,
                     'item_description' => $get_item_details->item_description,
+                    'previous_quantity_as_per_invoice' => $get_item_details->quantity_as_per_invoice,
                     'quantity_as_per_invoice' => $get_item_details->quantity_as_per_invoice,
+                    'previous_verification_status' => $get_item_details->verification_status,
                     'verification_status' => $verification_status,
-                    'quantity_verified' => $quantity_verified,
+                    'previous_quantity_verified' => $get_item_details->quantity_verified,
+                    'quantity_verified' => $quantity_verified_value,
+                    'previous_new_location_verified' => $get_item_details->new_location_verified,
                     'new_location_verified' => $new_location_verified,
+                    'previous_verified_by' => $get_item_details->verified_by,
                     'verified_by' => $verified_by,
+                    'previous_verified_by_username' => $get_item_details->verified_by_username,
                     'verified_by_username' => $verified_by_username,
+                    'previous_verified_datetime' => $get_item_details->verified_datetime,
                     'verified_datetime' => $current_date_time,
+                    'previous_verification_remarks' => $get_item_details->verification_remarks,
                     'verification_remarks' => $verification_remarks,
-                    'qty_ok' => $qty_ok_value,
-                    'qty_damaged' => $qty_damaged_value,
-                    'qty_scrapped' => $qty_scrapped_value,
-                    'qty_not_in_use' => $qty_not_in_use_value,
-                    'qty_missing' => $qty_missing_value,
-                    'qty_shifted' => $qty_shifted_value,
+                    'previous_qty_ok' => $get_item_details->qty_ok,
+                    'qty_ok' => $qty_ok,
+                    'previous_qty_damaged' => $get_item_details->qty_damaged,
+                    'qty_damaged' => $qty_damaged,
+                    'previous_qty_scrapped' => $get_item_details->qty_scrapped,
+                    'qty_scrapped' => $qty_scrapped,
+                    'previous_qty_not_in_use' => $get_item_details->qty_not_in_use,
+                    'qty_not_in_use' => $qty_not_in_use,
+                    'previous_qty_missing' => $get_item_details->qty_missing,
+                    'qty_missing' => $qty_missing,
+                    'previous_qty_shifted' => $get_item_details->qty_shifted,
+                    'qty_shifted' => $qty_shifted,
+                    'previous_mode_of_verification' => $get_item_details->mode_of_verification,
                     'mode_of_verification' => $mode_of_verification,
-                    // 'type_of_operation' => $operation,
-                    'qty_value' => $actual_quantity_verified,
+                    'previous_created_at' => date('Y-m-d H:i:s'),
                     'created_at' => date('Y-m-d H:i:s'),
                 );
-                $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts',$verifiedproducts_array);
+                // echo "<pre>Insert :: verifiedproducts_log :";
+                // print_r($verifiedproducts_array);
+                // echo "</pre>";
+                // // exit;
+                $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts_log',$verifiedproducts_array);
 
-                header('Content-Type: application/json');
-                echo json_encode(array("success"=>200,"message"=>"Item verified update successfully."));
-                exit;
 
-            } 
-            else {
-                header('Content-Type: application/json');
-                echo json_encode(array("success"=>401,"message"=>"Item not verified"));
-                exit;
-            }
+
+                //Add into Verified Products Log Table        
+                $qty_scrapped_value = 0;
+                $qty_damaged_value = 0;
+                $qty_ok_value = 0;
+                $qty_not_in_use_value = 0;
+                $qty_missing_value = 0;
+                $qty_shifted_value = 0;
+                if($update_details->item_scrap_condition =='qty_ok')
+                {
+                $qty_ok_value = $quantity_verified;
+                }
+                if($update_details->item_scrap_condition =='qty_damaged')
+                {
+                $qty_damaged_value = $quantity_verified;
+                }
+                if($update_details->item_scrap_condition =='qty_scrapped')
+                {
+                $qty_scrapped_value = $quantity_verified;
+                }
+                if($update_details->item_scrap_condition =='qty_not_in_use')
+                {
+                $qty_not_in_use_value = $quantity_verified;
+                }
+                if($update_details->item_scrap_condition =='qty_missing')
+                {
+                $qty_missing_value = $quantity_verified;
+                }
+                if($update_details->item_scrap_condition =='qty_shifted')
+                {
+                $qty_shifted_value = $quantity_verified;
+                }
+                
+
+
+
+
+
+
+
+                
+                
+                if($verifiedproducts_result)
+                {
+
+                    $verifiedproducts_array = array(
+                        'company_id' => $company_id,
+                        'location_id' => $location_id,
+                        'entity_code' => $entity_code,
+                        'project_id' => $project_id,
+                        'project_name' => $project_name,
+                        'original_table_name' => $original_table_name,
+                        'item_id' => $get_item_details->id,
+                        'item_category' => $get_item_details->item_category,
+                        'item_unique_code' => $get_item_details->item_unique_code,
+                        'item_sub_code' => $get_item_details->item_sub_code,
+                        'item_description' => $get_item_details->item_description,
+                        'quantity_as_per_invoice' => $get_item_details->quantity_as_per_invoice,
+                        'verification_status' => $verification_status,
+                        'quantity_verified' => $quantity_verified,
+                        'new_location_verified' => $new_location_verified,
+                        'verified_by' => $verified_by,
+                        'verified_by_username' => $verified_by_username,
+                        'verified_datetime' => $current_date_time,
+                        'verification_remarks' => $verification_remarks,
+                        'qty_ok' => $qty_ok_value,
+                        'qty_damaged' => $qty_damaged_value,
+                        'qty_scrapped' => $qty_scrapped_value,
+                        'qty_not_in_use' => $qty_not_in_use_value,
+                        'qty_missing' => $qty_missing_value,
+                        'qty_shifted' => $qty_shifted_value,
+                        'mode_of_verification' => $mode_of_verification,
+                        // 'type_of_operation' => $operation,
+                        'qty_value' => $actual_quantity_verified,
+                        'created_at' => date('Y-m-d H:i:s'),
+                    );
+                    // echo "<pre>Insert tto verifiedproducts:";
+                    // print_r($verifiedproducts_array);
+                    // echo "</pre>";
+                    // // exit;
+                    $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts',$verifiedproducts_array);
+
+                    header('Content-Type: application/json');
+                    echo json_encode(array("success"=>200,"message"=>"Item verified update successfully."));
+                    exit;
+
+                } 
+                else {
+                    header('Content-Type: application/json');
+                    echo json_encode(array("success"=>401,"message"=>"Item not verified"));
+                    exit;
+                }
 
         }else{
 
@@ -3771,7 +3808,7 @@ public function get_project_additionaldata(){
                             <td align="center" style="padding-bottom:20px;">
                                 <a href="' . $loginLink . '" 
                                 style="background:#0d6efd;color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:5px;display:inline-block;">
-                                Click here to Get Details Report
+                                Click here to Get Detailed Report
                                 </a>
                             </td>
                         </tr>
@@ -5607,6 +5644,11 @@ $this->email->attach($file_path);
         $query= $this->db->get();   
         $verifiedproducts_data = $query->row();
 
+        // echo "<pre>verifiedproducts_data :";
+        // print_r($verifiedproducts_data);
+        // echo "</pre>";
+        // exit;
+
         $verified_datetime = date('Y-m-d H:i:s');
 
       
@@ -5640,48 +5682,46 @@ $this->email->attach($file_path);
             'type_of_operation' => 'rollback',
             'qty_value' => $verifiedproducts_data->qty_value,
             'created_at' => date('Y-m-d H:i:s'),
-        );
+        );       
         $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts',$verifiedproducts_array);
 
        
        
 
-        $data=array(
-            "quantity_verified"=>$company_projects_product_details->quantity_verified-$company_projects_product_details->quantity_verified,
-            "new_location_verified"=>$company_projects_product_details->quantity_verified-$company_projects_product_details->quantity_verified,
-            "instance_count"=>(int)$company_projects_product_details->instance_count+1,
-        );
-
+        $data=array();
+        $qty_value = 0;
         if(!empty($verifiedproducts_data->qty_ok)){
              $data['qty_ok'] = $company_projects_product_details->qty_ok-$verifiedproducts_data->qty_ok;
+             $qty_value = $verifiedproducts_data->qty_ok;
         }
         if(!empty($verifiedproducts_data->qty_damaged)){
              $data['qty_damaged'] = $company_projects_product_details->qty_damaged-$verifiedproducts_data->qty_damaged;
+             $qty_value = $verifiedproducts_data->qty_damaged;
         }
         if(!empty($verifiedproducts_data->qty_scrapped)){
              $data['qty_scrapped'] = $company_projects_product_details->qty_scrapped-$verifiedproducts_data->qty_scrapped;
+             $qty_value = $verifiedproducts_data->qty_scrapped;
         }
         if(!empty($verifiedproducts_data->qty_not_in_use)){
              $data['qty_not_in_use'] = $company_projects_product_details->qty_not_in_use-$verifiedproducts_data->qty_not_in_use;
+             $qty_value = $verifiedproducts_data->qty_not_in_use;
         }
         if(!empty($verifiedproducts_data->qty_shifted)){
              $data['qty_shifted'] = $company_projects_product_details->qty_shifted-$verifiedproducts_data->qty_shifted;
+             $qty_value = $verifiedproducts_data->qty_shifted;
+        }
+
+        $remaining_quantity = (int)$company_projects_product_details->quantity_verified-(int)$qty_value;
+        $data["quantity_verified"] = $remaining_quantity;
+        $data["instance_count"] = (int)$company_projects_product_details->instance_count+1;
+        $data["verification_status"] = "";
+        if($company_projects_product_details->quantity_as_per_invoice <= $remaining_quantity)
+        {
+            $data["verification_status"] = "Verified";
         }
         $insert=$this->db->where('id',$item_id);
         $insert=$this->db->update($table_name,$data);
 
-        /*
-        $data=array(
-            "type_of_operation"=>'rollback',
-        );
-        $insert=$this->db->where('company_id',$verifiedproducts_data->company_id);
-        $insert=$this->db->where('location_id',$verifiedproducts_data->location_id);
-        $insert=$this->db->where('entity_code',$verifiedproducts_data->entity_code);
-        $insert=$this->db->where('project_id',$verifiedproducts_data->project_id);
-        $insert=$this->db->where('project_name',$verifiedproducts_data->project_name);
-        $insert=$this->db->where('item_id',$verifiedproducts_data->item_id);
-        $insert=$this->db->update('verifiedproducts',$data);
-        */
 
       
         // if(!empty($project_id) && count($project_id) > 0)
@@ -6102,6 +6142,989 @@ public function generateExceptionReportDev() {
          */
         if($type === 'Project Based'){
 
+        
+            // exceptioncategory
+            /*
+            1 ->Condition of Item
+            2 ->Changes/ Updations of Items (New)
+            3 ->Qty Validation Status
+            4 ->Updated with Verification Remarks
+            5 ->Updated with Item Notes
+            6 ->Calculate Risk Exposure (New)
+            8 ->Mode of Verification
+            9 ->Duplicate Item Codes verified (NOT WORKING)
+            10 ->Duplicate Item Codes Identified (New)
+            */
+            $lastProj = $this->db->query('SELECT * FROM company_projects WHERE status="' . $projectstatus . '" AND company_id=' . $company_id . ' ORDER BY id DESC LIMIT 1')->result();
+
+            if ($lastProj) {
+                $condition = [
+                    "status"              => $projectstatus,
+                    "company_id"          => $company_id,
+                    "original_table_name" => $lastProj[0]->original_table_name,
+                    // "entity_code"         => $this->admin_registered_entity_code
+                ];
+                $getProjects = $this->tasks->get_data('company_projects', $condition);
+               
+
+                foreach ($getProjects as $project) {
+                    $old_pattern = ["/[^a-zA-Z0-9]/", "/_+/", "/_$/"];
+                    $new_pattern = ["_", "_", ""];
+                    $project_name = strtolower(preg_replace($old_pattern, $new_pattern, trim($project->project_name)));
+
+                    $project_report = $this->_getExceptionCategoryReport($project_name,$exceptioncategory,$verificationstatus,$reportHeaders) ?: [];
+                
+                
+                    
+                    if (is_array($project_report)) {
+                        $report_data = array_merge($report_data, $project_report);
+                    }
+
+                   
+
+                }
+            }
+
+
+            if($exceptioncategory == '1'){  //Condition of Item
+                // Step 1: Headers
+                /*
+                $headers = [
+                    "Allocated Item Category",
+                    "To be Verified (Amount in Lacs)", "To be Verified (Number of Qty)",
+                    "Good Condition (Amount in Lacs)", "Good Condition (Number of Qty)",
+                    "Damaged (Amount in Lacs)", "Damaged (Number of Qty)",
+                    "Scrapped (Amount in Lacs)", "Scrapped (Number of Qty)",
+                    "Missing (Amount in Lacs)", "Missing (Number of Qty)",
+                    "Shifted (Amount in Lacs)", "Shifted (Number of Qty)",
+                    "Not in Use (Amount in Lacs)", "Not in Use (Number of Qty)",
+                    "Remaining to be Verified (Amount in Lacs)", "Remaining to be Verified (Number of Qty)"
+                ]; */
+
+                $headers = [
+                    "Allocated Item Category",
+                    "To be Verified (Amount in Lacs)", "To be Verified (Number of Qty)",
+                    "Good Condition (Number of Qty)",
+                    "Damaged (Number of Qty)",
+                    "Scrapped (Number of Qty)",
+                    "Missing (Number of Qty)",
+                    "Shifted (Number of Qty)",
+                    "Not in Use (Number of Qty)",
+                    "Remaining to be Verified (Amount in Lacs)", "Remaining to be Verified (Number of Qty)"
+                ];
+
+
+                fputcsv($fp, $headers);
+
+                // Step 2: Safe loop (only if data exists)
+                if (isset($report_data['all']) && is_array($report_data['all']) && count($report_data['all']) > 0) {
+
+                    $lookup = [];
+                    foreach (['good', 'damaged', 'scrapped', 'missing', 'shifted', 'notinuse'] as $status) {
+                        $lookup[$status] = isset($report_data[$status]) && is_array($report_data[$status]) 
+                            ? $report_data[$status] : [];
+                    }
+
+                    $column_totals = array_fill(0, count($headers), 0);
+                    
+                    $totalAmount=0;
+                    $totalItems=0;
+                    $goodTotalAmount=0;
+                    $goodTotalItems=0;
+                    $damagedTotalAmount=0;
+                    $damagedTotalItems=0;
+                    $scrappedTotalAmount=0;
+                    $scrappedTotalItems=0;
+                    $missingTotalAmount=0;
+                    $missingTotalItems=0;
+                    $shiftedTotalAmount=0;
+                    $shiftedTotalItems=0;
+                    $notinuseTotalAmount=0;
+                    $notinuseTotalItems=0;
+                    $remainingTotalAmount=0;
+                    $remainingTotalItems=0;
+                    $remainitemstotal=0;
+                    foreach($report_data['all'] as $allcat)
+                    {
+                        $row = [];
+                        $goodAmount=0;
+                        $goodItems=0;
+                        $damagedAmount=0;
+                        $damagedItems=0;
+                        $scrappedAmount=0;
+                        $scrappedItems=0;
+                        $missingAmount=0;
+                        $missingItems=0;
+                        $shiftedAmount=0;
+                        $shiftedItems=0;
+                        $notinuseAmount=0;
+                        $notinuseItems=0;
+                        $remainingAmount=0;
+                        $remainingItems=0;
+                        $totalAmount=$totalAmount+$allcat->total_amount;
+                        $totalItems=$totalItems+$allcat->total_qty;
+                        foreach($report_data['good'] as $good)
+                        {
+                            if($good->item_category==$allcat->item_category)
+                            {
+                                $goodAmount=$good->total_amount;
+                                $goodItems=$good->good_qty;
+                                $goodTotalAmount=$goodTotalAmount+$goodAmount;
+                                $goodTotalItems=$goodTotalItems+$goodItems;
+                            }
+                        }
+                        foreach($report_data['damaged'] as $damaged)
+                        {
+                            if($damaged->item_category==$allcat->item_category)
+                            {
+                                $damagedAmount=$damaged->total_amount;
+                                $damagedItems=$damaged->damaged_qty;
+                                $damagedTotalAmount=$damagedTotalAmount+$damagedAmount;
+                                $damagedTotalItems=$damagedTotalItems+$damagedItems;
+                            }
+                        }
+                        foreach($report_data['scrapped'] as $scrapped)
+                        {
+                            if($scrapped->item_category==$allcat->item_category)
+                            {
+                                $scrappedAmount=$scrapped->total_amount;
+                                $scrappedItems=$scrapped->scrapped_qty;
+                                $scrappedTotalAmount=$scrappedTotalAmount+$scrappedAmount;
+                                $scrappedTotalItems=$scrappedTotalItems+$scrappedItems;
+                            }
+                        }
+                        foreach($report_data['missing'] as $missing)
+                        {
+                            if($missing->item_category==$allcat->item_category)
+                            {
+                                $missingAmount=$missing->total_amount;
+                                $missingItems=$missing->missing_item;
+                                $missingTotalAmount=$missingTotalAmount+$missingAmount;
+                                $missingTotalItems=$missingTotalItems+$missingItems;
+                            }
+                        }
+                        foreach($report_data['shifted'] as $shifted)
+                        {
+                            if($shifted->item_category==$allcat->item_category)
+                            {
+                                $shiftedAmount=$shifted->total_amount;
+                                $shiftedItems = 0;
+                                if(isset($shifted->shifted_item)){
+                                    $shiftedItems=$shifted->shifted_item;
+                                }                                
+                                $shiftedTotalAmount=$shiftedTotalAmount+$shiftedAmount;
+                                $shiftedTotalItems=$shiftedTotalItems+$shiftedItems;
+                            }
+                        }
+                        foreach($report_data['notinuse'] as $notinuse)
+                        {
+                            if($notinuse->item_category==$allcat->item_category)
+                            {
+                                $notinuseAmount=$notinuse->total_amount;
+                                $notinuseItems=$notinuse->notinuse_qty;
+                                $notinuseTotalAmount=$notinuseTotalAmount+$notinuseAmount;
+                                    $notinuseTotalItems= $notinuseTotalItems + $notinuseItems;
+                            }
+                        }
+                        $remainitem='0';
+                        foreach($report_data['remaining'] as $remainingdata)
+                        {
+                            if($remainingdata->item_category==$allcat->item_category)
+                            {
+                                $remainitem= $remainingdata->items;
+                            }
+                            $remainitem = $allcat->total_qty-($goodItems+$damagedItems+$scrappedItems+$missingItems+$shiftedItems+$notinuseItems);
+
+                            
+                        }
+                        $remainitemstotal +=$remainitem;
+
+
+                        $remainingAmount=$allcat->total_amount-($goodAmount+$damagedAmount+$scrappedAmount+$missingAmount+$shiftedAmount+$notinuseAmount);
+                        $remainingItems=$allcat->total_qty-($goodItems+$damagedItems+$scrappedItems+$missingItems+$shiftedItems+$notinuseItems);
+                        $remainingTotalAmount=$remainingTotalAmount+$remainingAmount;
+                        $remainingTotalItems=$remainingTotalItems+$remainingItems;
+
+
+                        $row[] = $allcat->item_category;
+                        $row[] = $allcat->total_amount!=0?getmoney_format(round(($allcat->total_amount/100000),2)):$allcat->total_amount;
+                        $row[] = $allcat->total_qty;
+                        $row[] = $goodItems;
+                        $row[] = $damagedItems;
+                        $row[] = $scrappedItems;
+                        $row[] = $missingItems;
+                        $row[] = $shiftedItems;
+                        $row[] = $notinuseItems;
+                        $row[] = $remainingAmount!=0?getmoney_format(round(($remainingAmount/100000),2)):$remainingAmount;
+                        $row[] = $remainitem;
+                        fputcsv($fp, $row);
+                    }
+
+
+
+                    $Grand_Total_row[] = "Grand Total";
+                    $Grand_Total_row[] = $totalAmount!=0?getmoney_format(round(($totalAmount/100000),2)):$totalAmount;
+                    $Grand_Total_row[] = $totalItems ;
+                    $Grand_Total_row[] = $goodTotalItems ;
+                    $Grand_Total_row[] = $damagedTotalItems ;
+                    $Grand_Total_row[] = $scrappedTotalItems ;
+                    $Grand_Total_row[] = $missingTotalItems ;
+                    $Grand_Total_row[] = $shiftedTotalItems ;
+                    $Grand_Total_row[] = $notinuseTotalItems ;
+                    $Grand_Total_row[] = $remainingTotalAmount!=0?getmoney_format(round(($remainingTotalAmount/100000),2)):$remainingTotalAmount;
+                    $Grand_Total_row[] = $remainingTotalItems;
+                    fputcsv($fp, $Grand_Total_row);
+
+
+
+                    $Grand_Total_percentage_row[] = "% to Grand Total";
+                    $Grand_Total_percentage_row[] = "100%";
+                    $Grand_Total_percentage_row[] = "100%";
+                    $Grand_Total_percentage_row[] = round(($goodTotalItems/$totalItems)*100,2).'%';
+                    $Grand_Total_percentage_row[] = round(($damagedTotalItems/$totalItems)*100,2).'%';
+                    $Grand_Total_percentage_row[] = round(($scrappedTotalItems/$totalItems)*100,2).'%';
+                    $Grand_Total_percentage_row[] = round(($missingTotalItems/$totalItems)*100,2).'%';
+                    $Grand_Total_percentage_row[] = round(($shiftedTotalItems/$totalItems)*100,2).'%';
+                    $Grand_Total_percentage_row[] = round(($notinuseTotalItems/$totalItems)*100,2).'%';
+                    $Grand_Total_percentage_row[] = round(($remainingTotalAmount/$totalAmount)*100,2).'%';
+                    $Grand_Total_percentage_row[] = round(($remainingTotalItems/$totalItems)*100,2).'%';
+                    fputcsv($fp, $Grand_Total_percentage_row);
+                    /*
+                    foreach ($report_data['all'] as $category) {
+                        $row = [];
+                        $row[] = $category->item_category;
+
+                        $toBeVerifiedAmount = (float)($category->total_amount / 100000);
+                        $toBeVerifiedQty    = (int)$category->total_qty;
+                        $row[] = $toBeVerifiedAmount;
+                        $row[] = $toBeVerifiedQty;
+
+                        $getValues = function($status, $cat_name) use ($lookup) {
+                            foreach ($lookup[$status] as $item) {
+                                if ($item->item_category === $cat_name) {
+                                    return [
+                                        'amount' => (float)($item->total_amount / 100000),
+                                        'qty'    => (int)($item->qty ?? 0)
+                                    ];
+                                }
+                            }
+                            return ['amount' => 0, 'qty' => 0];
+                        };
+
+                        $good     = $getValues('good', $category->item_category);
+                        $damaged  = $getValues('damaged', $category->item_category);
+                        $scrapped = $getValues('scrapped', $category->item_category);
+                        $missing  = $getValues('missing', $category->item_category);
+                        $shifted  = $getValues('shifted', $category->item_category);
+                        $notinuse = $getValues('notinuse', $category->item_category);
+
+                        $row = array_merge($row, [
+                            $good['amount'], $good['qty'],
+                            $damaged['amount'], $damaged['qty'],
+                            $scrapped['amount'], $scrapped['qty'],
+                            $missing['amount'], $missing['qty'],
+                            $shifted['amount'], $shifted['qty'],
+                            $notinuse['amount'], $notinuse['qty']
+                        ]);
+
+                        $remainingAmount = $toBeVerifiedAmount - ($good['amount'] + $damaged['amount'] + $scrapped['amount'] + $missing['amount'] + $shifted['amount'] + $notinuse['amount']);
+                        $remainingQty    = $toBeVerifiedQty - ($good['qty'] + $damaged['qty'] + $scrapped['qty'] + $missing['qty'] + $shifted['qty'] + $notinuse['qty']);
+
+                        $row[] = $remainingAmount > 0 ? round($remainingAmount, 2) : 0;
+                        $row[] = $remainingQty > 0 ? $remainingQty : 0;
+
+                        echo "<pre>row :";
+                        print_r($row);
+                        echo "</pre>";
+                        exit;
+
+                        fputcsv($fp, $row);
+
+                        for ($i = 1; $i < count($row); $i++) {
+                            $column_totals[$i] += $row[$i];
+                        }
+                    } */
+
+                    // Totals
+
+                    /*
+                    $total_row = ["Grand Total"];
+                    for ($i = 1; $i < count($headers); $i++) {
+                        $total_row[] = round($column_totals[$i], 2);
+                    }
+                    fputcsv($fp, $total_row);
+                    */ 
+
+                } else {
+                    fputcsv($fp, ["No data found"]); /// This Data is Fetching While Report Generated
+                }
+            }
+
+            if($exceptioncategory == '2'){  //Changes/ Updations of Items (New)  [File Name :- ChangesUpdationsItemsReport]
+                
+                $headers = array();
+                $project_header_column_value = explode(",",$report_data['project_header_column_value']);
+                unset($project_header_column_value[0]);
+                unset($project_header_column_value[1]);
+                $headers[] = 'Allocated Item Category';
+                
+                foreach($project_header_column_value as $project_header_column_value_value){                                
+                        $headers[] = ucfirst(str_replace('_',' ',$project_header_column_value_value));
+                }            
+                fputcsv($fp, $headers);
+
+                $rows = array();
+                foreach($report_data['different'] as $key=>$value){    
+                    $row = array(); // Create new row for each record            
+                    $row[] = $key;
+                    foreach($project_header_column_value as $project_header_column_value_value){
+                        if(isset($report_data['different'][$key][$project_header_column_value_value])){
+                            $row[] = count($report_data['different'][$key][$project_header_column_value_value]);
+                        }else{
+                            $row[] = "0";
+                        }                    
+                    }
+                    // $rows[] = $row; // Add row to master array
+                    fputcsv($fp, $row);
+                }
+                
+            }
+
+            if($exceptioncategory == '3'){  //Qty Validation Status
+                // Step 1: Headers      //Should be Dynamic     [File Name :- quantityValidationReport]
+                $headers = [
+                    "Allocated Item Category",
+                    "To be Verified - Amount(in Lacs)",
+                    "To be Verified - Number of Line Items",
+                    "Verified - Amount(in Lacs)",
+                    "Verified - Number of Line Items",
+                    "Verified as Equal - Amount(in Lacs)",
+                    "Verified as Equal - Number of Line Items",
+                    "Short Found - Amount(in Lacs)",
+                    "Short Found - Number of Line Items",
+                    "Excess Found - Amount(in Lacs)",
+                    "Excess Found - Number of Line Items",
+                    "Remaining to be Verified - Amount(in Lacs)",
+                    "Remaining to be Verified - Number of Line Items",
+                ];
+                fputcsv($fp, $headers);
+                
+                
+                $totalAmount=0;
+                $totalItems=0;
+                $verifiedTotalAmount=0;
+                $verifiedTotalItems=0;
+                $shortTotalAmount=0;
+                $shortTotalItems=0;
+                $equalTotalAmount=0;
+                $equalTotalItems=0;
+                $excessTotalAmount=0;
+                $excessTotalItems=0;
+                $remainingTotalAmount=0;
+                $remainingTotalItems=0;
+                $remainitemstotal=0;
+                $remainitemamounttotal=0;
+                $excessitemtotal =0;
+                $excessamounttotalnew =0;
+                foreach($report_data['all'] as $allcat)
+                {
+                    $row = [];
+                    $verifiedAmount=0;
+                    $verifiedItems=0;
+                    $shortAmount=0;
+                    $shortItems=0;
+                    $equalAmount=0;
+                    $equalItems=0;
+                    $excessAmount=0;
+                    $excessItems=0;
+                    $remainingAmount=0;
+                    $remainingItems=0;
+                
+                    $totalAmount=$totalAmount+$allcat->total_amount;
+                    $totalItems=$totalItems+$allcat->total_items;
+                    foreach($report_data['verified'] as $verified)
+                    {
+                        if($verified->item_category==$allcat->item_category)
+                        {
+                            $verifiedAmount=$verified->total_amount;
+                            $verifiedItems=$verified->total_items;
+                            $verifiedTotalAmount=$verifiedTotalAmount+$verifiedAmount;
+                            $verifiedTotalItems=$verifiedTotalItems+$verifiedItems;
+                            
+                            if($verified->total_items > $allcat->total_items && $verified->total_items > 0)
+                            {
+                                $shortAmount=$allcat->total_amount-$verified->total_amount;
+                                $shortItems=$allcat->total_items-$verified->total_items;
+                                $shortTotalAmount=$shortTotalAmount+$shortAmount;
+                                $shortTotalItems=$shortTotalItems+$shortItems;
+                            }
+
+                            if($verified->total_items > $allcat->total_items)
+                            {
+                                // // $excessAmount=$allcat->total_amount - $verified->total_amount;
+                                // $excessItems=$verified->total_items - $allcat->total_items;
+
+                                // $excessTotalAmount=$excessTotalAmount+$excessAmount;
+                                // $excessTotalItems=$excessTotalItems+$excessItems;
+                            }
+
+                            if($verified->total_items < 1)
+                            {
+                                $remainingAmount=$allcat->total_amount;
+                                $remainingItems=$allcat->total_items;
+                                $remainingTotalAmount=$remainingTotalAmount+$remainingAmount;
+                                $remainingTotalItems=$remainingTotalItems+$remainingItems;	
+                            }
+                            
+                        }
+
+                    }
+                    foreach($report_data['verifiedequal'] as $verifiedeq)
+                    {
+                        if($verifiedeq->item_category==$allcat->item_category)
+                        {
+                            $equalAmount=$verifiedeq->total_amount;
+                            $equalItems=$verifiedeq->total_items;
+                            $equalTotalAmount=$equalTotalAmount+$equalAmount;
+                            $equalTotalItems=$equalTotalItems+$equalItems;
+                        }
+                    }
+
+                    /*
+                    if($_SESSION['reportData']['verification_status']=='Not-Verified')
+                    {
+                        $remainingAmount=$allcat->total_amount;
+                        $remainingItems=$allcat->total_items;
+                        $remainingTotalAmount=$remainingTotalAmount+$remainingAmount;
+                        $remainingTotalItems=$remainingTotalItems+$remainingItems;
+                    }
+                    */ 
+
+                    $remainitem='0';
+                    $remainitemamount='0';
+                    foreach($report_data['remaining'] as $remainingdata)
+                    {
+                        if($remainingdata->item_category==$allcat->item_category)
+                        {
+                            $remainitem= $remainingdata->items;
+                            $remainitemamount= $remainingdata->total_amount;
+                        }
+                        
+                    }
+                    $remainitemstotal +=$remainitem;
+                    $remainitemamounttotal +=$remainitemamount;
+                        
+                    $excessitem='0';
+                    $excessamount='0';
+                    foreach($report_data['excess'] as $excess)
+                    {
+                        if($excess->item_category == $allcat->item_category)
+                        {
+                            $excessitem = $excess->items;
+                                $excessAmount =$excess->total_amount;		
+                                $excessamounttotalnew=$excessamounttotalnew+$excessAmount;
+
+                        }													
+                        
+                        
+                    }
+                    $excessitemtotal +=$excessitem;
+
+                        
+                    /*
+                    if($_SESSION['reportData']['verification_status']=='Not-Verified')
+                    {
+
+                        $equalAmount = 0;
+                        $equalItems = 0;
+                        $shortAmount = 0;
+                        $shortItems = 0;
+                        $excessAmount = 0;
+                        $excessitem = 0;
+                        // $equalAmount = 0;
+
+                        $equalTotalAmount = 0;
+                        $equalTotalItems = 0;
+                        $shortTotalAmount = 0;
+                        $shortTotalItems = 0;
+                        $excessamounttotalnew = 0;
+                        $excessitemtotal = 0;
+                    } */
+
+                    $row[] = $allcat->item_category;
+                    $row[] = $allcat->total_amount!=0?getmoney_format(round(($allcat->total_amount/100000),2)):$allcat->total_amount;
+                    $row[] = $allcat->total_items;
+                    $row[] = $verifiedAmount!=0?getmoney_format(round(($verifiedAmount/100000),2)):$verifiedAmount;
+                    $row[] = $verifiedItems;
+                    $row[] = $equalAmount!=0?getmoney_format(round(($equalAmount/100000),2)):$equalAmount;
+                    $row[] = $equalItems;
+                    $row[] = $shortAmount!=0?getmoney_format(round(($shortAmount/100000),2)):$shortAmount;
+                    $row[] = $shortItems;
+                    $row[] = $excessAmount!=0?getmoney_format(round(($excessAmount/100000),2)):$excessAmount;
+                    $row[] = $excessitem; 
+                    $row[] = $remainitemamount!=0?getmoney_format(round(($remainitemamount/100000),2)):$remainitemamount;
+                    $row[] = $remainitem;
+                    fputcsv($fp, $row);
+                }
+
+
+
+                $grand_total_row = array();
+                $grand_total_row[] = "Grand Total";
+                $grand_total_row[] = $totalAmount!=0?getmoney_format(round(($totalAmount/100000),2)):$totalAmount;
+                $grand_total_row[] = $totalItems;
+                $grand_total_row[] = $verifiedTotalAmount!=0?getmoney_format(round(($verifiedTotalAmount/100000),2)):$verifiedTotalAmount;
+                $grand_total_row[] = $verifiedTotalItems;
+                $grand_total_row[] = $equalTotalAmount!=0?getmoney_format(round(($equalTotalAmount/100000),2)):$equalTotalAmount;
+                $grand_total_row[] = $equalTotalItems;
+                $grand_total_row[] = $shortTotalAmount!=0?getmoney_format(round(($shortTotalAmount/100000),2)):$shortTotalAmount;
+                $grand_total_row[] = $shortTotalItems;
+                $grand_total_row[] = $excessamounttotalnew!=0?getmoney_format(round(($excessamounttotalnew/100000),2)):$excessamounttotalnew;
+                $grand_total_row[] = $excessitemtotal;
+                $grand_total_row[] = $remainitemamounttotal!=0?getmoney_format(round(($remainitemamounttotal/100000),2)):$remainitemamounttotal;
+                $grand_total_row[] = $remainitemstotal;
+                fputcsv($fp, $grand_total_row);
+
+                $grand_total_percentage_row = array();
+                $grand_total_percentage_row[] = "% to Grand Total";
+                $grand_total_percentage_row[] = "100%";
+                $grand_total_percentage_row[] = "100%";            
+                $grand_total_percentage_row[] = round(($verifiedTotalAmount/$totalAmount)*100,2)."%";
+                $grand_total_percentage_row[] = round(($verifiedTotalItems/$totalItems)*100,2)."%";
+                $grand_total_percentage_row[] = round(($equalTotalAmount/$totalAmount)*100,2)."%";
+                $grand_total_percentage_row[] = round(($equalTotalItems/$totalItems)*100,2)."%";
+                $grand_total_percentage_row[] = round(($shortTotalAmount/$totalAmount)*100,2)."%";
+                $grand_total_percentage_row[] = round(($shortTotalItems/$totalItems)*100,2)."%";            
+                $grand_total_percentage_row[] = round(($excessamounttotalnew/$totalAmount)*100,2)."%";
+                $grand_total_percentage_row[] = round(($excessitemtotal/$totalItems)*100,2)."%";
+                $grand_total_percentage_row[] = round(($remainitemamounttotal/$totalAmount)*100,2)."%";
+                $grand_total_percentage_row[] = round(($remainitemstotal/$totalItems)*100,2)."%";
+                fputcsv($fp, $grand_total_percentage_row);
+
+
+            }
+
+            if($exceptioncategory == '4'){  //Updated with Verification Remarks     [File Name :- verificationRemarksReport]
+
+                $headers = [
+                    "Allocated Item Category",
+                    "Number of Line Items",
+                ];
+                fputcsv($fp, $headers);
+
+                $totalItems=0;
+                foreach($report_data['all'] as $allcat)
+                {
+                    $row = array(); 
+                    $totalItems=$totalItems+$allcat->items;
+
+                    $row[] = $allcat->item_category; 
+                    $row[] = $allcat->items; 
+                    fputcsv($fp, $row);
+                }
+                
+
+                $row1[] = "Grand Total"; 
+                $row1[] = $totalItems; 
+
+                fputcsv($fp, $row1);
+
+            }
+
+            if($exceptioncategory == '5'){  //Updated with Item Notes
+
+                $headers = [
+                    "Allocated Item Category",
+                    "Number of Line Items",
+
+                ];
+                fputcsv($fp, $headers);
+
+                $totalItems=0;
+                foreach($report_data['all'] as $allcat)
+                {
+                    $row = array();
+                    $totalItems=$totalItems+$allcat->items;
+
+                    $row[] = $allcat->item_category; 
+                    $row[] = $allcat->items; 
+                    fputcsv($fp, $row);
+                }
+                
+
+                $row1[] = "Grand Total"; 
+                $row1[] = $totalItems; 
+
+                fputcsv($fp, $row1);
+
+
+            }
+
+            if($exceptioncategory == '6'){  //Calculate Risk Exposure (New)         I think only showing When Finish
+
+
+                $headers = [
+                    "Allocated Item Category",
+                    "Damaged (Amount in Lacs)", "Damaged (Number of Qty)",
+                    "Scrapped (Amount in Lacs)", "Scrapped (Number of Qty)",
+                    "Missing (Amount in Lacs)", "Missing (Number of Qty)",
+                    "Shifted (Amount in Lacs)", "Shifted (Number of Qty)",
+                    "Not in Use (Amount in Lacs)", "Not in Use (Number of Qty)",
+                    "Short (Amount in Lacs)", "Short (Number of Qty)",
+                    "Excess (Amount in Lacs)", "Excess (Number of Qty)",
+                    "Total Risk Exposure (Amount in Lacs)", "Total Risk Exposure (Number of Qty)",
+                ];
+                fputcsv($fp, $headers);
+
+                $totalAmount=0;
+                $totalItems=0;
+                $goodTotalAmount=0;
+                $goodTotalItems=0;
+                $damagedTotalAmount=0;
+                $damagedTotalItems=0;
+                $scrappedTotalAmount=0;
+                $scrappedTotalItems=0;
+                $missingTotalAmount=0;
+                $missingTotalItems=0;
+                $shiftedTotalAmount=0;
+                $shiftedTotalItems=0;
+                $notinuseTotalAmount=0;
+                $notinuseTotalItems=0;
+                $remainingTotalAmount=0;
+                $remainingTotalItems=0;            
+                $remainitemstotal=0;
+                foreach($report_data['all'] as $allcat)
+                {
+                    $row = [];
+                    $goodAmount=0;
+                    $goodItems=0;
+                    $damagedAmount=0;
+                    $damagedItems=0;
+                    $scrappedAmount=0;
+                    $scrappedItems=0;
+                    $missingAmount=0;
+                    $missingItems=0;
+                    $shiftedAmount=0;
+                    $shiftedItems=0;
+                    $notinuseAmount=0;
+                    $notinuseItems=0;
+                    $remainingAmount=0;
+                    $remainingItems=0;
+
+                    $shortAmount=0;
+                    $shortItems=0;
+                    $excessitem=0;
+                    $excessamount=0;
+
+                    foreach($report_data['verified'] as $verified)
+                    {
+                        if($verified->item_category==$allcat->item_category)
+                        {
+                            $verifiedAmount=$verified->total_amount;
+                            $verifiedItems=$verified->total_items;
+                            $verifiedTotalAmount=$verifiedTotalAmount+$verifiedAmount;
+                            $verifiedTotalItems=$verifiedTotalItems+$verifiedItems;
+                            
+                            if($verified->total_items > $allcat->total_items && $verified->total_items > 0)
+                            {
+                                $shortAmount=$allcat->total_amount-$verified->total_amount;
+                                $shortItems=$allcat->total_items-$verified->total_items;
+                                $shortTotalAmount=$shortTotalAmount+$shortAmount;
+                                $shortTotalItems=$shortTotalItems+$shortItems;
+                            }
+
+                            if($verified->total_items > $allcat->total_items)
+                            {
+                                // // $excessAmount=$allcat->total_amount - $verified->total_amount;
+                                // $excessItems=$verified->total_items - $allcat->total_items;
+
+                                // $excessTotalAmount=$excessTotalAmount+$excessAmount;
+                                // $excessTotalItems=$excessTotalItems+$excessItems;
+                            }
+
+                            if($verified->total_items < 1)
+                            {
+                                $remainingAmount=$allcat->total_amount;
+                                $remainingItems=$allcat->total_items;
+                                $remainingTotalAmount=$remainingTotalAmount+$remainingAmount;
+                                $remainingTotalItems=$remainingTotalItems+$remainingItems;	
+                            }
+                            
+                        }
+
+                    }
+
+                    
+
+                    $totalAmount=$totalAmount+$allcat->total_amount;
+                    $totalItems=$totalItems+$allcat->total_qty;
+                    foreach($report_data['good'] as $good)
+                    {
+                        if($good->item_category==$allcat->item_category)
+                        {
+                            $goodAmount=$good->total_amount;
+                            $goodItems=$good->good_qty;
+                            $goodTotalAmount=$goodTotalAmount+$goodAmount;
+                            $goodTotalItems=$goodTotalItems+$goodItems;
+                        }
+                    }
+                    foreach($report_data['damaged'] as $damaged)
+                    {
+                        if($damaged->item_category==$allcat->item_category)
+                        {
+                            $damagedAmount=$damaged->total_amount;
+                            $damagedItems=$damaged->damaged_qty;
+                            $damagedTotalAmount=$damagedTotalAmount+$damagedAmount;
+                            $damagedTotalItems=$damagedTotalItems+$damagedItems;
+                        }
+                    }
+                    foreach($report_data['scrapped'] as $scrapped)
+                    {
+                        if($scrapped->item_category==$allcat->item_category)
+                        {
+                            $scrappedAmount=$scrapped->total_amount;
+                            $scrappedItems=$scrapped->scrapped_qty;
+                            $scrappedTotalAmount=$scrappedTotalAmount+$scrappedAmount;
+                            $scrappedTotalItems=$scrappedTotalItems+$scrappedItems;
+                        }
+                    }
+                    foreach($report_data['missing'] as $missing)
+                    {
+                        if($missing->item_category==$allcat->item_category)
+                        {
+                            $missingAmount=$missing->total_amount;
+                            $missingItems=$missing->missing_item;
+                            $missingTotalAmount=$missingTotalAmount+$missingAmount;
+                            $missingTotalItems=$missingTotalItems+$missingItems;
+                        }
+                    }
+                    foreach($report_data['shifted'] as $shifted)
+                    {
+                        if($shifted->item_category==$allcat->item_category)
+                        {
+                            $shiftedAmount=$shifted->total_amount;
+                            $shiftedItems=$shifted->shifted_item;
+                            $shiftedTotalAmount=$shiftedTotalAmount+$shiftedAmount;
+                            $shiftedTotalItems=$shiftedTotalItems+$shiftedItems;
+                        }
+                    }
+                    foreach($report_data['notinuse'] as $notinuse)
+                    {
+                        if($notinuse->item_category==$allcat->item_category)
+                        {
+                            $notinuseAmount=$notinuse->total_amount;
+                            $notinuseItems=$notinuse->notinuse_qty;
+                            $notinuseTotalAmount=$notinuseTotalAmount+$notinuseAmount;
+                                $notinuseTotalItems= $notinuseTotalItems + $notinuseItems;
+                        }
+                    }
+                    $remainitem='0';
+                    foreach($report_data['remaining'] as $remainingdata)
+                    {
+                        if($remainingdata->item_category==$allcat->item_category)
+                        {
+                            $remainitem= $remainingdata->items;
+                        }
+                        
+                    }
+                    $remainitemstotal +=$remainitem;
+
+
+                    $excessitem=0;
+                    $excessamount=0;
+                    foreach($report_data['excess'] as $excess)
+                    {
+                        if($excess->item_category == $allcat->item_category)
+                        {
+                            $excessitem = $excess->items;
+                            $excessAmount =$excess->total_amount;		
+                            $excessamounttotalnew=$excessamounttotalnew+$excessAmount;
+
+                        }
+                    }
+                        
+                    $excessitemtotal +=$excessitem;
+                    $remainingAmount=$allcat->total_amount-($goodAmount+$damagedAmount+$scrappedAmount+$missingAmount+$shiftedAmount+$notinuseAmount);
+                    $remainingItems=$allcat->total_qty-($goodItems+$damagedItems+$scrappedItems+$missingItems+$shiftedItems+$notinuseItems);
+                    $remainingTotalAmount=$remainingTotalAmount+$remainingAmount;
+                    $remainingTotalItems=$remainingTotalItems+$remainingItems;
+
+
+
+                    $row[] = $allcat->item_category;
+                    
+                    $row[] = $damagedAmount!=0?getmoney_format(round(($damagedAmount/100000),2)):$damagedAmount;
+                    $row[] = $damagedItems;
+                    
+                    $row[] = $scrappedAmount!=0?getmoney_format(round(($scrappedAmount/100000),2)):$scrappedAmount;
+                    $row[] = $scrappedItems;
+                    
+                    $row[] = $missingAmount!=0?getmoney_format(round(($missingAmount/100000),2)):$missingAmount;
+                    $row[] = $missingItems;
+
+                    $row[] = $shiftedAmount!=0?getmoney_format(round(($shiftedAmount/100000),2)):$shiftedAmount;;
+                    $row[] = $shiftedItems;
+
+                    $row[] = $notinuseAmount!=0?getmoney_format(round(($notinuseAmount/100000),2)):$notinuseAmount;
+                    $row[] = $notinuseItems;
+
+                    $row[] = $shortAmount!=0?getmoney_format(round(($shortAmount/100000),2)):$shortAmount;
+                    $row[] = $shortItems;
+
+                    if($excessAmount == NULL){
+                        $row[] = "0";
+                    }else{
+                        $row[] = $excessAmount!=0?getmoney_format(round(($excessAmount/100000),2)):$excessAmount; 
+                    }
+                    $row[] = $excessitem;
+
+                    $row[] = "0";
+                    $row[] = "0";
+                    fputcsv($fp, $row);
+                }
+
+                $Grand_Total_row[] = "Grand Total";
+                $Grand_Total_row[] = $damagedTotalAmount!=0?getmoney_format(round(($damagedTotalAmount/100000),2)):$damagedTotalAmount;
+                $Grand_Total_row[] = $damagedTotalItems;
+                $Grand_Total_row[] = $scrappedTotalAmount!=0?getmoney_format(round(($scrappedTotalAmount/100000),2)):$scrappedTotalAmount;
+                $Grand_Total_row[] = $scrappedTotalItems;
+                $Grand_Total_row[] = $missingTotalAmount!=0?getmoney_format(round(($missingTotalAmount/100000),2)):$missingTotalAmount;;
+                $Grand_Total_row[] = $missingTotalItems;
+                $Grand_Total_row[] = $shiftedTotalAmount!=0?getmoney_format(round(($shiftedTotalAmount/100000),2)):$shiftedTotalAmount;
+                $Grand_Total_row[] = $shiftedTotalItems;
+                $Grand_Total_row[] = $notinuseTotalAmount!=0?getmoney_format(round(($notinuseTotalAmount/100000),2)):$notinuseTotalAmount;
+                $Grand_Total_row[] = $notinuseTotalItems;
+                $Grand_Total_row[] = $shortTotalAmount!=0?getmoney_format(round(($shortTotalAmount/100000),2)):$shortTotalAmount;
+                $Grand_Total_row[] = $shortTotalItems;
+                $Grand_Total_row[] = $excessamounttotalnew!=0?getmoney_format(round(($excessamounttotalnew/100000),2)):$excessamounttotalnew;
+                $Grand_Total_row[] = $excessitemtotal;
+                $Grand_Total_row[] = "0";
+                $Grand_Total_row[] = "0";
+                fputcsv($fp, $Grand_Total_row);
+
+                $Grand_Total_percentage_row[] = "% to Grand Total";
+                $Grand_Total_percentage_row[] = round(($damagedTotalAmount/$totalAmount)*100,2)."%" ;
+                $Grand_Total_percentage_row[] = round(($damagedTotalItems/$totalItems)*100,2)."%" ;
+                $Grand_Total_percentage_row[] = round(($scrappedTotalAmount/$totalAmount)*100,2)."%" ;
+                $Grand_Total_percentage_row[] = round(($scrappedTotalItems/$totalItems)*100,2)."%" ;
+                $Grand_Total_percentage_row[] = round(($missingTotalAmount/$totalAmount)*100,2)."%" ;
+                $Grand_Total_percentage_row[] = round(($missingTotalItems/$totalItems)*100,2)."%" ;
+                $Grand_Total_percentage_row[] = round(($shiftedTotalAmount/$totalAmount)*100,2)."%" ;
+                $Grand_Total_percentage_row[] = round(($shiftedTotalItems/$totalItems)*100,2)."%" ;
+                $Grand_Total_percentage_row[] = round(($notinuseTotalAmount/$totalAmount)*100,2)."%" ;
+                $Grand_Total_percentage_row[] = round(($notinuseTotalItems/$totalItems)*100,2)."%" ;
+                $Grand_Total_percentage_row[] = round(($shortTotalItems/$totalItems)*100,2)."%" ;
+                $Grand_Total_percentage_row[] = round(($excessamounttotalnew/$totalAmount)*100,2)."%" ;
+                $Grand_Total_percentage_row[] = round(($excessamounttotalnew/$totalAmount)*100,2)."%" ;
+                $Grand_Total_percentage_row[] = round(($excessitemtotal/$totalItems)*100,2)."%" ;
+                $Grand_Total_percentage_row[] = "0";
+                $Grand_Total_percentage_row[] = "0";
+                fputcsv($fp, $Grand_Total_percentage_row);
+            }
+
+            if($exceptioncategory == '7'){
+
+            }
+
+            if($exceptioncategory == '8'){  //Mode of Verification
+                $headers = [
+                    "Allocated Item Category",
+                    "Verified by Scan",
+                    "Verified by Manual Search",
+                ];
+                fputcsv($fp, $headers);
+
+
+                $table = [];
+                $grandScan = $grandManual = 0;
+
+                foreach ($report_data['all'] as $row) {
+                    $category = $row->item_category;
+
+                    // find scan items
+                    $scan = 0;
+                    foreach ($report_data['scan'] as $s) {
+                        if ($s->item_category === $category) {
+                            $scan = $s->items;
+                            break;
+                        }
+                    }
+
+                    // find manual items
+                    $manual = 0;
+                    foreach ($report_data['manual'] as $m) {
+                        if ($m->item_category === $category) {
+                            $manual = $m->items;
+                            break;
+                        }
+                    }
+
+                    $table[] = [
+                        "category" => $category,
+                        "scan" => $scan,
+                        "manual" => $manual
+                    ];
+
+                    $grandScan += $scan;
+                    $grandManual += $manual;
+                }
+
+                
+                foreach ($table as $row){
+                    $row1 = array();
+                    $row1[] = $row['category']; 
+                    $row1[] = $row['scan']; 
+                    $row1[] = $row['manual'];                 
+                    fputcsv($fp, $row1);
+                }
+                
+
+
+                $row2[] = "Grand Total"; 
+                $row2[] = $grandScan; 
+                $row2[] = $grandManual;      
+                fputcsv($fp, $row2);
+
+
+
+
+
+            }
+
+            if($exceptioncategory == '9'){  //Duplicate Item Codes verified (NOT WORKING)
+
+            }
+
+            if($exceptioncategory == '10'){ //Duplicate Item Codes Identified (New)
+
+                $headers = [
+                    "Allocated Item Category",
+                    "No Of Line Item",
+                    "Not Verified",
+                    "SCAN",
+                    "SEARCH"
+                ];
+                fputcsv($fp, $headers);
+
+                $row1 = array();
+                if(!empty($report_data['Duplicate_Array'])){
+                    foreach($report_data['Duplicate_Array'] as $key=>$allcat)
+                    {
+                        $row1[] = $allcat['item_category']; 
+                        $row1[] = $allcat['total_uniqu_record_cout']; 
+                        $row1[] = $allcat['total_not_verified_uniqu_record_cout']; 
+                        $row1[] = $allcat['total_scan_uniqu_record_cout']; 
+                        $row1[] = $allcat['total_search_uniqu_record_cout']; 
+                    }
+                }
+                fputcsv($fp, $row1);
+
+
+            }
+            $report_type = $exceptioncategory;
+
+
+            /*
             $condition = [
                 "id"              => $projectSelect,
                 "status"          => $projectstatus,
@@ -6272,6 +7295,7 @@ public function generateExceptionReportDev() {
                 fputcsv($fp, $grand_total_percentage_row);
             }
             $report_type = "Standard";
+            */
             
             
         }elseif($type === 'consolidated'){   

@@ -1,0 +1,52 @@
+
+Case 1 :- 15 ok
+Case 2 :- 10 damaged
+Case 3 :- 10 ok
+
+
+{
+    "item_scrap_condition":"qty_scrapped",
+    "qty_scrapped":10,
+    "quantity_as_per_invoice":56,
+    "verification_status":"Verified",
+    "quantity_verified":10,
+    "new_location_verified":"TestNewLocation",
+    "verified_by":60,
+    "verified_by_username":"Jasmeet",
+    "verification_remarks":"ForPostman",
+    "mode_of_verification":"Scan"
+}
+
+{
+    "item_scrap_condition":"qty_ok",
+    "qty_ok":15,
+    "quantity_as_per_invoice":56,
+    "verification_status":"Verified",
+    "quantity_verified":15,
+    "new_location_verified":"TestNewLocation",
+    "verified_by":60,
+    "verified_by_username":"Jasmeet",
+    "verification_remarks":"ForPostman",
+    "mode_of_verification":"Scan"
+}
+
+{
+    "item_scrap_condition":"qty_damaged",
+    "qty_damaged":10,
+    "quantity_as_per_invoice":56,
+    "verification_status":"Verified",
+    "quantity_verified":10,
+    "new_location_verified":"TestNewLocation",
+    "verified_by":60,
+    "verified_by_username":"Jasmeet",
+    "verification_remarks":"ForPostman",
+    "mode_of_verification":"Scan"
+}
+
+
+qty_ok
+qty_damaged
+qty_scrapped
+qty_not_in_use
+qty_missing
+qty_shifted
