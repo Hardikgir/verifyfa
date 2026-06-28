@@ -1,3 +1,55 @@
+id :- 8
+Qty :- 78
+Case1 :- 25
+Case2 :- 533
+Case3 :- 53
+
+
+qty_ok
+qty_damaged
+qty_scrapped
+qty_not_in_use
+qty_missing
+qty_shifted
+
+{
+    "item_scrap_condition":"qty_ok",
+    "qty_ok":25,
+    "quantity_as_per_invoice":78,
+    "verification_status":"Verified",
+    "quantity_verified":25,
+    "new_location_verified":"TestNewLocation",
+    "verified_by":60,
+    "verified_by_username":"Jasmeet",
+    "verification_remarks":"ForPostman",
+    "mode_of_verification":"Scan"
+}
+{
+    "item_scrap_condition":"qty_missing",
+    "qty_missing":533,
+    "quantity_as_per_invoice":78,
+    "verification_status":"Verified",
+    "quantity_verified":533,
+    "new_location_verified":"TestNewLocation",
+    "verified_by":60,
+    "verified_by_username":"Jasmeet",
+    "verification_remarks":"ForPostman",
+    "mode_of_verification":"Scan"
+}
+{
+    "item_scrap_condition":"qty_shifted",
+    "qty_shifted":53,
+    "quantity_as_per_invoice":78,
+    "verification_status":"Verified",
+    "quantity_verified":53,
+    "new_location_verified":"TestNewLocation",
+    "verified_by":60,
+    "verified_by_username":"Jasmeet",
+    "verification_remarks":"ForPostman",
+    "mode_of_verification":"Scan"
+}
+
+
 
 Case 1 :- 15 ok
 Case 2 :- 10 damaged
