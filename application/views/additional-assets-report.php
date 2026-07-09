@@ -80,7 +80,7 @@ $this->load->view('layouts/sidebar');
                 <td  style="display: none;"><?php echo $row->expected_unit_cost;?></td>
                 <td  style="display: none;"><?php echo $row->any_other_details_unit_cost;?></td>
                 <td><?php echo $row->verified_name;?></td>
-                <td><?php echo date("d-M-Y G:i:a",strtotime($row->updated_at));?></td>
+                <td><?php echo date("Y-m-d H:i:s",strtotime($row->updated_at));?></td>
             </tr>
             <?php } ?>
         </tbody>
