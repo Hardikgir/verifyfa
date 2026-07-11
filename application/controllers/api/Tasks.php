@@ -773,6 +773,13 @@ class Tasks extends CI_Controller
                 $update_item_details_data_first["verification_status"] = "Verified";
             }
             $update_item_details_data_first['quantity_verified'] = (int) $get_item_details->quantity_verified - (int) $get_instance_details->qty_value;
+
+            $update_item_details_data_first['item_description'] = $update_details->item_description;
+            $update_item_details_data_first['serial_product_number'] = $update_details->serial_product_number;
+            $update_item_details_data_first['make'] = $update_details->make;
+            $update_item_details_data_first['model'] = $update_details->model;
+            $update_item_details_data_first['tag_status_y_n_na'] = $update_details->tag_status_y_n_na;
+
             $verify = $this->tasks->update_data($projectname, $update_item_details_data_first, $condition);           //UPDATE OPERATION
 
 
