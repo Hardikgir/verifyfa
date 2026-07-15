@@ -261,7 +261,7 @@ table th,table td{
 												if($missing->item_category==$allcat->item_category)
 												{
 													$missingAmount=$missing->total_amount;
-													$missingItems=$missing->missing_item;
+													$missingItems=$missing->missing_qty;
 													$missingTotalAmount=$missingTotalAmount+$missingAmount;
 													$missingTotalItems=$missingTotalItems+$missingItems;
 												}
@@ -271,7 +271,7 @@ table th,table td{
 												if($shifted->item_category==$allcat->item_category)
 												{
 													$shiftedAmount=$shifted->total_amount;
-													$shiftedItems=$shifted->shifted_item;
+													$shiftedItems=$shifted->shifted_qty;
 													$shiftedTotalAmount=$shiftedTotalAmount+$shiftedAmount;
 													$shiftedTotalItems=$shiftedTotalItems+$shiftedItems;
 												}

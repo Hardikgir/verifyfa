@@ -865,6 +865,7 @@ class Tasks extends CI_Controller
             $verifiedproducts_details_data['verified_datetime'] = $current_date_time;
             $verifiedproducts_details_data['updatedat'] = date('Y-m-d H:i:s');
             $verifiedproducts_details_data['verification_remarks'] = $new_remarks;
+            $verifiedproducts_details_data['new_location_verified'] = $new_loc;
             $verifiedproducts_details_data['company_id'] = $get_instance_details->company_id;
             $verifiedproducts_details_data['location_id'] = $get_instance_details->location_id;
             $verifiedproducts_details_data['entity_code'] = $get_instance_details->entity_code;
@@ -1055,7 +1056,7 @@ class Tasks extends CI_Controller
                     'quantity_as_per_invoice' => $get_item_details->quantity_as_per_invoice,
                     'verification_status' => $verification_status,
                     'quantity_verified' => $update_item_details_data_second['quantity_verified'],
-                    'new_location_verified' => $new_location_verified,
+                    'new_location_verified' => $new_loc,
                     'verified_by' => $verified_by,
                     'verified_by_username' => $verified_by_username,
                     'verified_datetime' => $current_date_time,
@@ -6073,7 +6074,7 @@ class Tasks extends CI_Controller
                             foreach ($report_data['missing'] as $missing) {
                                 if ($missing->item_category == $allcat->item_category) {
                                     $missingAmount = $missing->total_amount;
-                                    $missingItems = $missing->missing_item;
+                                    $missingItems = $missing->missing_qty;
                                     $missingTotalAmount = $missingTotalAmount + $missingAmount;
                                     $missingTotalItems = $missingTotalItems + $missingItems;
                                 }
@@ -6082,8 +6083,8 @@ class Tasks extends CI_Controller
                                 if ($shifted->item_category == $allcat->item_category) {
                                     $shiftedAmount = $shifted->total_amount;
                                     $shiftedItems = 0;
-                                    if (isset($shifted->shifted_item)) {
-                                        $shiftedItems = $shifted->shifted_item;
+                                    if (isset($shifted->shifted_qty)) {
+                                        $shiftedItems = $shifted->shifted_qty;
                                     }
                                     $shiftedTotalAmount = $shiftedTotalAmount + $shiftedAmount;
                                     $shiftedTotalItems = $shiftedTotalItems + $shiftedItems;
@@ -6642,7 +6643,7 @@ class Tasks extends CI_Controller
                         foreach ($report_data['missing'] as $missing) {
                             if ($missing->item_category == $allcat->item_category) {
                                 $missingAmount = $missing->total_amount;
-                                $missingItems = $missing->missing_item;
+                                $missingItems = $missing->missing_qty;
                                 $missingTotalAmount = $missingTotalAmount + $missingAmount;
                                 $missingTotalItems = $missingTotalItems + $missingItems;
                             }
@@ -6650,7 +6651,7 @@ class Tasks extends CI_Controller
                         foreach ($report_data['shifted'] as $shifted) {
                             if ($shifted->item_category == $allcat->item_category) {
                                 $shiftedAmount = $shifted->total_amount;
-                                $shiftedItems = $shifted->shifted_item;
+                                $shiftedItems = $shifted->shifted_qty;
                                 $shiftedTotalAmount = $shiftedTotalAmount + $shiftedAmount;
                                 $shiftedTotalItems = $shiftedTotalItems + $shiftedItems;
                             }
@@ -7190,7 +7191,7 @@ class Tasks extends CI_Controller
                             foreach ($report_data['missing'] as $missing) {
                                 if ($missing->item_category == $allcat->item_category) {
                                     $missingAmount = $missing->total_amount;
-                                    $missingItems = $missing->missing_item;
+                                    $missingItems = $missing->missing_qty;
                                     $missingTotalAmount = $missingTotalAmount + $missingAmount;
                                     $missingTotalItems = $missingTotalItems + $missingItems;
                                 }
@@ -7198,7 +7199,7 @@ class Tasks extends CI_Controller
                             foreach ($report_data['shifted'] as $shifted) {
                                 if ($shifted->item_category == $allcat->item_category) {
                                     $shiftedAmount = $shifted->total_amount;
-                                    $shiftedItems = $shifted->shifted_item;
+                                    $shiftedItems = $shifted->shifted_qty;
                                     $shiftedTotalAmount = $shiftedTotalAmount + $shiftedAmount;
                                     $shiftedTotalItems = $shiftedTotalItems + $shiftedItems;
                                 }
@@ -7756,7 +7757,7 @@ class Tasks extends CI_Controller
                         foreach ($report_data['missing'] as $missing) {
                             if ($missing->item_category == $allcat->item_category) {
                                 $missingAmount = $missing->total_amount;
-                                $missingItems = $missing->missing_item;
+                                $missingItems = $missing->missing_qty;
                                 $missingTotalAmount = $missingTotalAmount + $missingAmount;
                                 $missingTotalItems = $missingTotalItems + $missingItems;
                             }
@@ -7764,7 +7765,7 @@ class Tasks extends CI_Controller
                         foreach ($report_data['shifted'] as $shifted) {
                             if ($shifted->item_category == $allcat->item_category) {
                                 $shiftedAmount = $shifted->total_amount;
-                                $shiftedItems = $shifted->shifted_item;
+                                $shiftedItems = $shifted->shifted_qty;
                                 $shiftedTotalAmount = $shiftedTotalAmount + $shiftedAmount;
                                 $shiftedTotalItems = $shiftedTotalItems + $shiftedItems;
                             }
