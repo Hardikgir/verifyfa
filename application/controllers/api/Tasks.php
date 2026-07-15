@@ -5923,7 +5923,7 @@ class Tasks extends CI_Controller
              * FETCH REPORT DATA
              * ------------------------
              */
-            if ($type === 'Project Based') {
+            if ($type === 'Project Based' || $type === 'project') {
 
 
                 // exceptioncategory
@@ -5938,16 +5938,12 @@ class Tasks extends CI_Controller
                 9 ->Duplicate Item Codes verified (NOT WORKING)
                 10 ->Duplicate Item Codes Identified (New)
                 */
-                $lastProj = $this->db->query('SELECT * FROM company_projects WHERE status="' . $projectstatus . '" AND company_id=' . $company_id . ' ORDER BY id DESC LIMIT 1')->result();
-
-                if ($lastProj) {
-                    $condition = [
-                        "status" => $projectstatus,
-                        "company_id" => $company_id,
-                        "original_table_name" => $lastProj[0]->original_table_name,
-                        // "entity_code"         => $this->admin_registered_entity_code
-                    ];
-                    $getProjects = $this->tasks->get_data('company_projects', $condition);
+                $condition = [
+                    "id" => $projectSelect,
+                    "status" => $projectstatus,
+                    "company_id" => $company_id,
+                ];
+                $getProjects = $this->tasks->get_data('company_projects', $condition);
 
 
                     foreach ($getProjects as $project) {
@@ -5960,13 +5956,19 @@ class Tasks extends CI_Controller
 
 
                         if (is_array($project_report)) {
-                            $report_data = array_merge($report_data, $project_report);
+                            foreach ($project_report as $key => $val) {
+                                if (!isset($report_data[$key])) {
+                                    $report_data[$key] = [];
+                                }
+                                if (is_array($val)) {
+                                    $report_data[$key] = array_merge($report_data[$key], $val);
+                                }
+                            }
                         }
 
 
 
                     }
-                }
 
 
                 if ($exceptioncategory == '1') {  //Condition of Item
@@ -7077,7 +7079,14 @@ class Tasks extends CI_Controller
 
 
                         if (is_array($project_report)) {
-                            $report_data = array_merge($report_data, $project_report);
+                            foreach ($project_report as $key => $val) {
+                                if (!isset($report_data[$key])) {
+                                    $report_data[$key] = [];
+                                }
+                                if (is_array($val)) {
+                                    $report_data[$key] = array_merge($report_data[$key], $val);
+                                }
+                            }
                         }
 
 

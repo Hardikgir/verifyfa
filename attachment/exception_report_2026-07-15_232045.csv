@@ -1,0 +1,8 @@
+"Allocated Item Category","To be Verified (Amount in Lacs)","To be Verified (Number of Qty)","Good Condition (Number of Qty)","Damaged (Number of Qty)","Scrapped (Number of Qty)","Missing (Number of Qty)","Shifted (Number of Qty)","Not in Use (Number of Qty)","Remaining to be Verified (Amount in Lacs)","Remaining to be Verified (Number of Qty)"
+F&F,116.83,342,25,0,18,0,40,25,"0,110.78",234
+OE,1.31,3,0,0,0,0,0,0,1.31,3
+COMP,0.45,36,10,14,20,0,0,11,-0.06,-19
+MED,1.19,48,21,0,0,0,0,0,0.76,27
+TEST,197.55,1975,11,0,1,0,0,0,197.35,1963
+"Grand Total",317.33,2404,67,14,39,0,40,36,88.58,2208
+"% to Grand Total",100%,100%,2.79%,0.58%,1.62%,0%,1.66%,1.5%,27.91%,91.85%

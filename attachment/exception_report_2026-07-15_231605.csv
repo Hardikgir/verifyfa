@@ -1,0 +1,4 @@
+"Allocated Item Category","To be Verified (Amount in Lacs)","To be Verified (Number of Qty)","Good Condition (Number of Qty)","Damaged (Number of Qty)","Scrapped (Number of Qty)","Missing (Number of Qty)","Shifted (Number of Qty)","Not in Use (Number of Qty)","Remaining to be Verified (Amount in Lacs)","Remaining to be Verified (Number of Qty)"
+TEST,197.55,1975,11,0,1,0,0,0,197.35,1963
+"Grand Total",197.55,1975,11,0,1,0,0,0,197.35,1963
+"% to Grand Total",100%,100%,0.56%,0%,0.05%,0%,0%,0%,99.9%,99.39%
