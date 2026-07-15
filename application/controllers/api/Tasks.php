@@ -798,23 +798,12 @@ class Tasks extends CI_Controller
                 'qty_shifted' => (int) $get_item_details->qty_shifted,
             );
             $update_item_details_data_second = array();
-            if (isset($update_details->qty_ok)) {
-                $update_item_details_data_second['qty_ok'] = (int) $get_item_details->qty_ok + (int) $update_details->qty_ok;
-            }
-            if (isset($update_details->qty_damaged)) {
-                $update_item_details_data_second['qty_damaged'] = (int) $get_item_details->qty_damaged + (int) $update_details->qty_damaged;
-            }
-            if (isset($update_details->qty_scrapped)) {
-                $update_item_details_data_second['qty_scrapped'] = (int) $get_item_details->qty_scrapped + (int) $update_details->qty_scrapped;
-            }
-            if (isset($update_details->qty_not_in_use)) {
-                $update_item_details_data_second['qty_not_in_use'] = (int) $get_item_details->qty_not_in_use + (int) $update_details->qty_not_in_use;
-            }
-            if (isset($update_details->qty_missing)) {
-                $update_item_details_data_second['qty_missing'] = (int) $get_item_details->qty_missing + (int) $update_details->qty_missing;
-            }
-            if (isset($update_details->qty_shifted)) {
-                $update_item_details_data_second['qty_shifted'] = (int) $get_item_details->qty_shifted + (int) $update_details->qty_shifted;
+            if (isset($update_details->item_scrap_condition)) {
+                $condition_field = $update_details->item_scrap_condition;
+                $valid_fields = array('qty_ok', 'qty_damaged', 'qty_scrapped', 'qty_not_in_use', 'qty_missing', 'qty_shifted');
+                if (in_array($condition_field, $valid_fields)) {
+                    $update_item_details_data_second[$condition_field] = (int) $get_item_details->$condition_field + (int) $update_details->quantity_verified;
+                }
             }
             $quantity_verified_update = (int) $get_item_details->quantity_verified + (int) $update_details->quantity_verified;
             $update_item_details_data_second['quantity_verified'] = $quantity_verified_update;
