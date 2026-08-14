@@ -13,24 +13,54 @@ $allcategories=getCategories($projects[0]->project_name);
     padding-bottom: 5px;
     margin-bottom: 10px;
 }
+.enbtn{    background-color: green !important;}
+.disbtn{    background-color: #407b40 !important;}
 </style>
       <div class="content">
         <div class="container-fluid">
           <div class="row">
               <div class="col-md-1"></div>
             <div class="col-md-10">
-              <div class="card">                
+              <div class="card">       
+                    
               <div class="card-header card-header-primary">
                 <div class="container">
+                <div class="row mb-4">
+                        <div class="col-md-12 text-center">
+                           <h3> 
+                             <b>Company Name :</b><?php echo get_CompanyName($projects[0]->company_id);?> 
+                             <b> (Location :</b><?php echo $projects[0]->project_location;?>)
+                           </h3>
+                        </div>
+                    </div>  
                     <div class="row">
                         <div class="col-md-4">
-                            <td class="text-center"> <a href="<?php echo base_url();?>index.php/dashboard" class="btn btn-round pull-right">Back</a>
+                            <td class="text-center"> <a href="<?php echo base_url();?>index.php/dashboard" class="btn btn-round pull-left">Back</a>
                             </td>
                         </div>
-                        <div class="col-md-4">
-                            <td class="text-center"> <a href="#" class="btn btn-round btn-fill btn-default finishproject <?php echo $projects[0]->status!=3?'disabled':'';?> pull-right">Finish</a>
+
+                       
+                            <?php if($projects[0]->status == '3'){ ?>
+                          <div class="col-md-4 text-center">
+                            <td class="text-center"> <a href="<?php echo base_url();?>index.php/dashboard/reopen_verification/<?php echo $projects[0]->id;?>" class="btn btn-round pull-left">Reopen Verification</a>
                             </td>
-                        </div>
+                            </div>
+                            <?php } ?>
+                        
+                        
+                            <?php 
+                            $user_id=$this->user_id;
+                            $entity_code=$this->admin_registered_entity_code;
+                            //manager role Menu//
+                            $user_role_manager_cnt=get_user_role_cnt_managers($user_id,$entity_code);
+                            if($user_role_manager_cnt > 0){ 
+                            ?>
+                            <div class="col-md-4 text-center">
+                            <td class="text-center"> <a href="#" class="btn btn-round btn-fill btn-default finishproject enbtn <?php echo $projects[0]->status!=3?'disabled disbtn':'';?> ">Finish</a>
+                            </td>
+                            </div>
+                            <?php } ?>
+                       
                         <div class="col-md-4">
                             <td class="text-center"> <a href="<?php echo base_url();?>index.php/dashboard/projectprint/<?php echo $projects[0]->id;?>" class="btn btn-round btn-fill btn-info pull-right">Export</a>
                             </td>
@@ -116,8 +146,9 @@ $allcategories=getCategories($projects[0]->project_name);
                    
                             <div class="col-md-6">
                                 <div class="form-group">
+                                    <?php $verifiercnt=  explode(',',$pro->project_verifier);?>
                                     <label class="bmd-label-floating">No.of Resources assigned</label>
-                                    <input type="text" value="<?php echo count(array($pro->project_verifier)); ?>" class="form-control" disabled>
+                                    <input type="text" value="<?php echo count($verifiercnt); ?>" class="form-control" disabled>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -308,7 +339,7 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                 ?>
                                                                 <div class="col-md-6">
                                                                     <canvas id="untaggedpieChart"></canvas>
-                                                                    <h5 class=" text-center">Non-Tagged</h5>
+                                                                    <h5 class=" text-center">Non-Tagged </h5>
                                                                 </div>
                                                                 <?php
                                                                 }
@@ -342,10 +373,10 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                             <th>Tagged</th>
                                                                             <?php
                                                                             }
-                                                                            if($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD' )
+                                                                            if(count($cat['unspecified'])>0 && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD' ))
                                                                             {
                                                                             ?>
-                                                                            <th>Non-Tagged</th>
+                                                                            <th>Non-Tagged <?php echo count($cat['untagged']);?></th>
                                                                             <?php
                                                                             }
                                                                             if(!empty($cat['unspecified']) && ($projects[0]->project_type=='UN' || $projects[0]->project_type=='CD'))
@@ -661,7 +692,7 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                             <th>Tagged</th>
                                                                             <?php
                                                                             }
-                                                                            if($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD' )
+                                                                            if(count($cat['unspecified'])>0 && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD' ))
                                                                             {
                                                                             ?>
                                                                             <th>Non-Tagged</th>
@@ -974,7 +1005,7 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                 <?php 
                                                                 if($listing['ytotal']>0 && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD')){
                                                                 ?>
-                                                                    <div class="col-md-6">
+                                                                    <div class="col-md-6 11 ">
                                                                         <canvas id="resourcetaggedpieChart"></canvas>
                                                                         <h5 class=" text-center">Tagged</h5>
                                                                     </div>
@@ -982,7 +1013,7 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                 }
                                                                 if($listing['ntotal']>0 && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD')){
                                                                 ?>
-                                                                    <div class="col-md-6">
+                                                                    <div class="col-md-6 22 ">
                                                                         <canvas id="resourceuntaggedpieChart"></canvas>
                                                                         <h5 class=" text-center">Non-Tagged</h5>
                                                                     </div>
@@ -990,7 +1021,7 @@ $allcategories=getCategories($projects[0]->project_name);
                                                                 }
                                                                 if($listing['natotal']>0 && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD')){
                                                                 ?>	
-                                                                    <div class="col-md-6">
+                                                                    <div class="col-md-6 33">
                                                                         <canvas id="resourceunspecifiedpieChart"></canvas>
                                                                         <h5 class=" text-center">Unspecified</h5>
                                                                     </div>	

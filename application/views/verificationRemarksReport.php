@@ -93,13 +93,13 @@ table th,table td{
                                             <div class="col-md-6">
 												<div class="form-group">
                                                     <label>Start Date:</label>
-                                                    <input type="text" class="form-control" value="<?php echo date('d/m/yy',strtotime($data['project'][0]->start_date));?>">
+                                                    <input type="text" class="form-control" value="<?php echo date('d/m/Y',strtotime($data['project'][0]->start_date));?>">
 												</div>
 											</div>
 											<div class="col-md-6">
 												<div class="form-group">
                                                     <label>Due Date:</label>
-                                                    <input type="text" class="form-control" value="<?php echo date('d/m/yy',strtotime($data['project'][0]->due_date));?>">
+                                                    <input type="text" class="form-control" value="<?php echo date('d/m/Y',strtotime($data['project'][0]->due_date));?>">
 												</div>
 											</div>
 											
@@ -159,7 +159,7 @@ table th,table td{
 										<tr>
 											<th>Allocated Item Category</th>
 											<th>Number of Line Items</th>
-											<th>Click View Details</th>
+											<!-- <th>Click View Details</th> -->
 										</tr>
 										
 										<?php
@@ -172,32 +172,32 @@ table th,table td{
 										<tr>
 											<td><?php echo $allcat->item_category; ?></td>
 											<td><?php echo $allcat->items; ?></td>
-											<td><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionFourReport/<?php echo urlencode($allcat->item_category); ?>">Download to View Details</a></td>
-										</tr>
+											<!-- <td><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionFourReport/<?php echo urlencode($allcat->item_category); ?>">Download to View Details</a></td> -->
+										</tr> 
 										<?php
 										}
 										?>
 										<tr>
 											<td></td>
 											<td></td>
-											<td></td>
+											<!-- <td></td> -->
 											
 										</tr>
 										<tr>
 											<td></td>
 											<td></td>
-											<td></td>
+											<!-- <td></td> -->
 											
 										</tr>
 										<tr>
 											<th><?php echo "Grand Total"; ?></th>
 											<th><?php echo $totalItems; ?></th>
-											<th></th>
+											<!-- <th></th> -->
 										</tr>
 										<tr>
 											<td></td>
 											<td><?php if($totalItems>0){ ?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionFourAllReport">Download to View Details</a><?php } ?></td>
-											<td></td>
+											<!-- <td></td> -->
 											
 										</tr>
 										

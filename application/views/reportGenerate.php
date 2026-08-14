@@ -93,13 +93,13 @@ table th,table td{
                                             <div class="col-md-6">
 												<div class="form-group">
                                                     <label>Start Date:</label>
-                                                    <input type="text" class="form-control" value="<?php echo date('d/m/yy',strtotime($data['project'][0]->start_date));?>">
+                                                    <input type="text" class="form-control" value="<?php echo date('d/m/Y',strtotime($data['project'][0]->start_date));?>">
 												</div>
 											</div>
 											<div class="col-md-6">
 												<div class="form-group">
                                                     <label>Due Date:</label>
-                                                    <input type="text" class="form-control" value="<?php echo date('d/m/yy',strtotime($data['project'][0]->due_date));?>">
+                                                    <input type="text" class="form-control" value="<?php echo date('d/m/Y',strtotime($data['project'][0]->due_date));?>">
 												</div>
 											</div>
 											
@@ -275,10 +275,10 @@ table th,table td{
 										</tr>
 										<tr>
 											<th>Click for detailed report</th>
-											<th colspan="2"><?php if($totalAmount!=0){?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadProjectReportFAR">Download as Annexure</a><?php }?></th>
-											<th colspan="2"><?php if($taggedTotalAmount!=0){?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadProjectReportTagged">Download as Annexure</a><?php }?></th>
-											<th colspan="2"><?php if($nontaggedTotalAmount!=0){?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadProjectReportNonTagged">Download as Annexure</a><?php }?></th>
-											<th colspan="2"><?php if($unspecifiedTotalAmount!=0){?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadProjectReportUnspecified">Download as Annexure</a> <?php }?></td>
+											<th colspan="2"><?php if($totalAmount!=0){?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadProjectReportFAR/<?php echo $_POST['location_id'];?>">Download as Annexure</a><?php }?></th>
+											<th colspan="2"><?php if($taggedTotalAmount!=0){?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadProjectReportTagged/<?php echo $_POST['location_id'];?>">Download as Annexure</a><?php }?></th>
+											<th colspan="2"><?php if($nontaggedTotalAmount!=0){?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadProjectReportNonTagged/<?php echo $_POST['location_id'];?>">Download as Annexure</a><?php }?></th>
+											<th colspan="2"><?php if($unspecifiedTotalAmount!=0){?><a href="<?php echo base_url(); ?>index.php/dashboard/downloadProjectReportUnspecified/<?php echo $_POST['location_id'];?>">Download as Annexure</a> <?php }?></td>
 										</tr>
 										
 									</table>

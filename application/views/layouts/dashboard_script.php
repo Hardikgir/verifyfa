@@ -7,20 +7,32 @@ $close_projectdetails="";
 $cancel_projectdetails="";
 foreach($projects as $project)
 {
-    if($project->status==0)
-    {
-        $open_projects++;
-        $open_projectdetails.=", ".$project->project_name.'('.round(($project->VerifiedQuantity/$project->TotalQuantity)*100,2).' %)';
-    }
-    if($project->status==1)
-    {
-        $closed_projects++;
-        $close_projectdetails.=", ".$project->project_name.'('.round(($project->VerifiedQuantity/$project->TotalQuantity)*100,2).' %)';
-    }
-    if($project->status==2)
-    {
-        $cancelled_projects++;
-        $cancel_projectdetails.=", ".$project->project_name.'('.round(($project->VerifiedQuantity/$project->TotalQuantity)*100,2).' %)';
+    $verifiercount = check_verifier_count($project->id,$this->user_id);
+    $check_itemowner_count = check_itemowner_count($project->id,$this->user_id);
+    $check_process_owner_count = check_process_owner_count($project->id,$this->user_id);
+    $check_manager_count = check_manager_count($project->id,$this->user_id);
+
+    if(($verifiercount == '1') || ($check_itemowner_count =='1') || ($check_process_owner_count == '1') ||  ($check_manager_count == '1')){
+
+        if($project->status==0)
+        {
+            $open_projects++;
+            if($project->VerifiedQuantity !=0){
+            $open_projectdetails.=", ".$project->project_name.'('.round(($project->VerifiedQuantity/$project->TotalQuantity)*100,2).' %)';
+        }else{
+            $open_projectdetails.='0%';
+        }
+        }
+        if($project->status==1)
+        {
+            $closed_projects++;
+            $close_projectdetails.=", ".$project->project_name.'('.round(($project->VerifiedQuantity/$project->TotalQuantity)*100,2).' %)';
+        }
+        if($project->status==2)
+        {
+            $cancelled_projects++;
+            $cancel_projectdetails.=", ".$project->project_name.'('.round(($project->VerifiedQuantity/$project->TotalQuantity)*100,2).' %)';
+        }
     }
 }
 ?>

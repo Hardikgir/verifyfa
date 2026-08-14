@@ -9,9 +9,46 @@ select option:disabled {
     color: #cccccc;
     
 }
+
+.OptionEnable {
+	color:red
+}
 </style>
 	<div class="content">
 				<div class="container-fluid">
+
+				<!-- <form action="https://verifyfa.developmentdemo.co.in/index.php/dashboard/exceptions" method="post" class="bg-white"> -->
+					<form action="<?php echo base_url();?>index.php/dashboard/exceptions" method="post" class="bg-white">
+                <br>
+                <div class="row">
+                <div class="col-md-2 form-row">
+                </div>
+                <div class="col-md-4 form-row">
+                    <label class="form-label">Select Company</label>
+                    <select name="company_id" id="company_id" class="form-control" required>
+                        <option value="">Select Company</option>
+                        <?php foreach($company_data_list as $row_com_list){ 
+                             $company_n=get_company_row($row_com_list->company_id);
+                            ?>
+                        <option value="<?php echo $company_n->id;?>" <?php if(isset($_REQUEST['company_id']) && $_REQUEST['company_id'] ==  $company_n->id){ echo "selected";}?>><?php echo $company_n->company_name.'('. $company_n->short_code.')';?></option>
+
+                        <?php }?>
+                    </select>
+                </div>
+                <div class="col-md-4 form-row">
+                    <label class="form-label">Select Location</label>
+                    <select name="location_id" id="company_location" class="form-control">
+                        <option value="">Select Location</option>
+                    </select>
+                </div>
+                <div class="col-md-2 form-row">
+                <button type="submit" class="btn btn-success">GO</button>
+              </div>
+                </div><br>
+               
+                
+                <br>
+        </form>
 					<div class="row">
 						<div class="col-md-1"></div>
 						<div class="col-md-10">
@@ -19,34 +56,49 @@ select option:disabled {
 							{
 							?>
 							<div class="alert alert-danger">
-								<?php echo $_SESSION['error_message']['message']; ?>
+								<?php 
+if (isset($_SESSION['error_message']) && is_array($_SESSION['error_message']) && isset($_SESSION['error_message']['message'])) {
+    echo $_SESSION['error_message']['message'];
+} else {
+    echo $_SESSION['error_message']; // Fallback if it's a string
+}
+?>
 							</div>
 							<?php 
 							}
 							?>
+							<?php 
+                                if(count($projects)>0)
+                                {
+                                ?>
 							<div class="card">
 								
 								<div class="card-header card-header-primary">
 									<h4 class="card-title">Reports </h4> 
 								</div>
-                                <?php 
-                                if(count($projects)>0)
-                                {
-                                ?>
+                                
 								
 								<form method="POST" action="<?php echo base_url(); ?>index.php/dashboard/generateExceptionReport">
 									<div class="card-body">
-										
+									<input type="hidden" value="" name="company_id" id="comid">
+									<input type="hidden" value="" name="location_id" id="locid">
 										<div class="row">
-											<div class="col-md-6">
+											<div class="col-md-4">
 												<div class="form-group">
 													<div class="radio"> <span class="text-center"><label><input type="radio" name="optradio" value="project" class="optradio" checked> Project based </label></span>
 													</div>
 												</div>
 											</div>
-											<div class="col-md-6">
+											<div class="col-md-4">
 												<div class="form-group">
 													<div class="radio"> <span class="text-center"><label><input type="radio" name="optradio" value="consolidated" class="text-center optradio"> Consolidated </label></span>
+													</div>
+												</div>
+											</div>
+
+											<div class="col-md-4">
+												<div class="form-group">
+													<div class="radio"> <span class="text-center"><label><input type="radio" name="optradio" value="additional" class="text-center optradio"> Additional Assets </label></span>
 													</div>
 												</div>
 											</div>
@@ -71,6 +123,7 @@ select option:disabled {
 												</div>
 											</div>
 										</div>
+
 										<div class="row my-3">
 											<div class="col-md-6">
 												<div class="form-group">
@@ -78,18 +131,14 @@ select option:disabled {
 														<option value="" selected>Exception Category <span class="mandatory_star">*</span>
 														</option>
 														<option value="1">Condition of Item</option>
-														<option value="2" disabled>Changes/ Updations of Items</option>
+														<option value="2">Changes/ Updations of Items (New)</option>
 														<option value="3">Qty Validation Status</option>
 														<option value="4">Updated with Verification Remarks</option>
 														<option value="5">Updated with Item Notes</option>
-														<option value="6" disabled>Calculate Risk Exposure</option>
-														<option value="7" disabled>Marked for Review</option>
+														<option value="6">Calculate Risk Exposure (New)</option>
 														<option value="8">Mode of Verification</option>
-														<option value="9" disabled>Duplicate Item Codes verified</option>
-														<option value="10" disabled>Duplicate Item Codes Identified</option>
-														<option value="11" disabled>Revalidation Status</option>
-														
-														
+														<!-- <option value="9">Duplicate Item Codes verified</option> -->
+														<option value="10">Duplicate Item Codes Identified (New)</option>
 														
 													</select>
 												</div>
@@ -160,26 +209,17 @@ select option:disabled {
 									
                                     <div class="clearfix"></div>
 								</form>
-								<?php
-                                }
-                                else
-                                {
-                                ?>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <div class="text-center">
-                                                Projects are not available
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                   
-                                <?php
-                                }
+								
+							</div>
+							<?php
+                                }else{
+									?>
+									<h1 style="text-align:center;color: #9bc8f2;">No Data to Show</h1>
+									<?php
+								}
                                 
                                 ?>
-							</div>
+                                
 						</div>
 					</div>
 				</div>
@@ -194,3 +234,48 @@ $this->load->view('layouts/scripts');
 $this->load->view('layouts/reportscript');
 $this->load->view('layouts/footer');
 ?>
+
+<script>
+
+
+$('#exceptioncategory').change(function() {
+	var selected_value = $(this).val();
+	$('#projectstatus').children('option[value="0"]').css('display','block');
+	$('#projectstatus').children('option[value="2"]').css('display','block');
+	if(selected_value == '6'){
+		$('#projectstatus').children('option[value="0"]').css('display','none');
+		$('#projectstatus').children('option[value="2"]').css('display','none');
+	}	
+});
+
+
+
+$('#company_id').change(function() {
+    var company_id = $(this).val();
+	$("#comid").val(company_id);
+	$.post("<?php echo base_url();?>index.php/plancycle/getlocationdatareport",{company_id: company_id},function(data){
+        $('#company_location').find('option').remove().end().append(data);
+      }
+    );
+});
+
+$('#location_id').change(function() {
+    var location_id = $(this).val();
+	$("#locid").val(location_id);
+});
+
+
+
+<?php if(isset($_REQUEST['company_id']) ){ 
+	?>
+	var company_id = '<?php echo $_REQUEST['company_id'];?>';
+	var location_id = '<?php echo $_REQUEST['location_id'];?>';
+	$("#comid").val(company_id);
+	$("#locid").val(location_id);
+	$.post("<?php echo base_url();?>index.php/plancycle/getlocationdatanew1",{company_id: company_id,location_id:location_id},function(data){
+        $('#company_location').find('option').remove().end().append(data);
+      }
+    );
+<?php
+}?>
+</script>

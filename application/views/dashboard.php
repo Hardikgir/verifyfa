@@ -10,6 +10,8 @@ $cancelled_projects=2;
 	<div class="content">
 		<div class="container-fluid">
 	
+    	
+    
 		<div class="row">
 			<div class="col-lg-12">
 				<section class="text-center">
@@ -270,5 +272,16 @@ $cancelled_projects=2;
 <?php
 $this->load->view('layouts/scripts');
 $this->load->view('layouts/dashboard_script');
+?>
+	<script src="<?php echo base_url();?>assets/js/material-dashboard.js?v=2.1.1" type="text/javascript"></script>
+<script>
+	$(document).ready(function() {
+		      // Javascript method's body can be found in assets/js/demos.js
+		     
+		      md.initDashboardPageCharts();
+		      
+		    });
+	</script>
+<?php
 $this->load->view('layouts/footer');
 ?>

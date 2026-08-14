@@ -19,6 +19,17 @@ $allcategories=getCategories($projects[0]->project_name);
     background: #5ca1e2 !important;
     
 }
+
+.project-title {
+    font-size: 30px;
+    font-weight: 700;
+    color: #fdfdfd;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #5ca1e2;
+    display: inline-block;
+    padding-bottom: 5px;
+}
     </style>
 
       <div class="content">
@@ -30,10 +41,12 @@ $allcategories=getCategories($projects[0]->project_name);
               <div class="card-header card-header-primary">
                 <div class="container">
                     <div class="row">
-                        
-                            <div class="col-md-3"><h4>Project Detail<h4></div>
+                       <div class="col-md-6">
+                           <h2 class="project-title">Project Detail</h2>
+                        </div>
+                            <!-- <div class="col-md-3"><h3>Project Detail<h3></div> -->
                             <div class="col-md-3 col-xs-3 text-right">
-                            <a href="<?php echo base_url();?>index.php/dashboard/projectdetail/<?php echo $projectId;?>" class="btn btn-round btn-blue">Back</a>
+                            <a href="<?php echo base_url();?>index.php/ProjectDetails/one/<?php echo $projectId;?>" class="btn btn-round btn-blue">Back</a>
                             </div>
                             <div class="col-md-3 col-xs-3 text-right">
                             <a href="#" class="btn btn-round btn-blue" onclick="window.print()">Print</a>
@@ -96,8 +109,9 @@ $allcategories=getCategories($projects[0]->project_name);
                    
                             <div class="col-md-6">
                                 <div class="form-group">
+                                    <?php $verifiercnt=  explode(',',$pro->project_verifier);?>
                                     <label class="bmd-label-floating">No.of Resources assigned</label>
-                                    <input type="text" value="<?php echo count($pro->project_verifier); ?>" class="form-control">
+                                    <input type="text" value="<?php echo count($verifiercnt); ?>" class="form-control">
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -385,11 +399,11 @@ $allcategories=getCategories($projects[0]->project_name);
                                                             if($projects[0]->project_type=='CD' )
                                                             {
                                                             ?>
-                                                            <td><?php echo round(($overall/3),2).' %<br>'.$overallverified.' of '.$overalltotal;?></td>
+                                                            <td><?php echo ($overalltotal>0?round(($overallverified/$overalltotal)*100,2):0).' %<br>'.$overallverified.' of '.$overalltotal;?></td>
                                                             <?php 
                                                             }
                                                             ?>
-                                                            <td><?php echo$projects[0]->status<3  ? 'In Process':'Completed';?></td>
+                                                            <td><?php $li_overall_percent = ($overalltotal > 0) ? round(($overallverified / $overalltotal) * 100, 2) : 0; echo ($li_overall_percent == 100) ? "Verified" : "In Process";?></td>
                                                             
                                                             
                                                         </tr>
@@ -720,7 +734,7 @@ $allcategories=getCategories($projects[0]->project_name);
                                                     if($projects[0]->project_type=='CD' )
                                                     {
                                                     ?>
-                                                    <td><?php echo round(($overall/3),2).'%<br>'.getmoney_format(round(($overallverified/100000),2)).' of '.getmoney_format(round(($overalltotal/100000),2)).' Lacs'?></td>
+                                                    <td><?php echo ($overalltotal>0?round(($overallverified/$overalltotal)*100,2):0).'%<br>'.getmoney_format(round(($overallverified/100000),2)).' of '.getmoney_format(round(($overalltotal/100000),2)).' Lacs'?></td>
                                                     <?php 
                                                     }
                                                     ?>
