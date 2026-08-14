@@ -109,10 +109,6 @@ table th,table td{
 										$excessTotalItems=0;
 										$remainingTotalAmount=0;
 										$remainingTotalItems=0;
-										$remainitemstotal=0;
-										$remainitemamounttotal=0;
-										$excessitemtotal=0;
-										$excessamounttotalnew=0;
                                         foreach($data as $data)
                                         {
                                             $subtotalAmount=0;
@@ -127,10 +123,6 @@ table th,table td{
 											$subexcessTotalItems=0;
 											$subremainingTotalAmount=0;
 											$subremainingTotalItems=0;
-											$subremainitemstotal=0;
-											$subremainitemamounttotal=0;
-											$subexcessitemtotal=0;
-											$subexcessamounttotalnew=0;
                                         ?>
                                             <tr><th colspan="13"  style="text-align:left;"><a href="<?php echo base_url(); ?>index.php/dashboard/downloadExceptionThreeReportAllocated/<?php echo  $data['project']->id; ?>" style="color:#5CA1E2;"><?php echo $data['project']->project_name;?>:</a></th></tr>
                                         <?php
@@ -175,6 +167,15 @@ table th,table td{
 															$subshortTotalAmount=$subshortTotalAmount+$shortAmount;
 															$subshortTotalItems=$subshortTotalItems+$shortItems;
 														}
+														if($verified->total_items > $allcat->total_items)
+														{
+															$excessAmount=$allcat->total_amount-$verified->total_amount;
+															$excessItems=$verified->total_items-$allcat->total_items;
+															$excessTotalAmount=$excessTotalAmount+$excessAmount;
+															$excessTotalItems=$excessTotalItems+$excessItems;
+															$subexcessTotalAmount=$subexcessTotalAmount+$excessAmount;
+															$subexcessTotalItems=$subexcessTotalItems+$excessItems;
+														}
 														if($verified->total_items < 1)
 														{
 															$remainingAmount=$allcat->total_amount;
@@ -206,35 +207,6 @@ table th,table td{
 													$subremainingTotalAmount=$subremainingTotalAmount+$remainingAmount;
 													$subremainingTotalItems=$subremainingTotalItems+$remainingItems;
 												}
-												$remainitem='0';
-												$remainitemamount='0';
-												foreach($data['remaining'] as $remainingdata)
-												{
-													if($remainingdata->item_category==$allcat->item_category)
-													{
-														$remainitem= $remainingdata->items;
-														$remainitemamount= $remainingdata->total_amount;
-													}
-												}
-												$remainitemstotal +=$remainitem;
-												$remainitemamounttotal +=$remainitemamount;
-												$subremainitemstotal +=$remainitem;
-												$subremainitemamounttotal +=$remainitemamount;
-
-												$excessitem='0';
-												$excessamount='0';
-												foreach($data['excess'] as $excess)
-												{
-													if($excess->item_category == $allcat->item_category)
-													{
-														$excessitem = $excess->items;
-														$excessAmount = $excess->total_amount;
-														$excessamounttotalnew=$excessamounttotalnew+$excessAmount;
-													}
-												}
-												$excessitemtotal +=$excessitem;
-												$subexcessitemtotal +=$excessitem;
-												$subexcessamounttotalnew +=$excessAmount;
 										
 										?>
 										<tr>
@@ -247,10 +219,10 @@ table th,table td{
 											<td><?php echo $equalItems; ?></td>
 											<td><?php if($shortAmount>0){echo getmoney_format(round(($shortAmount/100000),2));}else if($shortAmount<0){ echo '-'.getmoney_format(round(($shortAmount/100000),2));}else {echo 0;} ?></td>
 											<td><?php echo $shortItems; ?></td>
-											<td><?php echo $excessAmount!=0?getmoney_format(round(($excessAmount/100000),2)):$excessAmount; ?></td>
-											<td><?php echo $excessitem; ?></td>
-											<td><?php echo $remainitemamount!=0?getmoney_format(round(($remainitemamount/100000),2)):$remainitemamount; ?></td>
-											<td><?php echo $remainitem; ?></td>
+											<td><?php if($excessAmount>0){echo getmoney_format(round(($excessAmount/100000),2));}else if($excessAmount<0){ echo '-'.getmoney_format(round(($excessAmount/100000),2));}else {echo 0;} ?></td>
+											<td><?php echo $excessItems; ?></td>
+											<td><?php echo $remainingAmount!=0?getmoney_format(round(($remainingAmount/100000),2)):$remainingAmount; ?></td>
+											<td><?php echo $remainingItems; ?></td>
 										</tr>
 										<?php
                                             }
@@ -265,10 +237,10 @@ table th,table td{
 											<th><?php echo $subequalTotalItems; ?></th>
 											<th><?php if($subshortTotalAmount>0){echo getmoney_format(round(($subshortTotalAmount/100000),2));}else if($subshortTotalAmount<0){ echo '-'.getmoney_format(round(($subshortTotalAmount/100000),2));}else {echo 0;} ?></th>
 											<th><?php echo $subshortTotalItems; ?></th>
-											<th><?php echo $subexcessamounttotalnew!=0?getmoney_format(round(($subexcessamounttotalnew/100000),2)):$subexcessamounttotalnew; ?></th>
-											<th><?php echo $subexcessitemtotal; ?></th>
-											<th><?php echo $subremainitemamounttotal!=0?getmoney_format(round(($subremainitemamounttotal/100000),2)):$subremainitemamounttotal; ?></th>
-											<th><?php echo $subremainitemstotal; ?></th>
+											<th><?php if($subexcessTotalAmount>0){echo getmoney_format(round(($subexcessTotalAmount/100000),2));}else if($subexcessTotalAmount<0){ echo '-'.getmoney_format(round(($subexcessTotalAmount/100000),2));}else {echo 0;} ?></th>
+											<th><?php echo $subexcessTotalItems; ?></th>
+											<th><?php echo $subremainingTotalAmount!=0?getmoney_format(round(($subremainingTotalAmount/100000),2)):$subremainingTotalAmount; ?></th>
+											<th><?php echo $subremainingTotalItems; ?></th>
                                         </tr>
                                         <?php
                                         
@@ -286,10 +258,10 @@ table th,table td{
 											<th><?php echo $equalTotalItems; ?></th>
 											<th><?php if($shortTotalAmount>0){echo getmoney_format(round(($shortTotalAmount/100000),2));}else if($shortTotalAmount<0){ echo '-'.getmoney_format(round(($shortTotalAmount/100000),2));}else {echo 0;} ?></th>
 											<th><?php echo $shortTotalItems; ?></th>
-											<th><?php echo $excessamounttotalnew!=0?getmoney_format(round(($excessamounttotalnew/100000),2)):$excessamounttotalnew; ?></th>
-											<th><?php echo $excessitemtotal; ?></th>
-											<th><?php echo $remainitemamounttotal!=0?getmoney_format(round(($remainitemamounttotal/100000),2)):$remainitemamounttotal; ?></th>
-											<th><?php echo $remainitemstotal; ?></th>
+											<th><?php if($excessTotalAmount>0){echo getmoney_format(round(($excessTotalAmount/100000),2));}else if($excessTotalAmount<0){ echo '-'.getmoney_format(round(($excessTotalAmount/100000),2));}else {echo 0;} ?></th>
+											<th><?php echo $excessTotalItems; ?></th>
+											<th><?php echo $remainingTotalAmount!=0?getmoney_format(round(($remainingTotalAmount/100000),2)):$remainingTotalAmount; ?></th>
+											<th><?php echo $remainingTotalItems; ?></th>
 										</tr>
 										
 										

@@ -3,25 +3,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $this->load->view('layouts/header');
 $this->load->view('layouts/sidebar');
 ?>
-<style>
-  .custom-select[multiple], .custom-select[size]:not([size="1"]) {
-    height: auto;
-    padding-right: 0.75rem;
-    background-image: none;
-    min-height: 400px;
-}
-option {
-    text-wrap: wrap;
-    border-bottom: 1px solid;
-    padding-bottom: 5px;
-    padding-top: 5px;
-}
-  </style>
  <div class="content">
         <div class="container-fluid">
           <div class="row">
               <div class="col-md-1"></div>
-            <div class="col-md-12">
+            <div class="col-md-10">
               <div class="card">                
                 <div class="card-header card-header-primary">         
                     <div class="row">
@@ -36,122 +22,100 @@ option {
                                     <li class="active"></li>
                                     <li class="active"></li>
                                     <li class="active"></li>
-                                    <p class="text-center" style="font-weight:bold; margin:0;padding: 10px;"> Entity Name: <?php echo get_CompanyName($company_name);?><br> Location Name: <?php $comloc= get_location_row($company_location); echo $comloc->location_name?> </p>
-
                                 </ul>
                             </form>
                         </div>     
                        
                     </div>      
+                  
                     </div>
                 <div class="card-body">  
                     <form method="POST" action="<?php echo base_url();?>index.php/plancycle/finishplancycle">                                     
-                    <h3>Map Project to Monitoring Team:</h3>
- 
-                    <div class="row my-3">
-
-                          <div class="col-md-3">
+                      <div class="row my-3">
+                          <div class="col-md-12">
                               <div class="form-group">
-                                <label class="bmd-label-floating">To Select multiple Item Categories, hold Ctrl button and then multi select</label>
                                   <select class="browser-default custom-select multiple" name="verifier[]" multiple required>
                                       <option value="">Allocated to Verifier(s)<span id="mandatory_star">*</span></option>
                                       <?php
-                                      foreach($user_data as $dsad){
-                                        $user_role = explode(',',$dsad->user_role);
-                                        if (in_array("1", $user_role)){
-                                            $user_id = $dsad->user_id;
-                                            $getdat = get_user_row($user_id);
-                                            $getdept = get_department_row($getdat->department_id);
-                                            $getcom = get_company_row($getdat->company_id);
-                                            ?>
-                                                <option value="<?php echo $getdat->id;?>"><?php echo $getdat->firstName.' '.$getdat->lastName;?>/ <?php echo $getdat->designation;?> /<?php echo $getdept->department_shortcode;?> /<?php echo $getcom->short_code;?></option>
-                                            <?php
-                                        }
+                                      foreach($users as $usr)
+                                      {
+                                          if($usr->userRole==1)
+                                          {
+                                     ?>
+                                      <option value="<?php echo $usr->id;?>"><?php echo $usr->firstName.' '.$usr->lastName;?></option>
+                                      <?php
+                                          }
                                       }
                                       ?>
                                   </select>
                               </div> 
-                          </div> 
-                          <div class="col-md-3">
+                          </div>                                                   
+                        </div>  
+                        <h3>Map Project to Monitoring Team:</h3>
+                        <div class="row my-3">
+                            <div class="col-md-6">
                                 <div class="form-group">
-                                      <label class="bmd-label-floating">To Select multiple Item Categories, hold Ctrl button and then multi select</label>
-                                    <select class="browser-default custom-select multiple" multiple name="process_owner[]">
+                                    <select class="browser-default custom-select multiple" multiple name="process_owner[]" required>
                                         <option value="">Process Owner(s)</span></option>
+                                        <?php
+                                      foreach($users as $usr)
+                                      {
+                                          if($usr->userRole==2)
+                                          {
+                                     ?>
+                                      <option value="<?php echo $usr->id;?>"><?php echo $usr->firstName.' '.$usr->lastName;?></option>
                                       <?php
-                                      foreach($user_data as $dsad){
-                                        $user_role = explode(',',$dsad->user_role);
-                                        if (in_array("2", $user_role)){
-                                          $user_id = $dsad->user_id;
-                                            $getdat = get_user_row($user_id);
-                                            $getdept = get_department_row($getdat->department_id);
-                                            $getcom = get_company_row($getdat->company_id);
-                                            ?>
-                                                <option value="<?php echo $getdat->id;?>"><?php echo $getdat->firstName.' '.$getdat->lastName;?>/ <?php echo $getdat->designation;?> /<?php echo $getdept->department_shortcode;?> /<?php echo $getcom->short_code;?></option>
-                                            <?php
-                                        }
+                                          }
                                       }
                                       ?>
                                     </select>
                                 </div>
-                            </div>                                                  
-                        
-                         
-                            <div class="col-md-3">
+                            </div>
+                            <div class="col-md-6">
                                 <div class="form-group">
-                                  <label class="bmd-label-floating">To Select multiple Item Categories, hold Ctrl button and then multi select</label>
-                                    <select class="browser-default custom-select multiple" multiple name="item_owner[]">
-                                        <option value="">Entity Owner(s)</option>
+                                    <select class="browser-default custom-select multiple" multiple name="item_owner[]" required>
+                                        <option value="">Item Owner(s)</option>
+                                        <?php
+                                      foreach($users as $usr)
+                                      {
+                                          if($usr->userRole==3)
+                                          {
+                                     ?>
+                                      <option value="<?php echo $usr->id;?>"><?php echo $usr->firstName.' '.$usr->lastName;?></option>
                                       <?php
-                                        foreach($user_data as $dsad){
-                                          $user_role = explode(',',$dsad->user_role);
-                                          if (in_array("3", $user_role)){
-                                            $user_id = $dsad->user_id;
-                                            $getdat = get_user_row($user_id);
-                                            $getdept = get_department_row($getdat->department_id);
-                                            $getcom = get_company_row($getdat->company_id);
-                                            ?>
-                                                <option value="<?php echo $getdat->id;?>"><?php echo $getdat->firstName.' '.$getdat->lastName;?>/ <?php echo $getdat->designation;?> /<?php echo $getdept->department_shortcode;?> /<?php echo $getcom->short_code;?></option>
-                                              <?php
                                           }
-                                        }
+                                      }
                                       ?>
                                     </select>
                                 </div>
-                            </div>        
-                            <div class="col-md-3">
+                            </div>                          
+                          </div> 
+                          <div class="row my-3">
+                              <div class="col-md-12">
                                   <div class="form-group">
-                                      <label class="bmd-label-floating">To Select multiple Item Categories, hold Ctrl button and then multi select</label>
                                       <select class="browser-default custom-select multiple" multiple name="project_manager[]" required>
                                           <option value="">Manager(s)</span></option>
+                                         <?php
+                                      foreach($users as $usr)
+                                      {
+                                          if($usr->userRole==0)
+                                          {
+                                     ?>
+                                      <option value="<?php echo $usr->id;?>"><?php echo $usr->firstName.' '.$usr->lastName;?></option>
                                       <?php
-
-                                          foreach($user_data as $dsad){
-                                            $user_role = explode(',',$dsad->user_role);
-                                            if (in_array("0", $user_role)){
-                                              $user_id = $dsad->user_id;
-                                            $getdat = get_user_row($user_id);
-                                            $getdept = get_department_row($getdat->department_id);
-                                            $getcom = get_company_row($getdat->company_id);
-                                            ?>
-                                                <option value="<?php echo $getdat->id;?>" <?php if($getdat->id == $this->user_id){ echo "selected";}?>><?php echo $getdat->firstName.' '.$getdat->lastName;?>/ <?php echo $getdat->designation;?> /<?php echo $getdept->department_shortcode;?>/ <?php echo $getcom->short_code;?></option>
-                                                <?php
-                                            }
                                           }
-                                      
+                                      }
                                       ?>
                                       </select>
                                   </div>
-                              </div>                      
-                          </div> 
-                          <div class="row my-3">
-                                                                               
+                              </div>                                                       
                             </div> 
                             <input type="hidden" name="project_id" value="<?php echo $project_id;?>">
                             <div class="row ml-5">
                                 <div class="col-md-4">
-                                    <!-- <td class="text-center">
+                                    <td class="text-center">
                                       <a href="#" class="btn  btn-fill  pull-right-sec ">Cancel</a>
-                                    </td> -->
+                                    </td>
                                   </div>
                                  
                                 <div class="col-md-4">

@@ -22,12 +22,6 @@ $this->load->view('layouts/sidebar');
                                     <li class="active"></li>
                                     <li class="active"></li>
                                     <li class=""></li>
-                                    <?php
-                                     $com=get_company_row($company_name);
-                                     $loc=get_location_row($company_location);
-                                    ?>
-                                    <p class="text-center" style="font-weight:bold; margin:0;padding: 10px;"> Entity Name: <?php echo $com->company_name;?> <br> Location Name: <?php echo $loc->location_name;?> </p>
-
                                 </ul>
                             </form>
                         </div>
@@ -73,8 +67,7 @@ $this->load->view('layouts/sidebar');
                               </div>
                          </div>                        
                       </div> 
-                        
-                        <div class="row my-3">
+                      <div class="row my-3">
                           <div class="col-md-6">
                             <div class="form-group">
                               <label class="bmd-label-floating">Project Name<span id="mandatory_star">*</span></label>
@@ -115,8 +108,7 @@ $this->load->view('layouts/sidebar');
                       
                         <div class="col-md-6">
                                 <div class="form-group">
-                                    <label class="bmd-label-floating">To Select multiple Item Categories, hold Ctrl button and then multi select</label>
-                                    <select class="browser-default custom-select multiple_selection" name="item_category[]" id="item_category" multiple required>
+                                    <select class="browser-default custom-select" name="item_category[]" id="item_category" multiple required>
                                         <option selected>Item Category<span id="mandatory_star">*</span></option>
                                         <?php
                                         foreach($categories as $cat)
@@ -197,8 +189,6 @@ $this->load->view('layouts/sidebar');
       $('#end_date').val('')
       
     }
-
-    
   </script>
   <?php
   $this->load->view('layouts/footer');

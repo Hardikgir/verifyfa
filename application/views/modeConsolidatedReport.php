@@ -96,17 +96,11 @@ table th,table td{
 												$scanItems=0;
 												foreach($data['manual'] as $manual)
 												{
-													if($manual->item_category === $allcat->item_category){
-														$manualItems=$manual->items;
-														break;
-													}
+													$manualItems=$manual->items;
 												}
 												foreach($data['scan'] as $scan)
 												{
-													if($scan->item_category === $allcat->item_category){
-														$scanItems=$scan->items;
-														break;
-													}
+													$scanItems=$scan->items;
 												}
 												$subtotalManualItems=$subtotalManualItems+$manualItems;
 												$subtotalScanItems=$subtotalScanItems+$scanItems;

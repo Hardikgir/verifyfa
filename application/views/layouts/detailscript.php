@@ -77,51 +77,85 @@ if (chDonut3) {
 	}
 	if($projects[0]->project_type=='CD')
 	{
+
 	
-	$grandTotal = $listing['ytotal']+$listing['ntotal']+$listing['natotal'];
-	$grandVerified = $listing['yverified']+$listing['nverified']+$listing['naverified'];
-	$grandUnverified = $grandTotal - $grandVerified;
-	$donutData = array();
-	$donutLabels = array();
-	$donutColors = array();
-	$donutHoverColors = array();
-	
-	if($listing['ytotal']!=0){
-		$tagPercent = $grandTotal>0 ? round(($listing['yverified']/$grandTotal)*100,2) : 0;
-		$donutData[] = $tagPercent;
-		$donutLabels[] = "Tagged (".$tagPercent." %): ".$listing['yverified']." of ".$grandTotal." Li";
-		$donutColors[] = "#46BFBD";
-		$donutHoverColors[] = "#616774";
-	}
-	if($listing['ntotal']!=0){
-		$untagPercent = $grandTotal>0 ? round(($listing['nverified']/$grandTotal)*100,2) : 0;
-		$donutData[] = $untagPercent;
-		$donutLabels[] = "Non-Tagged (".$untagPercent." %): ".$listing['nverified']." of ".$grandTotal." Li";
-		$donutColors[] = "#FDB45C";
-		$donutHoverColors[] = "#007bff";
-	}
-	if($listing['natotal']!=0){
-		$usPercent = $grandTotal>0 ? round(($listing['naverified']/$grandTotal)*100,2) : 0;
-		$donutData[] = $usPercent;
-		$donutLabels[] = "Unspecified (".$usPercent." %): ".$listing['naverified']." of ".$grandTotal." Li";
-		$donutColors[] = "#F7464A";
-		$donutHoverColors[] = "#FFC870";
-	}
-	if($grandUnverified > 0){
-		$unvPercent = $grandTotal>0 ? round(($grandUnverified/$grandTotal)*100,2) : 0;
-		$donutData[] = $unvPercent;
-		$donutLabels[] = "Unverified (".$unvPercent." %) : ".$grandUnverified." of ".$grandTotal." Li";
-		$donutColors[] = "#e5e5e5";
-		$donutHoverColors[] = "#e5e5e5";
-	}
+	if($listing['ytotal']!=0 && $listing['ntotal']!=0 && $listing['natotal']!=0)
+	{
 	?>
 	var donutdataset=[{
-		data: <?php echo json_encode(array_values($donutData));?>,
-		      backgroundColor: <?php echo json_encode(array_values($donutColors));?>,
-		      hoverBackgroundColor: <?php echo json_encode(array_values($donutHoverColors));?>
+		data: [<?php echo round(($listing['yverified']/$listing['ytotal'])*100,2);?>, <?php echo round(($listing['nverified']/$listing['ntotal'])*100,2);?>,<?php echo round(($listing['naverified']/$listing['natotal'])*100,2);?>,<?php echo 100-(round((($listing['yverified']+$listing['nverified']+$listing['naverified'])/($listing['ytotal']+$listing['ntotal']+$listing['natotal']))*100,2));?>],
+		      backgroundColor: ["#46BFBD", "#FDB45C","#F7464A","#e5e5e5"],
+		      hoverBackgroundColor: ["#616774", "#007bff", "#FFC870","#e5e5e5"]
 	}];
-	var donutlabel=<?php echo json_encode(array_values($donutLabels));?>;
+	var donutlabel=["Tagged (<?php echo round(($listing['yverified']/$listing['ytotal'])*100,2);?> %): <?php echo $listing['yverified']; ?> of <?php echo $listing['ytotal']; ?> Li", "Untagged (<?php echo round(($listing['nverified']/$listing['ntotal'])*100,2);?> %): <?php echo $listing['yverified']; ?> of <?php echo $listing['ntotal']; ?> Li", "Unspecified (<?php echo round(($listing['naverified']/$listing['natotal'])*100,2);?> %): <?php echo $listing['naverified']; ?> of <?php echo $listing['natotal']; ?> Li","Unverified (<?php echo 100-(round((($listing['yverified']+$listing['nverified']+$listing['naverified'])/($listing['ytotal']+$listing['ntotal']+$listing['natotal']))*100,2));?> %) : <?php echo ($listing['ytotal']+$listing['ntotal']+$listing['natotal'])-($listing['yverified']+$listing['nverified']+$listing['naverified']).' of '.($listing['ytotal']+$listing['ntotal']+$listing['natotal']).' Li'; ?>"];
 	<?php 
+	}
+	else if($listing['ytotal']!=0 && $listing['ntotal']!=0 && $listing['natotal']==0)
+	{
+	?>
+	var donutdataset=[{
+		data: [<?php echo round(($listing['yverified']/$listing['ytotal'])*100,2);?>, <?php echo round(($listing['nverified']/$listing['ntotal'])*100,2);?>,<?php echo 100-(round((($listing['yverified']+$listing['nverified'])/($listing['ytotal']+$listing['ntotal']))*100,2));?>],
+		      backgroundColor: ["#46BFBD", "#FDB45C","#e5e5e5"],
+		      hoverBackgroundColor: ["#616774", "#007bff","#e5e5e5"]
+	}];
+	var donutlabel=["Tagged (<?php echo round(($listing['yverified']/$listing['ytotal'])*100,2);?> %): <?php echo $listing['yverified']; ?> of <?php echo $listing['ytotal']; ?> Li", "Untagged (<?php echo round(($listing['nverified']/$listing['ntotal'])*100,2);?> %): <?php echo $listing['nverified']; ?> of <?php echo $listing['ntotal']; ?> Li","Unverified (<?php echo 100-(round((($listing['yverified']+$listing['nverified'])/($listing['ytotal']+$listing['ntotal']))*100,2));?> %) : <?php echo ($listing['ytotal']+$listing['ntotal'])-($listing['yverified']+$listing['nverified']).' of '.($listing['ytotal']+$listing['ntotal']).' Li';?>"];
+	<?php 
+	}
+	else if($listing['ytotal']!=0 && $listing['ntotal']==0 && $listing['natotal']==0)
+	{
+	?>
+	var donutdataset=[{
+		data: [<?php echo round(($listing['yverified']/$listing['ytotal'])*100,2);?>,<?php echo 100-(round((($listing['yverified'])/($listing['ytotal']))*100,2));?>],
+		      backgroundColor: ["#46BFBD","#e5e5e5"],
+		      hoverBackgroundColor: ["#616774","#e5e5e5"]
+	}];
+	var donutlabel=["Tagged (<?php echo round(($listing['yverified']/$listing['ytotal'])*100,2);?> %): <?php echo $listing['yverified']; ?> of <?php echo $listing['ytotal']; ?> Li","Unverified (<?php echo 100-(round((($listing['yverified'])/($listing['ytotal']))*100,2));?> %) : <?php echo ($listing['ytotal']-$listing['yverified']).' of '.($listing['ytotal']).' Li';?>"];
+	<?php 
+	}
+	else if($listing['ytotal']!=0 && $listing['ntotal']==0 && $listing['natotal']!=0)
+	{
+	?>
+	var donutdataset=[{
+		data: [<?php echo round(($listing['yverified']/$listing['ytotal'])*100,2);?>,<?php echo round(($listing['naverified']/$listing['natotal'])*100,2);?>,<?php echo 100-(round((($listing['yverified']+$listing['naverified'])/($listing['ytotal']+$listing['natotal']))*100,2));?>],
+		      backgroundColor: ["#46BFBD","#F7464A","#e5e5e5"],
+		      hoverBackgroundColor: ["#616774", "#FFC870","#e5e5e5"]
+	}];
+	var donutlabel=["Tagged (<?php echo round(($listing['yverified']/$listing['ytotal'])*100,2);?> %): <?php echo $listing['yverified']; ?> of <?php echo $listing['ytotal']; ?> Li", "Unspecified (<?php echo round(($listing['naverified']/$listing['natotal'])*100,2);?> %): <?php echo $listing['naverified']; ?> of <?php echo $listing['natotal']; ?> Li","Unverified (<?php echo 100-(round((($listing['yverified']+$listing['naverified'])/($listing['ytotal']+$listing['natotal']))*100,2));?> %) : <?php echo ($listing['ytotal']+$listing['natotal'])-($listing['yverified']+$listing['naverified']).' of '.($listing['ytotal']+$listing['natotal']).' Li';?>"];
+	<?php 
+	}
+	else if($listing['ytotal']==0 && $listing['ntotal']==0 && $listing['natotal']!=0)
+	{
+	?>
+	var donutdataset=[{
+		data: [<?php echo round(($listing['naverified']/$listing['natotal'])*100,2);?>,<?php echo 100-(round((($listing['naverified'])/($listing['natotal']))*100,2));?>],
+		      backgroundColor: ["#F7464A","#e5e5e5"],
+		      hoverBackgroundColor: ["#FFC870","#e5e5e5"]
+	}];
+	var donutlabel=["Unspecified (<?php echo round(($listing['naverified']/$listing['natotal'])*100,2);?> %): <?php echo $listing['naverified']; ?> of <?php echo $listing['natotal']; ?> Li","Unverified (<?php echo 100-(round((($listing['naverified'])/($listing['natotal']))*100,2));?> %) : <?php echo ($listing['natotal'])-($listing['naverified']).' of '.($listing['natotal']).' Li';?>"];
+	<?php 
+	}
+	else if($listing['ytotal']==0 && $listing['ntotal']!=0 && $listing['natotal']!=0)
+	{
+	?>
+	var donutdataset=[{
+		data: [<?php echo round(($listing['nverified']/$listing['ntotal'])*100,2);?>,<?php echo round(($listing['naverified']/$listing['natotal'])*100,2);?>,<?php echo 100-(round((($listing['nverified']+$listing['naverified'])/($listing['ntotal']+$listing['natotal']))*100,2));?>],
+		      backgroundColor: ["#46BFBD","#e5e5e5"],
+		      hoverBackgroundColor: ["#616774","#e5e5e5"]
+	}];
+	var donutlabel=["Untagged (<?php echo round(($listing['nverified']/$listing['ntotal'])*100,2);?> %): <?php echo $listing['nverified']; ?> of <?php echo $listing['ntotal']; ?> Li","Unspecified (<?php echo round(($listing['naverified']/$listing['natotal'])*100,2);?> %): <?php echo $listing['naverified']; ?> of <?php echo $listing['natotal']; ?> Li","Unverified (<?php echo 100-(round((($listing['nverified']+$listing['naverified'])/($listing['ntotal']+$listing['natotal']))*100,2));?> %) : <?php echo ($listing['ntotal']+$listing['natotal'])-($listing['nverified']+$listing['naverified']).' of '.($listing['ntotal']+$listing['natotal']).' Li';?>"];
+	<?php 
+	}
+	else if($listing['ytotal']==0 && $listing['ntotal']!=0 && $listing['natotal']==0)
+	{
+	?>
+	var donutdataset=[{
+		data: [<?php echo round(($listing['nverified']/$listing['ntotal'])*100,2);?>,<?php echo 100-(round((($listing['nverified'])/($listing['ntotal']))*100,2));?>],
+		      backgroundColor: ["#46BFBD","#F7464A","#e5e5e5"],
+		      hoverBackgroundColor: ["#616774",  "#FFC870","#e5e5e5"]
+	}];
+	var donutlabel=["UnTagged (<?php echo round(($listing['nverified']/$listing['ntotal'])*100,2);?> %): <?php echo $listing['nverified']; ?> of <?php echo $listing['ntotal']; ?> Li","Unverified (<?php echo 100-(round((($listing['nverified'])/($listing['ntotal']))*100,2));?> %) : <?php echo ($listing['ntotal'])-($listing['nverified']).' of '.($listing['ntotal']).' Li';?>"];
+	<?php 
+	}
 	}
 	?>
 		var ctxD = document.getElementById("doughnutChart").getContext('2d');
@@ -152,13 +186,6 @@ $totaltaggedOverall=[];
 $amounttaggedOverall=[];
 $amounttotaltaggedOverall=[];
 if(count($cat['tagged'])>0 && ($projects[0]->project_type=='TG' || $projects[0]->project_type=='CD')){
-	// First calculate totals for correct pie proportions
-	$totalTaggedVerified=0;
-	$totalTaggedVerifiedAmount=0;
-	foreach($cat['tagged'] as $tcat){
-		$totalTaggedVerified+=$tcat['verified'];
-		$totalTaggedVerifiedAmount+=$tcat['verifiedamount'];
-	}
 	foreach($cat['tagged'] as $tcat)
 	{
 		$taggedOverall[$tcat['category']]=$tcat['verified'];
@@ -167,12 +194,17 @@ if(count($cat['tagged'])>0 && ($projects[0]->project_type=='TG' || $projects[0]-
 		$amounttotaltaggedOverall[$tcat['category']]=$tcat['totalamount'];
 	$tcattotalpercentage=$tcattotalpercentage+$tcat['percentage'];
 	$atcattotalpercentage=$atcattotalpercentage+$tcat['amountpercentage'];
-	$tcatPercent=$totalTaggedVerified>0?round(($tcat['verified']/$totalTaggedVerified)*100,2):0;
-	array_push($tcatlabels,$tcat['category'].' ('.$tcat['verified'].' of '.$totalTaggedVerified.') ('.$tcatPercent.' %)');
-	array_push($tcatdata,$tcatPercent);
-	$atcatPercent=$totalTaggedVerifiedAmount>0?round(($tcat['verifiedamount']/$totalTaggedVerifiedAmount)*100,2):0;
-	array_push($atcatlabels,$tcat['category'].' ('.round($tcat['verifiedamount']/100000,2).' of '.round($totalTaggedVerifiedAmount/100000,2).' Lacs) ('.$atcatPercent.' %)');
-	array_push($atcatdata,$atcatPercent);
+	array_push($tcatlabels,$tcat['category'].' ('.round(($tcat['percentage']/count($cat['tagged'])),2).' %)');
+	array_push($tcatdata,round(($tcat['percentage']/count($cat['tagged'])),2));
+	array_push($atcatlabels,$tcat['category'].' ('.$tcat['amountpercentage'].' %)');
+	array_push($atcatdata,$tcat['amountpercentage']);
+	// if($cnt1 == count($cat['tagged'])-1)
+	// {
+	// 	array_push($tcatlabels,'Unverified'.' ('.(100-($tcattotalpercentage/count($cat['tagged']))).' %)');
+	// 	array_push($tcatdata,(100-($tcattotalpercentage/count($cat['tagged']))));
+	// 	array_push($atcatlabels,'Unverified'.' ('.(100-($atcattotalpercentage/count($cat['tagged']))).' %)');
+	// 	array_push($atcatdata,(100-($atcattotalpercentage/count($cat['tagged']))));
+	// }
 	$cnt1++;
 	}
 ?>
@@ -222,13 +254,6 @@ $totaluntaggedOverall=[];
 $amountuntaggedOverall=[];
 $amounttotaluntaggedOverall=[];
 if(count($cat['untagged'])>0 && ($projects[0]->project_type=='NT' || $projects[0]->project_type=='CD')){
-	// First calculate totals for correct pie proportions
-	$totalUntaggedVerified=0;
-	$totalUntaggedVerifiedAmount=0;
-	foreach($cat['untagged'] as $utcat){
-		$totalUntaggedVerified+=$utcat['verified'];
-		$totalUntaggedVerifiedAmount+=$utcat['verifiedamount'];
-	}
 	foreach($cat['untagged'] as $utcat)
 	{
 		$untaggedOverall[$utcat['category']]=$utcat['verified'];
@@ -237,12 +262,17 @@ if(count($cat['untagged'])>0 && ($projects[0]->project_type=='NT' || $projects[0
 		$amounttotaluntaggedOverall[$utcat['category']]=$utcat['totalamount'];
 		$utcattotalpercentage+=$utcat['percentage'];
 		$autcattotalpercentage+=$utcat['amountpercentage'];
-	$utcatPercent=$totalUntaggedVerified>0?round(($utcat['verified']/$totalUntaggedVerified)*100,2):0;
-	array_push($utcatlabels,$utcat['category'].' ('.$utcat['verified'].' of '.$totalUntaggedVerified.') ('.$utcatPercent.' %)');
-	array_push($utcatdata,$utcatPercent);
-	$autcatPercent=$totalUntaggedVerifiedAmount>0?round(($utcat['verifiedamount']/$totalUntaggedVerifiedAmount)*100,2):0;
-	array_push($autcatlabels,$utcat['category'].' ('.round($utcat['verifiedamount']/100000,2).' of '.round($totalUntaggedVerifiedAmount/100000,2).' Lacs) ('.$autcatPercent.' %)');
-	array_push($autcatdata,$autcatPercent);
+	array_push($utcatlabels,$utcat['category'].' ('.round(($utcat['percentage']/count($cat['untagged'])),2).' %)');
+	array_push($utcatdata,round(($utcat['percentage']/count($cat['untagged'])),2));
+	array_push($autcatlabels,$utcat['category'].' ('.$utcat['amountpercentage'].' %)');
+	array_push($autcatdata,$utcat['amountpercentage']);
+	// if($cnt2 == count($cat['untagged'])-1)
+	// {
+	// 	array_push($utcatlabels,'Unverified'.' ('.(100-($utcattotalpercentage/count($cat['untagged']))).' %)');
+	// 	array_push($utcatdata,(100-($utcattotalpercentage/count($cat['untagged']))));
+	// 	array_push($autcatlabels,'Unverified'.' ('.(100-($autcattotalpercentage/count($cat['untagged']))).' %)');
+	// 	array_push($autcatdata,(100-($autcattotalpercentage/count($cat['untagged']))));
+	// }
 	$cnt2++;
 	}
 ?>
@@ -290,27 +320,25 @@ $totalustaggedOverall=[];
 $amountustaggedOverall=[];
 $amounttotalustaggedOverall=[];
 if(count($cat['unspecified'])>0 && ($projects[0]->project_type=='UN' || $projects[0]->project_type=='CD')){
-	// First calculate totals for correct pie proportions
-	$totalUsVerified=0;
-	$totalUsVerifiedAmount=0;
-	foreach($cat['unspecified'] as $uscat){
-		$totalUsVerified+=$uscat['verified'];
-		$totalUsVerifiedAmount+=$uscat['verifiedamount'];
-	}
 	foreach($cat['unspecified'] as $uscat)
 	{
-		$ustaggedOverall[$uscat['category']]=$uscat['verified'];
+		$untaggedOverall[$uscat['category']]=$uscat['verified'];
 		$totalustaggedOverall[$uscat['category']]=$uscat['total'];
 		$amountustaggedOverall[$uscat['category']]=$uscat['verifiedamount'];
 		$amounttotalustaggedOverall[$uscat['category']]=$uscat['totalamount'];
 		$uscattotalpercentage+=$uscat['percentage'];
 		$auscattotalpercentage+=$uscat['amountpercentage'];
-		$uscatPercent=$totalUsVerified>0?round(($uscat['verified']/$totalUsVerified)*100,2):0;
-		array_push($uscatlabels,$uscat['category'].' ('.$uscat['verified'].' of '.$totalUsVerified.') ('.$uscatPercent.' %)');
-		array_push($uscatdata,$uscatPercent);
-		$auscatPercent=$totalUsVerifiedAmount>0?round(($uscat['verifiedamount']/$totalUsVerifiedAmount)*100,2):0;
-		array_push($auscatlabels,$uscat['category'].' ('.round($uscat['verifiedamount']/100000,2).' of '.round($totalUsVerifiedAmount/100000,2).' Lacs) ('.$auscatPercent.' %)');
-		array_push($auscatdata,$auscatPercent);
+		array_push($uscatlabels,$uscat['category'].' ('.round(($uscat['percentage']/count($cat['unspecified'])),2).' %)');
+		array_push($uscatdata,round(($uscat['percentage']/count($cat['unspecified'])),2));
+		array_push($auscatlabels,$uscat['category'].' ('.$uscat['amountpercentage'].' %)');
+		array_push($auscatdata,$uscat['amountpercentage']);
+		// if($cnt3 == count($cat['unspecified'])-1)
+		// {
+		// 	array_push($uscatlabels,'Unverified'.' ('.(100-($uscattotalpercentage/count($cat['unspecified']))).' %)');
+		// 	array_push($uscatdata,(100-($uscattotalpercentage/count($cat['unspecified']))));
+		// 	array_push($auscatlabels,'Unverified'.' ('.(100-($auscattotalpercentage/count($cat['unspecified']))).' %)');
+		// 	array_push($auscatdata,(100-($auscattotalpercentage/count($cat['unspecified']))));
+		// }
 		$cnt3++;
 	
 	}

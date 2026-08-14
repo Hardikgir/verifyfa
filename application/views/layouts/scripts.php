@@ -39,7 +39,7 @@
 	<!--  Notifications Plugin    -->
 	<script src="<?php echo base_url();?>assets/js/plugins/bootstrap-notify.js"></script>
 	<!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
-	<!-- <script src="<?php echo base_url();?>assets/js/material-dashboard.js?v=2.1.1" type="text/javascript"></script> -->
+	<script src="<?php echo base_url();?>assets/js/material-dashboard.js?v=2.1.1" type="text/javascript"></script>
 	<!-- Material Dashboard DEMO methods, don't include it in your project! -->
 	<script src="<?php echo base_url();?>assets/demo/demo.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
@@ -215,49 +215,16 @@
 		    });
 	</script>
 	<script>
-		// $(document).ready(function() {
-		//       // Javascript method's body can be found in assets/js/demos.js
+		$(document).ready(function() {
+		      // Javascript method's body can be found in assets/js/demos.js
 		     
-		//       md.initDashboardPageCharts();
+		      md.initDashboardPageCharts();
+			  
+
 		      
-		//     });
+		    });
 		function counter(field,field2,limit)
 		{
 			document.getElementById(field2).innerHTML=limit-field.value.length+' chars left';
 		}
 	</script>
-
-<script src="https://cdn.ckeditor.com/ckeditor5/35.4.0/classic/ckeditor.js"></script>
-
-<script>
-ClassicEditor.create( document.querySelector( '.editornew' ) ).then( editor => {
-console.log( editor );
-} ).catch( error => {
-} );
-</script>
-
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-
-<script>
-    function profile_ntupdate(id){
-
- swal({
-  title: "First you will update your profile",
-  text: "",
-  icon: "warning",
-  buttons: true,
-})
-swal({
-              title: `Complete your profile details`,
-              text: "First you need to update your profile",
-              icon: "warning",
-              buttons: true,
-              dangerMode: true,
-          })
-          .then((willDelete) => {
-            if (willDelete) {
-             window.location.href="<?php echo base_url();?>index.php/my-profile/";
-            }
-          });
-}
-</script>
