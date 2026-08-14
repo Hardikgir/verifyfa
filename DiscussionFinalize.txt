@@ -1,0 +1,102 @@
+erifyfa - Meeting 14/08/2026
+
+> New Location Verified (Column)
+> Last Updated on (Column)
+> Verification Remark (Column)
+> Single Bar Insted of Double Bar
+{ Thier is 2 time update of this in saveverified() }
+
+
+> Rollback Record is not showing in report 
+    >> Do bar Verification kiya pehle 1 qty k sath Second 11 k sath (2 bar Verify hua)   
+    >> Second Rollback kar diya
+    >> Abhi Report nikali to vo report me aata hi nai h
+
+
+> Report K Regarding Email per :- Mobile K trhow Kiya tha. (Changes/Updatation of Item) Report Data Missing
+> Calculate Risk Exposure [Ye Project Close per hi ana chaiye ion mobile application me]
+baki isis me column ke value k issue h (Discussion & Update Total)
+
+
+
+SELECT id,item_unique_code,new_location_verified,verified_datetime,verification_remarks,qty_ok,qty_damaged,qty_scrapped,qty_not_in_use,qty_missing,qty_shifted,mode_of_verification,instance_count FROM test_final_adm_23_05_26 WHERE id = 9
+
+
+new_location_verified
+verified_datetime
+
+
+{
+    "item_description":"ICT-FCT SMIU4AV TESTING FIXTURE",
+    "serial_product_number":"6589454",
+    "make":"Make",
+    "model":"Model",
+    "tag_status_y_n_na":"Y",
+    "item_scrap_condition":"qty_damaged",
+    "qty_damaged":10,
+    "quantity_as_per_invoice":90,
+    "verification_status":"Verified",
+    "quantity_verified":10,
+    "new_location_verified":"Gujrat Vadodara Location ",
+    "verified_by":60,
+    "verified_by_username":"Jasmeet",
+    "verification_remarks":"First Operation with 10 qty",
+    "mode_of_verification":"Scan"
+}
+
+{
+    "item_description":"ICT-FCT SMIU4AV TESTING FIXTURE",
+    "serial_product_number":"6589454",
+    "make":"Make",
+    "model":"Model",
+    "tag_status_y_n_na":"Y",
+    "item_scrap_condition":"qty_ok",
+    "qty_ok":15,
+    "quantity_as_per_invoice":90,
+    "verification_status":"Verified",
+    "quantity_verified":15,
+    "new_location_verified":"Gujrat Surat Location ",
+    "verified_by":60,
+    "verified_by_username":"Jasmeet",
+    "verification_remarks":"Second Operation with 15 qty",
+    "mode_of_verification":"Scan"
+}
+
+
+{
+    "item_description":"ICT-FCT SMIU4AV TESTING FIXTURE",
+    "serial_product_number":"6589454",
+    "make":"Make",
+    "model":"Model",
+    "tag_status_y_n_na":"Y",
+    "item_scrap_condition":"qty_ok",
+    "qty_ok":25,
+    "quantity_as_per_invoice":90,
+    "verification_status":"Verified",
+    "quantity_verified":25,
+    "new_location_verified":"Gujrat Surat Location ",
+    "verified_by":60,
+    "verified_by_username":"Jasmeet",
+    "verification_remarks":"Second Operation with 25 qty",
+    "mode_of_verification":"Scan"
+}
+
+
+Edit first :- 
+{
+    "item_description":"ICT-FCT SMIU4AV TESTING FIXTURE",
+    "serial_product_number":"6589454",
+    "make":"Make",
+    "model":"Model",
+    "tag_status_y_n_na":"Y",
+    "item_scrap_condition":"qty_ok",
+    "qty_ok":20,
+    "quantity_as_per_invoice":90,
+    "verification_status":"Verified",
+    "quantity_verified":20,
+    "new_location_verified":"Gujrat Baroda Location ",
+    "verified_by":60,
+    "verified_by_username":"Jasmeet",
+    "verification_remarks":"Edit First Operation with 20 qty",
+    "mode_of_verification":"Scan"
+}
