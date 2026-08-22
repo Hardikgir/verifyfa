@@ -5998,11 +5998,13 @@ class Tasks extends CI_Controller
 
                         if (is_array($project_report)) {
                             foreach ($project_report as $key => $val) {
-                                if (!isset($report_data[$key])) {
-                                    $report_data[$key] = [];
-                                }
                                 if (is_array($val)) {
+                                    if (!isset($report_data[$key]) || !is_array($report_data[$key])) {
+                                        $report_data[$key] = [];
+                                    }
                                     $report_data[$key] = array_merge($report_data[$key], $val);
+                                } else {
+                                    $report_data[$key] = $val;
                                 }
                             }
                         }
@@ -6600,6 +6602,9 @@ class Tasks extends CI_Controller
                     $remainingTotalAmount = 0;
                     $remainingTotalItems = 0;
                     $remainitemstotal = 0;
+                    $shortTotalAmount = 0;
+                    $shortTotalItems = 0;
+
                     foreach ($report_data['all'] as $allcat) {
                         $row = [];
                         $goodAmount = 0;
@@ -6764,8 +6769,11 @@ class Tasks extends CI_Controller
                         }
                         $row[] = $excessitem;
 
-                        $row[] = "0";
-                        $row[] = "0";
+                        $total_risk_exposure_amount = $damagedAmount + $scrappedAmount + $missingAmount + $shiftedAmount + $notinuseAmount + $shortAmount;
+                        $total_risk_exposure_qty = $damagedItems + $scrappedItems + $missingItems + $shiftedItems + $notinuseItems + $shortItems;
+
+                        $row[] = $total_risk_exposure_amount != 0 ? getmoney_format(round(($total_risk_exposure_amount / 100000), 2)) : $total_risk_exposure_amount;
+                        $row[] = $total_risk_exposure_qty;
                         fputcsv($fp, $row);
                     }
 
@@ -6785,8 +6793,12 @@ class Tasks extends CI_Controller
                     $Grand_Total_row[] = $shortTotalItems;
                     $Grand_Total_row[] = $excessamounttotalnew != 0 ? getmoney_format(round(($excessamounttotalnew / 100000), 2)) : $excessamounttotalnew;
                     $Grand_Total_row[] = $excessitemtotal;
-                    $Grand_Total_row[] = "0";
-                    $Grand_Total_row[] = "0";
+
+                    $total_risk_exposure_amount_grand = $damagedTotalAmount + $scrappedTotalAmount + $missingTotalAmount + $shiftedTotalAmount + $notinuseTotalAmount + $shortTotalAmount;
+                    $total_risk_exposure_qty_grand = $damagedTotalItems + $scrappedTotalItems + $missingTotalItems + $shiftedTotalItems + $notinuseTotalItems + $shortTotalItems;
+
+                    $Grand_Total_row[] = $total_risk_exposure_amount_grand != 0 ? getmoney_format(round(($total_risk_exposure_amount_grand / 100000), 2)) : $total_risk_exposure_amount_grand;
+                    $Grand_Total_row[] = $total_risk_exposure_qty_grand;
                     fputcsv($fp, $Grand_Total_row);
 
                     $Grand_Total_percentage_row[] = "% to Grand Total";
@@ -6800,12 +6812,13 @@ class Tasks extends CI_Controller
                     $Grand_Total_percentage_row[] = round(($shiftedTotalItems / $totalItems) * 100, 2) . "%";
                     $Grand_Total_percentage_row[] = round(($notinuseTotalAmount / $totalAmount) * 100, 2) . "%";
                     $Grand_Total_percentage_row[] = round(($notinuseTotalItems / $totalItems) * 100, 2) . "%";
+                    $Grand_Total_percentage_row[] = round(($shortTotalAmount / $totalAmount) * 100, 2) . "%";
                     $Grand_Total_percentage_row[] = round(($shortTotalItems / $totalItems) * 100, 2) . "%";
                     $Grand_Total_percentage_row[] = round(($excessamounttotalnew / $totalAmount) * 100, 2) . "%";
-                    $Grand_Total_percentage_row[] = round(($excessamounttotalnew / $totalAmount) * 100, 2) . "%";
                     $Grand_Total_percentage_row[] = round(($excessitemtotal / $totalItems) * 100, 2) . "%";
-                    $Grand_Total_percentage_row[] = "0";
-                    $Grand_Total_percentage_row[] = "0";
+
+                    $Grand_Total_percentage_row[] = round(($total_risk_exposure_amount_grand / $totalAmount) * 100, 2) . "%";
+                    $Grand_Total_percentage_row[] = round(($total_risk_exposure_qty_grand / $totalItems) * 100, 2) . "%";
                     fputcsv($fp, $Grand_Total_percentage_row);
                 }
 
@@ -7121,11 +7134,13 @@ class Tasks extends CI_Controller
 
                         if (is_array($project_report)) {
                             foreach ($project_report as $key => $val) {
-                                if (!isset($report_data[$key])) {
-                                    $report_data[$key] = [];
-                                }
                                 if (is_array($val)) {
+                                    if (!isset($report_data[$key]) || !is_array($report_data[$key])) {
+                                        $report_data[$key] = [];
+                                    }
                                     $report_data[$key] = array_merge($report_data[$key], $val);
+                                } else {
+                                    $report_data[$key] = $val;
                                 }
                             }
                         }
@@ -7713,7 +7728,6 @@ class Tasks extends CI_Controller
                     $scrappedTotalAmount = 0;
                     $scrappedTotalItems = 0;
                     $missingTotalAmount = 0;
-                    $missingTotalItems = 0;
                     $shiftedTotalAmount = 0;
                     $shiftedTotalItems = 0;
                     $notinuseTotalAmount = 0;
@@ -7721,6 +7735,8 @@ class Tasks extends CI_Controller
                     $remainingTotalAmount = 0;
                     $remainingTotalItems = 0;
                     $remainitemstotal = 0;
+                    $shortTotalAmount = 0;
+                    $shortTotalItems = 0;
                     foreach ($report_data['all'] as $allcat) {
                         $row = [];
                         $goodAmount = 0;
@@ -7885,8 +7901,11 @@ class Tasks extends CI_Controller
                         }
                         $row[] = $excessitem;
 
-                        $row[] = "0";
-                        $row[] = "0";
+                        $total_risk_exposure_amount = $damagedAmount + $scrappedAmount + $missingAmount + $shiftedAmount + $notinuseAmount + $shortAmount;
+                        $total_risk_exposure_qty = $damagedItems + $scrappedItems + $missingItems + $shiftedItems + $notinuseItems + $shortItems;
+
+                        $row[] = $total_risk_exposure_amount != 0 ? getmoney_format(round(($total_risk_exposure_amount / 100000), 2)) : $total_risk_exposure_amount;
+                        $row[] = $total_risk_exposure_qty;
                         fputcsv($fp, $row);
                     }
 
@@ -7906,8 +7925,12 @@ class Tasks extends CI_Controller
                     $Grand_Total_row[] = $shortTotalItems;
                     $Grand_Total_row[] = $excessamounttotalnew != 0 ? getmoney_format(round(($excessamounttotalnew / 100000), 2)) : $excessamounttotalnew;
                     $Grand_Total_row[] = $excessitemtotal;
-                    $Grand_Total_row[] = "0";
-                    $Grand_Total_row[] = "0";
+
+                    $total_risk_exposure_amount_grand = $damagedTotalAmount + $scrappedTotalAmount + $missingTotalAmount + $shiftedTotalAmount + $notinuseTotalAmount + $shortTotalAmount;
+                    $total_risk_exposure_qty_grand = $damagedTotalItems + $scrappedTotalItems + $missingTotalItems + $shiftedTotalItems + $notinuseTotalItems + $shortTotalItems;
+
+                    $Grand_Total_row[] = $total_risk_exposure_amount_grand != 0 ? getmoney_format(round(($total_risk_exposure_amount_grand / 100000), 2)) : $total_risk_exposure_amount_grand;
+                    $Grand_Total_row[] = $total_risk_exposure_qty_grand;
                     fputcsv($fp, $Grand_Total_row);
 
                     $Grand_Total_percentage_row[] = "% to Grand Total";
@@ -7921,12 +7944,13 @@ class Tasks extends CI_Controller
                     $Grand_Total_percentage_row[] = round(($shiftedTotalItems / $totalItems) * 100, 2) . "%";
                     $Grand_Total_percentage_row[] = round(($notinuseTotalAmount / $totalAmount) * 100, 2) . "%";
                     $Grand_Total_percentage_row[] = round(($notinuseTotalItems / $totalItems) * 100, 2) . "%";
+                    $Grand_Total_percentage_row[] = round(($shortTotalAmount / $totalAmount) * 100, 2) . "%";
                     $Grand_Total_percentage_row[] = round(($shortTotalItems / $totalItems) * 100, 2) . "%";
                     $Grand_Total_percentage_row[] = round(($excessamounttotalnew / $totalAmount) * 100, 2) . "%";
-                    $Grand_Total_percentage_row[] = round(($excessamounttotalnew / $totalAmount) * 100, 2) . "%";
                     $Grand_Total_percentage_row[] = round(($excessitemtotal / $totalItems) * 100, 2) . "%";
-                    $Grand_Total_percentage_row[] = "0";
-                    $Grand_Total_percentage_row[] = "0";
+
+                    $Grand_Total_percentage_row[] = round(($total_risk_exposure_amount_grand / $totalAmount) * 100, 2) . "%";
+                    $Grand_Total_percentage_row[] = round(($total_risk_exposure_qty_grand / $totalItems) * 100, 2) . "%";
                     fputcsv($fp, $Grand_Total_percentage_row);
                 }
 

@@ -1,0 +1,4 @@
+"Allocated Item Category","Damaged (Amount in Lacs)","Damaged (Number of Qty)","Scrapped (Amount in Lacs)","Scrapped (Number of Qty)","Missing (Amount in Lacs)","Missing (Number of Qty)","Shifted (Amount in Lacs)","Shifted (Number of Qty)","Not in Use (Amount in Lacs)","Not in Use (Number of Qty)","Short (Amount in Lacs)","Short (Number of Qty)","Excess (Amount in Lacs)","Excess (Number of Qty)","Total Risk Exposure (Amount in Lacs)","Total Risk Exposure (Number of Qty)"
+TEST,0,0,0.1,1,0.15,1,0.1,10,0.1,1,0,0,3.4,3,0.45,13
+"Grand Total",0,0,0.1,1,0.15,1,0.1,10,0.1,1,,,3.4,3,0.45,13
+"% to Grand Total",0%,0%,0.05%,0.05%,0.08%,0.05%,0.05%,0.51%,0.05%,0.05%,0%,1.72%,1.72%,0.15%,0.23%,0.66%

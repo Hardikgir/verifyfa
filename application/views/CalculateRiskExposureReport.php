@@ -219,6 +219,8 @@ table th,table td{
 
                                         
 										$remainitemstotal=0;
+										$shortTotalAmount=0;
+										$shortTotalItems=0;
 										foreach($data['all'] as $allcat)
 										{
 											$goodAmount=0;
@@ -407,8 +409,18 @@ table th,table td{
 											</td><!-- For Excess_Found -->
 											<td><?php echo $excessitem; ?></td><!-- For Excess_Found -->
 
-											<td>0</td><!-- For Total Risk Exposure -->
-											<td>0</td><!-- For Total Risk Exposure -->
+											<td>
+												<?php 
+													$total_risk_exposure_amount = $damagedAmount + $scrappedAmount + $missingAmount + $shiftedAmount + $notinuseAmount + $shortAmount;
+													echo $total_risk_exposure_amount != 0 ? getmoney_format(round(($total_risk_exposure_amount/100000),2)) : $total_risk_exposure_amount;
+												?>
+											</td><!-- For Total Risk Exposure -->
+											<td>
+												<?php 
+													$total_risk_exposure_qty = $damagedItems + $scrappedItems + $missingItems + $shiftedItems + $notinuseItems + $shortItems;
+													echo $total_risk_exposure_qty;
+												?>
+											</td><!-- For Total Risk Exposure -->
 
 										</tr>
 										<?php
@@ -468,8 +480,18 @@ table th,table td{
 											<th><?php echo $shortTotalItems; ?></th><!-- For Short_Found -->
                                             <th><?php echo $excessamounttotalnew!=0?getmoney_format(round(($excessamounttotalnew/100000),2)):$excessamounttotalnew; ?></th><!-- For Excess_Found -->
 											<th><?php echo $excessitemtotal; ?></th><!-- For Excess_Found -->
-											<th>0</th><!-- For Total Risk Exposure -->
-											<th>0</th><!-- For Total Risk Exposure -->
+											<th>
+												<?php 
+													$total_risk_exposure_amount_grand = $damagedTotalAmount + $scrappedTotalAmount + $missingTotalAmount + $shiftedTotalAmount + $notinuseTotalAmount + $shortTotalAmount;
+													echo $total_risk_exposure_amount_grand != 0 ? getmoney_format(round(($total_risk_exposure_amount_grand/100000),2)) : $total_risk_exposure_amount_grand;
+												?>
+											</th><!-- For Total Risk Exposure -->
+											<th>
+												<?php 
+													$total_risk_exposure_qty_grand = $damagedTotalItems + $scrappedTotalItems + $missingTotalItems + $shiftedTotalItems + $notinuseTotalItems + $shortTotalItems;
+													echo $total_risk_exposure_qty_grand;
+												?>
+											</th><!-- For Total Risk Exposure -->
 										</tr>
 										<tr>
 											<th><?php echo "% to Grand Total"; ?></th>
@@ -483,12 +505,22 @@ table th,table td{
 											<th><?php echo round(($shiftedTotalItems/$totalItems)*100,2); ?>%</th><!-- For Shifted -->
 											<th><?php echo round(($notinuseTotalAmount/$totalAmount)*100,2); ?>%</th><!-- For Not_in_Use -->
 											<th><?php echo round(($notinuseTotalItems/$totalItems)*100,2); ?>%</th><!-- For Not_in_Use -->
-										    <th><?php echo round(($shortTotalItems/$totalItems)*100,2); ?>%</th><!-- For Short_Found -->
-											<th><?php echo round(($excessamounttotalnew/$totalAmount)*100,2); ?>%</th><!-- For Short_Found -->
+										    <th><?php echo round(($shortTotalAmount/$totalAmount)*100,2); ?>%</th><!-- For Short_Found -->
+											<th><?php echo round(($shortTotalItems/$totalItems)*100,2); ?>%</th><!-- For Short_Found -->
                                             <th><?php echo round(($excessamounttotalnew/$totalAmount)*100,2); ?>%</th><!-- For Excess_Found -->
 											<th><?php echo round(($excessitemtotal/$totalItems)*100,2); ?>%</th><!-- For Excess_Found -->
-											<th>0</th><!-- For Total Risk Exposure -->
-											<th>0</th><!-- For Total Risk Exposure -->
+											<th>
+												<?php 
+													$total_risk_exposure_amount_grand = $damagedTotalAmount + $scrappedTotalAmount + $missingTotalAmount + $shiftedTotalAmount + $notinuseTotalAmount + $shortTotalAmount;
+													echo round(($total_risk_exposure_amount_grand/$totalAmount)*100,2);
+												?>%
+											</th><!-- For Total Risk Exposure -->
+											<th>
+												<?php 
+													$total_risk_exposure_qty_grand = $damagedTotalItems + $scrappedTotalItems + $missingTotalItems + $shiftedTotalItems + $notinuseTotalItems + $shortTotalItems;
+													echo round(($total_risk_exposure_qty_grand/$totalItems)*100,2);
+												?>%
+											</th><!-- For Total Risk Exposure -->
 										</tr>
 										<tr>
 											<td></td>
