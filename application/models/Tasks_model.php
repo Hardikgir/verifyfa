@@ -1979,6 +1979,31 @@ function get_product_search($sort_by,$order_by,$table_name)
     }
 
 
+     function active_getProjects($table,$userid,$company_id,$location_id) { 
+
+        // $condition1=array('company_projects.project_verifier IN ('.$userid.') || company_projects.manager IN ('.$userid.') || company_projects.process_owner IN ('.$userid.') || company_projects.item_owner IN ('.$userid.')');
+
+        $condition1='(FIND_IN_SET('.$userid.',company_projects.project_verifier) || FIND_IN_SET('.$userid.',company_projects.manager) || FIND_IN_SET('.$userid.',company_projects.process_owner) || FIND_IN_SET('.$userid.',company_projects.item_owner))';
+
+        $this->db->select('company_projects.*,company_locations.location_name,user_role.id as role_id,company.company_name');
+        $this->db->from('company_projects');
+        $this->db->join('user_role','find_in_set(user_role.user_id,company_projects.project_verifier) AND company_projects.company_id=user_role.company_id');
+        $this->db->join('company','company.id=user_role.company_id');
+        $this->db->join('company_locations','company_locations.id=company_projects.project_location');
+        // $this->db->where(array('user_role.user_id'=>$userid,'company_projects.status'=>0));
+        // $this->db->where(array('user_role.user_id'=>$userid,'company_projects.status'=>0));
+        $this->db->where('company_projects.status','0');
+        // $this->db->where("company_projects.status NOT IN (2,5)", NULL, FALSE);
+        $this->db->where(array('user_role.user_id'=>$userid));
+        $this->db->where($condition1 );
+        $this->db->where(array('company_projects.company_id'=>$company_id,'company_projects.project_location'=>$location_id));
+        $this->db->group_by('company_projects.project_id');
+        $gettasks=$this->db->get();
+        // echo $this->db->last_query();
+        return $gettasks->result();
+
+    }
+
 
 
 }

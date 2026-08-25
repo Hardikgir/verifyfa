@@ -29,7 +29,8 @@ class Tasks extends CI_Controller
         $condition = array(
             "id" => $userid
         );
-        $projects = $this->tasks->getProjects('users', $userid, $company_id, $location_id);
+        // $projects = $this->tasks->getProjects('users', $userid, $company_id, $location_id);
+        $projects = $this->tasks->active_getProjects('users', $userid, $company_id, $location_id);
 
         // echo '<pre>last_query ';
         // print_r($this->db->last_query());
@@ -766,7 +767,7 @@ class Tasks extends CI_Controller
                 $verification_remarks = $get_item_details->verification_remarks .' | (-' . $revert_qty . ') ';
                 $edit_opration_value = 'Update Qty & Details';
                 // $new_loc_rollback = $get_item_details->new_location_verified .' | (-' . $revert_qty . ') ';
-                $new_loc_rollback = $update_details->new_location_verified .' | (-' . $revert_qty . ') ';
+                $new_loc_rollback = $update_details->new_location_verified .', (-' . $revert_qty . ') ';
                 // $new_loc_rollback = $update_details->new_location_verified;                
             }else{
                 $verification_remarks = $get_item_details->verification_remarks ;
@@ -774,6 +775,48 @@ class Tasks extends CI_Controller
                 $new_loc_rollback = $update_details->new_location_verified;
                 $edit_opration_value = 'Update Details';
             }
+
+            if($edit_opration != 'Update Qty & Details'){
+                $new_location_verified_array = explode(",", $new_loc_rollback);
+                $lastIndex = count($new_location_verified_array) - 1;
+                $secondLastIndex = $lastIndex - 1;
+
+                [$new_location_verified_array[$secondLastIndex], $new_location_verified_array[$lastIndex]] =
+                [$new_location_verified_array[$lastIndex], $new_location_verified_array[$secondLastIndex]];
+
+                // print_r($new_location_verified_array);
+                $new_loc_rollback = implode(",",$new_location_verified_array);
+            }
+            // exit();
+
+            /*
+            echo '<pre>new_location_verified ';
+            print_r($update_details->new_location_verified);
+            echo '</pre>';
+
+            $new_location_verified_array = explode(",",$new_loc_rollback);
+            echo '<pre>new_location_verified_array ';
+            print_r($new_location_verified_array);
+            echo '</pre>';
+
+            echo '<pre>Count :';
+            print_r(count($new_location_verified_array));
+            echo '</pre>';
+
+            $last = array_pop($new_location_verified_array);
+            $secondLast = array_pop($new_location_verified_array);
+
+            $array[] = $last;
+            $array[] = $secondLast;
+
+            print_r($array);
+            exit();
+            */
+
+
+
+
+
 
             $new_loc = $get_item_details->new_location_verified;
             if (isset($update_details->new_location_verified) && $update_details->new_location_verified != '') {
@@ -852,6 +895,7 @@ class Tasks extends CI_Controller
             $update_item_details_data_second['new_location_verified'] = $new_loc;
             */
             $update_item_details_data_second['verified_datetime'] = date('Y-m-d H:i:s');
+            $update_item_details_data_second['updatedat'] = date('Y-m-d H:i:s');    
 
             // echo "<pre>update_item_details_data_second ::";
             // print_r($update_item_details_data_second);
@@ -5540,10 +5584,12 @@ class Tasks extends CI_Controller
             $data["verification_status"] = "Verified";
         }
 
-        // echo '<pre>data v';
-        // print_r($data);
-        // echo '</pre>';
-        // exit();
+        $new_loc_rollback = $company_projects_product_details->new_location_verified .', (-' . $verifiedproducts_data->qty_value . ') ';
+        $data["new_location_verified"] = $new_loc_rollback;
+
+        $verification_remarks_value = $company_projects_product_details->verification_remarks .' | (-' . $verifiedproducts_data->qty_value . ') ';
+        $data["verification_remarks"] = $verification_remarks_value;
+        $data['updatedat'] = date('Y-m-d H:i:s');    
 
         $insert = $this->db->where('id', $item_id);
         $insert = $this->db->update($table_name, $data);
