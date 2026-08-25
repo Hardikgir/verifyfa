@@ -1,4 +1,89 @@
-erifyfa - Meeting 14/08/2026
+verifyfa - Meeting 23/08/2026
+
+1) 
+Mobile Application Calculate Risk Exposure (Project Close ho tab ye Mail aata h)
+Web me bhi Galat hi data show ho raha h
+
+Project 44 me issue hai 
+
+2) Risk Exposure Report me issue 
+    - Project id : 4
+    - Column in Excess (Amount)
+    - Video 2 Video time is 08:07 & Actual timer is 11:56 AM (Damage me amount is showing wrong)
+    - Qty Validate Excess Found me Value wrong Video 2 video time 08:51 actual timer is 11:57 Am (I think line item dal diya h qty k jagah)
+    -
+
+    Calculation Riks Exposure 
+    Vo Do report ka conbination (Item Condition - qty per Chalti h OR Qty Validation - Line Item per chal raha )   Line ITem Matlab (12:00 pm)
+
+    - Jab Project Close karte h tab jo not verified h vo Sare short me chale jane chaiye(12:01 pm)[Means jo remaing h vo short me convert ho jana chaiye]
+    - Short ka issue jo h vo new report se bhi pata chal sakta h (12:02 pm)
+    - agar h proper ho jaye to ek bar ye bhi check kar lena ki jisme proper chal rhaa h (12:05 pm) Vo hile naa
+    (Excess Found me hota kya h ki muje qty karni thi 1 or maine kar diya h 11 so usme 10 h vo as Excess Found)
+
+    - shorating certified karna h status ki wahaj se change ho jana chaiye
+    - 12:06 konse column me isse h vo bhi samjaya h [Calculation Risk Exposure]
+    - 12:09 pe bataya h ki correction kya h
+    - 12:10 Data sab h calculation bhi h but proper table me showing nai ho raha.
+    -
+
+3) if finish project then that should not be showing mobile application (Task List ke inder)
+
+4) ek new project banaya tha (12:11) but created time abhi bhi wrong le raha h +5 hrs ka different aa raha H (on column last Updated on)
+
+
+
+
+
+
+
+Testing Data :- 
+
+ID :- 0421
+Qty :- 78
+
+First Operation :- 
+----------------------------------------
+Qty :- 8
+Perform Task :- qty_ok
+Operation_type :- Adding
+New Location :- 1f-Endocopy
+Verification Remark :- First Details Update
+
+
+Second Operation :- 
+----------------------------------------
+Qty :- 10
+Perform Task :- qty_ok
+Operation_type :- Update Details only
+
+
+Operation_type :- Update Details & qty
+
+
+
+
+Testing Data :- 
+
+ID :- 0421
+Qty :- 90
+
+First Operation :- 
+----------------------------------------
+Qty :- 8
+Perform Task :- qty_ok
+Operation_type :- Adding
+New Location :- 1f-Endocopy
+Verification Remark :- First Details Update
+
+
+
+
+=========================================================================
+=========================================================================
+=========================================================================
+
+verifyfa - Meeting 14/08/2026
 
 > New Location Verified (Column)
 > Last Updated on (Column)

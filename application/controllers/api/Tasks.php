@@ -762,14 +762,23 @@ class Tasks extends CI_Controller
             }
 
 
-            if($edit_opration == 'Update Qty & Details'){
+            if($edit_opration != 'Update Qty & Details'){
                 $verification_remarks = $get_item_details->verification_remarks .' | (-' . $revert_qty . ') ';
-                $new_loc_rollback = $get_item_details->new_location_verified .' | (-' . $revert_qty . ') ';
+                $edit_opration_value = 'Update Qty & Details';
+                // $new_loc_rollback = $get_item_details->new_location_verified .' | (-' . $revert_qty . ') ';
+                $new_loc_rollback = $update_details->new_location_verified .' | (-' . $revert_qty . ') ';
+                // $new_loc_rollback = $update_details->new_location_verified;                
             }else{
                 $verification_remarks = $get_item_details->verification_remarks ;
-                $new_loc_rollback = $get_item_details->new_location_verified ;
+                // $new_loc_rollback = $get_item_details->new_location_verified ;
+                $new_loc_rollback = $update_details->new_location_verified;
+                $edit_opration_value = 'Update Details';
             }
-            
+
+            $new_loc = $get_item_details->new_location_verified;
+            if (isset($update_details->new_location_verified) && $update_details->new_location_verified != '') {
+                $new_loc = $get_item_details->new_location_verified != '' ? $get_item_details->new_location_verified .' | ' . $update_details->new_location_verified : $update_details->new_location_verified;
+            }
 
 
             $update_item_details_data_first['verification_remarks'] = $verification_remarks;            
@@ -835,11 +844,13 @@ class Tasks extends CI_Controller
             }
             $update_item_details_data_second['verification_remarks'] = $new_remarks;
 
+            /*
             $new_loc = $get_item_details->new_location_verified;
             if (isset($update_details->new_location_verified) && $update_details->new_location_verified != '') {
                 $new_loc = $get_item_details->new_location_verified != '' ? $get_item_details->new_location_verified .' | ' . $update_details->new_location_verified : $update_details->new_location_verified;
             }
             $update_item_details_data_second['new_location_verified'] = $new_loc;
+            */
             $update_item_details_data_second['verified_datetime'] = date('Y-m-d H:i:s');
 
             // echo "<pre>update_item_details_data_second ::";
@@ -967,7 +978,7 @@ class Tasks extends CI_Controller
             //Add In Log File
             $verifiedproducts_array = array(
                 'row_id' => $get_item_details->id,
-                'edit_opration' => $edit_opration,
+                'edit_opration' => $edit_opration_value,
                 'previous_company_id' => $company_id,
                 'company_id' => $company_id,
                 'previous_location_id' => $location_id,
