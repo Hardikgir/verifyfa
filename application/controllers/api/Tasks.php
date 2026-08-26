@@ -6420,7 +6420,7 @@ class Tasks extends CI_Controller
                                 $verifiedTotalAmount = $verifiedTotalAmount + $verifiedAmount;
                                 $verifiedTotalItems = $verifiedTotalItems + $verifiedItems;
 
-                                if ($verified->total_items > $allcat->total_items && $verified->total_items > 0) {
+                                if ($verified->total_items < $allcat->total_items && $verified->total_items >= 0) {
                                     $shortAmount = $allcat->total_amount - $verified->total_amount;
                                     $shortItems = $allcat->total_items - $verified->total_items;
                                     $shortTotalAmount = $shortTotalAmount + $shortAmount;
@@ -6682,7 +6682,7 @@ class Tasks extends CI_Controller
                         $shortAmount = 0;
                         $shortItems = 0;
                         $excessitem = 0;
-                        $excessamount = 0;
+                        $excessAmount = 0;
 
                         foreach ($report_data['verified'] as $verified) {
                             if ($verified->item_category == $allcat->item_category) {
@@ -6691,30 +6691,11 @@ class Tasks extends CI_Controller
                                 $verifiedTotalAmount = $verifiedTotalAmount + $verifiedAmount;
                                 $verifiedTotalItems = $verifiedTotalItems + $verifiedItems;
 
-                                if ($verified->total_items > $allcat->total_items && $verified->total_items > 0) {
+                                if ($verified->total_items < $allcat->total_qty && $verified->total_items >= 0) {
                                     $shortAmount = $allcat->total_amount - $verified->total_amount;
-                                    $shortItems = $allcat->total_items - $verified->total_items;
-                                    $shortTotalAmount = $shortTotalAmount + $shortAmount;
-                                    $shortTotalItems = $shortTotalItems + $shortItems;
+                                    $shortItems = $allcat->total_qty - $verified->total_items;
                                 }
-
-                                if ($verified->total_items > $allcat->total_items) {
-                                    // // $excessAmount=$allcat->total_amount - $verified->total_amount;
-                                    // $excessItems=$verified->total_items - $allcat->total_items;
-
-                                    // $excessTotalAmount=$excessTotalAmount+$excessAmount;
-                                    // $excessTotalItems=$excessTotalItems+$excessItems;
-                                }
-
-                                if ($verified->total_items < 1) {
-                                    $remainingAmount = $allcat->total_amount;
-                                    $remainingItems = $allcat->total_items;
-                                    $remainingTotalAmount = $remainingTotalAmount + $remainingAmount;
-                                    $remainingTotalItems = $remainingTotalItems + $remainingItems;
-                                }
-
                             }
-
                         }
 
 
@@ -6785,14 +6766,36 @@ class Tasks extends CI_Controller
                             if ($excess->item_category == $allcat->item_category) {
                                 $excessitem = $excess->items;
                                 $excessAmount = $excess->total_amount;
-                                $excessamounttotalnew = $excessamounttotalnew + $excessAmount;
-
                             }
                         }
 
-                        $excessitemtotal += $excessitem;
                         $remainingAmount = $allcat->total_amount - ($goodAmount + $damagedAmount + $scrappedAmount + $missingAmount + $shiftedAmount + $notinuseAmount);
                         $remainingItems = $allcat->total_qty - ($goodItems + $damagedItems + $scrappedItems + $missingItems + $shiftedItems + $notinuseItems);
+
+                        if ($projectstatus == 1) {
+                            if ($remainingItems > 0) {
+                                $shortItems = $remainingItems;
+                                $shortAmount = $remainingAmount;
+                                $excessitem = 0;
+                                $excessAmount = 0;
+                            } else if ($remainingItems < 0) {
+                                $shortItems = 0;
+                                $shortAmount = 0;
+                                $excessitem = -$remainingItems;
+                                $excessAmount = -$remainingAmount;
+                            } else {
+                                $shortItems = 0;
+                                $shortAmount = 0;
+                                $excessitem = 0;
+                                $excessAmount = 0;
+                            }
+                        }
+
+                        $shortTotalAmount = $shortTotalAmount + $shortAmount;
+                        $shortTotalItems = $shortTotalItems + $shortItems;
+                        $excessamounttotalnew = $excessamounttotalnew + $excessAmount;
+                        $excessitemtotal = $excessitemtotal + $excessitem;
+
                         $remainingTotalAmount = $remainingTotalAmount + $remainingAmount;
                         $remainingTotalItems = $remainingTotalItems + $remainingItems;
 
@@ -7554,7 +7557,7 @@ class Tasks extends CI_Controller
                                 $verifiedTotalAmount = $verifiedTotalAmount + $verifiedAmount;
                                 $verifiedTotalItems = $verifiedTotalItems + $verifiedItems;
 
-                                if ($verified->total_items > $allcat->total_items && $verified->total_items > 0) {
+                                if ($verified->total_items < $allcat->total_items && $verified->total_items >= 0) {
                                     $shortAmount = $allcat->total_amount - $verified->total_amount;
                                     $shortItems = $allcat->total_items - $verified->total_items;
                                     $shortTotalAmount = $shortTotalAmount + $shortAmount;
@@ -7814,7 +7817,7 @@ class Tasks extends CI_Controller
                         $shortAmount = 0;
                         $shortItems = 0;
                         $excessitem = 0;
-                        $excessamount = 0;
+                        $excessAmount = 0;
 
                         foreach ($report_data['verified'] as $verified) {
                             if ($verified->item_category == $allcat->item_category) {
@@ -7823,30 +7826,11 @@ class Tasks extends CI_Controller
                                 $verifiedTotalAmount = $verifiedTotalAmount + $verifiedAmount;
                                 $verifiedTotalItems = $verifiedTotalItems + $verifiedItems;
 
-                                if ($verified->total_items > $allcat->total_items && $verified->total_items > 0) {
+                                if ($verified->total_items < $allcat->total_qty && $verified->total_items >= 0) {
                                     $shortAmount = $allcat->total_amount - $verified->total_amount;
-                                    $shortItems = $allcat->total_items - $verified->total_items;
-                                    $shortTotalAmount = $shortTotalAmount + $shortAmount;
-                                    $shortTotalItems = $shortTotalItems + $shortItems;
+                                    $shortItems = $allcat->total_qty - $verified->total_items;
                                 }
-
-                                if ($verified->total_items > $allcat->total_items) {
-                                    // // $excessAmount=$allcat->total_amount - $verified->total_amount;
-                                    // $excessItems=$verified->total_items - $allcat->total_items;
-
-                                    // $excessTotalAmount=$excessTotalAmount+$excessAmount;
-                                    // $excessTotalItems=$excessTotalItems+$excessItems;
-                                }
-
-                                if ($verified->total_items < 1) {
-                                    $remainingAmount = $allcat->total_amount;
-                                    $remainingItems = $allcat->total_items;
-                                    $remainingTotalAmount = $remainingTotalAmount + $remainingAmount;
-                                    $remainingTotalItems = $remainingTotalItems + $remainingItems;
-                                }
-
                             }
-
                         }
 
 
@@ -7917,14 +7901,36 @@ class Tasks extends CI_Controller
                             if ($excess->item_category == $allcat->item_category) {
                                 $excessitem = $excess->items;
                                 $excessAmount = $excess->total_amount;
-                                $excessamounttotalnew = $excessamounttotalnew + $excessAmount;
-
                             }
                         }
 
-                        $excessitemtotal += $excessitem;
                         $remainingAmount = $allcat->total_amount - ($goodAmount + $damagedAmount + $scrappedAmount + $missingAmount + $shiftedAmount + $notinuseAmount);
                         $remainingItems = $allcat->total_qty - ($goodItems + $damagedItems + $scrappedItems + $missingItems + $shiftedItems + $notinuseItems);
+
+                        if ($projectstatus == 1) {
+                            if ($remainingItems > 0) {
+                                $shortItems = $remainingItems;
+                                $shortAmount = $remainingAmount;
+                                $excessitem = 0;
+                                $excessAmount = 0;
+                            } else if ($remainingItems < 0) {
+                                $shortItems = 0;
+                                $shortAmount = 0;
+                                $excessitem = -$remainingItems;
+                                $excessAmount = -$remainingAmount;
+                            } else {
+                                $shortItems = 0;
+                                $shortAmount = 0;
+                                $excessitem = 0;
+                                $excessAmount = 0;
+                            }
+                        }
+
+                        $shortTotalAmount = $shortTotalAmount + $shortAmount;
+                        $shortTotalItems = $shortTotalItems + $shortItems;
+                        $excessamounttotalnew = $excessamounttotalnew + $excessAmount;
+                        $excessitemtotal = $excessitemtotal + $excessitem;
+
                         $remainingTotalAmount = $remainingTotalAmount + $remainingAmount;
                         $remainingTotalItems = $remainingTotalItems + $remainingItems;
 

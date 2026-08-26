@@ -6,7 +6,7 @@ Web me bhi Galat hi data show ho raha h
 
 Project 44 me issue hai 
 
-2) Risk Exposure Report me issue 
+2) Risk Exposure Report me issue :- On Web (http://verifyfa.com/Dev/index.php/dashboard/generateExceptionReport)
     - Project id : 4
     - Column in Excess (Amount)
     - Video 2 Video time is 08:07 & Actual timer is 11:56 AM (Damage me amount is showing wrong)
@@ -27,9 +27,9 @@ Project 44 me issue hai
     - 12:10 Data sab h calculation bhi h but proper table me showing nai ho raha.
     -
 
-3) if finish project then that should not be showing mobile application (Task List ke inder)
+3) if finish project then that should not be showing mobile application (Task List ke inder) :- Done
 
-4) ek new project banaya tha (12:11) but created time abhi bhi wrong le raha h +5 hrs ka different aa raha H (on column last Updated on)
+4) ek new project banaya tha (12:11) but created time abhi bhi wrong le raha h +5 hrs ka different aa raha H (on column last Updated on) :- Done
 
 
 

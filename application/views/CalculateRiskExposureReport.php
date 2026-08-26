@@ -241,7 +241,7 @@ table th,table td{
                                             $shortAmount=0;
 											$shortItems=0;
 											$excessitem=0;
-											$excessamount=0;
+											$excessAmount=0;
 
                                             foreach($data['verified'] as $verified)
 											{
@@ -252,33 +252,12 @@ table th,table td{
 													$verifiedTotalAmount=$verifiedTotalAmount+$verifiedAmount;
 													$verifiedTotalItems=$verifiedTotalItems+$verifiedItems;
 													
-													if($verified->total_items > $allcat->total_items && $verified->total_items > 0)
+													if($verified->total_items < $allcat->total_qty && $verified->total_items >= 0)
 													{
 														$shortAmount=$allcat->total_amount-$verified->total_amount;
-														$shortItems=$allcat->total_items-$verified->total_items;
-														$shortTotalAmount=$shortTotalAmount+$shortAmount;
-														$shortTotalItems=$shortTotalItems+$shortItems;
+														$shortItems=$allcat->total_qty-$verified->total_items;
 													}
-
-													if($verified->total_items > $allcat->total_items)
-													{
-														// // $excessAmount=$allcat->total_amount - $verified->total_amount;
-														// $excessItems=$verified->total_items - $allcat->total_items;
-
-														// $excessTotalAmount=$excessTotalAmount+$excessAmount;
-														// $excessTotalItems=$excessTotalItems+$excessItems;
-													}
-
-													if($verified->total_items < 1)
-													{
-														$remainingAmount=$allcat->total_amount;
-														$remainingItems=$allcat->total_items;
-														$remainingTotalAmount=$remainingTotalAmount+$remainingAmount;
-														$remainingTotalItems=$remainingTotalItems+$remainingItems;	
-													}
-													
 												}
-
 											}
 
                                             
@@ -365,14 +344,42 @@ table th,table td{
 												{
 													$excessitem = $excess->items;
 													$excessAmount =$excess->total_amount;		
-													$excessamounttotalnew=$excessamounttotalnew+$excessAmount;
- 
 												}
 											}
 												
-											$excessitemtotal +=$excessitem;
 											$remainingAmount=$allcat->total_amount-($goodAmount+$damagedAmount+$scrappedAmount+$missingAmount+$shiftedAmount+$notinuseAmount);
 											$remainingItems=$allcat->total_qty-($goodItems+$damagedItems+$scrappedItems+$missingItems+$shiftedItems+$notinuseItems);
+
+											if($data['project'][0]->status == 1 || $data['project'][0]->status == 3)
+											{
+												if($remainingItems > 0)
+												{
+													$shortItems = $remainingItems;
+													$shortAmount = $remainingAmount;
+													$excessitem = 0;
+													$excessAmount = 0;
+												}
+												else if($remainingItems < 0)
+												{
+													$shortItems = 0;
+													$shortAmount = 0;
+													$excessitem = -$remainingItems;
+													$excessAmount = -$remainingAmount;
+												}
+												else
+												{
+													$shortItems = 0;
+													$shortAmount = 0;
+													$excessitem = 0;
+													$excessAmount = 0;
+												}
+											}
+
+											$shortTotalAmount = $shortTotalAmount + $shortAmount;
+											$shortTotalItems = $shortTotalItems + $shortItems;
+											$excessamounttotalnew = $excessamounttotalnew + $excessAmount;
+											$excessitemtotal = $excessitemtotal + $excessitem;
+
 											$remainingTotalAmount=$remainingTotalAmount+$remainingAmount;
 											$remainingTotalItems=$remainingTotalItems+$remainingItems;
 										?>
