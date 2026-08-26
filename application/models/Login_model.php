@@ -227,7 +227,7 @@ class Login_model extends CI_Model {
 
 
 	public function clearprojecdatabyid($projectid, $original_table_name){
-		
+		$this->load->dbforge();
 		$this->db->select('*');
 		$this->db->from('company_projects');
 		$this->db->where('id',$projectid);

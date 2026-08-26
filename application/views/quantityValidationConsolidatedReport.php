@@ -166,7 +166,7 @@ table th,table td{
 														$verifiedTotalItems=$verifiedTotalItems+$verifiedItems;
 														$subverifiedTotalAmount=$subverifiedTotalAmount+$verifiedAmount;
 														$subverifiedTotalItems=$subverifiedTotalItems+$verifiedItems;
-														if($verified->total_items < $allcat->total_items && $verified->total_items >= 0)
+														if($verified->total_items < $allcat->total_items && $verified->total_items > 0)
 														{
 															$shortAmount=$allcat->total_amount-$verified->total_amount;
 															$shortItems=$allcat->total_items-$verified->total_items;

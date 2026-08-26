@@ -410,6 +410,7 @@ class Plancycle extends CI_Controller {
 		foreach($inserting_array as $inserting_array_key=>$inserting_array_value){
 			if($insert_count < $plan_row->line_item_avaliable){
 				$inserting_array_value['createdat'] = date('Y-m-d H:i:s');
+				$inserting_array_value['updatedat'] = date('Y-m-d H:i:s');
 				$new_insert_array[] = $inserting_array_value;
 				$this->db->insert($tablename,$inserting_array_value);		
 			}

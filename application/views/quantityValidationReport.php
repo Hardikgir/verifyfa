@@ -96,7 +96,7 @@ table th,table td{
 											$verifiedTotalAmount=$verifiedTotalAmount+$verifiedAmount;
 											$verifiedTotalItems=$verifiedTotalItems+$verifiedItems;	//Used full
 											
-											if($verified->total_items < $allcat->total_items && $verified->total_items >= 0)
+											if($verified->total_items > $allcat->total_items && $verified->total_items > 0)
 											{
 												$shortAmount=$allcat->total_amount-$verified->total_amount;
 												$shortItems=$allcat->total_items-$verified->total_items;
@@ -435,7 +435,7 @@ table th,table td{
 													$verifiedTotalAmount=$verifiedTotalAmount+$verifiedAmount;
 													$verifiedTotalItems=$verifiedTotalItems+$verifiedItems;
 													
-													if($verified->total_items < $allcat->total_items && $verified->total_items >= 0)
+													if($verified->total_items > $allcat->total_items && $verified->total_items > 0)
 													{
 														$shortAmount=$allcat->total_amount-$verified->total_amount;
 														$shortItems=$allcat->total_items-$verified->total_items;

@@ -350,7 +350,7 @@ table th,table td{
 											$remainingAmount=$allcat->total_amount-($goodAmount+$damagedAmount+$scrappedAmount+$missingAmount+$shiftedAmount+$notinuseAmount);
 											$remainingItems=$allcat->total_qty-($goodItems+$damagedItems+$scrappedItems+$missingItems+$shiftedItems+$notinuseItems);
 
-											if($data['project'][0]->status == 1 || $data['project'][0]->status == 3)
+											if($data['project'][0]->status != 0)
 											{
 												if($remainingItems > 0)
 												{
