@@ -712,6 +712,14 @@ class Tasks extends CI_Controller
 
             // if($edit_opration == 'Update Qty & Details'){
 
+            if($edit_opration != 'Update Qty & Details'){
+                $edit_opration_value = 'Update Qty & Details';
+            }else{
+                $edit_opration_value = 'Update Details';
+                $update_details->quantity_verified = 0;
+                $scanned->quantity_verified = 0;
+            }
+
 
 
             if ($get_instance_details->qty_value < $update_details->quantity_verified) {
@@ -736,88 +744,61 @@ class Tasks extends CI_Controller
                 'qty_missing' => (int) $get_item_details->qty_missing,
                 'qty_shifted' => (int) $get_item_details->qty_shifted,
             );
-            $revert_qty = (int) $get_instance_details->qty_value;
-            if (!empty($get_instance_details_qty_ok)) {
-                // $update_item_details_data_first['qty_ok'] = (int)$get_item_details->qty_ok - (int)$get_instance_details->qty_value;
-                $update_item_details_data_first['qty_ok'] = (int) $get_item_details->qty_ok - (int) $get_instance_details->qty_value;
-            }
-            if (!empty($get_instance_details_qty_damaged)) {
-                // $update_item_details_data_first['qty_damaged'] = (int)$get_item_details->qty_damaged - (int)$get_instance_details->qty_value;
-                $update_item_details_data_first['qty_damaged'] = (int) $get_item_details->qty_damaged - (int) $get_instance_details->qty_value;
-            }
-            if (!empty($get_instance_details_qty_scrapped)) {
-                // $update_item_details_data_first['qty_scrapped'] = (int)$get_item_details->qty_scrapped - (int)$get_instance_details->qty_value;
-                $update_item_details_data_first['qty_scrapped'] = (int) $get_item_details->qty_scrapped - (int) $get_instance_details->qty_value;
-            }
-            if (!empty($get_instance_details_qty_not_in_use)) {
-                // $update_item_details_data_first['qty_not_in_use'] = (int)$get_item_details->qty_not_in_use - (int)$get_instance_details->qty_value;
-                $update_item_details_data_first['qty_not_in_use'] = (int) $get_item_details->qty_not_in_use - (int) $get_instance_details->qty_value;
-            }
-            if (!empty($get_instance_details_qty_missing)) {
-                // $update_item_details_data_first['qty_missing'] = (int)$get_item_details->qty_missing - (int)$get_instance_details->qty_value;
-                $update_item_details_data_first['qty_missing'] = (int) $get_item_details->qty_missing - (int) $get_instance_details->qty_value;
-            }
-            if (!empty($get_instance_details_qty_shifted)) {
-                // $update_item_details_data_first['qty_shifted'] = (int)$get_item_details->qty_shifted - (int)$get_instance_details->qty_value;
-                $update_item_details_data_first['qty_shifted'] = (int) $get_item_details->qty_shifted - (int) $get_instance_details->qty_value;
+
+            $revert_qty = 0;
+            if($edit_opration_value == 'Update Qty & Details'){
+                $revert_qty = (int) $get_instance_details->qty_value;
+                if (!empty($get_instance_details_qty_ok)) {
+                    // $update_item_details_data_first['qty_ok'] = (int)$get_item_details->qty_ok - (int)$get_instance_details->qty_value;
+                    $update_item_details_data_first['qty_ok'] = (int) $get_item_details->qty_ok - (int) $get_instance_details->qty_value;
+                }
+                if (!empty($get_instance_details_qty_damaged)) {
+                    // $update_item_details_data_first['qty_damaged'] = (int)$get_item_details->qty_damaged - (int)$get_instance_details->qty_value;
+                    $update_item_details_data_first['qty_damaged'] = (int) $get_item_details->qty_damaged - (int) $get_instance_details->qty_value;
+                }
+                if (!empty($get_instance_details_qty_scrapped)) {
+                    // $update_item_details_data_first['qty_scrapped'] = (int)$get_item_details->qty_scrapped - (int)$get_instance_details->qty_value;
+                    $update_item_details_data_first['qty_scrapped'] = (int) $get_item_details->qty_scrapped - (int) $get_instance_details->qty_value;
+                }
+                if (!empty($get_instance_details_qty_not_in_use)) {
+                    // $update_item_details_data_first['qty_not_in_use'] = (int)$get_item_details->qty_not_in_use - (int)$get_instance_details->qty_value;
+                    $update_item_details_data_first['qty_not_in_use'] = (int) $get_item_details->qty_not_in_use - (int) $get_instance_details->qty_value;
+                }
+                if (!empty($get_instance_details_qty_missing)) {
+                    // $update_item_details_data_first['qty_missing'] = (int)$get_item_details->qty_missing - (int)$get_instance_details->qty_value;
+                    $update_item_details_data_first['qty_missing'] = (int) $get_item_details->qty_missing - (int) $get_instance_details->qty_value;
+                }
+                if (!empty($get_instance_details_qty_shifted)) {
+                    // $update_item_details_data_first['qty_shifted'] = (int)$get_item_details->qty_shifted - (int)$get_instance_details->qty_value;
+                    $update_item_details_data_first['qty_shifted'] = (int) $get_item_details->qty_shifted - (int) $get_instance_details->qty_value;
+                }
             }
 
 
-            if($edit_opration != 'Update Qty & Details'){
+            // if($edit_opration != 'Update Qty & Details'){
+            if($edit_opration_value == 'Update Qty & Details'){
                 $verification_remarks = $get_item_details->verification_remarks .' | (-' . $revert_qty . ') ';
-                $edit_opration_value = 'Update Qty & Details';
-                // $new_loc_rollback = $get_item_details->new_location_verified .' | (-' . $revert_qty . ') ';
                 $new_loc_rollback = $update_details->new_location_verified .', (-' . $revert_qty . ') ';
-                // $new_loc_rollback = $update_details->new_location_verified;                
             }else{
-                $verification_remarks = $get_item_details->verification_remarks ;
-                // $new_loc_rollback = $get_item_details->new_location_verified ;
-                $new_loc_rollback = $update_details->new_location_verified;
-                $edit_opration_value = 'Update Details';
+                $verification_remarks = $get_item_details->verification_remarks ;                
+                // $new_loc_rollback = $update_details->new_location_verified;
+                $new_loc_rollback = preg_replace('/\s*-\s*\d+\s*$/', '', $update_details->new_location_verified);
+
             }
 
-            if($edit_opration != 'Update Qty & Details'){
+            // if($edit_opration != 'Update Qty & Details'){
+            if($edit_opration_value == 'Update Qty & Details'){
                 $new_location_verified_array = explode(",", $new_loc_rollback);
                 $lastIndex = count($new_location_verified_array) - 1;
                 $secondLastIndex = $lastIndex - 1;
 
                 [$new_location_verified_array[$secondLastIndex], $new_location_verified_array[$lastIndex]] =
                 [$new_location_verified_array[$lastIndex], $new_location_verified_array[$secondLastIndex]];
-
-                // print_r($new_location_verified_array);
                 $new_loc_rollback = implode(",",$new_location_verified_array);
             }
             // exit();
 
-            /*
-            echo '<pre>new_location_verified ';
-            print_r($update_details->new_location_verified);
-            echo '</pre>';
-
-            $new_location_verified_array = explode(",",$new_loc_rollback);
-            echo '<pre>new_location_verified_array ';
-            print_r($new_location_verified_array);
-            echo '</pre>';
-
-            echo '<pre>Count :';
-            print_r(count($new_location_verified_array));
-            echo '</pre>';
-
-            $last = array_pop($new_location_verified_array);
-            $secondLast = array_pop($new_location_verified_array);
-
-            $array[] = $last;
-            $array[] = $secondLast;
-
-            print_r($array);
-            exit();
-            */
-
-
-
-
-
-
+            
             $new_loc = $get_item_details->new_location_verified;
             if (isset($update_details->new_location_verified) && $update_details->new_location_verified != '') {
                 $new_loc = $get_item_details->new_location_verified != '' ? $get_item_details->new_location_verified .' | ' . $update_details->new_location_verified : $update_details->new_location_verified;
@@ -827,31 +808,45 @@ class Tasks extends CI_Controller
             $update_item_details_data_first['verification_remarks'] = $verification_remarks;            
             $update_item_details_data_first['new_location_verified'] = $new_loc_rollback;
 
-            $quantity_verified_value = (int) $get_item_details->quantity_verified - (int) $revert_qty;
-            $update_item_details_data_first['quantity_verified'] = (int) $get_item_details->quantity_verified - (int) $revert_qty;
+            if($edit_opration_value == 'Update Qty & Details'){
+                $quantity_verified_value = (int) $get_item_details->quantity_verified - (int) $revert_qty;
+                $update_item_details_data_first['quantity_verified'] = (int) $get_item_details->quantity_verified - (int) $revert_qty;
 
-            $update_item_details_data_first["verification_status"] = "";
-            if ($get_item_details->quantity_as_per_invoice <= $quantity_verified_value) {
-                $update_item_details_data_first["verification_status"] = "Verified";
+
+                $update_item_details_data_first["verification_status"] = "";
+                if ($get_item_details->quantity_as_per_invoice <= $quantity_verified_value) {
+                    $update_item_details_data_first["verification_status"] = "Verified";
+                }
+                $update_item_details_data_first['quantity_verified'] = (int) $get_item_details->quantity_verified - (int) $get_instance_details->qty_value;
             }
-            $update_item_details_data_first['quantity_verified'] = (int) $get_item_details->quantity_verified - (int) $get_instance_details->qty_value;
+            
+            
+            $update_item_details_data_first['item_description'] = '';
+            if(isset(($update_details->item_description))){
+                $update_item_details_data_first['item_description'] = $update_details->item_description;
+            }
 
-            $update_item_details_data_first['item_description'] = $update_details->item_description;
-            $update_item_details_data_first['serial_product_number'] = $update_details->serial_product_number;
-            $update_item_details_data_first['make'] = $update_details->make;
-            $update_item_details_data_first['model'] = $update_details->model;
-            $update_item_details_data_first['tag_status_y_n_na'] = $update_details->tag_status_y_n_na;                        
+            $update_item_details_data_first['serial_product_number'] = '';
+            if(isset(($update_details->serial_product_number))){
+                $update_item_details_data_first['serial_product_number'] = $update_details->serial_product_number;
+            }
 
-            // echo '<pre>update_item_details_data_first ';
-            // print_r($update_item_details_data_first);
-            // echo '</pre>';
+            $update_item_details_data_first['make'] = '';
+            if(isset(($update_details->make))){
+                $update_item_details_data_first['make'] = $update_details->make;
+            }
+            
+            $update_item_details_data_first['model'] = '';
+            if(isset(($update_details->model))){
+                $update_item_details_data_first['model'] = $update_details->model;
+            }
+            
+            $update_item_details_data_first['tag_status_y_n_na'] = '';
+            if(isset(($update_details->tag_status_y_n_na))){
+                $update_item_details_data_first['tag_status_y_n_na'] = $update_details->tag_status_y_n_na;
+            }                
             $verify = $this->tasks->update_data($projectname, $update_item_details_data_first, $condition);           //UPDATE OPERATION
-            // $last_query = $this->db->last_query();
-            // echo '<pre>last_query ';
-            // print_r($last_query);
-            // echo '</pre>';
-                        
-
+            
 
             $this->db->select('*');
             $this->db->from($projectname);
@@ -867,18 +862,31 @@ class Tasks extends CI_Controller
                 'qty_missing' => (int) $get_item_details->qty_missing,
                 'qty_shifted' => (int) $get_item_details->qty_shifted,
             );
-            $update_item_details_data_second = array();
-            if (isset($update_details->item_scrap_condition)) {
-                $condition_field = $update_details->item_scrap_condition;
-                $valid_fields = array('qty_ok', 'qty_damaged', 'qty_scrapped', 'qty_not_in_use', 'qty_missing', 'qty_shifted');
-                if (in_array($condition_field, $valid_fields)) {
-                    $update_item_details_data_second[$condition_field] = (int) $get_item_details->$condition_field + (int) $update_details->quantity_verified;
+
+            
+            $quantity_verified_update = (int) $get_item_details->quantity_verified;
+            $quantity_verified_value = 0;
+            if($edit_opration_value == 'Update Qty & Details'){
+                $update_item_details_data_second = array();
+                if (isset($update_details->item_scrap_condition)) {
+                    $condition_field = $update_details->item_scrap_condition;
+                    $valid_fields = array('qty_ok', 'qty_damaged', 'qty_scrapped', 'qty_not_in_use', 'qty_missing', 'qty_shifted');
+                    if (in_array($condition_field, $valid_fields)) {
+                        $update_item_details_data_second[$condition_field] = (int) $get_item_details->$condition_field + (int) $update_details->quantity_verified;
+                    }
                 }
+                $quantity_verified_update = (int) $get_item_details->quantity_verified + (int) $update_details->quantity_verified;
+                $update_item_details_data_second['quantity_verified'] = $quantity_verified_update;
+                $quantity_verified_value =  $quantity_verified_update;
             }
-            $quantity_verified_update = (int) $get_item_details->quantity_verified + (int) $update_details->quantity_verified;
-            $update_item_details_data_second['quantity_verified'] = $quantity_verified_update;
-            $update_item_details_data_second['instance_count'] = (int) $get_item_details->instance_count + 2;
-            if ($get_item_details->quantity_as_per_invoice <= $quantity_verified_update) {
+
+            if($edit_opration_value == 'Update Qty & Details'){
+                $update_item_details_data_second['instance_count'] = (int) $get_item_details->instance_count + 2;
+            }else{
+                $update_item_details_data_second['instance_count'] = (int) $get_item_details->instance_count + 1;
+                
+            }
+                if ($get_item_details->quantity_as_per_invoice <= $quantity_verified_update) {
                 $update_item_details_data_second["verification_status"] = "Verified";
             }
             $new_remarks = $get_item_details->verification_remarks;
@@ -916,24 +924,25 @@ class Tasks extends CI_Controller
             );
 
 
-
-            if (!empty($get_instance_details_qty_ok)) {
-                $verifiedproducts_details_data['qty_ok'] = -$revert_qty;
-            }
-            if (!empty($get_instance_details_qty_damaged)) {
-                $verifiedproducts_details_data['qty_damaged'] = -$revert_qty;
-            }
-            if (!empty($get_instance_details_qty_scrapped)) {
-                $verifiedproducts_details_data['qty_scrapped'] = -$revert_qty;
-            }
-            if (!empty($get_instance_details_qty_not_in_use)) {
-                $verifiedproducts_details_data['qty_not_in_use'] = -$revert_qty;
-            }
-            if (!empty($get_instance_details_qty_missing)) {
-                $verifiedproducts_details_data['qty_missing'] = -$revert_qty;
-            }
-            if (!empty($get_instance_details_qty_shifted)) {
-                $verifiedproducts_details_data['qty_shifted'] = -$revert_qty;
+            if($edit_opration_value == 'Update Qty & Details'){
+                if (!empty($get_instance_details_qty_ok)) {
+                    $verifiedproducts_details_data['qty_ok'] = -$revert_qty;
+                }
+                if (!empty($get_instance_details_qty_damaged)) {
+                    $verifiedproducts_details_data['qty_damaged'] = -$revert_qty;
+                }
+                if (!empty($get_instance_details_qty_scrapped)) {
+                    $verifiedproducts_details_data['qty_scrapped'] = -$revert_qty;
+                }
+                if (!empty($get_instance_details_qty_not_in_use)) {
+                    $verifiedproducts_details_data['qty_not_in_use'] = -$revert_qty;
+                }
+                if (!empty($get_instance_details_qty_missing)) {
+                    $verifiedproducts_details_data['qty_missing'] = -$revert_qty;
+                }
+                if (!empty($get_instance_details_qty_shifted)) {
+                    $verifiedproducts_details_data['qty_shifted'] = -$revert_qty;
+                }
             }
             $current_date_time = date('Y-m-d H:i:s');
             $quantity_verified = (int) $update_details->quantity_verified;
@@ -978,23 +987,26 @@ class Tasks extends CI_Controller
             $qty_not_in_use_value = 0;
             $qty_missing_value = 0;
             $qty_shifted_value = 0;
-            if ($update_details->item_scrap_condition == 'qty_ok') {
-                $qty_ok_value = $quantity_verified;
-            }
-            if ($update_details->item_scrap_condition == 'qty_damaged') {
-                $qty_damaged_value = $quantity_verified;
-            }
-            if ($update_details->item_scrap_condition == 'qty_scrapped') {
-                $qty_scrapped_value = $quantity_verified;
-            }
-            if ($update_details->item_scrap_condition == 'qty_not_in_use') {
-                $qty_not_in_use_value = $quantity_verified;
-            }
-            if ($update_details->item_scrap_condition == 'qty_missing') {
-                $qty_missing_value = $quantity_verified;
-            }
-            if ($update_details->item_scrap_condition == 'qty_shifted') {
-                $qty_shifted_value = $quantity_verified;
+
+            if($edit_opration_value == 'Update Qty & Details'){
+                if ($update_details->item_scrap_condition == 'qty_ok') {
+                    $qty_ok_value = $quantity_verified;
+                }
+                if ($update_details->item_scrap_condition == 'qty_damaged') {
+                    $qty_damaged_value = $quantity_verified;
+                }
+                if ($update_details->item_scrap_condition == 'qty_scrapped') {
+                    $qty_scrapped_value = $quantity_verified;
+                }
+                if ($update_details->item_scrap_condition == 'qty_not_in_use') {
+                    $qty_not_in_use_value = $quantity_verified;
+                }
+                if ($update_details->item_scrap_condition == 'qty_missing') {
+                    $qty_missing_value = $quantity_verified;
+                }
+                if ($update_details->item_scrap_condition == 'qty_shifted') {
+                    $qty_shifted_value = $quantity_verified;
+                }
             }
 
 
@@ -1089,25 +1101,28 @@ class Tasks extends CI_Controller
             $qty_not_in_use_value = 0;
             $qty_missing_value = 0;
             $qty_shifted_value = 0;
-            if ($update_details->item_scrap_condition == 'qty_ok') {
-                // $qty_ok_value = $quantity_verified;
-                $qty_ok_value = $update_details->quantity_verified;
-            }
-            if ($update_details->item_scrap_condition == 'qty_damaged') {
-                // $qty_damaged_value = $quantity_verified;
-                $qty_damaged_value = $update_details->quantity_verified;
-            }
-            if ($update_details->item_scrap_condition == 'qty_scrapped') {
-                $qty_scrapped_value = $update_details->quantity_verified;
-            }
-            if ($update_details->item_scrap_condition == 'qty_not_in_use') {
-                $qty_not_in_use_value = $update_details->quantity_verified;
-            }
-            if ($update_details->item_scrap_condition == 'qty_missing') {
-                $qty_missing_value = $update_details->quantity_verified;
-            }
-            if ($update_details->item_scrap_condition == 'qty_shifted') {
-                $qty_shifted_value = $update_details->quantity_verified;
+
+            if($edit_opration_value == 'Update Qty & Details'){
+                if ($update_details->item_scrap_condition == 'qty_ok') {
+                    // $qty_ok_value = $quantity_verified;
+                    $qty_ok_value = $update_details->quantity_verified;
+                }
+                if ($update_details->item_scrap_condition == 'qty_damaged') {
+                    // $qty_damaged_value = $quantity_verified;
+                    $qty_damaged_value = $update_details->quantity_verified;
+                }
+                if ($update_details->item_scrap_condition == 'qty_scrapped') {
+                    $qty_scrapped_value = $update_details->quantity_verified;
+                }
+                if ($update_details->item_scrap_condition == 'qty_not_in_use') {
+                    $qty_not_in_use_value = $update_details->quantity_verified;
+                }
+                if ($update_details->item_scrap_condition == 'qty_missing') {
+                    $qty_missing_value = $update_details->quantity_verified;
+                }
+                if ($update_details->item_scrap_condition == 'qty_shifted') {
+                    $qty_shifted_value = $update_details->quantity_verified;
+                }
             }
 
 
@@ -1135,7 +1150,7 @@ class Tasks extends CI_Controller
                     'item_description' => $get_item_details->item_description,
                     'quantity_as_per_invoice' => $get_item_details->quantity_as_per_invoice,
                     'verification_status' => $verification_status,
-                    'quantity_verified' => $update_item_details_data_second['quantity_verified'],
+                    'quantity_verified' => $quantity_verified_value,
                     'new_location_verified' => $new_loc,
                     'verified_by' => $verified_by,
                     'verified_by_username' => $verified_by_username,
@@ -1154,8 +1169,9 @@ class Tasks extends CI_Controller
                     'updatedat' => date('Y-m-d H:i:s')
                 );
 
-                $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts', $verifiedproducts_array);           //INSERT OPERATION
-
+                if($edit_opration_value == 'Update Qty & Details'){
+                    $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts', $verifiedproducts_array);           //INSERT OPERATION
+                }
                 header('Content-Type: application/json');
                 echo json_encode(array("success" => 200, "message" => "Item verified update successfully."));
                 exit;
@@ -2184,7 +2200,7 @@ class Tasks extends CI_Controller
             echo json_encode(array("success" => 200, "message" => "Data insert successfully.", "status" => '0'));
         } else {
             header('Content-Type: application/json');
-            echo json_encode(array("success" => 200, "message" => "something went wrong.", "status" => '0'));
+            echo json_encode(array("success" => 200, "message" => "something went wrong", "status" => '0'));
         }
         exit;
     }
@@ -2250,7 +2266,7 @@ class Tasks extends CI_Controller
             echo json_encode(array("success" => 200, "message" => "Data Updated successfully.", "status" => '0'));
         } else {
             header('Content-Type: application/json');
-            echo json_encode(array("success" => 200, "message" => "something went wrong.", "status" => '0'));
+            echo json_encode(array("success" => 200, "message" => "something went wrong", "status" => '0'));
         }
         exit;
     }

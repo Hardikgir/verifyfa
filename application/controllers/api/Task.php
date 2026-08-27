@@ -860,7 +860,7 @@ class Tasks extends CI_Controller {
 		} 
 		else {
 			header('Content-Type: application/json');
-			echo json_encode(array("success"=>401,"message"=>"Something went wrong"));
+			echo json_encode(array("success"=>401,"message"=>"Something went wrong 1"));
 			exit;
 		}
 
@@ -895,7 +895,7 @@ class Tasks extends CI_Controller {
 		} 
 		else {
 			header('Content-Type: application/json');
-			echo json_encode(array("success"=>401,"message"=>"Something went wrong"));
+			echo json_encode(array("success"=>401,"message"=>"Something went wrong 2"));
 			exit;
 		}
     }
@@ -1183,7 +1183,7 @@ public function save_project_contact_info(){
             } 
             else {
                 header('Content-Type: application/json');
-                echo json_encode(array("success"=>401,"message"=>"Something Went Wrong"));
+                echo json_encode(array("success"=>401,"message"=>"Something Went Wrong 3"));
                 exit;
             }
     }
@@ -1316,7 +1316,7 @@ public function project_completion_by_location(){
         echo json_encode(array("success"=>200,"message"=>"Data insert successfully.","status"=>'0'));
     }else{
         header('Content-Type: application/json');
-        echo json_encode(array("success"=>200,"message"=>"something went wrong.","status"=>'0'));
+        echo json_encode(array("success"=>200,"message"=>"something went wrong 4.","status"=>'0'));
     }
    exit;
    }
@@ -1382,7 +1382,7 @@ public function get_project_additionaldata(){
             echo json_encode(array("success"=>200,"message"=>"Data Updated successfully.","status"=>'0'));
         }else{
             header('Content-Type: application/json');
-            echo json_encode(array("success"=>200,"message"=>"something went wrong.","status"=>'0'));
+            echo json_encode(array("success"=>200,"message"=>"something went wrong 5.","status"=>'0'));
         }
        exit;
        }
@@ -1408,7 +1408,7 @@ public function get_project_additionaldata(){
                 } 
                 else {
                     header('Content-Type: application/json');
-                    echo json_encode(array("success"=>401,"message"=>"Something Went Wrong"));
+                    echo json_encode(array("success"=>401,"message"=>"Something Went Wrong 6"));
                     exit;
                 }
         }
