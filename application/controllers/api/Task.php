@@ -4092,7 +4092,7 @@ $this->email->attach($file_path);
 
         $this->db->select("*");   
         $this->db->from($table_name);   
-        $this->db->where("id",$project_id);
+        $this->db->where("id",$item_id);
         $query= $this->db->get();   
         $company_projects_product_details = $query->row();
 
@@ -4136,33 +4136,32 @@ $this->email->attach($file_path);
             'qty_shifted' => $verifiedproducts_data->qty_shifted,
             'mode_of_verification' => $verifiedproducts_data->mode_of_verification,
             'type_of_operation' => 'rollback',
-            'created_at' => date('Y-m-d H:s:i'),
+            'created_at' => date('Y-m-d H:i:s'),
         );
         $verifiedproducts_result = $this->tasks->insert_data('verifiedproducts',$verifiedproducts_array);
 
        
         
 
-        $data=array(
-            "quantity_verified"=>$company_projects_product_details->quantity_verified-$company_projects_product_details->quantity_verified,
-            "new_location_verified"=>$company_projects_product_details->quantity_verified-$company_projects_product_details->quantity_verified,
-            "instance_count"=>(int)$company_projects_product_details->instance_count+1,
-        );
+        $data = array();
 
-        if(!empty($verifiedproducts_data->qty_ok)){
-             $data['qty_ok'] = $company_projects_product_details->qty_ok-$verifiedproducts_data->qty_ok;
+        $condition_fields = array('qty_ok', 'qty_damaged', 'qty_scrapped', 'qty_not_in_use', 'qty_missing', 'qty_shifted');
+
+        foreach ($condition_fields as $field) {
+            if (!empty($verifiedproducts_data->$field) && (int) $verifiedproducts_data->$field > 0) {
+                $deduct_qty = (int) $verifiedproducts_data->$field;
+                $current_field_qty = isset($company_projects_product_details->$field) ? (int) $company_projects_product_details->$field : 0;
+                $data[$field] = max(0, $current_field_qty - $deduct_qty);
+            }
         }
-        if(!empty($verifiedproducts_data->qty_damaged)){
-             $data['qty_damaged'] = $company_projects_product_details->qty_damaged-$verifiedproducts_data->qty_damaged;
-        }
-        if(!empty($verifiedproducts_data->qty_scrapped)){
-             $data['qty_scrapped'] = $company_projects_product_details->qty_scrapped-$verifiedproducts_data->qty_scrapped;
-        }
-        if(!empty($verifiedproducts_data->qty_not_in_use)){
-             $data['qty_not_in_use'] = $company_projects_product_details->qty_not_in_use-$verifiedproducts_data->qty_not_in_use;
-        }
-        if(!empty($verifiedproducts_data->qty_shifted)){
-             $data['qty_shifted'] = $company_projects_product_details->qty_shifted-$verifiedproducts_data->qty_shifted;
+
+        $deduct_total = (int) (isset($verifiedproducts_data->qty_value) && $verifiedproducts_data->qty_value > 0 ? $verifiedproducts_data->qty_value : $verifiedproducts_data->quantity_verified);
+        $remaining_quantity = max(0, (int) $company_projects_product_details->quantity_verified - $deduct_total);
+        $data["quantity_verified"] = $remaining_quantity;
+        $data["instance_count"] = (int) $company_projects_product_details->instance_count + 1;
+        $data["verification_status"] = "";
+        if ($company_projects_product_details->quantity_as_per_invoice <= $remaining_quantity) {
+            $data["verification_status"] = "Verified";
         }
         $insert=$this->db->where('id',$item_id);
         $insert=$this->db->update($table_name,$data);

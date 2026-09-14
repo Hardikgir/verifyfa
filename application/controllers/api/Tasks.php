@@ -5558,41 +5558,19 @@ class Tasks extends CI_Controller
 
 
         $data = array();
-        $qty_value = 0;
 
-        // echo '<pre>company_projects_product_details ';
-        // print_r($company_projects_product_details);
-        // echo '</pre>';
-        // exit();
+        $condition_fields = array('qty_ok', 'qty_damaged', 'qty_scrapped', 'qty_not_in_use', 'qty_missing', 'qty_shifted');
 
-        // echo '<pre>verifiedproducts_data ';
-        // print_r($verifiedproducts_data);
-        // echo '</pre>';
-        // exit();
-
-        if (!empty($verifiedproducts_data->qty_ok)) {
-            $data['qty_ok'] = $company_projects_product_details->qty_ok - $verifiedproducts_data->qty_value;
-            $qty_value = $verifiedproducts_data->qty_ok;
-        }
-        if (!empty($verifiedproducts_data->qty_damaged)) {
-            $data['qty_damaged'] = $company_projects_product_details->qty_damaged - $verifiedproducts_data->qty_value;
-            $qty_value = $verifiedproducts_data->qty_damaged;
-        }
-        if (!empty($verifiedproducts_data->qty_scrapped)) {
-            $data['qty_scrapped'] = $company_projects_product_details->qty_scrapped - $verifiedproducts_data->qty_value;
-            $qty_value = $verifiedproducts_data->qty_scrapped;
-        }
-        if (!empty($verifiedproducts_data->qty_not_in_use)) {
-            $data['qty_not_in_use'] = $company_projects_product_details->qty_not_in_use - $verifiedproducts_data->qty_value;
-            $qty_value = $verifiedproducts_data->qty_not_in_use;
-        }
-        if (!empty($verifiedproducts_data->qty_shifted)) {
-            $data['qty_shifted'] = $company_projects_product_details->qty_shifted - $verifiedproducts_data->qty_value;
-            $qty_value = $verifiedproducts_data->qty_shifted;
+        foreach ($condition_fields as $field) {
+            if (!empty($verifiedproducts_data->$field) && (int) $verifiedproducts_data->$field > 0) {
+                $deduct_qty = (int) $verifiedproducts_data->$field;
+                $current_field_qty = isset($company_projects_product_details->$field) ? (int) $company_projects_product_details->$field : 0;
+                $data[$field] = max(0, $current_field_qty - $deduct_qty);
+            }
         }
 
-        $remaining_quantity = (int) $company_projects_product_details->quantity_verified - (int) $qty_value;
-        $remaining_quantity = (int) $company_projects_product_details->quantity_verified - (int) $verifiedproducts_data->qty_value;  //Added on 14 Augugest 2026 above are commented        
+        $deduct_total = (int) $verifiedproducts_data->qty_value;
+        $remaining_quantity = max(0, (int) $company_projects_product_details->quantity_verified - $deduct_total);
         $data["quantity_verified"] = $remaining_quantity;
         $data["instance_count"] = (int) $company_projects_product_details->instance_count + 1;
         $data["verification_status"] = "";
