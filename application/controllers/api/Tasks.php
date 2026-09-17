@@ -6032,10 +6032,14 @@ class Tasks extends CI_Controller
                 */
                 $condition = [
                     "id" => $projectSelect,
-                    "status" => $projectstatus,
-                    "company_id" => $company_id,
                 ];
+                if (!empty($company_id)) {
+                    $condition["company_id"] = $company_id;
+                }
                 $getProjects = $this->tasks->get_data('company_projects', $condition);
+                if (empty($getProjects)) {
+                    $getProjects = $this->tasks->get_data('company_projects', ["id" => $projectSelect]);
+                }
 
 
                     foreach ($getProjects as $project) {
@@ -6655,6 +6659,15 @@ class Tasks extends CI_Controller
                     $remainitemstotal = 0;
                     $shortTotalAmount = 0;
                     $shortTotalItems = 0;
+                    $verifiedTotalAmount = 0;
+                    $verifiedTotalItems = 0;
+                    $excessamounttotalnew = 0;
+                    $excessitemtotal = 0;
+
+                    if (!isset($report_data['all']) || !is_array($report_data['all'])) {
+                        echo json_encode(["success" => false, "status_code" => 404, "message" => "No project data found for project ID " . $projectSelect]);
+                        return;
+                    }
 
                     foreach ($report_data['all'] as $allcat) {
                         $row = [];
@@ -6766,7 +6779,7 @@ class Tasks extends CI_Controller
                         $remainingAmount = $allcat->total_amount - ($goodAmount + $damagedAmount + $scrappedAmount + $missingAmount + $shiftedAmount + $notinuseAmount);
                         $remainingItems = $allcat->total_qty - ($goodItems + $damagedItems + $scrappedItems + $missingItems + $shiftedItems + $notinuseItems);
 
-                        if ($projectstatus == 1) {
+                        if ($projectstatus != 0) {
                             if ($remainingItems > 0) {
                                 $shortItems = $remainingItems;
                                 $shortAmount = $remainingAmount;
@@ -6807,7 +6820,6 @@ class Tasks extends CI_Controller
                         $row[] = $missingItems;
 
                         $row[] = $shiftedAmount != 0 ? getmoney_format(round(($shiftedAmount / 100000), 2)) : $shiftedAmount;
-                        ;
                         $row[] = $shiftedItems;
 
                         $row[] = $notinuseAmount != 0 ? getmoney_format(round(($notinuseAmount / 100000), 2)) : $notinuseAmount;
@@ -6837,7 +6849,6 @@ class Tasks extends CI_Controller
                     $Grand_Total_row[] = $scrappedTotalAmount != 0 ? getmoney_format(round(($scrappedTotalAmount / 100000), 2)) : $scrappedTotalAmount;
                     $Grand_Total_row[] = $scrappedTotalItems;
                     $Grand_Total_row[] = $missingTotalAmount != 0 ? getmoney_format(round(($missingTotalAmount / 100000), 2)) : $missingTotalAmount;
-                    ;
                     $Grand_Total_row[] = $missingTotalItems;
                     $Grand_Total_row[] = $shiftedTotalAmount != 0 ? getmoney_format(round(($shiftedTotalAmount / 100000), 2)) : $shiftedTotalAmount;
                     $Grand_Total_row[] = $shiftedTotalItems;
@@ -6856,23 +6867,23 @@ class Tasks extends CI_Controller
                     fputcsv($fp, $Grand_Total_row);
 
                     $Grand_Total_percentage_row[] = "% to Grand Total";
-                    $Grand_Total_percentage_row[] = round(($damagedTotalAmount / $totalAmount) * 100, 2) . "%";
-                    $Grand_Total_percentage_row[] = round(($damagedTotalItems / $totalItems) * 100, 2) . "%";
-                    $Grand_Total_percentage_row[] = round(($scrappedTotalAmount / $totalAmount) * 100, 2) . "%";
-                    $Grand_Total_percentage_row[] = round(($scrappedTotalItems / $totalItems) * 100, 2) . "%";
-                    $Grand_Total_percentage_row[] = round(($missingTotalAmount / $totalAmount) * 100, 2) . "%";
-                    $Grand_Total_percentage_row[] = round(($missingTotalItems / $totalItems) * 100, 2) . "%";
-                    $Grand_Total_percentage_row[] = round(($shiftedTotalAmount / $totalAmount) * 100, 2) . "%";
-                    $Grand_Total_percentage_row[] = round(($shiftedTotalItems / $totalItems) * 100, 2) . "%";
-                    $Grand_Total_percentage_row[] = round(($notinuseTotalAmount / $totalAmount) * 100, 2) . "%";
-                    $Grand_Total_percentage_row[] = round(($notinuseTotalItems / $totalItems) * 100, 2) . "%";
-                    $Grand_Total_percentage_row[] = round(($shortTotalAmount / $totalAmount) * 100, 2) . "%";
-                    $Grand_Total_percentage_row[] = round(($shortTotalItems / $totalItems) * 100, 2) . "%";
-                    $Grand_Total_percentage_row[] = round(($excessamounttotalnew / $totalAmount) * 100, 2) . "%";
-                    $Grand_Total_percentage_row[] = round(($excessitemtotal / $totalItems) * 100, 2) . "%";
+                    $Grand_Total_percentage_row[] = ($totalAmount > 0) ? round(($damagedTotalAmount / $totalAmount) * 100, 2) . "%" : "0%";
+                    $Grand_Total_percentage_row[] = ($totalItems > 0) ? round(($damagedTotalItems / $totalItems) * 100, 2) . "%" : "0%";
+                    $Grand_Total_percentage_row[] = ($totalAmount > 0) ? round(($scrappedTotalAmount / $totalAmount) * 100, 2) . "%" : "0%";
+                    $Grand_Total_percentage_row[] = ($totalItems > 0) ? round(($scrappedTotalItems / $totalItems) * 100, 2) . "%" : "0%";
+                    $Grand_Total_percentage_row[] = ($totalAmount > 0) ? round(($missingTotalAmount / $totalAmount) * 100, 2) . "%" : "0%";
+                    $Grand_Total_percentage_row[] = ($totalItems > 0) ? round(($missingTotalItems / $totalItems) * 100, 2) . "%" : "0%";
+                    $Grand_Total_percentage_row[] = ($totalAmount > 0) ? round(($shiftedTotalAmount / $totalAmount) * 100, 2) . "%" : "0%";
+                    $Grand_Total_percentage_row[] = ($totalItems > 0) ? round(($shiftedTotalItems / $totalItems) * 100, 2) . "%" : "0%";
+                    $Grand_Total_percentage_row[] = ($totalAmount > 0) ? round(($notinuseTotalAmount / $totalAmount) * 100, 2) . "%" : "0%";
+                    $Grand_Total_percentage_row[] = ($totalItems > 0) ? round(($notinuseTotalItems / $totalItems) * 100, 2) . "%" : "0%";
+                    $Grand_Total_percentage_row[] = ($totalAmount > 0) ? round(($shortTotalAmount / $totalAmount) * 100, 2) . "%" : "0%";
+                    $Grand_Total_percentage_row[] = ($totalItems > 0) ? round(($shortTotalItems / $totalItems) * 100, 2) . "%" : "0%";
+                    $Grand_Total_percentage_row[] = ($totalAmount > 0) ? round(($excessamounttotalnew / $totalAmount) * 100, 2) . "%" : "0%";
+                    $Grand_Total_percentage_row[] = ($totalItems > 0) ? round(($excessitemtotal / $totalItems) * 100, 2) . "%" : "0%";
 
-                    $Grand_Total_percentage_row[] = round(($total_risk_exposure_amount_grand / $totalAmount) * 100, 2) . "%";
-                    $Grand_Total_percentage_row[] = round(($total_risk_exposure_qty_grand / $totalItems) * 100, 2) . "%";
+                    $Grand_Total_percentage_row[] = ($totalAmount > 0) ? round(($total_risk_exposure_amount_grand / $totalAmount) * 100, 2) . "%" : "0%";
+                    $Grand_Total_percentage_row[] = ($totalItems > 0) ? round(($total_risk_exposure_qty_grand / $totalItems) * 100, 2) . "%" : "0%";
                     fputcsv($fp, $Grand_Total_percentage_row);
                 }
 
@@ -7791,6 +7802,10 @@ class Tasks extends CI_Controller
                     $remainitemstotal = 0;
                     $shortTotalAmount = 0;
                     $shortTotalItems = 0;
+                    $verifiedTotalAmount = 0;
+                    $verifiedTotalItems = 0;
+                    $excessamounttotalnew = 0;
+                    $excessitemtotal = 0;
                     foreach ($report_data['all'] as $allcat) {
                         $row = [];
                         $goodAmount = 0;

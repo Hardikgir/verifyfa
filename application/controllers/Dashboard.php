@@ -1623,13 +1623,13 @@ class Dashboard extends CI_Controller {
 		}
 		if($type=='project')
 		{
-			$condition=array(
-				"id"=>$projectSelect,
-				"status"=>$projectstatus,
-				'company_id'=>$company_id,
-				'project_location'=>$location_id,
-				// 'entity_code'=>$this->admin_registered_entity_code
-			);
+			$condition = array("id" => $projectSelect);
+			if (!empty($company_id)) {
+				$condition['company_id'] = $company_id;
+			}
+			if (!empty($location_id)) {
+				$condition['project_location'] = $location_id;
+			}
 			$reportSearch=array(
 				"type"=>$type,
 				"id"=>$projectSelect,
@@ -1640,6 +1640,9 @@ class Dashboard extends CI_Controller {
 			);
 			
 			$getProject=$this->tasks->get_data('company_projects',$condition);
+			if (empty($getProject)) {
+				$getProject=$this->tasks->get_data('company_projects', array("id" => $projectSelect));
+			}
 			
 			if(count($getProject) > 0)
 			{
@@ -1865,14 +1868,13 @@ class Dashboard extends CI_Controller {
 		$reportView='';
 		if($type=='project')
 		{
-			$condition=array(
-				"id"=>$projectSelect,
-				"status"=>$projectstatus,
-				'company_id'=>$company_id,
-				'project_location'=>$location_id,
-				// 'entity_code'=>$this->admin_registered_entity_code
-
-			);
+			$condition = array("id" => $projectSelect);
+			if (!empty($company_id)) {
+				$condition['company_id'] = $company_id;
+			}
+			if (!empty($location_id)) {
+				$condition['project_location'] = $location_id;
+			}
 			$reportSearch=array(
 				"type"=>$type,
 				"id"=>$projectSelect,
@@ -1883,6 +1885,9 @@ class Dashboard extends CI_Controller {
 			);
 			
 			$getProject=$this->tasks->get_data('company_projects',$condition);
+			if (empty($getProject)) {
+				$getProject=$this->tasks->get_data('company_projects', array("id" => $projectSelect));
+			}
 			// echo $this->db->last_query();
 			// echo "gaurav";die;
 
