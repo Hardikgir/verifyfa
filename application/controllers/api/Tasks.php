@@ -6971,17 +6971,19 @@ class Tasks extends CI_Controller
                     ];
                     fputcsv($fp, $headers);
 
-                    $row1 = array();
                     if (!empty($report_data['Duplicate_Array'])) {
                         foreach ($report_data['Duplicate_Array'] as $key => $allcat) {
+                            $row1 = array();
                             $row1[] = $allcat['item_category'];
                             $row1[] = $allcat['total_uniqu_record_cout'];
                             $row1[] = $allcat['total_not_verified_uniqu_record_cout'];
                             $row1[] = $allcat['total_scan_uniqu_record_cout'];
                             $row1[] = $allcat['total_search_uniqu_record_cout'];
+                            fputcsv($fp, $row1);
                         }
+                    } else {
+                        fputcsv($fp, array("No Record Found"));
                     }
-                    fputcsv($fp, $row1);
 
 
                 }
@@ -8110,17 +8112,19 @@ class Tasks extends CI_Controller
                     ];
                     fputcsv($fp, $headers);
 
-                    $row1 = array();
                     if (!empty($report_data['Duplicate_Array'])) {
                         foreach ($report_data['Duplicate_Array'] as $key => $allcat) {
+                            $row1 = array();
                             $row1[] = $allcat['item_category'];
                             $row1[] = $allcat['total_uniqu_record_cout'];
                             $row1[] = $allcat['total_not_verified_uniqu_record_cout'];
                             $row1[] = $allcat['total_scan_uniqu_record_cout'];
                             $row1[] = $allcat['total_search_uniqu_record_cout'];
+                            fputcsv($fp, $row1);
                         }
+                    } else {
+                        fputcsv($fp, array("No Record Found"));
                     }
-                    fputcsv($fp, $row1);
 
 
                 }
