@@ -32,11 +32,7 @@ class Tasks extends CI_Controller
         // $projects = $this->tasks->getProjects('users', $userid, $company_id, $location_id);
         $projects = $this->tasks->active_getProjects('users', $userid, $company_id, $location_id);
 
-        // echo '<pre>last_query ';
-        // print_r($this->db->last_query());
-        // echo '</pre>';
-        // exit();
-
+       
         // echo $this->db->last_query();
         $old_pattern = array("/[^a-zA-Z0-9]/", "/_+/", "/_$/");
         $new_pattern = array("_", "_", "");
@@ -147,36 +143,42 @@ class Tasks extends CI_Controller
     {
         $userid = $this->input->post('user_id');
         $entity_code = $this->input->post('entity_code');
-        $location_id = $this->input->post('location_id');
-
-        // $company_id_imp='';
-
-
 
         $role_result_com = $this->get_all_company_user_role($entity_code, $userid);
-        // $role_result_com = $this->get_all_company_user_role_by_location_id($entity_code,$userid,$location_id);
+        $company_id_imp = '';
         $location_id = '';
         if (!empty($role_result_com)) {
-
-
+            $roledata = array();
+            $roledata1 = array();
             foreach ($role_result_com as $row_role) {
-                $roledata[] = $row_role->company_id;
-                $roledata1[] = $row_role->location_id;
+                if (!empty($row_role->company_id)) {
+                    $roledata[] = $row_role->company_id;
+                }
+                if (!empty($row_role->location_id)) {
+                    $roledata1[] = $row_role->location_id;
+                }
             }
-
-            $company_id_imp = implode(',', $roledata);
-            $location_id = implode(',', $roledata1);
+            if (!empty($roledata)) {
+                $company_id_imp = implode(',', array_unique($roledata));
+            }
+            if (!empty($roledata1)) {
+                $location_id = implode(',', array_unique($roledata1));
+            }
         }
 
-        $condition = array(
-            "id" => $userid
-        );
+        $post_company_id = $this->input->post('company_id');
+        if (!empty($post_company_id)) {
+            $company_id_imp = $post_company_id;
+        }
 
-        $company_id = $this->input->post('company_id');
+        $post_location_id = $this->input->post('location_id');
+        if (!empty($post_location_id)) {
+            $location_id = $post_location_id;
+        }
+
         $role_id = $this->input->post('role_id');
-        $location_id = $this->input->post('location_id');
 
-        $projects = $this->tasks->getProjectsdashboard('users', $userid, $entity_code, $company_id, $location_id, $role_id);
+        $projects = $this->tasks->getProjectsdashboard('users', $userid, $entity_code, $company_id_imp, $location_id, $role_id);
 
 
 
@@ -267,6 +269,8 @@ class Tasks extends CI_Controller
                 $project->TotalQuantity = 0;
                 $project->VerifiedQuantity = 0;
             }
+            $verifiername = $this->tasks->get_verifire_name($project->project_verifier);
+            $project->verifier_name = $verifiername;
             $project->assigned_by = get_UserName($project->assigned_by);
         }
         if (!empty($projects) && count($projects) > 0) {
@@ -395,7 +399,11 @@ class Tasks extends CI_Controller
 
 
         if ($verification_status != 'All') {
-            $where .= ' AND verification_status="' . $verification_status . '"';
+            if ($verification_status == "Not-Verified") {
+                $where .= ' AND verification_status!="Verified"';
+            }else{
+                $where .= ' AND verification_status="' . $verification_status . '"';
+            }
         }
         if ($tag_status_y_n_na != 'All') {
             $where .= ' AND tag_status_y_n_na="' . $tag_status_y_n_na . '"';
@@ -2326,7 +2334,11 @@ class Tasks extends CI_Controller
         //     $i++;
         // }
         if ($verification_status != 'All') {
-            $where .= ' AND verification_status="' . $verification_status . '"';
+            if ($verification_status == "Not-Verified") {
+                $where .= ' AND verification_status!="Verified"';
+            }else{
+                $where .= ' AND verification_status="' . $verification_status . '"';
+            }
         }
         if ($tag_status_y_n_na != 'All') {
             $where .= ' AND tag_status_y_n_na="' . $tag_status_y_n_na . '"';
@@ -3418,6 +3430,7 @@ class Tasks extends CI_Controller
                 $this->db->where('verification_status', 'Verified');
             } elseif ($verificationstatus == 'Not-Verified') {
                 $this->db->where('verification_status', 'Not-Verified');
+                $this->db->or_where('verification_status', '');
             } else {
                 $this->db->where('verification_status', '');
             }
@@ -4536,7 +4549,12 @@ class Tasks extends CI_Controller
         $where = '';
         $is_where = 0;
         if ($verification_status != 'All') {
-            $where .= ' WHERE verification_status="' . $verification_status . '"';
+            if ($verification_status == "Not-Verified") {
+                $where .= ' WHERE verification_status!="Verified"';
+                
+            } else {
+                $where .= ' WHERE verification_status="' . $verification_status . '"';
+            }
             $is_where = 1;
         }
         if ($tag_status_y_n_na != 'All') {
@@ -4612,7 +4630,12 @@ class Tasks extends CI_Controller
         $where = '';
         $is_where = 0;
         if ($verification_status != 'All') {
-            $where .= ' WHERE verification_status="' . $verification_status . '"';
+            if ($verification_status == "Not-Verified") {
+                $where .= ' WHERE verification_status!="Verified"';
+                
+            } else {
+                $where .= ' WHERE verification_status="' . $verification_status . '"';
+            }
             $is_where = 1;
         }
         if ($tag_status_y_n_na != 'All') {
@@ -4756,10 +4779,18 @@ class Tasks extends CI_Controller
 
 
         if ($verification_status != 'All') {
-            if ($is_where == 1) {
-                $where .= ' AND verification_status="' . $verification_status . '"';
-            } else {
-                $where .= ' WHERE verification_status="' . $verification_status . '"';
+            if ($verification_status == "Not-Verified") {
+                if ($is_where == 1) {
+                    $where .= ' AND verification_status!="Verified"';
+                } else {
+                    $where .= ' WHERE verification_status!="Verified"';
+                }
+            }else{
+                if ($is_where == 1) {
+                    $where .= ' AND verification_status="' . $verification_status . '"';
+                } else {
+                    $where .= ' WHERE verification_status="' . $verification_status . '"';
+                }
             }
 
             $is_where = 1;

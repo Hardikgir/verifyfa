@@ -72,39 +72,50 @@ class Tasks_model extends CI_Model {
     function getProjectsdashboard($table,$userid,$entity_code,$company_id_imp,$location_id,$role_id) { 
 
         $role_where = '';
-        if($role_id == '0'){
-            $role_where .= " AND FIND_IN_SET($userid, manager)";
+        if($role_id === '0'){
+            $role_where = " AND FIND_IN_SET($userid, company_projects.manager)";
         }
-        if($role_id == '1'){
-            $role_where .= " AND FIND_IN_SET($userid, project_verifier)";
+        if($role_id === '1'){
+            $role_where = " AND FIND_IN_SET($userid, company_projects.project_verifier)";
         }
-        if($role_id == '2'){
-            $role_where .= " AND FIND_IN_SET($userid, process_owner)";
+        if($role_id === '2'){
+            $role_where = " AND FIND_IN_SET($userid, company_projects.process_owner)";
         }
-        if($role_id == '3'){
-            $role_where .= " AND FIND_IN_SET($userid, item_owner)";
+        if($role_id === '3'){
+            $role_where = " AND FIND_IN_SET($userid, company_projects.item_owner)";
         }
 
-        $condition=array('company_projects.company_id IN ('.$company_id_imp.') AND company_projects.project_location IN ('.$location_id.') '.$role_where,"company_projects.entity_code"=>$entity_code);
+        $where_conds = array();
+        if(!empty($company_id_imp)) {
+            $where_conds[] = 'company_projects.company_id IN ('.$company_id_imp.')';
+        }
+        if(!empty($location_id)) {
+            $where_conds[] = 'company_projects.project_location IN ('.$location_id.')';
+        }
+        if(!empty($entity_code)) {
+            $where_conds[] = 'company_projects.entity_code = "'.$this->db->escape_str($entity_code).'"';
+        }
 
-        $condition1=array('company_projects.project_verifier IN ('.$userid.') || company_projects.manager IN ('.$userid.') || company_projects.process_owner IN ('.$userid.') || company_projects.item_owner IN ('.$userid.')');
-
+        $where_sql = implode(' AND ', $where_conds);
+        if(!empty($role_where)) {
+            if(!empty($where_sql)) {
+                $where_sql .= $role_where;
+            } else {
+                $where_sql = ltrim($role_where, ' AND ');
+            }
+        }
 
         $this->db->select('company_projects.*,company_locations.location_name,user_role.id as role_id,company.company_name');
         $this->db->from('company_projects');
         $this->db->join('user_role','find_in_set(user_role.user_id,company_projects.project_verifier) AND company_projects.company_id=user_role.company_id');
         $this->db->join('company','company.id=user_role.company_id');
         $this->db->join('company_locations','company_locations.id=company_projects.project_location');
-        // $this->db->where(array('user_role.user_id'=>$userid,'company_projects.status'=>0));
-        // $this->db->where(array('user_role.user_id'=>$userid,'company_projects.status'=>0));
-        // $this->db->where($condition);
-        $this->db->where($condition[0]);
-        // $this->db->where('company_projects.status !=','2');
+        if(!empty($where_sql)) {
+            $this->db->where($where_sql, NULL, FALSE);
+        }
         $this->db->where("company_projects.status NOT IN (2,5)", NULL, FALSE);
-        // $this->db->where(array('company_projects.company_id'=>$company_id,'company_projects.project_location'=>$location_id));
         $this->db->group_by('company_projects.project_id');
         $gettasks=$this->db->get();
-        // echo $this->db->last_query();
         return $gettasks->result();
 
     }
@@ -112,21 +123,19 @@ class Tasks_model extends CI_Model {
 
     function getSearchProjects($table,$userid,$location_id=0) { 
 
-        $condition1='FIND_IN_SET('.$userid.',company_projects.project_verifier) || FIND_IN_SET('.$userid.',company_projects.manager) || FIND_IN_SET('.$userid.',company_projects.process_owner) || FIND_IN_SET('.$userid.',company_projects.item_owner)';
+        $condition1 = '(FIND_IN_SET('.$userid.',company_projects.project_verifier) || FIND_IN_SET('.$userid.',company_projects.manager) || FIND_IN_SET('.$userid.',company_projects.process_owner) || FIND_IN_SET('.$userid.',company_projects.item_owner))';
 
-        $this->db->select('company_projects.*,company_locations.location_name,CONCAT(users.firstName,users.lastName) as verifier_name,company.company_name');
+        $this->db->select('company_projects.*,company_locations.location_name,company.company_name');
         $this->db->from('company_projects');
-        $this->db->join('users','find_in_set(users.id,company_projects.project_verifier) AND company_projects.company_id=users.company_id');
-        $this->db->join('company','company.id=users.company_id');
-        $this->db->join('company_locations','company_locations.id=company_projects.project_location');
-        $this->db->where(array('users.id'=>$userid));
-        // $this->db->where('company_projects.status !=','2');
+        $this->db->join('company','company.id=company_projects.company_id','left');
+        $this->db->join('company_locations','company_locations.id=company_projects.project_location','left');
         $this->db->where("company_projects.status NOT IN (2,5)", NULL, FALSE);
+        $this->db->where($condition1, NULL, FALSE);
         if(!empty($location_id)){
-            $this->db->where('company_locations.id',$location_id);
+            $this->db->where('company_projects.project_location',$location_id);
         }
 
-        // $this->db->where($condition1);
+        $this->db->group_by('company_projects.id');
         $gettasks=$this->db->get();
         return $gettasks->result();
 
