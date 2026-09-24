@@ -390,14 +390,13 @@ class Tasks_model extends CI_Model {
         }
         else
         {
-            $data['good']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Not-Verified' and qty_ok > 0 group by item_category")->result();
-            $data['damaged']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Not-Verified' and qty_damaged > 0 group by item_category")->result();
-            $data['scrapped']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Not-Verified' and qty_scrapped > 0 group by item_category")->result();
-            $data['missing']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Not-Verified' and qty_missing > 0 group by item_category")->result();
-            $data['shifted']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Not-Verified' and qty_shifted > 0 group by item_category")->result();
-            $data['notinuse']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty FROM ".$tablename." WHERE verification_status='Not-Verified' and qty_not_in_use > 0 group by item_category")->result();
-            // $data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE verification_status='Not-Verified' and quantity_as_per_invoice > quantity_verified group by item_category")->result();
-            $data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE verification_status='Not-Verified' and quantity_verified = 0 group by item_category")->result();
+            $data['good']=array();
+            $data['damaged']=array();
+            $data['scrapped']=array();
+            $data['missing']=array();
+            $data['shifted']=array();
+            $data['notinuse']=array();
+            $data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items FROM ".$tablename." WHERE (verification_status='Not-Verified' OR verification_status='Not Verified') group by item_category")->result();
         }
         
         $data['all']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(quantity_as_per_invoice) as total_qty FROM ".$tablename." group by item_category")->result();

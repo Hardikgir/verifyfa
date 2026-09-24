@@ -1,3 +1,24 @@
+You have to Work Today (24 Sep 2026) :- 
+
+1) Chanegs Report Their are Some issue
+	-> First Screenshot Value Change kiya h vo column per but old value showing blank and new value showing 
+	-> Second Screenshot  thier is not any chanegs but still showing old  new value with same value (if their are not chanegs then - should be showing)
+	-> if their are any not chanegs in MAKE column thier is showing - (Hyphon) that should be showing similar as other column
+	-> baki column sab sachi chal raha h 
+2) Thier are another issue happen in Report (Given in Email)
+	- Condition of Item
+	- Qty Validation Status
+
+	Discussion on Call :
+	Call 1 : 2 Email me not verified select karke trigger kiya mobile me usme data galat aa raha h (Galat aa raha h)
+	Call 2 : Application ka email se issue h Verification status not verified selected pr issue aaya h report generate per (Abhi to 2 email dekha baki to dekha nai h) baki ka muje dekhna h 
+	Call 3 : Web report me bhi same output aa raha h (Jo mobile app me aa raha h wahi same report web me bhi dikha rahe h) [Pata nai data kyu aisa aa raha h]
+
+	Project id :- 54 [LIVASA KARNAL - ALL ASSETS (LIV/26/54/CD)]
+
+
+
+
 Pending Work :- 08/06/2025
 
 1. Mobile api Report Section (Attachment by Email)

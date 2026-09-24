@@ -293,15 +293,13 @@ table th,table td{
 												{
 													$remainitem= $remainingdata->items;
 												}
-												$remainitem = $allcat->total_qty-($goodItems+$damagedItems+$scrappedItems+$missingItems+$shiftedItems+$notinuseItems);
-
-												
+												$remainitem = max(0, $allcat->total_qty-($goodItems+$damagedItems+$scrappedItems+$missingItems+$shiftedItems+$notinuseItems));
 											}
 											$remainitemstotal +=$remainitem;
 
 
-											$remainingAmount=$allcat->total_amount-($goodAmount+$damagedAmount+$scrappedAmount+$missingAmount+$shiftedAmount+$notinuseAmount);
-											$remainingItems=$allcat->total_qty-($goodItems+$damagedItems+$scrappedItems+$missingItems+$shiftedItems+$notinuseItems);
+											$remainingAmount=max(0, $allcat->total_amount-($goodAmount+$damagedAmount+$scrappedAmount+$missingAmount+$shiftedAmount+$notinuseAmount));
+											$remainingItems=max(0, $allcat->total_qty-($goodItems+$damagedItems+$scrappedItems+$missingItems+$shiftedItems+$notinuseItems));
 											$remainingTotalAmount=$remainingTotalAmount+$remainingAmount;
 											$remainingTotalItems=$remainingTotalItems+$remainingItems;
 										?>
