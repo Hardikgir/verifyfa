@@ -98,8 +98,39 @@ select, select.form-control {
     background-image: linear-gradient(to top, #5CA1E2 2px, rgba(156, 39, 176, 0) 2px), linear-gradient(to top, #d2d2d2 1px, rgba(210, 210, 210, 0) 1px);
 }
 .form-control {
-  
     padding: 5px !important;
+}
+@media (max-width: 991px) {
+	.navbar .container-fluid {
+		display: flex !important;
+		flex-wrap: wrap !important;
+		align-items: center !important;
+		justify-content: space-between !important;
+	}
+	.navbar-header-icons {
+		display: flex !important;
+		align-items: center !important;
+		margin-left: auto !important;
+	}
+	.navbar-header-icons .navbar-nav {
+		display: flex !important;
+		flex-direction: row !important;
+		align-items: center !important;
+		margin: 0 !important;
+	}
+	.navbar-header-icons .nav-item {
+		position: relative !important;
+		margin-left: 5px !important;
+	}
+	.navbar-header-icons .dropdown-menu {
+		position: absolute !important;
+		right: 0 !important;
+		left: auto !important;
+		top: 100% !important;
+		float: none !important;
+		background: #fff !important;
+		box-shadow: 0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(0, 0, 0, 0.4) !important;
+	}
 }
 </style>
 
@@ -312,115 +343,93 @@ $usercntrole=Count_user_role();
 	 	<div class="main-panel">
 			<!-- Navbar -->
 			<nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
-				<div class="container-fluid">
-					<div class="navbar-wrapper"> 
+				<div class="container-fluid d-flex align-items-center justify-content-between flex-wrap">
+					<div class="navbar-wrapper flex-grow-1" style="max-width: calc(100% - 150px);"> 
 						<a class="navbar-brand text-white p-0" href="#pablo">
 							Hello <?php echo get_textday();?> <span style="font-size: 1.125rem;font-weight: bold;"><?php echo $this->name; ?> </span>
 							<?php
-					// if(isset($session111['is_register_as_login']) && $session111['is_register_as_login'] == '1'){ 
-						$admin_registered_user_id = $session111['admin_registered_user_id'];
-						$rguserrow=registered_user_row($admin_registered_user_id);
-						?>
-					
-					<br>
-					<span style="font-size: 1rem;"> This subscription is registered in the name of <?php echo $rguserrow->organisation_name;?> (<?php echo $rguserrow->entity_code;?>).</sapn>
-				<?php 
-				// }
-				 ?>
-				</a>
+							$admin_registered_user_id = $session111['admin_registered_user_id'];
+							$rguserrow=registered_user_row($admin_registered_user_id);
+							?>
+						<br>
+						<span style="font-size: 0.875rem;"> This subscription is registered in the name of <?php echo $rguserrow->organisation_name;?> (<?php echo $rguserrow->entity_code;?>).</span>
+						</a>
 					</div>
-					<button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span>
-						<span class="navbar-toggler-icon icon-bar"></span>
-						<span class="navbar-toggler-icon icon-bar"></span>
-						<span class="navbar-toggler-icon icon-bar"></span>
-					</button>
-					<div class="collapse navbar-collapse justify-content-end">
-						<form class="navbar-form">							
-						</form>
-						<ul class="navbar-nav">
 
+					<div class="navbar-header-icons d-flex align-items-center ml-auto">
+						<ul class="navbar-nav flex-row align-items-center m-0">
 
-						<!-- for notification -->
-					<?php 
-					
-					$main_notification= get_all_notification_by_userspecific($entity_code);
-					// echo '<pre>last_query ';
-					// print_r($this->db->last_query());
-					// echo '</pre>';
-					// exit();
-					?>
-						<li class="nav-item">								
-								<li class="nav-item dropdown">
-									<a class="nav-link" href="#pablo" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: #fff;"> <i class="fa fa-bell"></i><span id="notificationcnt" class="123213">(<?php echo count($main_notification); ?>)</span>
-									</a>
-<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile" style="overflow-y: scroll;height: 350px;"> 
+							<!-- for notification -->
+							<?php 
+							$main_notification= get_all_notification_by_userspecific($entity_code);
+							?>
+							<li class="nav-item dropdown">
+								<a class="nav-link p-2 text-white" href="#pablo" id="navbarDropdownNotification" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
+									<i class="fa fa-bell"></i><span id="notificationcnt">(<?php echo count($main_notification); ?>)</span>
+								</a>
+								<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownNotification" style="overflow-y: scroll;height: 350px;">
+									<?php 
+									$i=0;
+									$j=0;
+									$unread_count = 0;
+									foreach($main_notification as $main_notification_row){
+										$i++;
+										$userrownt= get_user_row($main_notification_row->created_by);
+										$cntmain_notify= check_main_notificationread($this->user_id,$main_notification_row->id);
+										$i++;
+										?>
+										<a class="dropdown-item d-block" href="<?php echo base_url();?>index.php/view-reply-notofication/<?php echo $main_notification_row->id;?>?main_not=1" 
+											<?php 
+											if($cntmain_notify != '0'){ 
+												echo 'style="background: #abb5bd;color:#fff;font-size: 18px;font-weight: bold;border-bottom: 2px solid #11589b;margin: 0;"';
+											}else{
+												$unread_count++;
+												echo 'style="background: #5ca1e2;color:#fff;font-size: 18px;font-weight: bold;border-bottom: 2px solid #11589b;margin: 0;"';
+											} ?>
+											><?php echo ucfirst($userrownt->firstName).' '.ucfirst($userrownt->lastName);?> Broadcast a New <?php echo $main_notification_row->type;?><br>
+											<p style="font-size: 15px;font-weight: normal;" class="pb-0 mb-0"> <?php echo $main_notification_row->title;?> <span style="color:blue;">Check now</span></p>
+											<p style="margin: 0;padding: 0;font-size: 12px;"><b>At:</b> <?php echo date("d-M-Y g:i:a", strtotime($main_notification_row->created_at));?></p>  
+										</a>
 
+										<?php 
+										if($usercntrole == 0){ 
+											echo 'No Role Assigned.';
+											die;
+										}
+									} 
+									?>
+									<p class="notall"><a href="<?php echo base_url();?>index.php/view-all-notification">See All Notification</a></p>
+									<script>
+									document.getElementById("notificationcnt").innerHTML='(<?php echo $unread_count;?>)'; 
+									</script>
+								</div>					
+							</li>
+							<!-- for notification -->
 
-<?php 
-$i=0;
-$j=0;
-$unread_count = 0;
-foreach($main_notification as $main_notification_row){
-	$i++;
-	$userrownt= get_user_row($main_notification_row->created_by);
-	$cntmain_notify= check_main_notificationread($this->user_id,$main_notification_row->id);
-	// if($cntmain_notify == '0'){
-		$i++;
-	?>
-	<a class="dropdown-item d-block" href="<?php echo base_url();?>index.php/view-reply-notofication/<?php echo $main_notification_row->id;?>?main_not=1" 
-		<?php 
-		if($cntmain_notify != '0'){ 
-			
-			echo 'style="background: #abb5bd;color:#fff;font-size: 18px;font-weight: bold;border-bottom: 2px solid #11589b;margin: 0;"';
-		}else{
-			$unread_count++;
-			echo 'style="background: #5ca1e2;color:#fff;font-size: 18px;font-weight: bold;border-bottom: 2px solid #11589b;margin: 0;"';
-		} ?>
-		><?php echo ucfirst($userrownt->firstName).' '.ucfirst($userrownt->lastName);?> Broadcast a New <?php echo $main_notification_row->type;?><br>
-		<p style="font-size: 15px;font-weight: normal;" class="pb-0 mb-0"> <?php echo $main_notification_row->title;?> <span style="color:blue;">Check now<span></p>
-		<p style="margin: 0;padding: 0;font-size: 12px;"><b>At:</b> <?php echo date("d-M-Y g:i:a", strtotime($main_notification_row->created_at));?></p>  
-	</a>
-<?php 
-// }
- ?>
+							<!-- User Profile Dropdown -->
+							<li class="nav-item dropdown ml-2">
+								<a class="nav-link p-2 text-white" href="#pablo" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
+									<i class="material-icons text-white">person</i>
+								</a>
+								<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile"> 
+									<a class="dropdown-item" href="<?php echo base_url();?>"><?php echo $_SESSION['logged_in']['name'];?><br/></a>
+									<div class="dropdown-divider"></div> 
+									<a class="dropdown-item" href="<?php echo base_url();?>index.php/my-profile/">My Profile</a>
+									<div class="dropdown-divider"></div> 
+									<a class="dropdown-item" href="<?php echo base_url();?>index.php/change-my-password">Change Password</a>
+									<div class="dropdown-divider"></div> 
+									<a class="dropdown-item" href="<?php echo base_url();?>index.php/login/logout">Log out</a>
+								</div>
+							</li>
 
-<?php 
-// $usercntrole=Count_user_role();
-if($usercntrole == 0){ 
-	?>	
-	No Role Assigned.
-	<?php die; } ?>
-
-
-
-
-
-<?php } ?>
-<p class="notall"><a href="<?php echo base_url();?>index.php/view-all-notification">See All Notification</a></p>
-<script>
-document.getElementById("notificationcnt").innerHTML='(<?php echo $unread_count;?>)'; 
-</script>
-</div>					</li>
-							</li>	
-                    <!-- for notification -->
-
-							<li class="nav-item">								
-								<li class="nav-item dropdown">
-									<a class="nav-link" href="#pablo" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="material-icons text-white">person</i>
-										<p class="d-lg-none d-md-block">Account</p>
-									</a>
-									<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile"> <a class="dropdown-item" href="<?php echo base_url();?>"><?php echo $_SESSION['logged_in']['name'];?><br/></a>
-									<!-- (<?php if(isset($this->user_type) && $this->user_type!=''){echo $this->user_type==1?'Verifier':($this->user_type==0?'Manager':($this->user_type==2?'Process Owner':($this->user_type==3?'Item Owner':'Admin')));}else{} ?> -->
-										<!-- <a class="dropdown-item" href="#">Change Role</a> -->
-										<div class="dropdown-divider"></div> <a class="dropdown-item" href="<?php echo base_url();?>index.php/my-profile/">My Profile</a>
-										<div class="dropdown-divider"></div> <a class="dropdown-item" href="<?php echo base_url();?>index.php/change-my-password">Change Password</a>
-
-
-										<div class="dropdown-divider"></div> <a class="dropdown-item" href="<?php echo base_url();?>index.php/login/logout">Log out</a>
-									</div>
-								</li>
-							</li>	
 						</ul>
+
+						<button class="navbar-toggler ml-2" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation"> 
+							<span class="sr-only">Toggle navigation</span>
+							<span class="navbar-toggler-icon icon-bar"></span>
+							<span class="navbar-toggler-icon icon-bar"></span>
+							<span class="navbar-toggler-icon icon-bar"></span>
+						</button>
 					</div>
 				</div>
 			</nav>

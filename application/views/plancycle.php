@@ -166,18 +166,20 @@ $this->load->view('layouts/sidebar');
 												</div>
 											</div>
 										</div>
-										<div class="row">
-											<div class="col-md-4"></div>
-											<div class="col-md-4 my-4">
-												<input type="file" class="fileinput" id="project_file" name="project_file">
+										<div id="documentupload" style="display:none;">
+											<div class="row">
+												<div class="col-md-4"></div>
+												<div class="col-md-4 my-4">
+													<input type="file" class="fileinput" id="project_file" name="project_file">
+												</div>
+												<div class="col-md-4"></div>
 											</div>
-											<div class="col-md-4"></div>
-										</div>
-										<div class="row">
-											<div class="col-md-12">
-												<div class="form-group">
-													<div class="text-center">
-														<button type="button"  id="continuePlan" class="btn pull-right-sec my-4">NEXT</button>
+											<div class="row">
+												<div class="col-md-12">
+													<div class="form-group">
+														<div class="text-center">
+															<button type="button"  id="continuePlan" class="btn pull-right-sec my-4">NEXT</button>
+														</div>
 													</div>
 												</div>
 											</div>
@@ -185,7 +187,9 @@ $this->load->view('layouts/sidebar');
 										<div class="clearfix"></div>
 									</form>
 									
-									
+									<div id="show_all_result_by_id" style="display:none;">
+
+									</div>
 
 									<?php 
 									}
@@ -376,27 +380,6 @@ document.getElementById('company_name_new').onchange = function() {
 	  processData: false,
 	  data: fd,
 	  success: function(data) {
-		// console.log(data);
-		$('#company_location_new').find('option').remove().end().append(data);
-	  }
-	});
-}
-
-</script>
-<script>
-document.getElementById('company_name_new').onchange = function() {
-	var company_id = this.value;
-	var fd = new FormData();
-	fd.append('company_id',[company_id]);
-	jQuery.ajax({
-	  url: "<?php echo base_url();?>index.php/plancycle/getlocationdatanew",
-	  type: 'POST',
-	  cache: false,
-	  contentType: false,
-	  processData: false,
-	  data: fd,
-	  success: function(data) {
-		// console.log(data);
 		$('#company_location_new').find('option').remove().end().append(data);
 	  }
 	});
@@ -417,37 +400,31 @@ document.getElementById('company_location_new').onchange = function() {
 	  processData: false,
 	  data: fd,
 	  success: function(data) {
-		console.log(data);
-		if(data == "uploaddoc"){
+		var responseStr = typeof data === 'string' ? data.trim() : '';
+		if(responseStr == "uploaddoc"){
 			var documentupload = document.getElementById("documentupload");
-			documentupload.style.display = "block";
+			if(documentupload) documentupload.style.display = "block";
 			var show_all_result_by_id = document.getElementById("show_all_result_by_id");
-			show_all_result_by_id.style.display = "none";
+			if(show_all_result_by_id) show_all_result_by_id.style.display = "none";
 			var Downloadsample = document.getElementById("Downloadsample");
-			Downloadsample.style.display = "block";
+			if(Downloadsample) Downloadsample.style.display = "block";
 			
 			var totalLineContent = document.getElementById("totalLineContent");
-			totalLineContent.style.display = "block";
-
-			
-			
+			if(totalLineContent) totalLineContent.style.display = "block";
 		}else{
 			var documentupload = document.getElementById("documentupload");
-			documentupload.style.display = "none";
+			if(documentupload) documentupload.style.display = "none";
 			var show_all_result_by_id = document.getElementById("show_all_result_by_id");
-			show_all_result_by_id.style.display = "block";
-			$("#show_all_result_by_id").html(data);
+			if(show_all_result_by_id) {
+				show_all_result_by_id.style.display = "block";
+				$("#show_all_result_by_id").html(data);
+			}
 
 			var Downloadsample = document.getElementById("Downloadsample");
-			Downloadsample.style.display = "block";
-
+			if(Downloadsample) Downloadsample.style.display = "block";
 		}
-
-		// $('#company_location_new').find('option').remove().end().append(data);
 	  }
 	});
-
-
 }
 </script>
 

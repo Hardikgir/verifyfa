@@ -6373,18 +6373,20 @@ class Tasks extends CI_Controller
                     fputcsv($fp, $headers);
 
                     $rows = array();
-                    foreach ($report_data['different'] as $key => $value) {
-                        $row = array(); // Create new row for each record            
-                        $row[] = $key;
-                        foreach ($project_header_column_value as $project_header_column_value_value) {
-                            if (isset($report_data['different'][$key][$project_header_column_value_value])) {
-                                $row[] = count($report_data['different'][$key][$project_header_column_value_value]);
-                            } else {
-                                $row[] = "0";
+                    if (!empty($report_data['different']) && is_array($report_data['different'])) {
+                        foreach ($report_data['different'] as $key => $value) {
+                            $row = array(); // Create new row for each record            
+                            $row[] = $key;
+                            foreach ($project_header_column_value as $project_header_column_value_value) {
+                                if (isset($report_data['different'][$key][$project_header_column_value_value])) {
+                                    $row[] = count($report_data['different'][$key][$project_header_column_value_value]);
+                                } else {
+                                    $row[] = "0";
+                                }
                             }
+                            // $rows[] = $row; // Add row to master array
+                            fputcsv($fp, $row);
                         }
-                        // $rows[] = $row; // Add row to master array
-                        fputcsv($fp, $row);
                     }
 
                 }

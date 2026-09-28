@@ -491,54 +491,62 @@ class Tasks_model extends CI_Model {
         $project_header_column_value = implode(',', $project_header_column);
      
 
-
         $project_table_result = $this->db->query("SELECT ".$project_header_column_value." FROM ".$project_table_name)->result();
        
         $existing_id_array = array();
         foreach($project_table_result as $project_table_value){
-            $existing_id_array[] = $project_table_value->id;
-        }
-        $existing_id_value = implode(',', $existing_id_array);
-      
-
-        $project_header_column_base = array('id','item_sub_category','new_location_verified');
-        foreach($project_headers as $project_headers_value){
-            $project_header_column_base[] = $project_headers_value->keyname;
+            if (isset($project_table_value->id) && $project_table_value->id !== '') {
+                $existing_id_array[] = $project_table_value->id;
+            }
         }
 
+        $original_table_result = array();
+        if(!empty($existing_id_array)){
+            $existing_id_value = implode(',', $existing_id_array);
+            $project_header_column_base = array('id','item_sub_category','location_of_the_item_last_verified');
+            foreach($project_headers as $project_headers_value){
+                $project_header_column_base[] = $project_headers_value->keyname;
+            }
 
-    
+            $project_header_column_base_value = implode(',', $project_header_column_base);
+            $original_table_result = $this->db->query("SELECT ".$project_header_column_base_value." FROM ".$original_table_name." WHERE id in (".$existing_id_value.") ")->result();
+        }
 
-        $project_header_column_base_value = implode(',', $project_header_column_base);
-        $original_table_result = $this->db->query("SELECT ".$project_header_column_base_value." FROM ".$original_table_name." WHERE id in (".$existing_id_value.") ")->result();
-      
+        $original_by_id = array();
+        foreach ($original_table_result as $row) {
+            if (isset($row->id)) {
+                $original_by_id[$row->id] = $row;
+            }
+        }
+
         $different_array = array();
-        foreach($project_table_result as $project_table_key=>$project_table_value){
+        foreach($project_table_result as $project_table_value){
+            $orig_item = isset($original_by_id[$project_table_value->id]) ? $original_by_id[$project_table_value->id] : null;
 
             foreach($project_header_column as $project_header_column_new_value)
             {
 
-                if($project_header_column_new_value == 'location_of_the_item_last_verified'){
+                if($project_header_column_new_value == 'new_location_verified' || $project_header_column_new_value == 'location_of_the_item_last_verified'){
 
-                    if($original_table_result[$project_table_key]->new_location_verified != $project_table_result[$project_table_key]->$project_header_column_new_value){
-                        // if(!empty($project_table_result[$project_table_key]->new_location_verified)){
-                            $different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value][] = 1;
-                        // }
+                    $old_loc = isset($orig_item->location_of_the_item_last_verified) ? trim((string)$orig_item->location_of_the_item_last_verified) : '';
+                    $new_loc = isset($project_table_value->new_location_verified) ? trim((string)$project_table_value->new_location_verified) : '';
+
+                    if(!empty($new_loc) && $old_loc != $new_loc){
+                        $different_array['different'][$project_table_value->item_sub_category]['new_location_verified'][] = 1;
                     }
 
                 }else{
-                    if($original_table_result[$project_table_key]->$project_header_column_new_value != $project_table_result[$project_table_key]->$project_header_column_new_value){
-                    $different_array['different'][$project_table_result[$project_table_key]->item_sub_category][$project_header_column_new_value][] = 1;
-                }
-                }
+                    $old_val = isset($orig_item->$project_header_column_new_value) ? trim((string)$orig_item->$project_header_column_new_value) : '';
+                    $new_val = isset($project_table_value->$project_header_column_new_value) ? trim((string)$project_table_value->$project_header_column_new_value) : '';
 
-               
+                    if($old_val != $new_val){
+                        $different_array['different'][$project_table_value->item_sub_category][$project_header_column_new_value][] = 1;
+                    }
+                }
             }
         }
         
-       
         $different_array['project_header_column_value'] = $project_header_column_value;
-        
         return $different_array;
     }
 

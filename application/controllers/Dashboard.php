@@ -8683,23 +8683,22 @@ public function downloadExceptionChangesUpdationsofItems()
 		require 'vendor/autoload.php';
 		$spreadsheet1= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 		$sheet1 = $spreadsheet1->getActiveSheet();
-		$ReportTitle = 'Changes/ Updations of Items';
-		$spreadsheet= new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-		$sheet = $spreadsheet->getActiveSheet();
-
-
+		$ReportTitle = 'Changes_Updations_of_Items';
 		
 		$rowHeads=array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ','BA','BB','BC','BD','BE','BF','BG','BH','BI','BJ','BK','BL','BM','BN','BO','BP','BQ','BR','BS','BT','BU','BV','BW','BX','BY','BZ','CA','CB','CC','CD','CE','CF','CG','CH','CI','CJ','CK','CL','CM','CN','CO','CP','CQ','CR','CS','CT','CU','CV','CW','CX','CY','CZ');
 
-		$company_projects = $this->db->query("SELECT *  FROM company_projects WHERE id='".$project_id."'")->row();
+		$company_projects = $this->db->query("SELECT * FROM company_projects WHERE id='".$project_id."'")->row();
+		if (!$company_projects) {
+			show_404();
+			return;
+		}
+
 		$company_id = $company_projects->company_id;
 		$original_table_name = $company_projects->original_table_name;
 		$project_table_name = $company_projects->project_table_name;
 
-
-		$project_headers = $this->db->query("SELECT *  FROM project_headers WHERE project_id='".$project_id."' AND is_editable = 1")->result();
+		$project_headers = $this->db->query("SELECT * FROM project_headers WHERE project_id='".$project_id."' AND is_editable = 1")->result();
 		
-
 		$project_header_column = array('id','item_sub_category','location_of_the_item_last_verified','new_location_verified');
 		
 		$project_header_New_column = array();
@@ -8709,67 +8708,65 @@ public function downloadExceptionChangesUpdationsofItems()
 			$project_header_New_column[] = $project_headers_value->keyname."_Update";
 		}
 
-
-	// echo '<pre>project_header_New_column ';
-	// print_r($project_header_New_column);
-	// echo '</pre>';
-	// exit();
-	
-		$project_header_column_value = implode(',', $project_header_column);
 		$project_header_column_value = '*';
 		$project_table_result = $this->db->query("SELECT ".$project_header_column_value." FROM ".$project_table_name)->result();
-	
 
 		$existing_id_array = array();
 		foreach($project_table_result as $project_table_value){
-			$existing_id_array[] = $project_table_value->id;
+			if (isset($project_table_value->id) && $project_table_value->id !== '') {
+				$existing_id_array[] = $project_table_value->id;
+			}
 		}
-		$existing_id_value = implode(',', $existing_id_array);
-	  
 
+		$original_table_result = array();
+		if(!empty($existing_id_array)){
+			$existing_id_value = implode(',', $existing_id_array);
+			$original_table_query = "SELECT ".$project_header_column_value." FROM ".$original_table_name." WHERE id in (".$existing_id_value.") ";
+			$original_table_result = $this->db->query($original_table_query)->result();
+		}
 
-		$original_table_query = "SELECT ".$project_header_column_value." FROM ".$original_table_name." WHERE id in (".$existing_id_value.") ";
-		$original_table_result = $this->db->query($original_table_query)->result();
+		$original_by_id = array();
+		foreach ($original_table_result as $row) {
+			if (isset($row->id)) {
+				$original_by_id[$row->id] = $row;
+			}
+		}
 
 		$different_array = array();
 		$different_array2 = array();
-		$count = 1;
 
-		// echo '<pre>project_table_result ';
-		// print_r($project_table_result);
-		// echo '</pre>';
-		// exit();
+		foreach($project_table_result as $project_table_value){
+			$orig_item = isset($original_by_id[$project_table_value->id]) ? $original_by_id[$project_table_value->id] : null;
 
-		foreach($project_table_result as $project_table_key=>$project_table_value){
-
-		
 			foreach($project_header_column as $project_header_column_new_value)
 			{
-				if($original_table_result[$project_table_key]->$project_header_column_new_value != $project_table_result[$project_table_key]->$project_header_column_new_value){
+				if($project_header_column_new_value == 'new_location_verified' || $project_header_column_new_value == 'location_of_the_item_last_verified'){
+					$old_loc = isset($orig_item->location_of_the_item_last_verified) ? trim((string)$orig_item->location_of_the_item_last_verified) : '';
+					$new_loc = isset($project_table_value->new_location_verified) ? trim((string)$project_table_value->new_location_verified) : '';
 
-					$column_name = $project_header_column_new_value."_Update";					
-					$project_table_value->$column_name = "Old :- ".$original_table_result[$project_table_key]->$project_header_column_new_value." || New :- ".$project_table_result[$project_table_key]->$project_header_column_new_value;
-					if(!in_array($project_table_value->id, $different_array2)){
-						$different_array[] = $project_table_value;
+					if(!empty($new_loc) && $old_loc != $new_loc){
+						$column_name = "new_location_verified_Update";					
+						$project_table_value->$column_name = "Old :- ".$old_loc." || New :- ".$new_loc;
+						if(!in_array($project_table_value->id, $different_array2)){
+							$different_array[] = $project_table_value;
+							$different_array2[] = $project_table_value->id;
+						}
 					}
-					// $different_array[] = $project_table_value;
-					$different_array2[] = $project_table_value->id;
+				} else {
+					$old_val = isset($orig_item->$project_header_column_new_value) ? trim((string)$orig_item->$project_header_column_new_value) : '';
+					$new_val = isset($project_table_value->$project_header_column_new_value) ? trim((string)$project_table_value->$project_header_column_new_value) : '';
+
+					if($old_val != $new_val){
+						$column_name = $project_header_column_new_value."_Update";					
+						$project_table_value->$column_name = "Old :- ".$old_val." || New :- ".$new_val;
+						if(!in_array($project_table_value->id, $different_array2)){
+							$different_array[] = $project_table_value;
+							$different_array2[] = $project_table_value->id;
+						}
+					}
 				}
 			}
-			$count++;
 		}
-
-		
-		
-
-
-		// $different_array['project_header_column_value'] = $project_header_column_value; 
-
-		$project_header_column_value = explode(",",$project_header_column_value);
-		unset($project_header_column_value[0]);
-		unset($project_header_column_value[1]);
-
-
 
 		$this->db->select('company_projects.*,company_locations.location_name,user_role.id as role_id,company.company_name');
 		$this->db->from('company_projects');
@@ -8778,134 +8775,83 @@ public function downloadExceptionChangesUpdationsofItems()
 		$this->db->join('company_locations','company_locations.id=company_projects.project_location');
 		$this->db->where(array('company_projects.id'=>$project_id));
 		$gettasks=$this->db->get();
-		$company_project_details =  $gettasks->result();
-
-
+		$company_project_details = $gettasks->result();
 
 		$cnt=0;
 		$rowCount=1;
-		$columns="";
-		$colsArray=array();
 		
-		$details_content = "Name Of Company : ".$company_project_details[0]->company_name;
+		$details_content = "Name Of Company : ". (isset($company_project_details[0]->company_name) ? $company_project_details[0]->company_name : '');
 		$sheet1->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
 		$sheet1->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet1->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 
 		$rowCount=2;
-		$details_content = "Name Of Location : ".$company_project_details[0]->location_name;
-		// $sheet1->mergeCells("A1:F1");
+		$details_content = "Name Of Location : ". (isset($company_project_details[0]->location_name) ? $company_project_details[0]->location_name : '');
 		$sheet1->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
 		$sheet1->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet1->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
 
 		$rowCount=3;
-		$details_content = "Period of Verification : ".$company_project_details[0]->period_of_verification;
-		// $sheet1->mergeCells("A1:F1");
+		$details_content = "Period of Verification : ". (isset($company_project_details[0]->period_of_verification) ? $company_project_details[0]->period_of_verification : '');
 		$sheet1->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
 		$sheet1->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet1->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
-
 
 		$rowCount=4;
 		$details_content = "Name of the Report : Changes/ Updations of Items";
-		// $sheet1->mergeCells("A1:F1");
 		$sheet1->setCellValue($rowHeads[$cnt].$rowCount, $details_content);
 		$sheet1->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
 		$sheet1->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
-
-		// array_push($colsArray,'My title');
 
 		$rowCount = 6;
 		$cnt = 0;
 
-		$headerCondition=array('table_name'=>$original_table_name);
-		$project_headers=$this->tasks->get_data('project_headers',$headerCondition);
-
-
-		// $project_headers = array('Item Category','Item Sub Category','Unique Code','Sub Code','Item Description','Mode of Verification','Item Unique Code Update','Location Update','Item Classification Update');
-
-		$project_headers = array('Item Category','Item Sub Category','Unique Code','Sub Code','Item Description','Mode of Verification');
-
-		$project_headers = array_merge($project_headers, $project_header_New_column); 
+		$project_headers_list = array('Item Category','Item Sub Category','Unique Code','Sub Code','Item Description','Mode of Verification');
+		$project_headers_list = array_merge($project_headers_list, $project_header_New_column); 
 		
-
-		foreach($project_headers as $ph)
+		foreach($project_headers_list as $ph)
 		{
-			// if(($ph->keyname!='instance_count') && ($ph->keyname!='mode_of_verification') && ($ph->keyname!='serial_product_number') && ($ph->keyname!='is_edit'))
-			// {
-
-				$header_title_value = str_replace('_',' ',$ph);
-
-				$sheet1->setCellValue($rowHeads[$cnt].$rowCount, ucwords($header_title_value));
-				$sheet1->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
-				$sheet1->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
-				$cnt++;
-			// }
+			$header_title_value = str_replace('_',' ',$ph);
+			$sheet1->setCellValue($rowHeads[$cnt].$rowCount, ucwords($header_title_value));
+			$sheet1->getStyle($rowHeads[$cnt].$rowCount)->getFont()->applyFromArray( [ 'bold' => TRUE ] );
+			$sheet1->getColumnDimension($rowHeads[$cnt])->setAutoSize(true);
+			$cnt++;
 		}
 
-
-		
 		$rowCount = 7;
-		$cnt1 = 0;
 		foreach($different_array as $different_array_value){
-
 			$cnt1 = 0;
 			
+			$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount, isset($different_array_value->item_category) ? $different_array_value->item_category : '');
+			$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount, isset($different_array_value->item_sub_category) ? $different_array_value->item_sub_category : '');
+			$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount, isset($different_array_value->item_unique_code) ? $different_array_value->item_unique_code : '');
+			$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount, isset($different_array_value->item_sub_code) ? $different_array_value->item_sub_code : '');
+			$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount, isset($different_array_value->item_description) ? $different_array_value->item_description : '');
+			$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount, isset($different_array_value->mode_of_verification) ? $different_array_value->mode_of_verification : '');
 
-			$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,$different_array_value->item_category);
-			$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,$different_array_value->item_sub_category);
-			$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,$different_array_value->item_unique_code);
-			$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,$different_array_value->item_sub_code);
-			$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,$different_array_value->item_description);
-			$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,$different_array_value->mode_of_verification);
-
-			
 			foreach($project_header_New_column as $project_header_New_column_value){
-
-				// if($project_header_New_column_value == 'new_location_verified_Update' || $project_header_New_column_value == 'item_unique_code_Update' || $project_header_New_column_value == 'item_classification_Update'){
-
-					if(isset($different_array_value->$project_header_New_column_value)){
-						$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,$different_array_value->$project_header_New_column_value);
-					}else{
-						$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,"-");
-					}
-
-				// }
-
+				if(isset($different_array_value->$project_header_New_column_value)){
+					$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,$different_array_value->$project_header_New_column_value);
+				}else{
+					$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,"-");
+				}
 			}
-
-			/*
-			if(isset($different_array_value->item_unique_code_Update)){
-				$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,$different_array_value->item_unique_code_Update);
-			}else{
-				$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,"-");
-			}
-
-			if(isset($different_array_value->new_location_verified_Update)){
-				$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,$different_array_value->new_location_verified_Update);
-			}else{
-				$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,"-");
-			}
-
-			if(isset($different_array_value->item_classification_Update)){
-				$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,$different_array_value->item_classification_Update);
-			}else{
-				$sheet1->setCellValue($rowHeads[$cnt1++].$rowCount,"-");
-			}
-			*/
-			
 			$rowCount++;			
-			
 		}
-		// exit();
+
 		$writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet1,"Xlsx");
 		$writer->setPreCalculateFormulas(false);
-		$filename = $ReportTitle ;
-		header('Content-Type: application/vnd.ms-excel');
+		$filename = "Changes_Updations_of_Items";
+
+		if (ob_get_length()) {
+			ob_end_clean();
+		}
+
+		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 		header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
 		header('Cache-Control: max-age=0');
 		$writer->save('php://output');
+		exit();
 	}
 
 

@@ -129,17 +129,27 @@ class Plancycle extends CI_Controller {
 		// exit(); 
 		
 
-		$this->db->select('register_user_plan_log.*, subscription_plan.*');
-		$this->db->from(' subscription_plan');
-		$this->db->join('register_user_plan_log','register_user_plan_log.plan_id= subscription_plan.id');
-		$this->db->where('register_user_plan_log.register_user_id',$_SESSION['logged_in']['admin_registered_user_id']);
-		$this->db->order_by('register_user_plan_log.id', 'DESC');
-		$getnotifications=$this->db->get();
-		$result = $getnotifications->row();
-		// echo '<pre>last_query ';
-		// print_r($this->db->last_query());
-		// echo '</pre>';
-		// exit();
+		$admin_registered_user_id = $_SESSION['logged_in']['admin_registered_user_id'];
+		$this->db->select('plan_id');
+		$this->db->from('registred_users');
+		$this->db->where('id', $admin_registered_user_id);
+		$user_plan_query = $this->db->get();
+		$user_plan_res = $user_plan_query->row();
+		$active_plan_id = (!empty($user_plan_res) && !empty($user_plan_res->plan_id)) ? $user_plan_res->plan_id : 0;
+
+		if ($active_plan_id > 0) {
+			$this->db->select('*');
+			$this->db->from('subscription_plan');
+			$this->db->where('id', $active_plan_id);
+			$result = $this->db->get()->row();
+		} else {
+			$this->db->select('subscription_plan.*');
+			$this->db->from('register_user_plan_log');
+			$this->db->join('subscription_plan', 'subscription_plan.id = register_user_plan_log.upgrated_plan_id OR subscription_plan.id = register_user_plan_log.plan_id', 'left');
+			$this->db->where('register_user_plan_log.register_user_id', $admin_registered_user_id);
+			$this->db->order_by('register_user_plan_log.id', 'DESC');
+			$result = $this->db->get()->row();
+		}
 		$data['payment_history'] = $result;
 		
 
@@ -392,9 +402,19 @@ class Plancycle extends CI_Controller {
 		// echo '</pre>';
 		// exit(); 
 		
-		$plan_data = $this->Super_admin_model->get_registered_user_plan($_SESSION['logged_in']['admin_registered_user_id']);
-		
-		$plan_row=get_plan_row($plan_data->plan_id);
+		$admin_registered_user_id = $_SESSION['logged_in']['admin_registered_user_id'];
+		$this->db->select('plan_id');
+		$this->db->from('registred_users');
+		$this->db->where('id', $admin_registered_user_id);
+		$user_plan_res = $this->db->get()->row();
+		$active_plan_id = (!empty($user_plan_res) && !empty($user_plan_res->plan_id)) ? $user_plan_res->plan_id : 0;
+
+		if ($active_plan_id > 0) {
+			$plan_row = get_plan_row($active_plan_id);
+		} else {
+			$plan_data = $this->Super_admin_model->get_registered_user_plan($admin_registered_user_id);
+			$plan_row = get_plan_row($plan_data->plan_id);
+		}
 		// echo '<pre>tablename ';
 		// print_r($tablename);
 		// echo '</pre>';
@@ -883,6 +903,7 @@ class Plancycle extends CI_Controller {
 			<?php
 		}else{
 			echo "uploaddoc";
+			exit();
 		}
 	}
 
