@@ -201,6 +201,7 @@ class Login extends CI_Controller {
 		);
 
 		$this->db->where('register_user_plan_log.register_user_id', $user_result->id);
+		$this->db->order_by('register_user_plan_log.id', 'DESC');
 
 		$subscription_plan_query = $this->db->get();
 

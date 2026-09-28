@@ -633,16 +633,16 @@ table th,table td{
 											<th><?php echo "% to Grand Total"; ?></th>
 											<th class="DTFC_LeftWrapper">100%</th>
 											<th class="DTFC_LeftWrapper">100%</th>
-											<th><?php echo round(($verifiedTotalAmount/$totalAmount)*100,2); ?>%</th>
-											<th><?php echo round(($verifiedTotalItems/$totalItems)*100,2); ?>%</th>
-											<th><?php echo round(($equalTotalAmount/$totalAmount)*100,2); ?>%</th>
-											<th><?php echo round(($equalTotalItems/$totalItems)*100,2); ?>%</th>
-											<th><?php echo round(($shortTotalAmount/$totalAmount)*100,2); ?>%</th>
-											<th><?php echo round(($shortTotalItems/$totalItems)*100,2); ?>%</th>
-											<th><?php echo round(($excessamounttotalnew/$totalAmount)*100,2); ?>%</th>
-											<th><?php echo round(($excessitemtotal/$totalItems)*100,2); ?>%</th>
-											<th><?php echo round(($remainitemamounttotal/$totalAmount)*100,2); ?>%</th>
-											<th><?php echo round(($remainitemstotal/$totalItems)*100,2); ?>%</th>
+											<th><?php echo $totalAmount > 0 ? round(($verifiedTotalAmount/$totalAmount)*100,2) : 0; ?>%</th>
+											<th><?php echo $totalItems > 0 ? round(($verifiedTotalItems/$totalItems)*100,2) : 0; ?>%</th>
+											<th><?php echo $totalAmount > 0 ? round(($equalTotalAmount/$totalAmount)*100,2) : 0; ?>%</th>
+											<th><?php echo $totalItems > 0 ? round(($equalTotalItems/$totalItems)*100,2) : 0; ?>%</th>
+											<th><?php echo $totalAmount > 0 ? round(($shortTotalAmount/$totalAmount)*100,2) : 0; ?>%</th>
+											<th><?php echo $totalItems > 0 ? round(($shortTotalItems/$totalItems)*100,2) : 0; ?>%</th>
+											<th><?php echo $totalAmount > 0 ? round(($excessamounttotalnew/$totalAmount)*100,2) : 0; ?>%</th>
+											<th><?php echo $totalItems > 0 ? round(($excessitemtotal/$totalItems)*100,2) : 0; ?>%</th>
+											<th><?php echo $totalAmount > 0 ? round(($remainitemamounttotal/$totalAmount)*100,2) : 0; ?>%</th>
+											<th><?php echo $totalItems > 0 ? round(($remainitemstotal/$totalItems)*100,2) : 0; ?>%</th>
 										</tr>
 										<tr>
 											<td></td>

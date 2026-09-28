@@ -133,6 +133,7 @@ class Plancycle extends CI_Controller {
 		$this->db->from(' subscription_plan');
 		$this->db->join('register_user_plan_log','register_user_plan_log.plan_id= subscription_plan.id');
 		$this->db->where('register_user_plan_log.register_user_id',$_SESSION['logged_in']['admin_registered_user_id']);
+		$this->db->order_by('register_user_plan_log.id', 'DESC');
 		$getnotifications=$this->db->get();
 		$result = $getnotifications->row();
 		// echo '<pre>last_query ';

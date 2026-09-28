@@ -845,23 +845,23 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
         }
         else
         {
-            $data['all']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as total_items FROM ".$tablename." WHERE verification_status='Not-Verified' group by item_category")->result();
+            $data['all']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as total_items FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') group by item_category")->result();
             // echo '<pre>all Query :- ';
             // print_r($this->db->last_query());
             // echo '</pre>';
 
-            $data['verified']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as total_items FROM ".$tablename." WHERE verification_status='Not-Verified' and quantity_verified > 0 group by item_category")->result();
+            $data['verified']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as total_items FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and quantity_verified > 0 group by item_category")->result();
             // echo '<pre>verified Query :- ';
             // print_r($this->db->last_query());
             // echo '</pre>';
             
-            $data['verifiedequal']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as total_items FROM ".$tablename." WHERE verification_status='Not-Verified' and quantity_verified>0 group by item_category")->result();
+            $data['verifiedequal']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as total_items FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and quantity_verified>0 group by item_category")->result();
             // echo '<pre>verifiedequal Query :- ';
             // print_r($this->db->last_query());
             // echo '</pre>';
             
-            // $data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE verification_status='Not-Verified' and quantity_as_per_invoice > quantity_verified group by item_category")->result();
-            $data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE verification_status='Not-Verified' and quantity_verified = 0 group by item_category")->result();
+            // $data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and quantity_as_per_invoice > quantity_verified group by item_category")->result();
+            $data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and quantity_verified = 0 group by item_category")->result();
             // echo '<pre>remaining Query :- ';
             // print_r($this->db->last_query());
             // echo '</pre>';
@@ -1852,21 +1852,21 @@ function get_product_search($sort_by,$order_by,$table_name)
         {
            
             if($reporttype == 'all'){
-                $data = $this->db->query("SELECT * FROM ".$tablename." WHERE verification_status='Not-Verified'")->result_array();
+                $data = $this->db->query("SELECT * FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '')")->result_array();
             }
 
             
             if($reporttype == 'verified'){
-                $data = $this->db->query("SELECT * FROM ".$tablename." WHERE verification_status='Not-Verified' and quantity_verified > 0 ")->result_array();
+                $data = $this->db->query("SELECT * FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and quantity_verified > 0 ")->result_array();
             }
 
             if($reporttype == 'verifiedequal' || $reporttype =='equal'){
-                $data = $this->db->query("SELECT * FROM ".$tablename." WHERE verification_status='Not-Verified' and quantity_verified>0 ")->result_array();
+                $data = $this->db->query("SELECT * FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and quantity_verified>0 ")->result_array();
             }
 
             if($reporttype == 'remaining'){
-                // $data = $this->db->query("SELECT *  FROM ".$tablename." WHERE verification_status='Not-Verified' and quantity_as_per_invoice > quantity_verified ")->result_array();
-                $data = $this->db->query("SELECT *  FROM ".$tablename." WHERE verification_status='Not-Verified' AND quantity_verified = 0")->result_array();
+                // $data = $this->db->query("SELECT *  FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and quantity_as_per_invoice > quantity_verified ")->result_array();
+                $data = $this->db->query("SELECT *  FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') AND quantity_verified = 0")->result_array();
             }
 
             if($reporttype == 'excess'){
