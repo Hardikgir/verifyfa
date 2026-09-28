@@ -19,7 +19,43 @@ class Tasks extends CI_Controller {
 
 	}
 
-	
+	private function is_category_permitted($scanned_category, $project_category_data)
+	{
+		if (empty($project_category_data)) {
+			return true;
+		}
+
+		$project_categories = json_decode($project_category_data, true);
+
+		if (!is_array($project_categories)) {
+			if (is_string($project_category_data)) {
+				$trimmed_proj_cat = trim($project_category_data);
+				if (strcasecmp($trimmed_proj_cat, 'all') === 0 || $trimmed_proj_cat === '') {
+					return true;
+				}
+				$project_categories = array_map('trim', explode(',', $project_category_data));
+			} else {
+				return true;
+			}
+		}
+
+		if (empty($project_categories)) {
+			return true;
+		}
+
+		$scanned_cat_trimmed = strtolower(trim((string)$scanned_category));
+
+		foreach ($project_categories as $p_cat) {
+			$p_cat_trimmed = strtolower(trim((string)$p_cat));
+			if ($p_cat_trimmed === 'all' || $p_cat_trimmed === '*' || $p_cat_trimmed === $scanned_cat_trimmed) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+
 	public function getprojects()
 	{
 		$userid=$this->input->post('user_id');
@@ -342,9 +378,10 @@ class Tasks extends CI_Controller {
             $tag='CD';
             
             $projectdetail[0]->project_type=='TG'? $tag='Y':($projectdetail[0]->project_type=='NT'?$tag='N':($projectdetail[0]->project_type=='UN'?$tag='NA':$tag='CD'));
+            $is_cat_permitted = $this->is_category_permitted($scantask[0]->item_category, !empty($projectdetail) ? $projectdetail[0]->item_category : null);
             if($tag!='CD')
             {
-                if(!empty($projectdetail) && in_array($scantask[0]->item_category,json_decode($projectdetail[0]->item_category)) && $scantask[0]->tag_status_y_n_na==$tag)
+                if(!empty($projectdetail) && $is_cat_permitted && trim($scantask[0]->tag_status_y_n_na) == trim($tag))
                 {
                     header('Content-Type: application/json');
                     echo json_encode(array("success"=>200,"message"=>"Tasks fetched successfully.","data"=>$scantask));
@@ -360,7 +397,7 @@ class Tasks extends CI_Controller {
             }
             else
             {
-                if(!empty($projectdetail) && in_array($scantask[0]->item_category,json_decode($projectdetail[0]->item_category)))
+                if(!empty($projectdetail) && $is_cat_permitted)
                 {
                     header('Content-Type: application/json');
                     echo json_encode(array("success"=>200,"message"=>"Tasks fetched successfully.","data"=>$scantask));

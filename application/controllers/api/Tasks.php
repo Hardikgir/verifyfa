@@ -20,6 +20,42 @@ class Tasks extends CI_Controller
 
     }
 
+    private function is_category_permitted($scanned_category, $project_category_data)
+    {
+        if (empty($project_category_data)) {
+            return true;
+        }
+
+        $project_categories = json_decode($project_category_data, true);
+
+        if (!is_array($project_categories)) {
+            if (is_string($project_category_data)) {
+                $trimmed_proj_cat = trim($project_category_data);
+                if (strcasecmp($trimmed_proj_cat, 'all') === 0 || $trimmed_proj_cat === '') {
+                    return true;
+                }
+                $project_categories = array_map('trim', explode(',', $project_category_data));
+            } else {
+                return true;
+            }
+        }
+
+        if (empty($project_categories)) {
+            return true;
+        }
+
+        $scanned_cat_trimmed = strtolower(trim((string)$scanned_category));
+
+        foreach ($project_categories as $p_cat) {
+            $p_cat_trimmed = strtolower(trim((string)$p_cat));
+            if ($p_cat_trimmed === 'all' || $p_cat_trimmed === '*' || $p_cat_trimmed === $scanned_cat_trimmed) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 
     public function getprojects()
     {
@@ -328,8 +364,9 @@ class Tasks extends CI_Controller
             $tag = 'CD';
 
             $projectdetail[0]->project_type == 'TG' ? $tag = 'Y' : ($projectdetail[0]->project_type == 'NT' ? $tag = 'N' : ($projectdetail[0]->project_type == 'UN' ? $tag = 'NA' : $tag = 'CD'));
+            $is_cat_permitted = $this->is_category_permitted($scantask[0]->item_category, !empty($projectdetail) ? $projectdetail[0]->item_category : null);
             if ($tag != 'CD') {
-                if (!empty($projectdetail) && in_array($scantask[0]->item_category, json_decode($projectdetail[0]->item_category)) && $scantask[0]->tag_status_y_n_na == $tag) {
+                if (!empty($projectdetail) && $is_cat_permitted && trim($scantask[0]->tag_status_y_n_na) == trim($tag)) {
                     header('Content-Type: application/json');
                     echo json_encode(array("success" => 200, "message" => "Tasks fetched successfully.", "data" => $scantask));
                     exit;
@@ -340,7 +377,7 @@ class Tasks extends CI_Controller
                 }
 
             } else {
-                if (!empty($projectdetail) && in_array($scantask[0]->item_category, json_decode($projectdetail[0]->item_category))) {
+                if (!empty($projectdetail) && $is_cat_permitted) {
                     header('Content-Type: application/json');
                     echo json_encode(array("success" => 200, "message" => "Tasks fetched successfully.", "data" => $scantask));
                     exit;
@@ -464,7 +501,8 @@ class Tasks extends CI_Controller
 
                 // $st->date_of_purchase_invoice_date=date('d-m-Y',strtotime($st->date_of_purchase_invoice_date)); 
             }
-            if (!empty($projectdetail) && in_array($scantask[0]->item_category, json_decode($projectdetail[0]->item_category))) {
+            $is_cat_permitted = $this->is_category_permitted($scantask[0]->item_category, !empty($projectdetail) ? $projectdetail[0]->item_category : null);
+            if (!empty($projectdetail) && $is_cat_permitted) {
                 header('Content-Type: application/json');
                 echo json_encode(array("success" => 200, "message" => "Tasks fetched successfully.", "count" => $result_count, "data" => $scantask));
                 exit;
@@ -2376,7 +2414,8 @@ class Tasks extends CI_Controller
 
                 // $st->date_of_purchase_invoice_date=date('d-m-Y',strtotime($st->date_of_purchase_invoice_date)); 
             }
-            if (!empty($projectdetail) && in_array($scantask[0]->item_category, json_decode($projectdetail[0]->item_category))) {
+            $is_cat_permitted = $this->is_category_permitted($scantask[0]->item_category, !empty($projectdetail) ? $projectdetail[0]->item_category : null);
+            if (!empty($projectdetail) && $is_cat_permitted) {
                 header('Content-Type: application/json');
                 echo json_encode(array("success" => 200, "message" => "Tasks fetched successfully.", "data" => $scantask));
                 exit;
@@ -4883,7 +4922,8 @@ class Tasks extends CI_Controller
 
                 // $st->date_of_purchase_invoice_date=date('d-m-Y',strtotime($st->date_of_purchase_invoice_date)); 
             }
-            if (!empty($projectdetail) && in_array($scantask[0]->item_category, json_decode($projectdetail[0]->item_category))) {
+            $is_cat_permitted = $this->is_category_permitted($scantask[0]->item_category, !empty($projectdetail) ? $projectdetail[0]->item_category : null);
+            if (!empty($projectdetail) && $is_cat_permitted) {
                 header('Content-Type: application/json');
                 echo json_encode(array("success" => 200, "message" => "Tasks fetched successfully.", "count" => $result_count, "data" => $scantask));
                 exit;
@@ -5485,8 +5525,9 @@ class Tasks extends CI_Controller
             $tag = 'CD';
 
             $projectdetail[0]->project_type == 'TG' ? $tag = 'Y' : ($projectdetail[0]->project_type == 'NT' ? $tag = 'N' : ($projectdetail[0]->project_type == 'UN' ? $tag = 'NA' : $tag = 'CD'));
+            $is_cat_permitted = $this->is_category_permitted($scantask[0]->item_category, !empty($projectdetail) ? $projectdetail[0]->item_category : null);
             if ($tag != 'CD') {
-                if (!empty($projectdetail) && in_array($scantask[0]->item_category, json_decode($projectdetail[0]->item_category)) && $scantask[0]->tag_status_y_n_na == $tag) {
+                if (!empty($projectdetail) && $is_cat_permitted && trim($scantask[0]->tag_status_y_n_na) == trim($tag)) {
                     header('Content-Type: application/json');
                     echo json_encode(array("success" => 200, "message" => "Tasks fetched successfully.", "data" => $scantask));
                     exit;
@@ -5497,7 +5538,7 @@ class Tasks extends CI_Controller
                 }
 
             } else {
-                if (!empty($projectdetail) && in_array($scantask[0]->item_category, json_decode($projectdetail[0]->item_category))) {
+                if (!empty($projectdetail) && $is_cat_permitted) {
                     header('Content-Type: application/json');
                     echo json_encode(array("success" => 200, "message" => "Tasks fetched successfully.", "data" => $scantask));
                     exit;
@@ -6229,18 +6270,10 @@ class Tasks extends CI_Controller
                                     $notinuseTotalItems = $notinuseTotalItems + $notinuseItems;
                                 }
                             }
-                            $remainitem = '0';
-                            foreach ($report_data['remaining'] as $remainingdata) {
-                                if ($remainingdata->item_category == $allcat->item_category) {
-                                    $remainitem = $remainingdata->items;
-                                }
-                                $remainitem = max(0, $allcat->total_qty - ($goodItems + $damagedItems + $scrappedItems + $missingItems + $shiftedItems + $notinuseItems));
-                            }
-                            $remainitemstotal += $remainitem;
-
-
                             $remainingAmount = max(0, $allcat->total_amount - ($goodAmount + $damagedAmount + $scrappedAmount + $missingAmount + $shiftedAmount + $notinuseAmount));
                             $remainingItems = max(0, $allcat->total_qty - ($goodItems + $damagedItems + $scrappedItems + $missingItems + $shiftedItems + $notinuseItems));
+                            $remainitem = $remainingItems;
+                            $remainitemstotal += $remainitem;
                             $remainingTotalAmount = $remainingTotalAmount + $remainingAmount;
                             $remainingTotalItems = $remainingTotalItems + $remainingItems;
 
@@ -6427,168 +6460,145 @@ class Tasks extends CI_Controller
                     $remainitemamounttotal = 0;
                     $excessitemtotal = 0;
                     $excessamounttotalnew = 0;
-                    foreach ($report_data['all'] as $allcat) {
-                        $row = [];
-                        $verifiedAmount = 0;
-                        $verifiedItems = 0;
-                        $shortAmount = 0;
-                        $shortItems = 0;
-                        $equalAmount = 0;
-                        $equalItems = 0;
-                        $excessAmount = 0;
-                        $excessItems = 0;
-                        $remainingAmount = 0;
-                        $remainingItems = 0;
-
-                        $totalAmount = $totalAmount + $allcat->total_amount;
-                        $totalItems = $totalItems + $allcat->total_items;
-                        foreach ($report_data['verified'] as $verified) {
-                            if ($verified->item_category == $allcat->item_category) {
-                                $verifiedAmount = $verified->total_amount;
-                                $verifiedItems = $verified->total_items;
-                                $verifiedTotalAmount = $verifiedTotalAmount + $verifiedAmount;
-                                $verifiedTotalItems = $verifiedTotalItems + $verifiedItems;
-
-                                if ($verified->total_items < $allcat->total_items && $verified->total_items >= 0) {
-                                    $shortAmount = $allcat->total_amount - $verified->total_amount;
-                                    $shortItems = $allcat->total_items - $verified->total_items;
-                                    $shortTotalAmount = $shortTotalAmount + $shortAmount;
-                                    $shortTotalItems = $shortTotalItems + $shortItems;
-                                }
-
-                                if ($verified->total_items > $allcat->total_items) {
-                                    // // $excessAmount=$allcat->total_amount - $verified->total_amount;
-                                    // $excessItems=$verified->total_items - $allcat->total_items;
-
-                                    // $excessTotalAmount=$excessTotalAmount+$excessAmount;
-                                    // $excessTotalItems=$excessTotalItems+$excessItems;
-                                }
-
-                                if ($verified->total_items < 1) {
-                                    $remainingAmount = $allcat->total_amount;
-                                    $remainingItems = $allcat->total_items;
-                                    $remainingTotalAmount = $remainingTotalAmount + $remainingAmount;
-                                    $remainingTotalItems = $remainingTotalItems + $remainingItems;
-                                }
-
-                            }
-
-                        }
-                        foreach ($report_data['verifiedequal'] as $verifiedeq) {
-                            if ($verifiedeq->item_category == $allcat->item_category) {
-                                $equalAmount = $verifiedeq->total_amount;
-                                $equalItems = $verifiedeq->total_items;
-                                $equalTotalAmount = $equalTotalAmount + $equalAmount;
-                                $equalTotalItems = $equalTotalItems + $equalItems;
-                            }
-                        }
-
-                        /*
-                        if($_SESSION['reportData']['verification_status']=='Not-Verified')
-                        {
-                            $remainingAmount=$allcat->total_amount;
-                            $remainingItems=$allcat->total_items;
-                            $remainingTotalAmount=$remainingTotalAmount+$remainingAmount;
-                            $remainingTotalItems=$remainingTotalItems+$remainingItems;
-                        }
-                        */
-
-                        $remainitem = '0';
-                        $remainitemamount = '0';
-                        foreach ($report_data['remaining'] as $remainingdata) {
-                            if ($remainingdata->item_category == $allcat->item_category) {
-                                $remainitem = $remainingdata->items;
-                                $remainitemamount = $remainingdata->total_amount;
-                            }
-
-                        }
-                        $remainitemstotal += $remainitem;
-                        $remainitemamounttotal += $remainitemamount;
-
-                        $excessitem = '0';
-                        $excessamount = '0';
-                        foreach ($report_data['excess'] as $excess) {
-                            if ($excess->item_category == $allcat->item_category) {
-                                $excessitem = $excess->items;
-                                $excessAmount = $excess->total_amount;
-                                $excessamounttotalnew = $excessamounttotalnew + $excessAmount;
-
-                            }
-
-
-                        }
-                        $excessitemtotal += $excessitem;
-
-
-                        /*
-                        if($_SESSION['reportData']['verification_status']=='Not-Verified')
-                        {
-
-                            $equalAmount = 0;
-                            $equalItems = 0;
+                    if (!empty($report_data['all']) && is_array($report_data['all'])) {
+                        foreach ($report_data['all'] as $allcat) {
+                            $row = [];
+                            $verifiedAmount = 0;
+                            $verifiedItems = 0;
                             $shortAmount = 0;
                             $shortItems = 0;
+                            $equalAmount = 0;
+                            $equalItems = 0;
                             $excessAmount = 0;
-                            $excessitem = 0;
-                            // $equalAmount = 0;
+                            $excessItems = 0;
+                            $remainingAmount = 0;
+                            $remainingItems = 0;
 
-                            $equalTotalAmount = 0;
-                            $equalTotalItems = 0;
-                            $shortTotalAmount = 0;
-                            $shortTotalItems = 0;
-                            $excessamounttotalnew = 0;
-                            $excessitemtotal = 0;
-                        } */
+                            $totalAmount = $totalAmount + $allcat->total_amount;
+                            $totalItems = $totalItems + $allcat->total_items;
+                            if (!empty($report_data['verified']) && is_array($report_data['verified'])) {
+                                foreach ($report_data['verified'] as $verified) {
+                                    if ($verified->item_category == $allcat->item_category) {
+                                        $verifiedAmount = $verified->total_amount;
+                                        $verifiedItems = $verified->total_items;
+                                        $verifiedTotalAmount = $verifiedTotalAmount + $verifiedAmount;
+                                        $verifiedTotalItems = $verifiedTotalItems + $verifiedItems;
 
-                        $row[] = $allcat->item_category;
-                        $row[] = $allcat->total_amount != 0 ? getmoney_format(round(($allcat->total_amount / 100000), 2)) : $allcat->total_amount;
-                        $row[] = $allcat->total_items;
-                        $row[] = $verifiedAmount != 0 ? getmoney_format(round(($verifiedAmount / 100000), 2)) : $verifiedAmount;
-                        $row[] = $verifiedItems;
-                        $row[] = $equalAmount != 0 ? getmoney_format(round(($equalAmount / 100000), 2)) : $equalAmount;
-                        $row[] = $equalItems;
-                        $row[] = $shortAmount != 0 ? getmoney_format(round(($shortAmount / 100000), 2)) : $shortAmount;
-                        $row[] = $shortItems;
-                        $row[] = $excessAmount != 0 ? getmoney_format(round(($excessAmount / 100000), 2)) : $excessAmount;
-                        $row[] = $excessitem;
-                        $row[] = $remainitemamount != 0 ? getmoney_format(round(($remainitemamount / 100000), 2)) : $remainitemamount;
-                        $row[] = $remainitem;
-                        fputcsv($fp, $row);
+                                        if ($verified->total_items > $allcat->total_items && $verified->total_items > 0) {
+                                            $shortAmount = $allcat->total_amount - $verified->total_amount;
+                                            $shortItems = $allcat->total_items - $verified->total_items;
+                                            $shortTotalAmount = $shortTotalAmount + $shortAmount;
+                                            $shortTotalItems = $shortTotalItems + $shortItems;
+                                        }
+
+                                        if ($verified->total_items > $allcat->total_items) {
+                                            // // $excessAmount=$allcat->total_amount - $verified->total_amount;
+                                            // $excessItems=$verified->total_items - $allcat->total_items;
+
+                                            // $excessTotalAmount=$excessTotalAmount+$excessAmount;
+                                            // $excessTotalItems=$excessTotalItems+$excessItems;
+                                        }
+
+                                        if ($verified->total_items < 1) {
+                                            $remainingAmount = $allcat->total_amount;
+                                            $remainingItems = $allcat->total_items;
+                                            $remainingTotalAmount = $remainingTotalAmount + $remainingAmount;
+                                            $remainingTotalItems = $remainingTotalItems + $remainingItems;
+                                        }
+
+                                    }
+
+                                }
+                            }
+                            if (!empty($report_data['verifiedequal']) && is_array($report_data['verifiedequal'])) {
+                                foreach ($report_data['verifiedequal'] as $verifiedeq) {
+                                    if ($verifiedeq->item_category == $allcat->item_category) {
+                                        $equalAmount = $verifiedeq->total_amount;
+                                        $equalItems = $verifiedeq->total_items;
+                                        $equalTotalAmount = $equalTotalAmount + $equalAmount;
+                                        $equalTotalItems = $equalTotalItems + $equalItems;
+                                    }
+                                }
+                            }
+
+                            $remainitem = '0';
+                            $remainitemamount = '0';
+                            if (!empty($report_data['remaining']) && is_array($report_data['remaining'])) {
+                                foreach ($report_data['remaining'] as $remainingdata) {
+                                    if ($remainingdata->item_category == $allcat->item_category) {
+                                        $remainitem = $remainingdata->items;
+                                        $remainitemamount = $remainingdata->total_amount;
+                                    }
+
+                                }
+                            }
+                            $remainitemstotal += $remainitem;
+                            $remainitemamounttotal += $remainitemamount;
+
+                            $excessitem = '0';
+                            $excessamount = '0';
+                            if (!empty($report_data['excess']) && is_array($report_data['excess'])) {
+                                foreach ($report_data['excess'] as $excess) {
+                                    if ($excess->item_category == $allcat->item_category) {
+                                        $excessitem = $excess->items;
+                                        $excessAmount = $excess->total_amount;
+                                        $excessamounttotalnew = $excessamounttotalnew + $excessAmount;
+
+                                    }
+
+
+                                }
+                            }
+                            $excessitemtotal += $excessitem;
+
+                            $row[] = $allcat->item_category;
+                            $row[] = $allcat->total_amount != 0 ? getmoney_format(round(($allcat->total_amount / 100000), 2)) : $allcat->total_amount;
+                            $row[] = $allcat->total_items;
+                            $row[] = $verifiedAmount != 0 ? getmoney_format(round(($verifiedAmount / 100000), 2)) : $verifiedAmount;
+                            $row[] = $verifiedItems;
+                            $row[] = $equalAmount != 0 ? getmoney_format(round(($equalAmount / 100000), 2)) : $equalAmount;
+                            $row[] = $equalItems;
+                            $row[] = $shortAmount != 0 ? getmoney_format(round(($shortAmount / 100000), 2)) : $shortAmount;
+                            $row[] = $shortItems;
+                            $row[] = $excessAmount != 0 ? getmoney_format(round(($excessAmount / 100000), 2)) : $excessAmount;
+                            $row[] = $excessitem;
+                            $row[] = $remainitemamount != 0 ? getmoney_format(round(($remainitemamount / 100000), 2)) : $remainitemamount;
+                            $row[] = $remainitem;
+                            fputcsv($fp, $row);
+                        }
+
+                        $grand_total_row = array();
+                        $grand_total_row[] = "Grand Total";
+                        $grand_total_row[] = $totalAmount != 0 ? getmoney_format(round(($totalAmount / 100000), 2)) : $totalAmount;
+                        $grand_total_row[] = $totalItems;
+                        $grand_total_row[] = $verifiedTotalAmount != 0 ? getmoney_format(round(($verifiedTotalAmount / 100000), 2)) : $verifiedTotalAmount;
+                        $grand_total_row[] = $verifiedTotalItems;
+                        $grand_total_row[] = $equalTotalAmount != 0 ? getmoney_format(round(($equalTotalAmount / 100000), 2)) : $equalTotalAmount;
+                        $grand_total_row[] = $equalTotalItems;
+                        $grand_total_row[] = $shortTotalAmount != 0 ? getmoney_format(round(($shortTotalAmount / 100000), 2)) : $shortTotalAmount;
+                        $grand_total_row[] = $shortTotalItems;
+                        $grand_total_row[] = $excessamounttotalnew != 0 ? getmoney_format(round(($excessamounttotalnew / 100000), 2)) : $excessamounttotalnew;
+                        $grand_total_row[] = $excessitemtotal;
+                        $grand_total_row[] = $remainitemamounttotal != 0 ? getmoney_format(round(($remainitemamounttotal / 100000), 2)) : $remainitemamounttotal;
+                        $grand_total_row[] = $remainitemstotal;
+                        fputcsv($fp, $grand_total_row);
+
+                        $grand_total_percentage_row = array();
+                        $grand_total_percentage_row[] = "% to Grand Total";
+                        $grand_total_percentage_row[] = "100%";
+                        $grand_total_percentage_row[] = "100%";
+                        $grand_total_percentage_row[] = ($totalAmount != 0 ? round(($verifiedTotalAmount / $totalAmount) * 100, 2) : 0) . "%";
+                        $grand_total_percentage_row[] = ($totalItems != 0 ? round(($verifiedTotalItems / $totalItems) * 100, 2) : 0) . "%";
+                        $grand_total_percentage_row[] = ($totalAmount != 0 ? round(($equalTotalAmount / $totalAmount) * 100, 2) : 0) . "%";
+                        $grand_total_percentage_row[] = ($totalItems != 0 ? round(($equalTotalItems / $totalItems) * 100, 2) : 0) . "%";
+                        $grand_total_percentage_row[] = ($totalAmount != 0 ? round(($shortTotalAmount / $totalAmount) * 100, 2) : 0) . "%";
+                        $grand_total_percentage_row[] = ($totalItems != 0 ? round(($shortTotalItems / $totalItems) * 100, 2) : 0) . "%";
+                        $grand_total_percentage_row[] = ($totalAmount != 0 ? round(($excessamounttotalnew / $totalAmount) * 100, 2) : 0) . "%";
+                        $grand_total_percentage_row[] = ($totalItems != 0 ? round(($excessitemtotal / $totalItems) * 100, 2) : 0) . "%";
+                        $grand_total_percentage_row[] = ($totalAmount != 0 ? round(($remainitemamounttotal / $totalAmount) * 100, 2) : 0) . "%";
+                        $grand_total_percentage_row[] = ($totalItems != 0 ? round(($remainitemstotal / $totalItems) * 100, 2) : 0) . "%";
+                        fputcsv($fp, $grand_total_percentage_row);
                     }
-
-
-
-                    $grand_total_row = array();
-                    $grand_total_row[] = "Grand Total";
-                    $grand_total_row[] = $totalAmount != 0 ? getmoney_format(round(($totalAmount / 100000), 2)) : $totalAmount;
-                    $grand_total_row[] = $totalItems;
-                    $grand_total_row[] = $verifiedTotalAmount != 0 ? getmoney_format(round(($verifiedTotalAmount / 100000), 2)) : $verifiedTotalAmount;
-                    $grand_total_row[] = $verifiedTotalItems;
-                    $grand_total_row[] = $equalTotalAmount != 0 ? getmoney_format(round(($equalTotalAmount / 100000), 2)) : $equalTotalAmount;
-                    $grand_total_row[] = $equalTotalItems;
-                    $grand_total_row[] = $shortTotalAmount != 0 ? getmoney_format(round(($shortTotalAmount / 100000), 2)) : $shortTotalAmount;
-                    $grand_total_row[] = $shortTotalItems;
-                    $grand_total_row[] = $excessamounttotalnew != 0 ? getmoney_format(round(($excessamounttotalnew / 100000), 2)) : $excessamounttotalnew;
-                    $grand_total_row[] = $excessitemtotal;
-                    $grand_total_row[] = $remainitemamounttotal != 0 ? getmoney_format(round(($remainitemamounttotal / 100000), 2)) : $remainitemamounttotal;
-                    $grand_total_row[] = $remainitemstotal;
-                    fputcsv($fp, $grand_total_row);
-
-                    $grand_total_percentage_row = array();
-                    $grand_total_percentage_row[] = "% to Grand Total";
-                    $grand_total_percentage_row[] = "100%";
-                    $grand_total_percentage_row[] = "100%";
-                    $grand_total_percentage_row[] = round(($verifiedTotalAmount / $totalAmount) * 100, 2) . "%";
-                    $grand_total_percentage_row[] = round(($verifiedTotalItems / $totalItems) * 100, 2) . "%";
-                    $grand_total_percentage_row[] = round(($equalTotalAmount / $totalAmount) * 100, 2) . "%";
-                    $grand_total_percentage_row[] = round(($equalTotalItems / $totalItems) * 100, 2) . "%";
-                    $grand_total_percentage_row[] = round(($shortTotalAmount / $totalAmount) * 100, 2) . "%";
-                    $grand_total_percentage_row[] = round(($shortTotalItems / $totalItems) * 100, 2) . "%";
-                    $grand_total_percentage_row[] = round(($excessamounttotalnew / $totalAmount) * 100, 2) . "%";
-                    $grand_total_percentage_row[] = round(($excessitemtotal / $totalItems) * 100, 2) . "%";
-                    $grand_total_percentage_row[] = round(($remainitemamounttotal / $totalAmount) * 100, 2) . "%";
-                    $grand_total_percentage_row[] = round(($remainitemstotal / $totalItems) * 100, 2) . "%";
-                    fputcsv($fp, $grand_total_percentage_row);
 
 
                 }
@@ -7375,20 +7385,10 @@ class Tasks extends CI_Controller
                                     $notinuseTotalItems = $notinuseTotalItems + $notinuseItems;
                                 }
                             }
-                            $remainitem = '0';
-                            foreach ($report_data['remaining'] as $remainingdata) {
-                                if ($remainingdata->item_category == $allcat->item_category) {
-                                    $remainitem = $remainingdata->items;
-                                }
-                                $remainitem = $allcat->total_qty - ($goodItems + $damagedItems + $scrappedItems + $missingItems + $shiftedItems + $notinuseItems);
-
-
-                            }
+                            $remainingAmount = max(0, $allcat->total_amount - ($goodAmount + $damagedAmount + $scrappedAmount + $missingAmount + $shiftedAmount + $notinuseAmount));
+                            $remainingItems = max(0, $allcat->total_qty - ($goodItems + $damagedItems + $scrappedItems + $missingItems + $shiftedItems + $notinuseItems));
+                            $remainitem = $remainingItems;
                             $remainitemstotal += $remainitem;
-
-
-                            $remainingAmount = $allcat->total_amount - ($goodAmount + $damagedAmount + $scrappedAmount + $missingAmount + $shiftedAmount + $notinuseAmount);
-                            $remainingItems = $allcat->total_qty - ($goodItems + $damagedItems + $scrappedItems + $missingItems + $shiftedItems + $notinuseItems);
                             $remainingTotalAmount = $remainingTotalAmount + $remainingAmount;
                             $remainingTotalItems = $remainingTotalItems + $remainingItems;
 
@@ -7573,168 +7573,145 @@ class Tasks extends CI_Controller
                     $remainitemamounttotal = 0;
                     $excessitemtotal = 0;
                     $excessamounttotalnew = 0;
-                    foreach ($report_data['all'] as $allcat) {
-                        $row = [];
-                        $verifiedAmount = 0;
-                        $verifiedItems = 0;
-                        $shortAmount = 0;
-                        $shortItems = 0;
-                        $equalAmount = 0;
-                        $equalItems = 0;
-                        $excessAmount = 0;
-                        $excessItems = 0;
-                        $remainingAmount = 0;
-                        $remainingItems = 0;
-
-                        $totalAmount = $totalAmount + $allcat->total_amount;
-                        $totalItems = $totalItems + $allcat->total_items;
-                        foreach ($report_data['verified'] as $verified) {
-                            if ($verified->item_category == $allcat->item_category) {
-                                $verifiedAmount = $verified->total_amount;
-                                $verifiedItems = $verified->total_items;
-                                $verifiedTotalAmount = $verifiedTotalAmount + $verifiedAmount;
-                                $verifiedTotalItems = $verifiedTotalItems + $verifiedItems;
-
-                                if ($verified->total_items < $allcat->total_items && $verified->total_items >= 0) {
-                                    $shortAmount = $allcat->total_amount - $verified->total_amount;
-                                    $shortItems = $allcat->total_items - $verified->total_items;
-                                    $shortTotalAmount = $shortTotalAmount + $shortAmount;
-                                    $shortTotalItems = $shortTotalItems + $shortItems;
-                                }
-
-                                if ($verified->total_items > $allcat->total_items) {
-                                    // // $excessAmount=$allcat->total_amount - $verified->total_amount;
-                                    // $excessItems=$verified->total_items - $allcat->total_items;
-
-                                    // $excessTotalAmount=$excessTotalAmount+$excessAmount;
-                                    // $excessTotalItems=$excessTotalItems+$excessItems;
-                                }
-
-                                if ($verified->total_items < 1) {
-                                    $remainingAmount = $allcat->total_amount;
-                                    $remainingItems = $allcat->total_items;
-                                    $remainingTotalAmount = $remainingTotalAmount + $remainingAmount;
-                                    $remainingTotalItems = $remainingTotalItems + $remainingItems;
-                                }
-
-                            }
-
-                        }
-                        foreach ($report_data['verifiedequal'] as $verifiedeq) {
-                            if ($verifiedeq->item_category == $allcat->item_category) {
-                                $equalAmount = $verifiedeq->total_amount;
-                                $equalItems = $verifiedeq->total_items;
-                                $equalTotalAmount = $equalTotalAmount + $equalAmount;
-                                $equalTotalItems = $equalTotalItems + $equalItems;
-                            }
-                        }
-
-                        /*
-                        if($_SESSION['reportData']['verification_status']=='Not-Verified')
-                        {
-                            $remainingAmount=$allcat->total_amount;
-                            $remainingItems=$allcat->total_items;
-                            $remainingTotalAmount=$remainingTotalAmount+$remainingAmount;
-                            $remainingTotalItems=$remainingTotalItems+$remainingItems;
-                        }
-                        */
-
-                        $remainitem = '0';
-                        $remainitemamount = '0';
-                        foreach ($report_data['remaining'] as $remainingdata) {
-                            if ($remainingdata->item_category == $allcat->item_category) {
-                                $remainitem = $remainingdata->items;
-                                $remainitemamount = $remainingdata->total_amount;
-                            }
-
-                        }
-                        $remainitemstotal += $remainitem;
-                        $remainitemamounttotal += $remainitemamount;
-
-                        $excessitem = '0';
-                        $excessamount = '0';
-                        foreach ($report_data['excess'] as $excess) {
-                            if ($excess->item_category == $allcat->item_category) {
-                                $excessitem = $excess->items;
-                                $excessAmount = $excess->total_amount;
-                                $excessamounttotalnew = $excessamounttotalnew + $excessAmount;
-
-                            }
-
-
-                        }
-                        $excessitemtotal += $excessitem;
-
-
-                        /*
-                        if($_SESSION['reportData']['verification_status']=='Not-Verified')
-                        {
-
-                            $equalAmount = 0;
-                            $equalItems = 0;
+                    if (!empty($report_data['all']) && is_array($report_data['all'])) {
+                        foreach ($report_data['all'] as $allcat) {
+                            $row = [];
+                            $verifiedAmount = 0;
+                            $verifiedItems = 0;
                             $shortAmount = 0;
                             $shortItems = 0;
+                            $equalAmount = 0;
+                            $equalItems = 0;
                             $excessAmount = 0;
-                            $excessitem = 0;
-                            // $equalAmount = 0;
+                            $excessItems = 0;
+                            $remainingAmount = 0;
+                            $remainingItems = 0;
 
-                            $equalTotalAmount = 0;
-                            $equalTotalItems = 0;
-                            $shortTotalAmount = 0;
-                            $shortTotalItems = 0;
-                            $excessamounttotalnew = 0;
-                            $excessitemtotal = 0;
-                        } */
+                            $totalAmount = $totalAmount + $allcat->total_amount;
+                            $totalItems = $totalItems + $allcat->total_items;
+                            if (!empty($report_data['verified']) && is_array($report_data['verified'])) {
+                                foreach ($report_data['verified'] as $verified) {
+                                    if ($verified->item_category == $allcat->item_category) {
+                                        $verifiedAmount = $verified->total_amount;
+                                        $verifiedItems = $verified->total_items;
+                                        $verifiedTotalAmount = $verifiedTotalAmount + $verifiedAmount;
+                                        $verifiedTotalItems = $verifiedTotalItems + $verifiedItems;
 
-                        $row[] = $allcat->item_category;
-                        $row[] = $allcat->total_amount != 0 ? getmoney_format(round(($allcat->total_amount / 100000), 2)) : $allcat->total_amount;
-                        $row[] = $allcat->total_items;
-                        $row[] = $verifiedAmount != 0 ? getmoney_format(round(($verifiedAmount / 100000), 2)) : $verifiedAmount;
-                        $row[] = $verifiedItems;
-                        $row[] = $equalAmount != 0 ? getmoney_format(round(($equalAmount / 100000), 2)) : $equalAmount;
-                        $row[] = $equalItems;
-                        $row[] = $shortAmount != 0 ? getmoney_format(round(($shortAmount / 100000), 2)) : $shortAmount;
-                        $row[] = $shortItems;
-                        $row[] = $excessAmount != 0 ? getmoney_format(round(($excessAmount / 100000), 2)) : $excessAmount;
-                        $row[] = $excessitem;
-                        $row[] = $remainitemamount != 0 ? getmoney_format(round(($remainitemamount / 100000), 2)) : $remainitemamount;
-                        $row[] = $remainitem;
-                        fputcsv($fp, $row);
+                                        if ($verified->total_items > $allcat->total_items && $verified->total_items > 0) {
+                                            $shortAmount = $allcat->total_amount - $verified->total_amount;
+                                            $shortItems = $allcat->total_items - $verified->total_items;
+                                            $shortTotalAmount = $shortTotalAmount + $shortAmount;
+                                            $shortTotalItems = $shortTotalItems + $shortItems;
+                                        }
+
+                                        if ($verified->total_items > $allcat->total_items) {
+                                            // // $excessAmount=$allcat->total_amount - $verified->total_amount;
+                                            // $excessItems=$verified->total_items - $allcat->total_items;
+
+                                            // $excessTotalAmount=$excessTotalAmount+$excessAmount;
+                                            // $excessTotalItems=$excessTotalItems+$excessItems;
+                                        }
+
+                                        if ($verified->total_items < 1) {
+                                            $remainingAmount = $allcat->total_amount;
+                                            $remainingItems = $allcat->total_items;
+                                            $remainingTotalAmount = $remainingTotalAmount + $remainingAmount;
+                                            $remainingTotalItems = $remainingTotalItems + $remainingItems;
+                                        }
+
+                                    }
+
+                                }
+                            }
+                            if (!empty($report_data['verifiedequal']) && is_array($report_data['verifiedequal'])) {
+                                foreach ($report_data['verifiedequal'] as $verifiedeq) {
+                                    if ($verifiedeq->item_category == $allcat->item_category) {
+                                        $equalAmount = $verifiedeq->total_amount;
+                                        $equalItems = $verifiedeq->total_items;
+                                        $equalTotalAmount = $equalTotalAmount + $equalAmount;
+                                        $equalTotalItems = $equalTotalItems + $equalItems;
+                                    }
+                                }
+                            }
+
+                            $remainitem = '0';
+                            $remainitemamount = '0';
+                            if (!empty($report_data['remaining']) && is_array($report_data['remaining'])) {
+                                foreach ($report_data['remaining'] as $remainingdata) {
+                                    if ($remainingdata->item_category == $allcat->item_category) {
+                                        $remainitem = $remainingdata->items;
+                                        $remainitemamount = $remainingdata->total_amount;
+                                    }
+
+                                }
+                            }
+                            $remainitemstotal += $remainitem;
+                            $remainitemamounttotal += $remainitemamount;
+
+                            $excessitem = '0';
+                            $excessamount = '0';
+                            if (!empty($report_data['excess']) && is_array($report_data['excess'])) {
+                                foreach ($report_data['excess'] as $excess) {
+                                    if ($excess->item_category == $allcat->item_category) {
+                                        $excessitem = $excess->items;
+                                        $excessAmount = $excess->total_amount;
+                                        $excessamounttotalnew = $excessamounttotalnew + $excessAmount;
+
+                                    }
+
+
+                                }
+                            }
+                            $excessitemtotal += $excessitem;
+
+                            $row[] = $allcat->item_category;
+                            $row[] = $allcat->total_amount != 0 ? getmoney_format(round(($allcat->total_amount / 100000), 2)) : $allcat->total_amount;
+                            $row[] = $allcat->total_items;
+                            $row[] = $verifiedAmount != 0 ? getmoney_format(round(($verifiedAmount / 100000), 2)) : $verifiedAmount;
+                            $row[] = $verifiedItems;
+                            $row[] = $equalAmount != 0 ? getmoney_format(round(($equalAmount / 100000), 2)) : $equalAmount;
+                            $row[] = $equalItems;
+                            $row[] = $shortAmount != 0 ? getmoney_format(round(($shortAmount / 100000), 2)) : $shortAmount;
+                            $row[] = $shortItems;
+                            $row[] = $excessAmount != 0 ? getmoney_format(round(($excessAmount / 100000), 2)) : $excessAmount;
+                            $row[] = $excessitem;
+                            $row[] = $remainitemamount != 0 ? getmoney_format(round(($remainitemamount / 100000), 2)) : $remainitemamount;
+                            $row[] = $remainitem;
+                            fputcsv($fp, $row);
+                        }
+
+                        $grand_total_row = array();
+                        $grand_total_row[] = "Grand Total";
+                        $grand_total_row[] = $totalAmount != 0 ? getmoney_format(round(($totalAmount / 100000), 2)) : $totalAmount;
+                        $grand_total_row[] = $totalItems;
+                        $grand_total_row[] = $verifiedTotalAmount != 0 ? getmoney_format(round(($verifiedTotalAmount / 100000), 2)) : $verifiedTotalAmount;
+                        $grand_total_row[] = $verifiedTotalItems;
+                        $grand_total_row[] = $equalTotalAmount != 0 ? getmoney_format(round(($equalTotalAmount / 100000), 2)) : $equalTotalAmount;
+                        $grand_total_row[] = $equalTotalItems;
+                        $grand_total_row[] = $shortTotalAmount != 0 ? getmoney_format(round(($shortTotalAmount / 100000), 2)) : $shortTotalAmount;
+                        $grand_total_row[] = $shortTotalItems;
+                        $grand_total_row[] = $excessamounttotalnew != 0 ? getmoney_format(round(($excessamounttotalnew / 100000), 2)) : $excessamounttotalnew;
+                        $grand_total_row[] = $excessitemtotal;
+                        $grand_total_row[] = $remainitemamounttotal != 0 ? getmoney_format(round(($remainitemamounttotal / 100000), 2)) : $remainitemamounttotal;
+                        $grand_total_row[] = $remainitemstotal;
+                        fputcsv($fp, $grand_total_row);
+
+                        $grand_total_percentage_row = array();
+                        $grand_total_percentage_row[] = "% to Grand Total";
+                        $grand_total_percentage_row[] = "100%";
+                        $grand_total_percentage_row[] = "100%";
+                        $grand_total_percentage_row[] = ($totalAmount != 0 ? round(($verifiedTotalAmount / $totalAmount) * 100, 2) : 0) . "%";
+                        $grand_total_percentage_row[] = ($totalItems != 0 ? round(($verifiedTotalItems / $totalItems) * 100, 2) : 0) . "%";
+                        $grand_total_percentage_row[] = ($totalAmount != 0 ? round(($equalTotalAmount / $totalAmount) * 100, 2) : 0) . "%";
+                        $grand_total_percentage_row[] = ($totalItems != 0 ? round(($equalTotalItems / $totalItems) * 100, 2) : 0) . "%";
+                        $grand_total_percentage_row[] = ($totalAmount != 0 ? round(($shortTotalAmount / $totalAmount) * 100, 2) : 0) . "%";
+                        $grand_total_percentage_row[] = ($totalItems != 0 ? round(($shortTotalItems / $totalItems) * 100, 2) : 0) . "%";
+                        $grand_total_percentage_row[] = ($totalAmount != 0 ? round(($excessamounttotalnew / $totalAmount) * 100, 2) : 0) . "%";
+                        $grand_total_percentage_row[] = ($totalItems != 0 ? round(($excessitemtotal / $totalItems) * 100, 2) : 0) . "%";
+                        $grand_total_percentage_row[] = ($totalAmount != 0 ? round(($remainitemamounttotal / $totalAmount) * 100, 2) : 0) . "%";
+                        $grand_total_percentage_row[] = ($totalItems != 0 ? round(($remainitemstotal / $totalItems) * 100, 2) : 0) . "%";
+                        fputcsv($fp, $grand_total_percentage_row);
                     }
-
-
-
-                    $grand_total_row = array();
-                    $grand_total_row[] = "Grand Total";
-                    $grand_total_row[] = $totalAmount != 0 ? getmoney_format(round(($totalAmount / 100000), 2)) : $totalAmount;
-                    $grand_total_row[] = $totalItems;
-                    $grand_total_row[] = $verifiedTotalAmount != 0 ? getmoney_format(round(($verifiedTotalAmount / 100000), 2)) : $verifiedTotalAmount;
-                    $grand_total_row[] = $verifiedTotalItems;
-                    $grand_total_row[] = $equalTotalAmount != 0 ? getmoney_format(round(($equalTotalAmount / 100000), 2)) : $equalTotalAmount;
-                    $grand_total_row[] = $equalTotalItems;
-                    $grand_total_row[] = $shortTotalAmount != 0 ? getmoney_format(round(($shortTotalAmount / 100000), 2)) : $shortTotalAmount;
-                    $grand_total_row[] = $shortTotalItems;
-                    $grand_total_row[] = $excessamounttotalnew != 0 ? getmoney_format(round(($excessamounttotalnew / 100000), 2)) : $excessamounttotalnew;
-                    $grand_total_row[] = $excessitemtotal;
-                    $grand_total_row[] = $remainitemamounttotal != 0 ? getmoney_format(round(($remainitemamounttotal / 100000), 2)) : $remainitemamounttotal;
-                    $grand_total_row[] = $remainitemstotal;
-                    fputcsv($fp, $grand_total_row);
-
-                    $grand_total_percentage_row = array();
-                    $grand_total_percentage_row[] = "% to Grand Total";
-                    $grand_total_percentage_row[] = "100%";
-                    $grand_total_percentage_row[] = "100%";
-                    $grand_total_percentage_row[] = round(($verifiedTotalAmount / $totalAmount) * 100, 2) . "%";
-                    $grand_total_percentage_row[] = round(($verifiedTotalItems / $totalItems) * 100, 2) . "%";
-                    $grand_total_percentage_row[] = round(($equalTotalAmount / $totalAmount) * 100, 2) . "%";
-                    $grand_total_percentage_row[] = round(($equalTotalItems / $totalItems) * 100, 2) . "%";
-                    $grand_total_percentage_row[] = round(($shortTotalAmount / $totalAmount) * 100, 2) . "%";
-                    $grand_total_percentage_row[] = round(($shortTotalItems / $totalItems) * 100, 2) . "%";
-                    $grand_total_percentage_row[] = round(($excessamounttotalnew / $totalAmount) * 100, 2) . "%";
-                    $grand_total_percentage_row[] = round(($excessitemtotal / $totalItems) * 100, 2) . "%";
-                    $grand_total_percentage_row[] = round(($remainitemamounttotal / $totalAmount) * 100, 2) . "%";
-                    $grand_total_percentage_row[] = round(($remainitemstotal / $totalItems) * 100, 2) . "%";
-                    fputcsv($fp, $grand_total_percentage_row);
 
 
                 }

@@ -11,7 +11,7 @@ $this->load->view('layouts/sidebar');
                 <div class="card-header card-header-primary">
                     <div class="row">
                         <div class="col-md-6">
-                            <h4 class="card-title">VerifyFa</h4>
+                            <h4 class="card-title">VerifyFA</h4>
                             <p class="card-category">‘Mark’ headers for verification and editing</p>
                         </div>
                         <div class="col-md-6">

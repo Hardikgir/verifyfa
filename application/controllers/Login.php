@@ -15,7 +15,7 @@ class Login extends CI_Controller {
 	}
 	public function index()
 	{
-		$this->data['title']="VerifyFa Login";
+		$this->data['title']="VerifyFA Login";
 		if ($this->session->userdata('logged_in')!='') {
 			$session=$this->session->userdata('logged_in');
 			redirect(base_url()."index.php/dashboard", 'refresh');
@@ -125,7 +125,7 @@ class Login extends CI_Controller {
 
 	public function super_admin_login()
 	{
-		$this->data['title']="VerifyFa Super Admin Login";
+		$this->data['title']="VerifyFA Super Admin Login";
 		if ($this->session->userdata('super_admin_logged_in')!='') {
 			$session=$this->session->userdata('super_admin_logged_in');
 			redirect(base_url()."index.php/super-admin-dashboard", 'refresh');
@@ -156,7 +156,7 @@ class Login extends CI_Controller {
 
 	public function registered_user_login()
 	{
-		$this->data['title']="VerifyFa Registered User Login";
+		$this->data['title']="VerifyFA Registered User Login";
 		
 		$this->load->view('registered-user/login',$this->data);
 		
@@ -402,16 +402,16 @@ public function generate_active_register_user($id)
 
 	public function registered_user_forget_password()
 	{
-		$this->data['title']="VerifyFa Registered User Login";		
+		$this->data['title']="VerifyFA Registered User Login";		
 		$this->load->view('registered-user/forget-password',$this->data);
 	}
 	public function verifyfa_user_forget_password()
 	{
-		$this->data['title']="VerifyFa Registered User Login";		
+		$this->data['title']="VerifyFA Registered User Login";		
 		$this->load->view('forget-password',$this->data);
 	}
 	public function VerifyForForgetPassword(){
-		// $this->data['title']="VerifyFa Registered User Login";		
+		// $this->data['title']="VerifyFA Registered User Login";		
 		// $this->load->view('password-change',$this->data);
 
 		$email=$this->input->post('userEmail');
@@ -608,7 +608,7 @@ public function generate_active_register_user($id)
 		redirect("index.php/login/VerifyForChangePassword");
 	}
 	public function VerifyForChangePassword(){
-		$this->data['title']="VerifyFa Registered User Login";		
+		$this->data['title']="VerifyFA Registered User Login";		
 		$this->load->view('password-change',$this->data);
 	}
 	public function updatePasswordFromForget(){
@@ -636,7 +636,7 @@ public function generate_active_register_user($id)
 	}
 	
 	public function VerifyForForgetPasswordRegistered(){
-		// $this->data['title']="VerifyFa Registered User Login";		
+		// $this->data['title']="VerifyFA Registered User Login";		
 		// $this->load->view('password-change',$this->data);
 
 		$email=$this->input->post('email');
@@ -834,7 +834,7 @@ public function generate_active_register_user($id)
 		redirect("index.php/login/VerifyForChangePasswordRegistered");
 	}
 	public function VerifyForChangePasswordRegistered(){
-		$this->data['title']="VerifyFa Registered User Login";		
+		$this->data['title']="VerifyFA Registered User Login";		
 		$this->load->view('registered-user/password-change',$this->data);
 	}
 

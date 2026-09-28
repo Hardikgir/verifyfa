@@ -385,7 +385,7 @@ class Tasks_model extends CI_Model {
             $data['shifted']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Verified' and qty_shifted > 0 group by item_category")->result();
             $data['notinuse']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Verified' and qty_not_in_use > 0 group by item_category")->result();
             //$data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE verification_status='Verified' and quantity_as_per_invoice > quantity_verified group by item_category")->result();
-            $data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE verification_status='Not-Verified' and quantity_verified > 0 group by item_category")->result();
+            $data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and quantity_verified > 0 group by item_category")->result();
             
         }
         else
@@ -396,7 +396,7 @@ class Tasks_model extends CI_Model {
             $data['missing']=array();
             $data['shifted']=array();
             $data['notinuse']=array();
-            $data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items FROM ".$tablename." WHERE (verification_status='Not-Verified' OR verification_status='Not Verified') group by item_category")->result();
+            $data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') group by item_category")->result();
         }
         
         $data['all']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(quantity_as_per_invoice) as total_qty FROM ".$tablename." group by item_category")->result();
@@ -670,7 +670,7 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
             $data['shifted']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * qty_shifted) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Verified' and qty_shifted > 0 group by item_category")->result();
             $data['notinuse']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * qty_not_in_use) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Verified' and qty_not_in_use > 0 group by item_category")->result();
             //$data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE verification_status='Verified' and quantity_as_per_invoice > quantity_verified group by item_category")->result();
-            $data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE verification_status='Not-Verified' and quantity_verified > 0 group by item_category")->result();
+            $data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and quantity_verified > 0 group by item_category")->result();
 
             $data['excess']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as items FROM ".$tablename." WHERE quantity_as_per_invoice < quantity_verified  group by item_category")->result();
             $data['verified']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,SUM(quantity_verified) as total_items FROM ".$tablename." WHERE verification_status='Verified' group by item_category")->result();
@@ -678,17 +678,17 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
         }
         else
         {
-            $data['good']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * qty_ok) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Not-Verified' and qty_ok > 0 group by item_category")->result();
-            $data['damaged']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * qty_damaged) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Not-Verified' and qty_damaged > 0 group by item_category")->result();
-            $data['scrapped']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * qty_scrapped) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Not-Verified' and qty_scrapped > 0 group by item_category")->result();
-            $data['missing']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * qty_missing) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Not-Verified' and qty_missing > 0 group by item_category")->result();
-            $data['shifted']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * qty_shifted) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Not-Verified' and qty_shifted > 0 group by item_category")->result();
-            $data['notinuse']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * qty_not_in_use) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty FROM ".$tablename." WHERE verification_status='Not-Verified' and qty_not_in_use > 0 group by item_category")->result();
-            // $data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE verification_status='Not-Verified' and quantity_as_per_invoice > quantity_verified group by item_category")->result();
-            $data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE verification_status='Not-Verified' and quantity_verified = 0 group by item_category")->result();
+            $data['good']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * qty_ok) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and qty_ok > 0 group by item_category")->result();
+            $data['damaged']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * qty_damaged) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and qty_damaged > 0 group by item_category")->result();
+            $data['scrapped']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * qty_scrapped) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and qty_scrapped > 0 group by item_category")->result();
+            $data['missing']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * qty_missing) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and qty_missing > 0 group by item_category")->result();
+            $data['shifted']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * qty_shifted) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and qty_shifted > 0 group by item_category")->result();
+            $data['notinuse']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * qty_not_in_use) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and qty_not_in_use > 0 group by item_category")->result();
+            // $data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and quantity_as_per_invoice > quantity_verified group by item_category")->result();
+            $data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and quantity_verified = 0 group by item_category")->result();
 
              $data['excess']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as items FROM ".$tablename." WHERE quantity_as_per_invoice < quantity_verified  group by item_category")->result();
-             $data['verified']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,SUM(quantity_verified) as total_items FROM ".$tablename." WHERE verification_status='Not-Verified' group by item_category")->result();
+             $data['verified']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,SUM(quantity_verified) as total_items FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') group by item_category")->result();
         }
         
         $data['all']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(quantity_as_per_invoice) as total_qty FROM ".$tablename." group by item_category")->result();
@@ -903,7 +903,7 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
         }
         else
         {
-            $data['all']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE verification_status='Not-Verified' and (verification_remarks!='' OR verification_remarks!=NULL) group by item_category")->result();
+            $data['all']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and (verification_remarks!='' OR verification_remarks!=NULL) group by item_category")->result();
         }
         
         
@@ -926,7 +926,7 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
         }
         else
         {
-            $data['all']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE verification_status='Not-Verified' and (item_note!='' OR item_note!=NULL) group by item_category")->result();
+            $data['all']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and (item_note!='' OR item_note!=NULL) group by item_category")->result();
         }
         
         
@@ -948,8 +948,8 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
         }
         else
         {
-            $data['manual']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE mode_of_verification='Search' and verification_status='Not-Verified' group by item_category")->result();
-            $data['scan']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE mode_of_verification='Scan' and verification_status='Not-Verified' group by item_category")->result();
+            $data['manual']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE mode_of_verification='Search' and (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') group by item_category")->result();
+            $data['scan']=$this->db->query("SELECT item_category,count(*) as items FROM ".$tablename." WHERE mode_of_verification='Scan' and (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') group by item_category")->result();
         }
 
         // echo '<pre>data 1 ::';
@@ -979,7 +979,7 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
         }
         else
         {
-            $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE verification_status='Not-Verified'")->result_array();
+            $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '')")->result_array();
         }
         // echo $this->db->last_query();
         return $data;
@@ -996,7 +996,7 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
         }
         else
         {
-            $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE verification_status='Not-Verified' and tag_status_y_n_na='Y'")->result_array();
+            $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and tag_status_y_n_na='Y'")->result_array();
         }
                 // echo $this->db->last_query();
 
@@ -1014,7 +1014,7 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
         }
         else
         {
-            $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE verification_status='Not-Verified' and tag_status_y_n_na='N'")->result_array();
+            $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and tag_status_y_n_na='N'")->result_array();
         }
         return $data;
     }
@@ -1030,7 +1030,7 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
         }
         else
         {
-            $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE verification_status='Not-Verified' and tag_status_y_n_na='NA'")->result_array();
+            $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and tag_status_y_n_na='NA'")->result_array();
         }
         return $data;
     }
@@ -1117,35 +1117,35 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
         {
             if($reportOneType=='qty_ok')
             {
-                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE verification_status='Not-Verified' and qty_ok>0")->result_array();    
+                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and qty_ok>0")->result_array();    
             }
             else if($reportOneType=='qty_damaged')
             {
-                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE verification_status='Not-Verified' and qty_damaged>0")->result_array();    
+                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and qty_damaged>0")->result_array();    
             }
             else if($reportOneType=='qty_scrapped')
             {
-                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE verification_status='Not-Verified' and qty_scrapped>0")->result_array();    
+                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and qty_scrapped>0")->result_array();    
             }
             else if($reportOneType=='qty_missing')
             {
-                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE verification_status='Not-Verified' and qty_missing>0")->result_array();    
+                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and qty_missing>0")->result_array();    
             }
             else if($reportOneType=='qty_shifted')
             {
-                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE verification_status='Not-Verified' and qty_shifted>0")->result_array();    
+                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and qty_shifted>0")->result_array();    
             }
             else if($reportOneType=='qty_not_in_use')
             {
-                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE verification_status='Not-Verified' and qty_not_in_use>0")->result_array();    
+                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and qty_not_in_use>0")->result_array();    
             }
             else if($reportOneType=='qty_remaining')
             {
-                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE verification_status='Not-Verified' and quantity_as_per_invoice>quantity_verified")->result_array();    
+                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and quantity_as_per_invoice>quantity_verified")->result_array();    
             }
             else if($reportOneType=='consolidated')
             {
-                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE verification_status='Not-Verified'")->result_array();    
+                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '')")->result_array();    
             }
 
         }
