@@ -89,7 +89,7 @@ table th,table td{
 									
 									foreach($data['verified'] as $verified)
 									{
-										if($verified->item_category==$allcat->item_category)
+										if(strcasecmp(trim($verified->item_category), trim($allcat->item_category)) == 0)
 										{
 											$verifiedAmount=$verified->total_amount;
 											$verifiedItems=$verified->total_items;
@@ -125,12 +125,10 @@ table th,table td{
 
 									}
 
-
-
 									
 									foreach($data['verifiedequal'] as $verifiedeq)
 									{
-										if($verifiedeq->item_category==$allcat->item_category)
+										if(strcasecmp(trim($verifiedeq->item_category), trim($allcat->item_category)) == 0)
 										{
 											$equalAmount=$verifiedeq->total_amount;
 											$equalItems=$verifiedeq->total_items;
@@ -148,15 +146,11 @@ table th,table td{
 										$remainingTotalItems=$remainingTotalItems+$remainingItems;		//Used full
 									}
 
-
-
-
-
 									$remainitem='0';
 									$remainitemamount='0';
 									foreach($data['remaining'] as $remainingdata)
 									{
-										if($remainingdata->item_category==$allcat->item_category)
+										if(strcasecmp(trim($remainingdata->item_category), trim($allcat->item_category)) == 0)
 										{
 											$remainitem= $remainingdata->items;
 											$remainitemamount= $remainingdata->total_amount;
@@ -167,13 +161,11 @@ table th,table td{
 									$remainitemamounttotal +=$remainitemamount;
 										
 
-
-
 									$excessitem='0';
 									$excessamount='0';
 									foreach($data['excess'] as $excess)
 									{
-										if($excess->item_category == $allcat->item_category)
+										if(strcasecmp(trim($excess->item_category), trim($allcat->item_category)) == 0)
 										{
 											$excessitem = $excess->items;
 											$excessAmount =$excess->total_amount;		

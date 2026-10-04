@@ -162,79 +162,79 @@ table th,table td{
                                                 $subtotalItems=$subtotalItems+$allcat->total_qty;
                                                 foreach($data['good'] as $good)
 												{
-													if($good->item_category==$allcat->item_category)
-													{
-                                                        $goodAmount=$good->total_amount;
-														$goodItems=$good->good_qty;
-														$goodTotalAmount=$goodTotalAmount+$goodAmount;
-														$goodTotalItems=$goodTotalItems+$goodItems;
-                                                        $subgoodTotalAmount=$subgoodTotalAmount+$goodAmount;
-                                                        $subgoodTotalItems=$subgoodTotalItems+$goodItems;
-                                                    }
-                                                   
-                                                }
-                                                foreach($data['damaged'] as $damaged)
-												{
-													if($damaged->item_category==$allcat->item_category)
-													{
-                                                        $damagedAmount=$damaged->total_amount;
-														$damagedItems=$damaged->damaged_qty;
-														$damagedTotalAmount=$damagedTotalAmount+$damagedAmount;
-														$damagedTotalItems=$damagedTotalItems+$damagedItems;
-                                                        $subdamagedTotalAmount=$subdamagedTotalAmount+$damagedAmount;
-                                                        $subdamagedTotalItems=$subdamagedTotalItems+$damagedItems;
-                                                    }
+													if(strcasecmp(trim($good->item_category), trim($allcat->item_category)) == 0)
+ 													{
+                                                         $goodAmount=$good->total_amount;
+ 														$goodItems=$good->good_qty;
+ 														$goodTotalAmount=$goodTotalAmount+$goodAmount;
+ 														$goodTotalItems=$goodTotalItems+$goodItems;
+                                                         $subgoodTotalAmount=$subgoodTotalAmount+$goodAmount;
+                                                         $subgoodTotalItems=$subgoodTotalItems+$goodItems;
+                                                     }
                                                     
-                                                }
-                                                foreach($data['scrapped'] as $scrapped)
-												{
-													if($scrapped->item_category==$allcat->item_category)
-													{
-                                                        $scrappedAmount=$scrapped->total_amount;
-														$scrappedItems=$scrapped->scrapped_qty;
-														$scrappedTotalAmount=$scrappedTotalAmount+$scrappedAmount;
-														$scrappedTotalItems=$scrappedTotalItems+$scrappedItems;
-                                                        $subscrappedTotalAmount=$subscrappedTotalAmount+$scrappedAmount;
-                                                        $subscrappedTotalItems=$subscrappedTotalItems+$scrappedItems;
-                                                    }
-                                                   
-                                                }
-                                                foreach($data['missing'] as $missing)
-												{
-													if($missing->item_category==$allcat->item_category)
-													{
-														$missingAmount=$missing->total_amount;
-														$missingItems=$missing->missing_qty;
-														$missingTotalAmount=$missingTotalAmount+$missingAmount;
-														$missingTotalItems=$missingTotalItems+$missingItems;
-														$submissingTotalAmount=$submissingTotalAmount+$missingAmount;
-                                                        $submissingTotalItems=$submissingTotalItems+$missingItems;
-													}
-												}
-												foreach($data['shifted'] as $shifted)
-												{
-													if($shifted->item_category==$allcat->item_category)
-													{
-														$shiftedAmount=$shifted->total_amount;
-														$shiftedItems=$shifted->shifted_qty;
-														$shiftedTotalAmount=$shiftedTotalAmount+$shiftedAmount;
-														$shiftedTotalItems=$shiftedTotalItems+$shiftedItems;
-														$subshiftedTotalAmount=$subshiftedTotalAmount+$shiftedAmount;
-                                                        $subshiftedTotalItems=$subshiftedTotalItems+$shiftedItems;
-													}
-												}
-												foreach($data['notinuse'] as $notinuse)
-												{
-													if($notinuse->item_category==$allcat->item_category)
-													{
-														$notinuseAmount=$notinuse->total_amount;
-														$notinuseItems=$notinuse->notinuse_qty;
-														$notinuseTotalAmount=$notinuseTotalAmount+$notinuseAmount;
-														$notinuseTotalItems=$notinuseTotalItems+$notinuseItems;
-														$subnotinuseTotalAmount=$subnotinuseTotalAmount+$notinuseAmount;
-                                                        $subnotinuseTotalItems=$subnotinuseTotalItems+$notinuseItems;
-													}
-												}
+                                                 }
+                                                 foreach($data['damaged'] as $damaged)
+ 												{
+ 													if(strcasecmp(trim($damaged->item_category), trim($allcat->item_category)) == 0)
+ 													{
+                                                         $damagedAmount=$damaged->total_amount;
+ 														$damagedItems=$damaged->damaged_qty;
+ 														$damagedTotalAmount=$damagedTotalAmount+$damagedAmount;
+ 														$damagedTotalItems=$damagedTotalItems+$damagedItems;
+                                                         $subdamagedTotalAmount=$subdamagedTotalAmount+$damagedAmount;
+                                                         $subdamagedTotalItems=$subdamagedTotalItems+$damagedItems;
+                                                     }
+                                                     
+                                                 }
+                                                 foreach($data['scrapped'] as $scrapped)
+ 												{
+ 													if(strcasecmp(trim($scrapped->item_category), trim($allcat->item_category)) == 0)
+ 													{
+                                                         $scrappedAmount=$scrapped->total_amount;
+ 														$scrappedItems=$scrapped->scrapped_qty;
+ 														$scrappedTotalAmount=$scrappedTotalAmount+$scrappedAmount;
+ 														$scrappedTotalItems=$scrappedTotalItems+$scrappedItems;
+                                                         $subscrappedTotalAmount=$subscrappedTotalAmount+$scrappedAmount;
+                                                         $subscrappedTotalItems=$subscrappedTotalItems+$scrappedItems;
+                                                     }
+                                                    
+                                                 }
+                                                 foreach($data['missing'] as $missing)
+ 												{
+ 													if(strcasecmp(trim($missing->item_category), trim($allcat->item_category)) == 0)
+ 													{
+ 														$missingAmount=$missing->total_amount;
+ 														$missingItems=$missing->missing_qty;
+ 														$missingTotalAmount=$missingTotalAmount+$missingAmount;
+ 														$missingTotalItems=$missingTotalItems+$missingItems;
+ 														$submissingTotalAmount=$submissingTotalAmount+$missingAmount;
+                                                         $submissingTotalItems=$submissingTotalItems+$missingItems;
+ 													}
+ 												}
+ 												foreach($data['shifted'] as $shifted)
+ 												{
+ 													if(strcasecmp(trim($shifted->item_category), trim($allcat->item_category)) == 0)
+ 													{
+ 														$shiftedAmount=$shifted->total_amount;
+ 														$shiftedItems=$shifted->shifted_qty;
+ 														$shiftedTotalAmount=$shiftedTotalAmount+$shiftedAmount;
+ 														$shiftedTotalItems=$shiftedTotalItems+$shiftedItems;
+ 														$subshiftedTotalAmount=$subshiftedTotalAmount+$shiftedAmount;
+                                                         $subshiftedTotalItems=$subshiftedTotalItems+$shiftedItems;
+ 													}
+ 												}
+ 												foreach($data['notinuse'] as $notinuse)
+ 												{
+ 													if(strcasecmp(trim($notinuse->item_category), trim($allcat->item_category)) == 0)
+ 													{
+ 														$notinuseAmount=$notinuse->total_amount;
+ 														$notinuseItems=$notinuse->notinuse_qty;
+ 														$notinuseTotalAmount=$notinuseTotalAmount+$notinuseAmount;
+ 														$notinuseTotalItems=$notinuseTotalItems+$notinuseItems;
+ 														$subnotinuseTotalAmount=$subnotinuseTotalAmount+$notinuseAmount;
+                                                         $subnotinuseTotalItems=$subnotinuseTotalItems+$notinuseItems;
+ 													}
+ 												}
 												$remainingAmount=$allcat->total_amount-($goodAmount+$damagedAmount+$scrappedAmount+$missingAmount+$shiftedAmount+$notinuseAmount);
 												$remainingItems=$allcat->total_qty-($goodItems+$damagedItems+$scrappedItems+$missingItems+$shiftedItems+$notinuseItems);
 												$subremainingTotalAmount=$subremainingTotalAmount+$remainingAmount;

@@ -365,27 +365,27 @@ class Tasks_model extends CI_Model {
         }
         if($verificationstatus==1)
         {
-            $data['good']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE qty_ok > 0 group by item_category")->result();
-            $data['damaged']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE qty_damaged > 0 group by item_category")->result();
-            $data['scrapped']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE qty_scrapped > 0 group by item_category")->result();
-            $data['missing']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE qty_missing > 0 group by item_category")->result();
-            $data['shifted']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE qty_shifted > 0 group by item_category")->result();
-            $data['notinuse']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE qty_not_in_use > 0 group by item_category")->result();
-            $data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE quantity_as_per_invoice > quantity_verified group by item_category")->result();
+            $data['good']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE qty_ok > 0 group by UPPER(TRIM(item_category))")->result();
+            $data['damaged']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE qty_damaged > 0 group by UPPER(TRIM(item_category))")->result();
+            $data['scrapped']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE qty_scrapped > 0 group by UPPER(TRIM(item_category))")->result();
+            $data['missing']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE qty_missing > 0 group by UPPER(TRIM(item_category))")->result();
+            $data['shifted']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE qty_shifted > 0 group by UPPER(TRIM(item_category))")->result();
+            $data['notinuse']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE qty_not_in_use > 0 group by UPPER(TRIM(item_category))")->result();
+            $data['remaining']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE quantity_as_per_invoice > quantity_verified group by UPPER(TRIM(item_category))")->result();
                     //   echo $this->db->last_query();
 
             
         }
         else if($verificationstatus=='Verified')
         {
-            $data['good']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Verified' and qty_ok > 0 group by item_category")->result();
-            $data['damaged']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Verified' and qty_damaged > 0 group by item_category")->result();
-            $data['scrapped']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Verified' and qty_scrapped > 0 group by item_category")->result();
-            $data['missing']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Verified' and qty_missing > 0 group by item_category")->result();
-            $data['shifted']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Verified' and qty_shifted > 0 group by item_category")->result();
-            $data['notinuse']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Verified' and qty_not_in_use > 0 group by item_category")->result();
-            //$data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE verification_status='Verified' and quantity_as_per_invoice > quantity_verified group by item_category")->result();
-            $data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and quantity_verified > 0 group by item_category")->result();
+            $data['good']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Verified' and qty_ok > 0 group by UPPER(TRIM(item_category))")->result();
+            $data['damaged']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Verified' and qty_damaged > 0 group by UPPER(TRIM(item_category))")->result();
+            $data['scrapped']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Verified' and qty_scrapped > 0 group by UPPER(TRIM(item_category))")->result();
+            $data['missing']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Verified' and qty_missing > 0 group by UPPER(TRIM(item_category))")->result();
+            $data['shifted']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Verified' and qty_shifted > 0 group by UPPER(TRIM(item_category))")->result();
+            $data['notinuse']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(qty_ok) as good_qty,SUM(qty_damaged) as damaged_qty,SUM(qty_scrapped)as scrapped_qty,SUM(qty_missing) as missing_qty,SUM(qty_not_in_use) as notinuse_qty,SUM(qty_shifted) as shifted_qty  FROM ".$tablename." WHERE verification_status='Verified' and qty_not_in_use > 0 group by UPPER(TRIM(item_category))")->result();
+            //$data['remaining']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE verification_status='Verified' and quantity_as_per_invoice > quantity_verified group by UPPER(TRIM(item_category))")->result();
+            $data['remaining']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and quantity_verified > 0 group by UPPER(TRIM(item_category))")->result();
             
         }
         else
@@ -396,10 +396,10 @@ class Tasks_model extends CI_Model {
             $data['missing']=array();
             $data['shifted']=array();
             $data['notinuse']=array();
-            $data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') group by item_category")->result();
+            $data['remaining']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') group by UPPER(TRIM(item_category))")->result();
         }
         
-        $data['all']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(quantity_as_per_invoice) as total_qty FROM ".$tablename." group by item_category")->result();
+        $data['all']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM(total_item_amount_capitalized) as total_amount,SUM(quantity_as_per_invoice) as total_qty FROM ".$tablename." group by UPPER(TRIM(item_category))")->result();
         // echo $this->db->last_query();
         return $data;
     }
@@ -789,32 +789,32 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
 
         if($verificationstatus==1 || $verificationstatus===0 || $verificationstatus==='0' || strtolower((string)$verificationstatus)=='all')
         {
-            $data['all']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as total_items FROM ".$tablename." group by item_category")->result();
+            $data['all']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as total_items FROM ".$tablename." group by UPPER(TRIM(item_category))")->result();
             // echo '<pre>all Query :- ';
             // print_r($this->db->last_query());
             // echo '</pre>';
 
-            $data['verified']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as total_items FROM ".$tablename." WHERE verification_status='Verified' group by item_category")->result();
+            $data['verified']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as total_items FROM ".$tablename." WHERE verification_status='Verified' group by UPPER(TRIM(item_category))")->result();
             // echo '<pre>verified Query :- ';
             // print_r($this->db->last_query());
             // echo '</pre>';
 
-            $data['not_verified']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as total_items FROM ".$tablename." WHERE verification_status!='Verified' group by item_category")->result();
+            $data['not_verified']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as total_items FROM ".$tablename." WHERE verification_status!='Verified' group by UPPER(TRIM(item_category))")->result();
             // echo '<pre>not_verified Query :- ';
             // print_r($this->db->last_query());
             // echo '</pre>';
 
-            $data['verifiedequal']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as total_items FROM ".$tablename." WHERE verification_status='Verified' and quantity_as_per_invoice=quantity_verified group by item_category")->result();
+            $data['verifiedequal']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as total_items FROM ".$tablename." WHERE verification_status='Verified' and quantity_as_per_invoice=quantity_verified group by UPPER(TRIM(item_category))")->result();
             // echo '<pre>verifiedequal Query :- ';
             // print_r($this->db->last_query());
             // echo '</pre>';
 
-            $data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE quantity_as_per_invoice > quantity_verified group by item_category")->result();
+            $data['remaining']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE quantity_as_per_invoice > quantity_verified group by UPPER(TRIM(item_category))")->result();
             // echo '<pre>remaining Query :- ';
             // print_r($this->db->last_query());
             // echo '</pre>';
             
-            $data['excess']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as items FROM ".$tablename." WHERE quantity_as_per_invoice < quantity_verified  group by item_category")->result(); 
+            $data['excess']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as items FROM ".$tablename." WHERE quantity_as_per_invoice < quantity_verified  group by UPPER(TRIM(item_category))")->result(); 
             // echo '<pre>excess Query :- ';
             // print_r($this->db->last_query());
             // echo '</pre>';
@@ -823,29 +823,29 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
         }
         else if($verificationstatus=='Verified')
         {
-            $data['all']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as total_items FROM ".$tablename." WHERE verification_status='Verified' group by item_category")->result();
+            $data['all']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as total_items FROM ".$tablename." WHERE verification_status='Verified' group by UPPER(TRIM(item_category))")->result();
             // echo '<pre>all Query :- ';
             // print_r($this->db->last_query());
             // echo '</pre>';
 
-            $data['verified']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as total_items FROM ".$tablename." WHERE verification_status='Verified' group by item_category")->result();
+            $data['verified']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as total_items FROM ".$tablename." WHERE verification_status='Verified' group by UPPER(TRIM(item_category))")->result();
             // echo '<pre>verified Query :- ';
             // print_r($this->db->last_query());
             // echo '</pre>';
             
-            $data['verifiedequal']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as total_items FROM ".$tablename." WHERE verification_status='Verified' and quantity_as_per_invoice=quantity_verified group by item_category")->result();
+            $data['verifiedequal']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as total_items FROM ".$tablename." WHERE verification_status='Verified' and quantity_as_per_invoice=quantity_verified group by UPPER(TRIM(item_category))")->result();
             // echo '<pre>verifiedequal Query :- ';
             // print_r($this->db->last_query());
             // echo '</pre>';
             
-            //$data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE verification_status='Verified' and quantity_as_per_invoice > quantity_verified group by item_category")->result();
-            $data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE verification_status='Not-Verified' and quantity_verified > 0 group by item_category")->result();
+            //$data['remaining']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE verification_status='Verified' and quantity_as_per_invoice > quantity_verified group by UPPER(TRIM(item_category))")->result();
+            $data['remaining']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE verification_status='Not-Verified' and quantity_verified > 0 group by UPPER(TRIM(item_category))")->result();
             
             // echo '<pre>remaining Query :- ';
             // print_r($this->db->last_query());
             // echo '</pre>';
             
-            $data['excess']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as items FROM ".$tablename." WHERE quantity_as_per_invoice < quantity_verified  group by item_category")->result();
+            $data['excess']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as items FROM ".$tablename." WHERE quantity_as_per_invoice < quantity_verified  group by UPPER(TRIM(item_category))")->result();
             // echo '<pre>excess Query :- ';
             // print_r($this->db->last_query());
             // echo '</pre>';
@@ -853,29 +853,29 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
         }
         else
         {
-            $data['all']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as total_items FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') group by item_category")->result();
+            $data['all']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as total_items FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') group by UPPER(TRIM(item_category))")->result();
             // echo '<pre>all Query :- ';
             // print_r($this->db->last_query());
             // echo '</pre>';
 
-            $data['verified']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as total_items FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and quantity_verified > 0 group by item_category")->result();
+            $data['verified']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as total_items FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and quantity_verified > 0 group by UPPER(TRIM(item_category))")->result();
             // echo '<pre>verified Query :- ';
             // print_r($this->db->last_query());
             // echo '</pre>';
             
-            $data['verifiedequal']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as total_items FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and quantity_verified>0 group by item_category")->result();
+            $data['verifiedequal']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as total_items FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and quantity_verified>0 group by UPPER(TRIM(item_category))")->result();
             // echo '<pre>verifiedequal Query :- ';
             // print_r($this->db->last_query());
             // echo '</pre>';
             
-            // $data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and quantity_as_per_invoice > quantity_verified group by item_category")->result();
-            $data['remaining']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and quantity_verified = 0 group by item_category")->result();
+            // $data['remaining']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and quantity_as_per_invoice > quantity_verified group by UPPER(TRIM(item_category))")->result();
+            $data['remaining']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as items  FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '') and quantity_verified = 0 group by UPPER(TRIM(item_category))")->result();
             // echo '<pre>remaining Query :- ';
             // print_r($this->db->last_query());
             // echo '</pre>';
             // exit();
             
-            $data['excess']=$this->db->query("SELECT item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as items FROM ".$tablename." WHERE quantity_as_per_invoice < quantity_verified  group by item_category")->result();
+            $data['excess']=$this->db->query("SELECT UPPER(TRIM(item_category)) as item_category,SUM((total_item_amount_capitalized/quantity_as_per_invoice) * quantity_verified) as total_amount,count(*) as items FROM ".$tablename." WHERE quantity_as_per_invoice < quantity_verified  group by UPPER(TRIM(item_category))")->result();
             // echo '<pre>excess Query :- ';
             // print_r($this->db->last_query());
             // echo '</pre>';    

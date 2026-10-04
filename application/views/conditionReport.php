@@ -228,7 +228,7 @@ table th,table td{
 											$totalItems=$totalItems+$allcat->total_qty;
 											foreach($data['good'] as $good)
 											{
-												if($good->item_category==$allcat->item_category)
+												if(strcasecmp(trim($good->item_category), trim($allcat->item_category)) == 0)
 												{
 													$goodAmount=$good->total_amount;
 													$goodItems=$good->good_qty;
@@ -238,7 +238,7 @@ table th,table td{
 											}
 											foreach($data['damaged'] as $damaged)
 											{
-												if($damaged->item_category==$allcat->item_category)
+												if(strcasecmp(trim($damaged->item_category), trim($allcat->item_category)) == 0)
 												{
 													$damagedAmount=$damaged->total_amount;
 													$damagedItems=$damaged->damaged_qty;
@@ -248,7 +248,7 @@ table th,table td{
 											}
 											foreach($data['scrapped'] as $scrapped)
 											{
-												if($scrapped->item_category==$allcat->item_category)
+												if(strcasecmp(trim($scrapped->item_category), trim($allcat->item_category)) == 0)
 												{
 													$scrappedAmount=$scrapped->total_amount;
 													$scrappedItems=$scrapped->scrapped_qty;
@@ -258,7 +258,7 @@ table th,table td{
 											}
 											foreach($data['missing'] as $missing)
 											{
-												if($missing->item_category==$allcat->item_category)
+												if(strcasecmp(trim($missing->item_category), trim($allcat->item_category)) == 0)
 												{
 													$missingAmount=$missing->total_amount;
 													$missingItems=$missing->missing_qty;
@@ -268,7 +268,7 @@ table th,table td{
 											}
 											foreach($data['shifted'] as $shifted)
 											{
-												if($shifted->item_category==$allcat->item_category)
+												if(strcasecmp(trim($shifted->item_category), trim($allcat->item_category)) == 0)
 												{
 													$shiftedAmount=$shifted->total_amount;
 													$shiftedItems=$shifted->shifted_qty;
@@ -278,7 +278,7 @@ table th,table td{
 											}
 											foreach($data['notinuse'] as $notinuse)
 											{
-												if($notinuse->item_category==$allcat->item_category)
+												if(strcasecmp(trim($notinuse->item_category), trim($allcat->item_category)) == 0)
 												{
 													$notinuseAmount=$notinuse->total_amount;
 													$notinuseItems=$notinuse->notinuse_qty;
