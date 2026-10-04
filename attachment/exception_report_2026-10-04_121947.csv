@@ -1,0 +1,6 @@
+"Allocated Item Category","To be Verified - Amount(in Lacs)","To be Verified - Number of Line Items","Verified - Amount(in Lacs)","Verified - Number of Line Items","Verified as Equal - Amount(in Lacs)","Verified as Equal - Number of Line Items","Short Found - Amount(in Lacs)","Short Found - Number of Line Items","Excess Found - Amount(in Lacs)","Excess Found - Number of Line Items","Remaining to be Verified - Amount(in Lacs)","Remaining to be Verified - Number of Line Items"
+Furniture,0,46,0,45,0,45,0,0,0,0,0,1
+"Medical Equipment",0,70,0,64,0,64,0,0,0,0,0,6
+"Plant & Machinery",0,6,0,5,0,5,0,0,0,0,0,1
+"Grand Total",0,122,0,114,0,114,0,0,0,0,0,8
+"% to Grand Total",100%,100%,93.44%,93.44%,93.44%,93.44%,0%,0%,0%,0%,6.56%,6.56%

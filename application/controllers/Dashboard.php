@@ -4527,7 +4527,7 @@ public function downloadExceptionOneAllocatedReport($projectid,$reportOneType)
 			$getreport=$this->tasks->getDetailedExceptionThreeProjectCloseRemaining($project_name,$verification_status,$columns,$reportOneType);	
 		}
 
-		$getreport=$this->tasks->getExceptionThreeReportdownload($project_name,$verification_status,$reportOneType);	
+		// $getreport=$this->tasks->getExceptionThreeReportdownload($project_name,$verification_status,$reportOneType);	
 
 		// echo '<pre>verification_status ';
 		// print_r($verification_status);

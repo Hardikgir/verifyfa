@@ -166,14 +166,10 @@ table th,table td{
 														$verifiedTotalItems=$verifiedTotalItems+$verifiedItems;
 														$subverifiedTotalAmount=$subverifiedTotalAmount+$verifiedAmount;
 														$subverifiedTotalItems=$subverifiedTotalItems+$verifiedItems;
-														if($verified->total_items < $allcat->total_items && $verified->total_items > 0)
+														if($verified->total_items > $allcat->total_items && $verified->total_items > 0)
 														{
 															$shortAmount=$allcat->total_amount-$verified->total_amount;
 															$shortItems=$allcat->total_items-$verified->total_items;
-															$shortTotalAmount=$shortTotalAmount+$shortAmount;
-															$shortTotalItems=$shortTotalItems+$shortItems;
-															$subshortTotalAmount=$subshortTotalAmount+$shortAmount;
-															$subshortTotalItems=$subshortTotalItems+$shortItems;
 														}
 														if($verified->total_items < 1)
 														{
@@ -216,10 +212,6 @@ table th,table td{
 														$remainitemamount= $remainingdata->total_amount;
 													}
 												}
-												$remainitemstotal +=$remainitem;
-												$remainitemamounttotal +=$remainitemamount;
-												$subremainitemstotal +=$remainitem;
-												$subremainitemamounttotal +=$remainitemamount;
 
 												$excessitem='0';
 												$excessamount='0';
@@ -235,6 +227,27 @@ table th,table td{
 												$excessitemtotal +=$excessitem;
 												$subexcessitemtotal +=$excessitem;
 												$subexcessamounttotalnew +=$excessAmount;
+
+												if(!empty($data['project']) && $data['project']->status != 0)
+												{
+													if($remainitem > 0)
+													{
+														$shortItems = $remainitem;
+														$shortAmount = $remainitemamount;
+														$remainitem = 0;
+														$remainitemamount = 0;
+													}
+												}
+
+												$shortTotalAmount = $shortTotalAmount + $shortAmount;
+												$shortTotalItems = $shortTotalItems + $shortItems;
+												$subshortTotalAmount = $subshortTotalAmount + $shortAmount;
+												$subshortTotalItems = $subshortTotalItems + $shortItems;
+
+												$remainitemstotal +=$remainitem;
+												$remainitemamounttotal +=$remainitemamount;
+												$subremainitemstotal +=$remainitem;
+												$subremainitemamounttotal +=$remainitemamount;
 										
 										?>
 										<tr>

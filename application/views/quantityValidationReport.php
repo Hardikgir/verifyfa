@@ -439,8 +439,6 @@ table th,table td{
 													{
 														$shortAmount=$allcat->total_amount-$verified->total_amount;
 														$shortItems=$allcat->total_items-$verified->total_items;
-														$shortTotalAmount=$shortTotalAmount+$shortAmount;
-														$shortTotalItems=$shortTotalItems+$shortItems;
 													}
 
 													if($verified->total_items > $allcat->total_items)
@@ -493,8 +491,6 @@ table th,table td{
 												}
 												
 											}
-											$remainitemstotal +=$remainitem;
-											$remainitemamounttotal +=$remainitemamount;
 												
 											$excessitem='0';
 											$excessamount='0';
@@ -505,13 +501,29 @@ table th,table td{
 													$excessitem = $excess->items;
 													 $excessAmount =$excess->total_amount;		
 													 $excessamounttotalnew=$excessamounttotalnew+$excessAmount;
- 
+
 												}													
 												
 												
 											}
 											$excessitemtotal +=$excessitem;
 
+											if(!empty($data['project'][0]) && $data['project'][0]->status != 0)
+											{
+												if($remainitem > 0)
+												{
+													$shortItems = $remainitem;
+													$shortAmount = $remainitemamount;
+													$remainitem = 0;
+													$remainitemamount = 0;
+												}
+											}
+
+											$shortTotalAmount = $shortTotalAmount + $shortAmount;
+											$shortTotalItems = $shortTotalItems + $shortItems;
+
+											$remainitemstotal += $remainitem;
+											$remainitemamounttotal += $remainitemamount;
 												
 											
 											if($_SESSION['reportData']['verification_status']=='Not-Verified')

@@ -787,7 +787,7 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
         // Verified = Verified
         // Else = Not-Verified
 
-        if($verificationstatus==1)
+        if($verificationstatus==1 || $verificationstatus===0 || $verificationstatus==='0' || strtolower((string)$verificationstatus)=='all')
         {
             $data['all']=$this->db->query("SELECT item_category,SUM(total_item_amount_capitalized) as total_amount,count(*) as total_items FROM ".$tablename." group by item_category")->result();
             // echo '<pre>all Query :- ';
@@ -1213,8 +1213,7 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
     {
         if($reportOneType=='verified')
         {
-                $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE verification_status='Verified'")->result_array();
-          
+            $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE verification_status='Verified'")->result_array();
         }
         else if($reportOneType=='equal')
         {
@@ -1222,17 +1221,21 @@ function getExceptionSixReport($tablename,$verificationstatus,$reportHeaders)
         }
         else if($reportOneType=='short')
         {
-            $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE quantity_as_per_invoice > quantity_verified and quantity_verified<0")->result_array();    
+            $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE (verification_status != 'Verified' OR verification_status IS NULL OR verification_status = '' OR quantity_as_per_invoice > quantity_verified)")->result_array();    
         }
         else if($reportOneType=='excess')
         {
             $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE quantity_as_per_invoice < quantity_verified")->result_array();    
         }
-        
-        if($reportOneType=='remaining')
+        else if($reportOneType=='remaining')
         {
-            $data=$this->db->query("SELECT ".$reportHeaders." FROM ".$tablename." WHERE quantity_as_per_invoice > quantity_verified")->result_array();    
+            $data=array();    
         }
+        else
+        {
+            $data=array();
+        }
+        return $data;
     }
     public function getDetailedExceptionThreeConsolidatedReport($tablename,$verificationstatus,$reportHeaders)
     {

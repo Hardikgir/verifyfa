@@ -2822,6 +2822,9 @@ class Tasks extends CI_Controller
             $exceptioncategory = $this->input->post('exception_category');
             $projectstatus = $this->input->post('projectstatus');
             $verificationstatus = $this->input->post('verificationstatus');
+            if ($verificationstatus === '0' || $verificationstatus === 0 || strtolower((string)$verificationstatus) === 'all' || $verificationstatus === '' || $verificationstatus === null) {
+                $verificationstatus = 1;
+            }
             $reportHeaders = $this->input->post('reportHeaders');
             $original_table_name = $this->input->post('original_table_name');
             $company_id = $this->input->post('company_id');
@@ -6041,6 +6044,9 @@ class Tasks extends CI_Controller
             $exceptioncategory = $this->input->post('exception_category');
             $projectstatus = $this->input->post('projectstatus');
             $verificationstatus = $this->input->post('verificationstatus');
+            if ($verificationstatus === '0' || $verificationstatus === 0 || strtolower((string)$verificationstatus) === 'all' || $verificationstatus === '' || $verificationstatus === null) {
+                $verificationstatus = 1;
+            }
             $reportHeaders = $this->input->post('reportHeaders');
             $original_table_name = $this->input->post('original_table_name');
             $company_id = $this->input->post('company_id');
@@ -6136,8 +6142,7 @@ class Tasks extends CI_Controller
                             }
                         }
 
-
-
+                        $project_data[] = $project;
                     }
 
 
@@ -6487,8 +6492,6 @@ class Tasks extends CI_Controller
                                         if ($verified->total_items > $allcat->total_items && $verified->total_items > 0) {
                                             $shortAmount = $allcat->total_amount - $verified->total_amount;
                                             $shortItems = $allcat->total_items - $verified->total_items;
-                                            $shortTotalAmount = $shortTotalAmount + $shortAmount;
-                                            $shortTotalItems = $shortTotalItems + $shortItems;
                                         }
 
                                         if ($verified->total_items > $allcat->total_items) {
@@ -6532,8 +6535,6 @@ class Tasks extends CI_Controller
 
                                 }
                             }
-                            $remainitemstotal += $remainitem;
-                            $remainitemamounttotal += $remainitemamount;
 
                             $excessitem = '0';
                             $excessamount = '0';
@@ -6550,6 +6551,22 @@ class Tasks extends CI_Controller
                                 }
                             }
                             $excessitemtotal += $excessitem;
+
+                            $target_project = !empty($project_data[0]) ? $project_data[0] : (!empty($getProjects[0]) ? $getProjects[0] : null);
+                            if (!empty($target_project) && $target_project->status != 0) {
+                                if ($remainitem > 0) {
+                                    $shortItems = $remainitem;
+                                    $shortAmount = $remainitemamount;
+                                    $remainitem = 0;
+                                    $remainitemamount = 0;
+                                }
+                            }
+
+                            $shortTotalAmount = $shortTotalAmount + $shortAmount;
+                            $shortTotalItems = $shortTotalItems + $shortItems;
+
+                            $remainitemstotal += $remainitem;
+                            $remainitemamounttotal += $remainitemamount;
 
                             $row[] = $allcat->item_category;
                             $row[] = $allcat->total_amount != 0 ? getmoney_format(round(($allcat->total_amount / 100000), 2)) : $allcat->total_amount;
@@ -7253,8 +7270,7 @@ class Tasks extends CI_Controller
                             }
                         }
 
-
-
+                        $project_data[] = $project;
                     }
                 }
 
@@ -7645,24 +7661,23 @@ class Tasks extends CI_Controller
 
                                 }
                             }
-                            $remainitemstotal += $remainitem;
-                            $remainitemamounttotal += $remainitemamount;
+                            $excessitemtotal += $excessitem;
 
-                            $excessitem = '0';
-                            $excessamount = '0';
-                            if (!empty($report_data['excess']) && is_array($report_data['excess'])) {
-                                foreach ($report_data['excess'] as $excess) {
-                                    if ($excess->item_category == $allcat->item_category) {
-                                        $excessitem = $excess->items;
-                                        $excessAmount = $excess->total_amount;
-                                        $excessamounttotalnew = $excessamounttotalnew + $excessAmount;
-
-                                    }
-
-
+                            $target_project = !empty($project_data[0]) ? $project_data[0] : (!empty($getProjects[0]) ? $getProjects[0] : null);
+                            if (!empty($target_project) && $target_project->status != 0) {
+                                if ($remainitem > 0) {
+                                    $shortItems = $remainitem;
+                                    $shortAmount = $remainitemamount;
+                                    $remainitem = 0;
+                                    $remainitemamount = 0;
                                 }
                             }
-                            $excessitemtotal += $excessitem;
+
+                            $shortTotalAmount = $shortTotalAmount + $shortAmount;
+                            $shortTotalItems = $shortTotalItems + $shortItems;
+
+                            $remainitemstotal += $remainitem;
+                            $remainitemamounttotal += $remainitemamount;
 
                             $row[] = $allcat->item_category;
                             $row[] = $allcat->total_amount != 0 ? getmoney_format(round(($allcat->total_amount / 100000), 2)) : $allcat->total_amount;
