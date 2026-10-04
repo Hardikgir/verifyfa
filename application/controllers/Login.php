@@ -286,7 +286,7 @@ class Login extends CI_Controller {
 		$expiry_date= $userrow->link_expiry_date;
 		if( $expiry_date < $date){
 		
-			$this->session->set_flashdata('error_message', 'Your activation link expire kindly connect with verifyfa team.');
+			$this->session->set_flashdata('error_message', 'Your activation link expire kindly connect with VerifyFA team.');
 			redirect("index.php/registered-user-login");
 		}else{
 			$data=array("is_active"=>"4");
@@ -369,7 +369,7 @@ public function generate_active_register_user($id)
 		$expiry_date= $userrow->link_expiry_date;
 		if( $expiry_date < $date){
 		
-			$this->session->set_flashdata('error_message', 'Your activation link expire kindly connect with verifyfa team.');
+			$this->session->set_flashdata('error_message', 'Your activation link expire kindly connect with VerifyFA team.');
 			redirect("index.php/registered-user-login");
 		}else{
 			$data=array("is_active"=>"4");
@@ -435,7 +435,7 @@ public function generate_active_register_user($id)
 			$this->session->set_userdata('temp_logged_in', $sess_data);
 		}else{
 			$this->session->set_flashdata('error_message', 'Invalid Email or Entity Code');
-			redirect("index.php/forget-password-verifyfa-user");
+			redirect("index.php/forget-password-VerifyFA-user");
 		}
 
 
